@@ -4,9 +4,11 @@
     border-bottom-color: #e4e9f0;
     font-family: "Moul", serif;
   }
+
   .btn.btn-sm {
     font-size: 11px;
   }
+
   .select2-container--default .select2-selection--single .select2-selection__rendered {
     color: #444;
     line-height: 28px;
@@ -21,7 +23,7 @@
       <div class="page-title page-title-custom">
         <div class="title-page">
           <i class="mdi mdi-format-list-bulleted"></i>
-            ប្រពន្ធ័គ្រប់គ្រងសិស្ស
+          ប្រពន្ធ័គ្រប់គ្រងសិស្ស
         </div>
       </div>
     </div>
@@ -36,8 +38,10 @@
 </div>
 <div class="page-header flex-wrap">
   <div class="header-left">
-    <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2"  id="BntCreate" href="{{url('/student/transaction?type=cr')}}"><i class="mdi mdi-account-plus"></i> Add New</i></a>
-    <button type="button" data-type="skill" onclick="prints()" class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2"> Print
+    <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="BntCreate"
+      href="{{url('/student/transaction?type=cr')}}"><i class="mdi mdi-account-plus"></i> Add New</i></a>
+    <button type="button" data-type="skill" onclick="prints()"
+      class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2"> Print
       <i class="mdi mdi-printer btn-icon-append"></i>
       {{-- <button type="button" onclick="DownlaodExcel()"
           class="btn btn-outline-success btn-icon-text btn-sm mb-2 mb-md-0 me-2">Excel <i
@@ -54,8 +58,8 @@
     <div>
       {{-- <button type="button" class="btn btn-outline-primary"> Seacrh </button> --}}
     </div>
-    <a class="btn btn-primary btn-icon-text" data-toggle="collapse" href="#Fliter" role="button"
-      aria-expanded="false" aria-controls="collapseExample">Fliter
+    <a class="btn btn-primary btn-icon-text" data-toggle="collapse" href="#Fliter" role="button" aria-expanded="false"
+      aria-controls="collapseExample">Fliter
     </a>
   </div>
 </div>
@@ -106,6 +110,22 @@
 
   </div>
 </div>
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModals" aria-hidden="true">
+  <div class="modal-dialog modal-xl"> 
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-dark" id="imageModals">Upload Image</h5>
+        
+      </div>
+      <div class="modal-body PreImage" >
+          
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+  </div>
+</div>
 @include('system.modal_comfrim_delet')
 @include('general.student_list')
 @include('system.model_upload_excel')
@@ -118,13 +138,11 @@
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       }
     })
-
     $(document).on('click', '#btnDelete', function() {
       $(".modal-confirmation-text").html('Do you want to delete?');
       $("#btnYes").attr('data-code', $(this).attr('data-code'));
       $("#divConfirmation").modal('show');
     });
-
     $(document).on('click', '#btnYes', function() {
       var code = $(this).attr('data-code');
       $.ajax({
@@ -142,11 +160,9 @@
         }
       });
     });
-    
     $(document).on('click', '#btnExcel', function() {
       var fileInput = $('#dataExcel')[0];
       var file = fileInput.files[0];
-      
       if (file) {
         var formData = new FormData();
         formData.append('excel_file', file);
@@ -175,7 +191,85 @@
         notyf.error('Please select a file');
       }
     });
+    $(document).on('click', '.btn-browse', function() {
+      $('.upload-item').trigger('click');
+    });
+    $(document).on('click', '#btn-Image', function() {
+      let code = $(this).attr('data-code');
+      $.ajax({
+        type: "GET",
+        url: `/student/getImage`,
+        data: {
+          code: code
+        },
+        // beforeSend: function() {
+        //     // $('.global_laoder').show();
+        // },
+        success: function(response) {
+          if (response.status == 'success') {
+            $('#imageModal').modal('show');
+            $('.PreImage').html();
+            $('.PreImage').html(response.view);
+          }
+        }
+      });
+    });
+    $(document).on('change', '#file', function() {
+      let file = $('#file').val();
+      let data = new FormData(formimg);
+      $.ajax({
+        type: "POST",
+        url: `/student/uploadimage`,
+        data: data,
+        processData: false,
+        contentType: false,
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(response) {
+          if(response.status == 'success'){
+            notyf.success(response.msg);
+            $('.append_file').append(`
+              <div class="col-3">
+                <div class="drag-image">
+                <img src="${response.path}" alt="">
+                <div class="btn delete_image" data-id ='{{$item->id ?? ''}}'>Remove</div>
+                </div>
+              </div>
+            `);
+          }else{
+            notyf.error(response.msg);
+          }
+        }
+      });
+    });
+    $(document).on('click', '.delete_image', function(param) {
+      let id = $(this).attr('data-id');
+      $.ajax({
+        type: "POST",
+        url: `/student/delete-image`,
+        beforeSend: function() {
+          $('.global_laoder').show();
+        },
+        data: {
+          id: id
+        },
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(response) {
+          if (response.status == 'success') {
+            $(`.row_${id}`).remove();
+            $('.global_laoder').hide();
+            notyf.success(response.msg);
+          } else {
+            notyf.error(response.msg);
+          }
+        }
+      });
+    });
   });
+
   function prints(ctrl) {
     var url = '/student/print';
     var data = '';
@@ -221,7 +315,8 @@
       error: function(xhr, ajaxOptions, thrownError) {}
     });
   }
-  function importExcel(){
+
+  function importExcel() {
     $("#divUplocadExcel").modal('show');
   }
 </script>

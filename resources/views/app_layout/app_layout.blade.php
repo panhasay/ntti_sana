@@ -72,7 +72,7 @@
             <a class="navbar-brand brand-logo" href="{{ url('dashboard') }}">
               <img src="asset/NTTI/images/logo.png" alt="logo" />
             </a>
-            <a class="navbar-brand brand-logo-mini" href="index.html"><img src="asset/NTTI/images/logo-mini.svg"
+            <a class="navbar-brand brand-logo-mini" href="index.html"><img src="asset/NTTI/images/logo-mini.png"
                 alt="logo" /></a>
           </div>
           <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">

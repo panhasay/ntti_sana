@@ -10,13 +10,25 @@
       $khmerDate = App\Service\service::convertToKhmerDate($date);
       $postingDate = $record->posting_date;
       $year_student = App\Service\service::calculateDateDifference($postingDate);
+      $picture =  App\Models\General\Picture::where('code', $record->code)->where('type','student')->value('picture_ori');
+
   ?>
   <tr id="row{{$record->code}}">
     <td>
       <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" href="{{ 'student/transaction?type=ed&code='.\App\Service\service::Encr_string($record->code) }}"><i class="mdi mdi-border-color"></i> Edit</a>
       <button class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="btnDelete" data-code="{{ $record->code ?? '' }}"><i class="mdi mdi-delete-forever"></i>  Delete</button>
+      
+      @if($picture != null)
+        <img class="btn-Image" id="btn-Image" data-code ='{{$record->code ?? ''}}' src="{{ $picture ?? '' }}" width="1000" height="1000">
+      @else
+        <img class="btn-Image" id="btn-Image" data-code ='{{$record->code ?? ''}}' src="asset/NTTI/images/faces/default_User.jpg" width="1000" height="1000">
+      @endif
     </td>
-    <td class="text-center">{{ $record->code ?? ''}}</td>
+    <td class="text-center">
+        <a href="{{ url('dahhboard-student-account') }}?code={{ $record->code ?? '' }}">
+            {{ $record->code ?? '' }}
+        </a>
+    </td>
     <td> {{ $record->name ?? ''}}</td>
     <td>{{ $record->name_2 ?? ''}}</td>
     <td>{{ $record->gender ?? ''}}</td>

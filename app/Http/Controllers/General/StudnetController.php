@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ExportData;
 use App\Imports\ImportExcell;
+use App\Models\General\Picture;
 use Illuminate\Auth\Events\Validated;
 use UserImport;
 
@@ -361,18 +362,86 @@ class StudnetController extends Controller
                             $insert_record->$key = $value;
                         }
                     }
-                    // dd($insert_record);
                     $insert_record->save();
                 }
             }
-
             return response()->json(['status' =>'success','msg' =>'Data Import Successfully']);
         }catch (\Exception $ex) {
             return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
         }
     }
-
     public function ManageStudnetWork(Request $request){
         return view('department.manage_academic_work');
+    }
+
+    public function GetImage(Request $request){
+        try {
+            $code = $request->code;
+            $record = null;
+            $record = DB::table('picture')->where('code',$code)->get();
+            $view =view('system.model_picture',compact('code','record'))->render();
+            return response()->json(['status' => 'success','view' => $view]);
+        } catch (\Exception $ex){ 
+            return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
+        }
+    }
+    public function UploadImage(Request $request){
+        DB::beginTransaction();
+      
+        try {
+            $data = $request->all();
+            $code = $data['code'];
+            $exstain_img = Picture::where('code',$code)->first();
+            if($exstain_img){
+                return response()->json(['status' => 'field' , 'msg' => 'រូបភាពសិស្សមានមួយហើយមិនអាចមាន ពីបានទេ !']);
+            }
+            $upload_path = 'upload/student';
+            $item_picture = new Picture();
+            if (!file_exists($upload_path)) {
+                mkdir($upload_path, 0777, true);
+            }
+            $fileName = $_FILES["file"]['name'];
+            $fileTmpLoc = $_FILES["file"]["tmp_name"];
+            $kaboom = explode(".", $fileName);
+            $fileExt = end($kaboom);
+            $token = openssl_random_pseudo_bytes(20);
+            $token = bin2hex($token);
+            $fname = $token . '.' . $fileExt;
+            $moveResult = move_uploaded_file($fileTmpLoc, $upload_path . "/" . $fname);
+             if($moveResult){
+                $http = $request->getSchemeAndHttpHost();
+                $file_path = $http.'/'. $upload_path . "/" . $fname ;
+                $item_picture->picture_ori = $file_path;
+                $item_picture->code = $code;
+                $item_picture->type = 'student';
+                $item_picture->save();
+                 DB::commit();
+                return response()->json(['status' => 'success' , 'msg' => 'Your changes have been successfully saved!','path' => $file_path]);
+             }
+             return response()->json(['status' => 'warning' , 'msg' => 'Something went wrong !']);   
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
+        }
+    }
+    public function DeleteImage(Request $request){
+        DB::beginTransaction();
+        try{
+            $data = $request->all();
+            $record = Picture::where('id',$data['id'])->first();
+            $http = $request->getSchemeAndHttpHost();
+            $path_folder = str_replace($http,'',$record->picture_ori);
+            $sd = public_path($path_folder);
+            if (file_exists($sd)) {
+                unlink($sd);
+            }
+            DB::commit();
+            $record->delete();
+            return response()->json(['status' => 'success' , 'msg' => 'File has been delete']);
+        }
+        catch (\Exception $ex) {
+            DB::rollBack();
+            return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
+        } 
     }
 }

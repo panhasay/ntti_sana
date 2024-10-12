@@ -67,6 +67,9 @@ Route::group(['perfix' => 'student'], function (){
     Route::POST('/studnet/import-excel',[StudnetController::class,'ImportExcel']);
     Route::get('/manage-academic-work',[StudnetController::class,'ManageStudnetWork']);
     Route::get('/assign-classes',[StudnetController::class,'ManageAssignClasses']);
+    Route::get('/student/getImage',[StudnetController::class,'GetImage']);
+    Route::Post('/student/uploadimage',[StudnetController::class,'UploadImage']);
+    Route::Post('/student/delete-image',[StudnetController::class,'DeleteImage']);
 
 });
 
@@ -170,6 +173,7 @@ Route::group(['perfix' => 'teachers'], function (){
     Route::get('/assign-classes-update-examtype',[AssingClassesController::class,'UpdateExamType']);
     Route::get('/exam-results',[AssingClassesController::class,'ExamResults']);
     Route::get('/get-exam-results',[AssingClassesController::class,'GetExamResults']);
+    Route::get('/get-exam-results-print-exam',[AssingClassesController::class,'PrintExamResults']);
 });
 
 

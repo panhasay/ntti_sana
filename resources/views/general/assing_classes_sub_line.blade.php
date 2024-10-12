@@ -5,7 +5,6 @@
     border: 1px solid #b3b3b3;
     font-weight: bold;
   }
-
   .form-control-line {
     border: 1px solid #e4e9f0;
     font-family: "Open Sans", sans-serif;
@@ -15,7 +14,6 @@
     font-family: 'Khmer OS Battambang';
     text-align: center;
   }
-
   .table th,
   .table td {
     vertical-align: middle;
@@ -25,7 +23,6 @@
     font-family: 'Khmer OS Battambang';
     padding: 1px;
   }
-
   .KhmerOSMuolLight {
     font-family: 'Khmer OS Muol Light';
   }

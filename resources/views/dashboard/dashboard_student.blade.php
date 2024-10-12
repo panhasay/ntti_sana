@@ -1,5 +1,8 @@
-@if(Auth::user()->role == "student")
+
     <style>
+      *{
+        font-family: "Khmer OS Battambang" !important;
+      }
         .horizontal-menu .bottom-navbar .page-navigation > .nav-item:not(.mega-menu) {
             position: relative;
             display: none;
@@ -22,9 +25,6 @@
         .bg-header{
             background: #2194ce;
         }
-        .info-student p{
-            line-height: 6px;
-        }
         .card-titles{
             position: relative;
             top: 30;
@@ -32,8 +32,14 @@
             z-index: 1000;
             font-weight: 700;
         }
+        .card {
+          border: 0;
+          background: #ffff !important;
+          border: 1px solid #e4e9f0;
+          border-left: 2px solid #2194ce;
+      }
     </style>
-  @endif
+
   @extends('app_layout.app_layout')
   <style>
     .card .card-body {
@@ -50,78 +56,56 @@
                         <li class="nav-item">
                             <a class="nav-link active text-white" aria-current="page" href="{{ url('/dahhboard-student-account') }}"><i class="mdi mdi-compass-outline menu-icon"></i> Dahhboard</a>
                         </li>
-                        {{-- <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Link</a>
-                        </li>
-                        <li class="nav-item dropdown ">
-                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Dropdown
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">Action</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
-                        </li> --}}
                     </ul>
                 </div>
             </div>
         </nav>
-        
         <!----End nav--->
-
         <div class="col-sm-12 stretch-card grid-margin">
             <div class="card">
               <div class="row">
                 <div class="col-md-4">
                   <div class="card border-0">
                     <div class="card-titles">អវត្តមាន</div>
-                    <div id="piechart" style="width: 550px; height: 350px;"></div>
+                    <div id="piechart" style="width: 440px; height: 350px;"></div>
                   </div>
                 </div>
                 <div class="col-md-4">
                   <div class="card border-0">
-                    <div class="card-body">
-                      <div class="card-title">News Sessions</div>
-                      <div class="d-flex flex-wrap">
-                        <div class="doughnut-wrapper w-50"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
-                          <canvas id="doughnutChart2" width="260" height="260" style="display: block; height: 208px; width: 208px;" class="chartjs-render-monitor"></canvas>
-                        </div>
-                        <div id="doughnut-chart-legend2" class="pl-lg-3 rounded-legend align-self-center flex-grow legend-vertical legend-bottom-left"><ul><li><span class="legend-dots" style="background:#5e6eed"></span>Page views</li><li><span class="legend-dots" style="background:#00d284"></span>New users</li><li><span class="legend-dots" style="background:#ff0d59"></span>Bounce rate</li></ul></div>
-                      </div>
-                    </div>
+                   
                   </div>
                 </div>
                 <div class="col-xl-4 grid-margin mt-3">
                     <div class="card stretch-card mb-3">
                       <div class="card-body d-flex flex-wrap justify-content-between ">
                         <div class="info-student">
-                          <h3 class="font-weight-semibold mb-1 text-black"> ឈ្មោះ : {{ $records->name_2 ?? '' }} </h3>
+                          <div class="row">
+                            <div class="col-10">
+                              <h3 class="font-weight-semibold mb-1 text-black"> ឈ្មោះ : {{ $records->name_2 ?? '' }} </h3>
+                            </div>
+                            <div class="col-1">
+                              <?php $picture =  App\Models\General\Picture::where('code', $records->code)->where('type','student')->value('picture_ori'); ?>
+                              @if($picture != null)
+                                <img style="float: right;border-radius: 10px;border: 1px solid #d2d2d2;position: absolute;right: 11px;" src="{{ $picture ?? '' }}" alt="" width="90" height="100">
+                              @else
+                                <img style="float: right;border-radius: 10px;border: 1px solid #d2d2d2;position: absolute;right: 11px;" src="asset/NTTI/images/faces/default_User.jpg" alt="" width="90" height="90">
+                              @endif
+                            </div>
+                          </div>
                           <p class="text-muted">Name : {{ $records->name ?? '' }}</p>
-                          <p class="text-muted">ក្រុម / Class : {{ $classes->class ?? '' }}</p>
+                          <p class="text-muted">ក្រុម / Class : {{ $records->class_code ?? '' }} ថ្នាក់៖ បរិញ្ញាប័ត្រ</p>
                           <p class="text-muted">ជំនាញ / Skills : {{ $skills->name ?? '' }} ({{ $skills->name_2 ?? '' }})</p>
-                          <p class="text-muted">ឆ្នាំទី​​ : 4</p>
+                          <p class="text-muted">Address / អាសយដ្ឋាន : {{ $records->student_address ?? '' }}</p>
                         </div>
-                       {{-- <h3 class="text-success font-weight-bold">+168.900</h3> --}}
                       </div>
                     </div>
                     <div class="card stretch-card mb-3">
                       <div class="card-body d-flex flex-wrap justify-content-between">
                         <div>
-                          <h4 class="font-weight-semibold mb-1 text-black"> Total Profit </h4>
-                          <h6 class="text-muted">Weekly Customer Orders</h6>
+                          <h4 class="font-weight-semibold mb-1 text-black">ពត័មានការសិក្សា ឆ្នាំទី ១</h4>
+                          <h6 class="text-muted">ឆមាសទី 1 : ពីន្ទុសរុប​​៖​ 80, មធ្យមភាគ៖​ 80,5 លេខ៖ 3</h6>
+                          <h6 class="text-muted">ឆមាសទី 2 : ពីន្ទុសរុប​​៖​ 60, មធ្យមភាគ៖​ 50,5 លេខ៖ 20</h6>
                         </div>
-                        <h3 class="text-success font-weight-bold">+6890.00</h3>
-                      </div>
-                    </div>
-                    <div class="card mt-3">
-                      <div class="card-body d-flex flex-wrap justify-content-between">
-                        <div>
-                          <h4 class="font-weight-semibold mb-1 text-black"> Issue Reports </h4>
-                          <h6 class="text-muted">System bugs and issues</h6>
-                        </div>
-                        <h3 class="text-danger font-weight-bold">-8380.00</h3>
                       </div>
                     </div>
                   </div>
@@ -131,7 +115,7 @@
         </div>
 
 
-    <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+    <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> 
   </div>
   <div class="page-header flex-wrap">
   </div>

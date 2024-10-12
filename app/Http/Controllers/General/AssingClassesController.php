@@ -352,4 +352,37 @@ class AssingClassesController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
+    public function PrintExamResults(Request $request)
+    {
+        $data = $request->all();
+        try {
+            $years = isset($_GET['years']) ? addslashes($_GET['years']) : '' ;
+            $type = isset($_GET['type']) ? addslashes($_GET['type']) : '' ;
+            $semester = isset($_GET['semester']) ? addslashes($_GET['semester']) : '' ;
+            $records = AssingClasses::with('subject') 
+                        ->where('class_code', $data['class_code'])
+                        ->where('qualification', $type)
+                        ->where('years', $years)
+                        ->where('semester', $semester)
+                        ->where('exam_type', "Yes")
+                        ->get();
+            $assingNos = $records->pluck('assing_no');
+            $lines = AssingClassesStudentLine::selectRaw('student_code')->whereIn('assing_line_no', $assingNos)
+                    ->GroupBy('student_code')
+                    ->get();  
+            $is_print = "Yes";
+            $header = AssingClasses::with('subject') 
+                    ->where('class_code', $data['class_code'])
+                    ->where('qualification', $type)
+                    ->where('years', $years)
+                    ->where('semester', $semester)
+                    ->where('exam_type', "Yes")
+                    ->first();
+            return view('general.exam_results_record_modal', compact('records' , 'lines', 'is_print', 'header'));
+
+        } catch (\Exception $ex) {
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
 }

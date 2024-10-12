@@ -48,12 +48,16 @@ class AuthController extends Controller
         $request->validate([
             'email' => 'required',
         ]);
-   
+        $permission = User::where('email', '=', $request->email)->first();
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
-            
-            return redirect()->intended('department-menu')
-                        ->withSuccess('You have Successfully loggedin');
+            if($permission->role == "student"){
+                return redirect()->intended('dahhboard-student-account')
+                ->withSuccess('You have Successfully loggedin');
+            }else{
+                return redirect()->intended('department-menu')
+                ->withSuccess('You have Successfully loggedin');
+            }
         }
 
         // for testb

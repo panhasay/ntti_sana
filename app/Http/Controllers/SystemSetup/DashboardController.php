@@ -150,8 +150,8 @@ class DashboardController extends Controller
     public function StudentUserAccount(Request $request){
         try {
             $data = $request->all();
-            $records = Student::where('code',Auth::user()->childs)->first();
-            // $classes = DB::table('classes')->where('id',$records->class_code ?? '')->first();
+            $records = Student::where('code',Auth::user()->user_code ?? $request->code)->first();
+
             $skills = DB::table('skills')->where('code',$records->skills_code ?? '')->first();
             return view('dashboard.dashboard_student', compact('records', 'skills'));
         } catch (\Exception $ex) {
