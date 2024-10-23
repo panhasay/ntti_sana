@@ -1,3 +1,4 @@
+
 <style>
     .table th, .table td {
         vertical-align: middle;
@@ -218,7 +219,12 @@
 
                                     $grand_total_score += $total_score;
                                 ?>
-                                <th class="text-center" width="150">{{ $total_score }}</th>
+                                @if($total_score > 50)
+                                    <th class="text-center" width="150">{{ $total_score }} </th>
+                                @else
+                                    <th class="text-center" width="150" style="background: rgb(98, 96, 96)">{{ $total_score }}</th>
+                                @endif
+                                
                             @endforeach
                             <?php
                                 // Calculate the student's average score again
@@ -229,7 +235,7 @@
                         @for ($i = 0; $i < $emptyColumns; $i++)
                             <th class="text-center" width="150">&nbsp;</th>
                         @endfor
-                        <td class="text-center">{{ $average_student }}</td>
+                        <td class="text-center">{{ number_format($average_student, 2) }} </td>
                         <td class="text-center">{{ $studentData['rank'] }}</td>
                     </tr>
                 @endforeach
@@ -240,13 +246,12 @@
                 បានឃើញនិងឯកភាព<br />
                 នារយករងសិក្សា
             </div>
-        <div class="col-2">
+        <div class="col-1">
             </div>
-            <div class="col-5 text-center khmer_os_b">
-                ថ្ងៃ រោច ខែស្រាពណ៏ ឆ្នាំរោង ឆស័កព.ស ២៥៦៨<br>
-                រាជធានីភ្នំពេញ ថ្ងៃទី 02 ខែ កញ្ញា ឆ្នាំ2024
-                <div class="KhmerOSMuolLight">ប្រធានដេប៉ាដេម៉ង</div>
-            </div>
+                <div class="col-6 text-center khmer_os_b">
+                    {{ App\Service\service::updateDateTime() ?? ''}}
+                    <div class="KhmerOSMuolLight">ប្រធានដេប៉ាដេម៉ង</div>
+                </div>
         </div><br>
     </div>
 @else
@@ -365,7 +370,7 @@
                         @for ($i = 0; $i < $emptyColumns; $i++)
                             <th class="text-center" width="150">&nbsp;</th>
                         @endfor
-                        <td class="text-center">{{ $average_student }}</td>
+                        <td class="text-center">{{ number_format($average_student, 2) }} </td>
                         <td class="text-center">{{ $studentData['rank'] }}</td>
                     </tr>
                 @endforeach

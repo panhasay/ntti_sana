@@ -47,6 +47,7 @@ class AssingClassesController extends Controller
             $records = AssingClasses::with(['department', 'section', 'skill', 'teacher','subject' ])
                 ->where('years', $data['years'])
                 ->where('qualification', $data['type'])
+                ->orderBy('session_year_code', 'DESC')
                 ->paginate(20);
         }
         try{

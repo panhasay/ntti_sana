@@ -10,13 +10,21 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Auth;
 use Stevebauman\Location\Facades\Location;
 
+
 use Illuminate\Support\Facades\DB;
 use Session;
 use App\Models\User;
 use Hash;
+use App\Service\service;
+use Illuminate\Contracts\Session\Session as SessionSession;
 
 class AuthController extends Controller
 {
+    public $services;
+    function __construct()
+    {
+        $this->services = new service();
+    }
     //
      /**
      * Write code on Method
@@ -49,8 +57,20 @@ class AuthController extends Controller
             'email' => 'required',
         ]);
         $permission = User::where('email', '=', $request->email)->first();
+        $user = $permission;
+        $email =  $request->email;
+        $role = $user->role;
+        $department = $user->department->name_2;
+        $ip = request()->ip();
+        $userAgent = request()->header('User-Agent');
+        $ipAddress = request()->ip(); // Get the IP address
+        $city = "Phnom Penh";
+        $type = "Login";
+        
+
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
+            $this->services->telegramSendUserLog($email,$role, $department, $ip, $userAgent, $city, $type);
             if($permission->role == "student"){
                 return redirect()->intended('dahhboard-student-account')
                 ->withSuccess('You have Successfully loggedin');
@@ -59,7 +79,6 @@ class AuthController extends Controller
                 ->withSuccess('You have Successfully loggedin');
             }
         }
-
         // for testb
         // $longitude = 'hello world';
         // $ip = '103.216.50.143'; /* Static IP address */
@@ -69,9 +88,7 @@ class AuthController extends Controller
         
         // return dd((Auth::attempt($credentials)));
         // return redirect("login")->withSuccess('Oppes! You have entered invalid credentials');
-
         // return DB::getSchemaBuilder()->getColumnListing($table);
-
         // // OR
         // return Schema::getColumnListing($table);
 
@@ -129,9 +146,20 @@ class AuthController extends Controller
      * @return response()
      */
     public function logout() {
+        $email = auth()->user()->email;
+        $permission = User::where('email', '=', $email)->first();
+        $user = $permission;
+        
+        $role = $user->role;
+        $department = $user->department->name_2;
+        $ip = request()->ip();
+        $userAgent = request()->header('User-Agent');
+        $ipAddress = request()->ip(); // Get the IP address
+        $city = "Phnom Penh";
+        $type = "Logout";
+        $this->services->telegramSendUserLog($email,$role, $department, $ip, $userAgent, $city, $type);
         Session::flush();
         Auth::logout();
-  
         return Redirect('login');
     }
 }

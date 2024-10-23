@@ -24,9 +24,11 @@
     <div class="column">
         <div class="effect-9">
             <div class="effect-img">
-            <img src="https://img.freepik.com/free-vector/organic-flat-people-business-training-illustration_23-2148901755.jpg?w=996&t=st=1699538720~exp=1699539320~hmac=e469da26591c37b7556bdd7e17fce39370c0b43b3e9cd9a5b61afd38d58a7246" alt="Team Image">
+                <a href="{{ url('/class-schedule') }}">
+                    <img src="https://img.freepik.com/free-vector/organic-flat-people-business-training-illustration_23-2148901755.jpg?w=996&t=st=1699538720~exp=1699539320~hmac=e469da26591c37b7556bdd7e17fce39370c0b43b3e9cd9a5b61afd38d58a7246" alt="Team Image">
+                </a>
             </div>
-            <div class="title-department">ប្រព័ន្ធគ្រប់គ្រងគ្រូ</div>
+            <div class="title-department">តារាងបែងចែកម៉ោងបង្រៀន</div>
         </div>
     </div>
     <div class="column">
@@ -71,6 +73,7 @@
                 <li><a href="{{ url('skills') }}">skills-ជំនាញ</a></li>
                 <li><a href="{{ url('subject') }}">Subject-មុខវិជ្ជា</a></li>
                 <li><a href="{{ url('teachers') }}">Teachers-សាស្ត្រាចារ្យ លោកគ្រូអ្នកគ្រូ</a></li>
+                <li><a href="{{ url('teachers') }}">Attendance-អវត្តមាន</a></li>
             </ul>
         </div>
     </div>

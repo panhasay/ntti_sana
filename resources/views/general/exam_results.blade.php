@@ -22,7 +22,7 @@
 </div>
 <div class="page-header flex-wrap">
   <div class="header-left">
-    <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="BntCreateAssign" href="#"></i> Print</i></a> 
+    {{-- <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="BntCreateAssign" href="#"></i> Print</i></a>  --}}
   </div>
   <div class="d-grid d-md-flex justify-content-md-end p-3">
     <input type="text" class="form-control mb-2 mb-md-0 me-2" id="search_data" data-page="{{ $page ?? '' }}" name="search_data"

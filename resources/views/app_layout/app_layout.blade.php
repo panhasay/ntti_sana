@@ -198,8 +198,8 @@
             </li>
             <li class="nav-item">
               <a class="nav-link" href="pages/tables/basic-table.html">
-                {{-- <i class="mdi mdi-table-large menu-icon"></i>
-                <span class="menu-title">Tables</span> --}}
+                <i class="mdi mdi-table-large menu-icon"></i>
+                <span class="menu-title">Document</span>
               </a>
             </li>
             <li class="nav-item">
@@ -457,6 +457,20 @@
               $(this).val(uppercasedValue);
           });
         });
+        function runAfterOneDay() {
+          alert('Please enter');
+          $.ajax({
+            type: 'get',
+            url: `logout`,
+            success: function(response) {
+             
+            }
+          });
+        }
+        // Delay of one day (in milliseconds)
+        var oneDayInMilliseconds = 24 * 60 * 60 * 1000;
+        // Set the function to run after one day
+        setTimeout(runAfterOneDay, oneDayInMilliseconds);
   </script>
 </body>
 </html>
