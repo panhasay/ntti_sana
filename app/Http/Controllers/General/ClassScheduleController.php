@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\General;
 
 use App\Http\Controllers\Controller;
+use App\Models\General\AssingClasses;
 use App\Models\General\Classes;
 use App\Models\General\ClassSchedule as GeneralClassSchedule;
 use App\Models\General\Skills;
+use App\Models\General\StudyYears;
+use App\Models\General\Subjects;
+use App\Models\General\Teachers;
 use App\Models\SystemSetup\Department;
 use App\Service\service;
 use Illuminate\Http\Request;
@@ -52,8 +56,11 @@ class ClassScheduleController extends Controller
         $department = Department::get();
         $school_years = DB::table('session_year')->orderBy('code', 'desc')->get();   
         $skills = DB::table('skills')->get();
+        $study_years = StudyYears::get();
+        $teachers = Teachers::orderBy('code', 'asc')->get();
+        $subjects = Subjects::orderBy('code', 'asc')->get();
         try {
-            $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'classs'];
+            $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'classs', 'study_years', 'teachers', 'subjects'];
             if ($type == 'cr') return view('general.class_schedule_card', compact($params));
             if (isset($_GET['code'])) {
                 $records = GeneralClassSchedule::where('id', $this->services->Decr_string($_GET['code']))->first();
@@ -94,6 +101,7 @@ class ClassScheduleController extends Controller
                 $records->qualification = $request->level;
                 $records->semester = $request->semester;
                 $records->class_code = $request->class_code;
+                $records->years = $request->years;
                 $records->update();
             }
             return response()->json(['status' => 'success', 'msg' => 'បច្ចុប្បន្នភាព ទិន្នន័យជោគជ័យ!', '$records' => $records]);
@@ -113,7 +121,8 @@ class ClassScheduleController extends Controller
             'department_code' => 'ដេប៉ាតឺម៉ង់ ត្រូវបំពេញ!',
             'school_year_code' => 'ឆ្នាំសិក្សា ត្រូវបំពេញ!',
             'level' => 'Level is ត្រូវបំពេញ!',
-            'semester' => 'Semester is ត្រូវបំពេញ!'
+            'semester' => 'Semester is ត្រូវបំពេញ!',
+            'years' => 'ត្រូវបំពេញ បរិញាប័ត្រ ឆ្នាំ !'
         ];
         foreach ($requiredFields as $field => $message) {
             if (empty($input[$field])) {
@@ -130,8 +139,15 @@ class ClassScheduleController extends Controller
             $records->qualification = $request->level;
             $records->semester = $request->semester;
             $records->class_code = $request->class_code;
+            $records->years = $request->years;
             $records->save();
-            return response()->json(['store' => 'yes', 'msg' => 'Records Add Succesfully !!']);
+
+            $record = GeneralClassSchedule::latest('id')->first();
+            if (isset($record->id)) {
+                $encryptedCode = \App\Service\service::Encr_string($record->id);
+                $url = "/class-schedule/transaction?type=ed&code=" . $encryptedCode;
+            }
+            return response()->json(['store' => 'yes', 'url' => $url, 'msg' => 'Records Add Succesfully !!']);
         } catch (\Exception $ex) {
             DB::rollBack();
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
@@ -147,6 +163,40 @@ class ClassScheduleController extends Controller
         try {
 
             $records = Department::whereRaw($extract_query)->get();
+            return view('student.student_print', compact('records', 'class_record'));
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+    public function SaveSchedule(Request $request)
+    {
+        $data = $request->all();
+        $id = $this->services->Decr_string($data['code']);
+        $header = GeneralClassSchedule::where('id', $id)->first();
+        $assing = AssingClasses::latest('id')->first();
+        if($assing){
+            $assing_no = $assing->assing_no + 10;
+        }else{
+            $assing_no = 10;
+        }
+        dd($data);
+        
+        try {
+            $records = new AssingClasses();
+            $records->teachers_code = $request->teachers_code;
+            $records->class_code = $request->class_code;
+            $records->sections_code = $request->sections_code;
+            $records->skills_code = $request->skills_code;
+            $records->department_code = $request->department_code;
+            $records->session_year_code = $request->session_year_code;
+            $records->subjects_code = $request->subjects_code;
+            $records->status = $request->status;
+            $records->semester = $request->semester;
+            $records->qualification = $request->qualification;
+            dd("tesr");
+
             return view('student.student_print', compact('records', 'class_record'));
         } catch (\Exception $ex) {
             DB::rollBack();

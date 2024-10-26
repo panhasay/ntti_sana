@@ -186,6 +186,7 @@ Route::group(['perfix' => '/class-schedule'], function (){
     Route::post('/class-schedule/update', [ClassScheduleController::class, 'update']);
     Route::post('/class-schedule/store', [ClassScheduleController::class, 'store']);
     Route::POST ('/class-schedule-delete', [ClassScheduleController::class, 'delete']);
+    Route::POST ('/class-schedule/save-schedule', [ClassScheduleController::class, 'SaveSchedule']);
 })->middleware('auth');
 
 

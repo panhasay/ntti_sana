@@ -12,6 +12,7 @@
         <th class="text-center">ដេប៉ាតឺម៉ង់</th>
         <th class="text-center">ចាប់ផ្តើមអនុវត្ត</th>
         <th class="text-center">ឆ្នាំសិក្សា</th>
+        <th class="text-center">បរិញាប័ត្រ ឆ្នាំ</th>
       </tr>
     </thead>
     <tbody>
