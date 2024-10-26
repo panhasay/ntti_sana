@@ -22,26 +22,37 @@
                 <th class="text-center" colspan="2">សៅរ៏</th>
             </tr>
             <tr class="general-data">
-                <th class="text-center"><input class="formSublist" type="time" date-name="monday" id="start_time" name="start_time"></th>
-                <th class="text-center"><input class="formSublist" type="time" date-name="monday" id="end_time" name="end_time"></th>
+                <th class="text-center">5:30</th>
+                <th class="text-center">5:30</th>
 
-                <th class="text-center"><input class="formSublist" type="time" id="appt" name="appt"></th>
-                <th class="text-center"><input class="formSublist" type="time" id="appt" name="appt"></th>
+                <th class="text-center">5:30</th>
+                <th class="text-center">5:30</th>
 
-                <th class="text-center"><input class="formSublist" type="time" id="appt" name="appt"></th>
-                <th class="text-center"><input class="formSublist" type="time" id="appt" name="appt"></th>
+                <th class="text-center">5:30</th>
+                <th class="text-center">5:30</th>
 
-                <th class="text-center"><input class="formSublist" type="time" id="appt" name="appt"></th>
-                <th class="text-center"><input class="formSublist" type="time" id="appt" name="appt"></th>
+                <th class="text-center">5:30</th>
+                <th class="text-center">5:30</th>
 
-                <th class="text-center"><input class="formSublist" type="time" id="appt" name="appt"></th>
-                <th class="text-center"><input class="formSublist" type="time" id="appt" name="appt"></th>
+                <th class="text-center">5:30</th>
+                <th class="text-center">5:30</th>
 
-                <th class="text-center"><input class="formSublist" type="time" id="appt" name="appt"></th>
-                <th class="text-center"><input class="formSublist" type="time" id="appt" name="appt"></th>
-
+                <th class="text-center">5:30</th>
+                <th class="text-center">5:30</th>
             </tr>
         </thead>
+        <tbody>
+            <tr>
+                <td class="text-center" rowspan="" width="10">1</td>
+                <td class="text-center" rowspan="2">សាស្រ្តាចារ្យ</td>
+                <td class="text-center" colspan="2">ចន្ទ</td>
+                <td class="text-center" colspan="2">អង្គា</td>
+                <td class="text-center" colspan="2">ពុធ</td>
+                <td class="text-center" colspan="2">ព្រហស្បត៏</td>
+                <td class="text-center" colspan="2">សុក្រ</td>
+                <td class="text-center" colspan="2">សៅរ៏</td>
+            </tr>
+        </tbody>
         {{-- <tbody>
             <tr class="general-data">
                 <td>1</td>

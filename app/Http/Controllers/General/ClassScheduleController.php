@@ -60,10 +60,16 @@ class ClassScheduleController extends Controller
         $teachers = Teachers::orderBy('code', 'asc')->get();
         $subjects = Subjects::orderBy('code', 'asc')->get();
         try {
-            $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'classs', 'study_years', 'teachers', 'subjects'];
+            $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'classs', 'study_years', 'teachers', 'subjects', 'record_sub_lines'];
             if ($type == 'cr') return view('general.class_schedule_card', compact($params));
             if (isset($_GET['code'])) {
                 $records = GeneralClassSchedule::where('id', $this->services->Decr_string($_GET['code']))->first();
+                $record_sub_lines = AssingClasses::where('class_code', $records->class_code)
+                                                    ->where('semester', $records->semester)
+                                                    ->where('years', $records->years)
+                                                    ->get();
+
+                dd($records, $record_sub_lines);
             }
             return view('general.class_schedule_card', compact($params));
         } catch (\Exception $ex) {
@@ -182,7 +188,7 @@ class ClassScheduleController extends Controller
             $assing_no = 10;
         }
         dd($data);
-        
+
         try {
             $records = new AssingClasses();
             $records->teachers_code = $request->teachers_code;
