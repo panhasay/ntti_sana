@@ -278,6 +278,13 @@ class service{
             '9' => $khmerNumbers[9],
         ]);
     }
+    public static function convertKhmerToEnglishNumber($khmerNumber)
+    {
+        $khmerDigits = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+        $englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+        
+        return str_replace($khmerDigits, $englishDigits, $khmerNumber);
+    }
     // end  format day khmer 
 
 

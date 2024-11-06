@@ -57,6 +57,9 @@ class AuthController extends Controller
             'email' => 'required',
         ]);
         $permission = User::where('email', '=', $request->email)->first();
+        if(!$permission){
+            return redirect("user-dont-have-permission")->withSuccess('Opps! You do not have access');
+        }
         $user = $permission;
         $email =  $request->email;
         $role = $user->role;

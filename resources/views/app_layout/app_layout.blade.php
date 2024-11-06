@@ -8,32 +8,32 @@
   <meta property="og:site_name" content="Metronic by Keenthemes" />
 
   <title>NTTI</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Moul&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Kdam+Thmor+Pro&family=Moul&family=Odor+Mean+Chey&display=swap"
-    rel="stylesheet">
+  <link rel="preconnect" href="{{asset('https://fonts.googleapis.com')}}">
+  <link rel="preconnect" href="{{asset('https://fonts.googleapis.comhttps://fonts.gstatic.com')}}" crossorigin>
+  <link href="{{asset('https://fonts.googleapis.com/css2?family=Moul&display=swap')}}" rel="stylesheet">
+  <link href="{{asset('https://fonts.googleapis.com/css2?family=Kdam+Thmor+Pro&family=Moul&family=Odor+Mean+Chey&display=swap')}}"
+ rel="stylesheet">
   <!---front ---> 
   <!-- plugins:css -->
-  <link rel="stylesheet" href="asset/NTTI/vendors/mdi/css/materialdesignicons.min.css">
-  <link rel="stylesheet" href="asset/NTTI/vendors/flag-icon-css/css/flag-icon.min.css">
-  <link rel="stylesheet" href="asset/NTTI/vendors/css/vendor.bundle.base.css">
+  <link rel="stylesheet" href="{{ asset('asset/NTTI/vendors/mdi/css/materialdesignicons.min.css') }}">
+  <link rel="stylesheet" href="{{asset('asset/NTTI/vendors/flag-icon-css/css/flag-icon.min.css')}}">
+  <link rel="stylesheet" href="{{asset('asset/NTTI/vendors/css/vendor.bundle.base.css')}}">
 
-  <link rel="stylesheet" href="asset/NTTI/vendors/select2/select2.min.css" />
-  <link rel="stylesheet" href="asset/NTTI/vendors/select2-bootstrap-theme/select2-bootstrap.min.css" />
+  <link rel="stylesheet" href="{{asset('asset/NTTI/vendors/select2/select2.min.css')}}" />
+  <link rel="stylesheet" href="{{asset('asset/NTTI/vendors/select2-bootstrap-theme/select2-bootstrap.min.css')}}" />
   <!-- endinject -->
   <!-- Plugin css for this page -->
-  <link rel="stylesheet" href="asset/NTTI/vendors/jquery-bar-rating/css-stars.css" />
-  <link rel="stylesheet" href="asset/NTTI/vendors/font-awesome/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="{{ asset('asset/NTTI/vendors/jquery-bar-rating/css-stars.css') }}" />
+  <link rel="stylesheet" href="{{ asset('asset/NTTI/vendors/font-awesome/css/font-awesome.min.css') }}" />
   <!-- End plugin css for this page -->
   <!-- inject:css -->
   <!-- endinject -->
   <!-- Layout styles -->
-  <link rel="stylesheet" href="asset/NTTI/css/global/style.css" />
+  <link rel="stylesheet" href="{{asset('asset/NTTI/css/global/style.css')}}" />
   <!-- End layout styles -->
   {{-- <link rel="shortcut icon" href="asset/NTTI/images/favicon.png" /> --}}
-  <link rel="shortcut icon" href="https://nttiportal.com/./uploads/school_content/logo/front_fav_icon-619eeffe4674b6.56720560.png" type="image/x-icon">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+  <link rel="shortcut icon" href="{{asset('https://nttiportal.com/./uploads/school_content/logo/front_fav_icon-619eeffe4674b6.56720560.png')}}" type="image/x-icon">
+  <link rel="stylesheet" href="{{asset('https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css')}}">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <!---google chart -->
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -69,10 +69,10 @@
       <nav class="navbar top-navbar col-lg-12 col-12 p-0">
         <div class="container">
           <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-            <a class="navbar-brand brand-logo" href="{{ url('dashboard') }}">
-              <img src="asset/NTTI/images/logo.png" alt="logo" />
+            <a class="navbar-brand brand-logo" href="{{ url('/department-menu') }}">
+               <img src="{{ asset('asset/NTTI/images/logo.png') }}" alt="logo" />
             </a>
-            <a class="navbar-brand brand-logo-mini" href="index.html"><img src="asset/NTTI/images/logo-mini.png"
+            <a class="navbar-brand brand-logo-mini" href="index.html"><img src="{{asset('asset/NTTI/images/logo-mini.png')}}"
                 alt="logo" /></a>
           </div>
           <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
@@ -96,7 +96,7 @@
               <li class="nav-item nav-profile dropdown">
                 <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                   <div class="nav-profile-img">
-                    <img src="asset/NTTI/images/faces/default_User.jpg" alt="image" />
+                    <img src="{{asset('asset/NTTI/images/faces/default_User.jpg')}}" alt="image" />
                   </div>
                   <div class="nav-profile-text">
                     <p class="text-black font-weight-semibold m-0"> {{ Auth::user()->name ?? ''}} </p>
@@ -198,8 +198,8 @@
             </li>
             <li class="nav-item">
               <a class="nav-link" href="pages/tables/basic-table.html">
-                <i class="mdi mdi-table-large menu-icon"></i>
-                <span class="menu-title">Document</span>
+                {{-- <i class="mdi mdi-table-large menu-icon"></i>
+                <span class="menu-title">Tables</span> --}}
               </a>
             </li>
             <li class="nav-item">
@@ -265,43 +265,46 @@
  
 
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
-    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"
-    integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous">
-  </script>
-  <script src="asset/NTTI/vendors/js/vendor.bundle.base.js"></script>
+  integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+</script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+  integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"
+  integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous">
+</script>
+<script src="{{ asset('asset/NTTI/vendors/js/vendor.bundle.base.js') }}"></script>
+
   <!-- endinject -->
   <!-- Plugin js for this page -->
-  <script src="asset/NTTI/vendors/jquery-bar-rating/jquery.barrating.min.js"></script>
-  <script src="asset/NTTI/vendors/chart.js/Chart.min.js"></script>
-  <script src="asset/NTTI/vendors/flot/jquery.flot.js"></script>
-  <script src="asset/NTTI/vendors/flot/jquery.flot.resize.js"></script>
-  <script src="asset/NTTI/vendors/flot/jquery.flot.categories.js"></script>
-  <script src="asset/NTTI/vendors/flot/jquery.flot.fillbetween.js"></script>
-  <script src="asset/NTTI/vendors/flot/jquery.flot.stack.js"></script>
-  <script src="asset/NTTI/js/jquery.cookie.js" type="text/javascript"></script>
-  <script src="asset/NTTI/vendors/select2/select2.min.js"></script>
-  <script src="asset/NTTI/js/select2.js"></script>
-  <script src="asset/NTTI/js/printThis.js"></script>
+  <script src="{{ asset('asset/NTTI/vendors/jquery-bar-rating/jquery.barrating.min.js') }}"></script>
+  <script src="{{ asset('asset/NTTI/vendors/chart.js/Chart.min.js') }}"></script>
+  <script src="{{ asset('asset/NTTI/vendors/flot/jquery.flot.js') }}"></script>
+  <script src="{{ asset('asset/NTTI/vendors/flot/jquery.flot.resize.js') }}"></script>
+  <script src="{{ asset('asset/NTTI/vendors/flot/jquery.flot.categories.js') }}"></script>
+  <script src="{{ asset('asset/NTTI/vendors/flot/jquery.flot.fillbetween.js') }}"></script>
+  <script src="{{ asset('asset/NTTI/vendors/flot/jquery.flot.stack.js') }}"></script>
+  <script src="{{ asset('asset/NTTI/js/jquery.cookie.js') }}" type="text/javascript"></script>
+  <script src="{{ asset('asset/NTTI/vendors/select2/select2.min.js') }}"></script>
+  <script src="{{ asset('asset/NTTI/js/select2.js') }}"></script>
+  <script src="{{ asset('asset/NTTI/js/printThis.js') }}"></script>
+  
 
   <!-- End plugin js for this page -->
   <!-- inject:js -->
-  <script src="asset/NTTI/js/off-canvas.js"></script>
-  <script src="asset/NTTI/js/hoverable-collapse.js"></script>
-  <script src="asset/NTTI/js/misc.js"></script>
-  <script src="asset/NTTI/js/settings.js"></script>
-  <script src="asset/NTTI/js/todolist.js"></script>
+  <script src="{{ asset('asset/NTTI/js/off-canvas.js') }}"></script>
+  <script src="{{ asset('asset/NTTI/js/hoverable-collapse.js') }}"></script>
+  <script src="{{ asset('asset/NTTI/js/misc.js') }}"></script>
+  <script src="{{ asset('asset/NTTI/js/settings.js') }}"></script>
+  <script src="{{ asset('asset/NTTI/js/todolist.js') }}"></script>
   <!-- endinject -->
   <!-- Custom js for this page -->
-  <script src="asset/NTTI/js/dashboard.js"></script>
+  <script src="{{ asset('asset/NTTI/js/dashboard.js') }}"></script>
   <!-- End custom js for this page -->
-  <script src="asset/NTTI/css/ntti.js"></script>
+  <script src="{{ asset('asset/NTTI/css/ntti.js') }}"></script>
   <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
-  {{-- Google chrat  --}}
+  {{-- Google Chart --}}
+
 
   <script>
     // success, info, warning, error, and none
@@ -457,20 +460,6 @@
               $(this).val(uppercasedValue);
           });
         });
-        function runAfterOneDay() {
-          alert('Please enter');
-          $.ajax({
-            type: 'get',
-            url: `logout`,
-            success: function(response) {
-             
-            }
-          });
-        }
-        // Delay of one day (in milliseconds)
-        var oneDayInMilliseconds = 24 * 60 * 60 * 1000;
-        // Set the function to run after one day
-        setTimeout(runAfterOneDay, oneDayInMilliseconds);
   </script>
 </body>
 </html>

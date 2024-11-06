@@ -23,7 +23,9 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ExportData;
 use App\Imports\ImportExcell;
 use App\Models\General\Picture;
+use App\Models\General\Skills;
 use Illuminate\Auth\Events\Validated;
+use App\Models\General\StudyYears;
 use UserImport;
 
 class StudnetController extends Controller
@@ -70,6 +72,10 @@ class StudnetController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
+    public function StudentRegistration(Request $request){
+        $records = Student::where('study_type', 'new student')->orderBy('code', 'asc')->paginate(15);
+        return view('general.student_register', compact('records'));
+    }
     public function transaction(request $request)
     {
         $data = $request->all();
@@ -95,6 +101,39 @@ class StudnetController extends Controller
                 $user_student = $data_string;
             }
             return view('general.student_card', compact($params));
+        } catch (\Exception $ex) {
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+    public function StudentRegistrationTransaction(request $request)
+    {
+        $data = $request->all();
+        $type = $data['type'];
+        $page = ucwords(str_replace("_", " ", $this->page));
+        $page_url = $this->page;
+        $class_record = DB::table('classes')->get();
+        $skills_records = DB::table('skills')->get();
+        $sections = DB::table('sections')->get();
+        $department = DB::table('department')->get();
+        $currentDate = Carbon::now()->toDateString(); // Get the current date in the format 'YYYY-MM-DD'
+        $records = null;
+        $user_student = '';
+        $skills = Skills::get();
+        $school_years = DB::table('session_year')->get();
+        $study_years = StudyYears::get();
+        try {
+            $params = ['records', 'class_record', 'type', 'skills_records', 'sections', 'department', 'user_student', 'currentDate', 'skills', 'school_years', 'study_years'];
+            if ($type == 'cr')
+                return view('general.student_register_card', compact($params));
+
+            if (isset($_GET['code'])) {
+                $records = Student::where('code', $this->services->Decr_string($_GET['code']))->first();
+                $string = $records->name;
+                $data_string = str_replace(' ', '_', $string);
+                $user_student = $data_string;
+            }
+            return view('general.student_register_card', compact($params));
         } catch (\Exception $ex) {
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
@@ -141,6 +180,115 @@ class StudnetController extends Controller
             return response()->json(['store' => 'yes', 'msg' => 'Records Add Succesfully !!']);
         } catch (\Exception $ex) {
             DB::rollBack();
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+    public function storeRegistration(request $request)
+    {
+        $input = $request->all();   
+        $requiredFields = [
+            'name' => 'សូមបំពេញ ខ្ញុំបាទ/នាងខ្ញុំឈ្មោះ',
+            'name_2' => 'សូមបំពេញឈ្មោះ អក្សរឡាតាំង',
+            'date_of_birth' => 'សូមបំពេញ ថ្ងៃ ខែ ឆ្នាំកំណើត',
+            'student_address' => 'សូមបំពេញ ទីកន្លែងកំណើត',
+            'current_address' => 'សូមបំពេញ អាសយដ្ឋានបច្ចុប្បន្ន!',
+            'phone_student' => 'សូមបំពេញ លេខទូរស័ព្ទ!',
+            'guardian_name' => 'សូមបំពេញ​ ឈ្មោះអាណាព្យាបាល',
+            'guardian_phone' => 'សូមបំពេញ លេខទូរស័ព្ទ',
+            'father_name' => 'សូមបំពេញ​ ​ឈ្មោះឪពុក',
+            'mother_name' => 'សូមបំពេញ​ ឈ្មោះម្ដាយ',
+            'skills_code' => 'សូមបំពេញ​ ជំនាញ',
+            'sections_code' => 'សូមបំពេញ​ វេន',
+            'apply_year' => 'សូមបំពេញ​ សុំចូលរៀន',
+            'qualification' => 'សូមបំពេញ​ កម្រិត',
+        ];
+
+        foreach ($requiredFields as $field => $message) {
+            if (empty($input[$field])) {
+                return response()->json(['status' => 'error', 'msg' => $message]);
+            }
+        }
+
+        $lastRecord = Student::latest('code')->first();
+        $code =  $lastRecord->code;
+        $record = Student::where('name_2',$request->name_2)->first();
+
+        if (isset($record->name_2) && $record->name_2 == $request->name_2){
+            return response()->json(['status' => 'error', 'msg' => "ឈ្មោះ\"{$request->name_2}\"មានរួចហើយ​!"]);
+        }
+
+        $status = ($input['status'] == 'no') ? 'no' : 'yes';
+        $phone_student = $this->services->convertKhmerToEnglishNumber($request->phone_student);
+        $guardian_phone = $this->services->convertKhmerToEnglishNumber($request->guardian_phone);
+        try {
+            $records = new Student();
+            $records->code = $lastRecord ? $lastRecord->code + 1 : 1;
+            $records->name_2 = $request->name_2;
+            $records->name = $request->name; 
+            $records->date_of_birth = $request->date_of_birth; 
+            $records->student_address = $request->student_address;
+            $records->current_address = $request->current_address;
+            $records->occupation = $request->occupation; 
+            $records->phone_student = $phone_student; 
+            $records->guardian_name = $request->guardian_name; 
+            $records->guardian_phone = $guardian_phone; 
+            $records->father_name = $request->father_name; 
+            $records->father_occupation = $request->father_occupation; 
+            $records->mother_name = $request->mother_name; 
+            $records->mother_occupation = $request->mother_occupation; 
+            $records->education_Level = $request->education_Level; 
+            $records->skills_code = $request->skills_code; 
+            $records->sections_code = $request->sections_code; 
+            $records->apply_year = $request->apply_year; 
+            $records->qualification = $request->qualification; 
+            $records->status = $request->status; 
+            $records->register_date = Carbon::now();
+            $records->study_type = "new student";
+            $records->gender = $request->gender;;
+            $records->save(); 
+            return response()->json(['store' => 'yes', 'msg' => 'លោកអ្នកបាន ចុះឈ្មោះជោជ័យ']);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+    public function updateRegistration(Request $request)
+    {
+        $input = $request->all();
+        $code = $input['type'];
+       
+        $records = Student::where('code', $code)->first();
+        $status = ($input['status'] == 'no') ? 'no' : 'yes';
+        $phone_student = $this->services->convertKhmerToEnglishNumber($request->phone_student);
+        $guardian_phone = $this->services->convertKhmerToEnglishNumber($request->guardian_phone);
+        try {
+                $records->name_2 = $request->name_2;
+                $records->name = $request->name; 
+                $records->date_of_birth = $request->date_of_birth; 
+                $records->student_address = $request->student_address;
+                $records->current_address = $request->current_address;
+                $records->occupation = $request->occupation; 
+                $records->phone_student = $phone_student; 
+                $records->guardian_name = $request->guardian_name; 
+                $records->guardian_phone = $guardian_phone; 
+                $records->father_name = $request->father_name; 
+                $records->father_occupation = $request->father_occupation; 
+                $records->mother_name = $request->mother_name; 
+                $records->mother_occupation = $request->mother_occupation; 
+                $records->education_Level = $request->education_Level; 
+                $records->skills_code = $request->skills_code; 
+                $records->sections_code = $request->sections_code; 
+                $records->apply_year = $request->apply_year; 
+                $records->qualification = $request->qualification; 
+                $records->status = $request->status; 
+                $records->register_date = Carbon::now();
+                $records->study_type = "new student";
+                $records->gender = $request->gender;;
+                $records->update(); 
+            return response()->json(['status' => 'success', 'msg' => 'Data Update Success !', '$records' => $records]);
+        } catch (\Exception $ex) {
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
@@ -276,6 +424,7 @@ class StudnetController extends Controller
             $records->name = $name;
             $records->password = Hash::make($data['password']);
             $records->role = 'student';
+            $records->department_code = Auth::user()->department_code;
             $records->user_code = $data['code'];
             $records->save();
             return response()->json(['status' => 'success', 'msg' => 'User Student Create success!']);
@@ -387,7 +536,6 @@ class StudnetController extends Controller
     }
     public function UploadImage(Request $request){
         DB::beginTransaction();
-      
         try {
             $data = $request->all();
             $code = $data['code'];

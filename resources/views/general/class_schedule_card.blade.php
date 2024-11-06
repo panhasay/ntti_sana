@@ -137,12 +137,12 @@
                         <div class="col-sm-9">
                             <select class="js-example-basic-single" id="level" name="level" style="width: 100%;">
                                 <?php 
-                      $options = [
-                        'បរិញ្ញាបត្រ' => 'បរិញ្ញាបត្រ',
-                        'សញ្ញាបត្រជាន់ខ្ពស់បច្ចេកទេស' => 'សញ្ញាបត្រជាន់ខ្ពស់បច្ចេកទេស',
-                        'បន្តបរិញ្ញាបត្របច្ចេកវីទ្យា' => 'បន្តបរិញ្ញាបត្របច្ចេកវីទ្យា',
-                    ];
-                  ?>
+                            $options = [
+                                    'បរិញ្ញាបត្រ' => 'បរិញ្ញាបត្រ',
+                                    'សញ្ញាបត្រជាន់ខ្ពស់បច្ចេកទេស' => 'សញ្ញាបត្រជាន់ខ្ពស់បច្ចេកទេស',
+                                    'បន្តបរិញ្ញាបត្របច្ចេកវីទ្យា' => 'បន្តបរិញ្ញាបត្របច្ចេកវីទ្យា',
+                                ];
+                            ?>
                                 @foreach ($options as $value => $label)
                                 <option value="{{ $value }}" {{ isset($records->level) && $records->level == $value ? 'selected' : '' }}>
                                     {{ $label }}
@@ -191,6 +191,9 @@
     <div class="row">
         <div class="col-md-6 col-sm-6 col-6">
             <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="AddTeacherSchedule" href="javascript:void(0);"><i class="mdi mdi-account-plus"></i> Add New</a>
+            <button type="button" id="prints" class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2">Print
+                <i class="mdi mdi-printer btn-icon-append"></i>
+            </button>
         </div>
         <div class="col-md-6 col-sm-6 col-6 khmer_os_b bold">
             កាលវិភាគបង្រៀន
@@ -336,7 +339,32 @@
         </div>
       </div>
     </div>
-  </div><br>
+</div><br>
+<!---PRINT--->
+<div class="modal fade" id="ModelPrints" tabindex="-1" role="dialog" aria-labelledby="ModelPrints" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-m-header">
+          <h5 class="modal-title" id="divConfirmation">Confirmation</h5>
+        </div>
+        <div class="modal-body">
+          <h4 class="modal-confirmation-text text-center p-4"></h4>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="btnClose" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" id="YesPrints" data-code="{{ $_GET['assing_no'] ?? '' }}" data-id=""
+            class="btn btn-primary">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!---PRINT CONNECT--->
+  <div class="print" style="display: none">
+    <div class="print-content">
+  
+    </div>
+  </div>
+  <!-- Modal -->
 @include('general.class_schedule_sub_lists')
 @endsection
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -371,11 +399,6 @@
                 }
             });
         });
-        // $('.formSublist').on('change', function() {
-        //   var name = $(this).attr('name');
-        //   var value = $(this).val();
-        //   var date_name = $(this).attr('date-name');
-        // });
         $("#AddTeacherSchedule").on('click', function() {
             $("#ModalTeacherSchedule").modal('show');
         })
@@ -391,14 +414,7 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
                 , success: function(response) {
-                    // if (response.status == 'success') {
-                    //     notyf.success(response.msg);
-                    // } else if (response.store == 'yes') {
-                    //     window.location.href = response.url;
-                    //     notyf.success(response.msg);
-                    // } else {
-                    //     notyf.error(response.msg);
-                    // }
+                 
                 }
             });
         })
@@ -417,17 +433,41 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
                 , success: function(response) {
-                    // if (response.status == 'success') {
-                    //     notyf.success(response.msg);
-                    // } else if (response.store == 'yes') {
-                    //     window.location.href = response.url;
-                    //     notyf.success(response.msg);
-                    // } else {
-                    //     notyf.error(response.msg);
-                    // }
+                
                 }
             });
         })
+        $(document).on('click', '#prints', function() {
+            $(".modal-confirmation-text").html('Do you want to Downlaod prints ?');
+            $("#YesPrints").attr('data-code', $(this).attr('data-type'));
+            $("#ModelPrints").modal('show');
+        });
+        $(document).on('click', '#YesPrints', function() {
+            let code = "{{ isset($_GET['code']) ? addslashes($_GET['code']) : '' }}";
+            let url = '/class-schedule-print?code=' + code;
+            $.ajax({
+                type: 'get',
+                url: url,
+                headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                beforeSend: function() {
+                    $('.loader').show();
+                },
+                success: function(response) {
+                if (response.status != 'success') {
+                    $('.loader').hide();
+                    $('.print-content').printThis({});
+                    $('.print-content').html(response);
+                    $('#ModelPrints').modal('hide');
+                } else {
+                    $('.loader').hide();
+                    notyf.error("Error: " + response.msg);
+                }
+                },
+                error: function(xhr, ajaxOptions, thrownError) {}
+            });
+        });
     });
 
     function DownlaodExcel() {

@@ -16,6 +16,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
+use function PHPSTORM_META\type;
+
 class ClassScheduleController extends Controller
 {
     //
@@ -67,9 +69,12 @@ class ClassScheduleController extends Controller
                 $record_sub_lines = AssingClasses::where('class_code', $records->class_code)
                                                     ->where('semester', $records->semester)
                                                     ->where('years', $records->years)
+                                                    ->where('qualification', $records->qualification)
+                                                    ->where('sections_code', $records->sections_code)
+                                                    ->where('skills_code', $records->skills_code)
+                                                    ->where('department_code', $records->department_code)
                                                     ->get();
-
-                dd($records, $record_sub_lines);
+                                                              
             }
             return view('general.class_schedule_card', compact($params));
         } catch (\Exception $ex) {
@@ -160,16 +165,21 @@ class ClassScheduleController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-    public function Print(Request $request)
+    public function printLine(Request $request)
     {
         $data = $request->all();
-        return dd($data);
-        $class_record = null;
-        $extract_query = $this->services->extractQuery($data);
+        $is_print = "yes";
         try {
-
-            $records = Department::whereRaw($extract_query)->get();
-            return view('student.student_print', compact('records', 'class_record'));
+            $records = GeneralClassSchedule::where('id', $this->services->Decr_string($_GET['code']))->first();
+            $record_sub_lines = AssingClasses::where('class_code', $records->class_code)
+                                                ->where('semester', $records->semester)
+                                                ->where('years', $records->years)
+                                                ->where('qualification', $records->qualification)
+                                                ->where('sections_code', $records->sections_code)
+                                                ->where('skills_code', $records->skills_code)
+                                                ->where('department_code', $records->department_code)
+                                                ->get();
+            return view('general.class_schedule_sub_lists', compact('records', 'record_sub_lines', 'is_print'));
         } catch (\Exception $ex) {
             DB::rollBack();
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
@@ -187,7 +197,6 @@ class ClassScheduleController extends Controller
         }else{
             $assing_no = 10;
         }
-        dd($data);
 
         try {
             $records = new AssingClasses();

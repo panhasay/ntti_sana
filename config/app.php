@@ -125,6 +125,8 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    'timezone' => 'Asia/Phnom_Penh',
+
     /*
     |--------------------------------------------------------------------------
     | Maintenance Mode Driver

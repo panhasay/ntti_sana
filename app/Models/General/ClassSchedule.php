@@ -18,4 +18,8 @@ class ClassSchedule extends Model
     protected $fillable = [
         '*',
     ];
+    public function section()
+    {
+        return $this->belongsTo(Sections::class, 'sections_code', 'code');
+    }
 }

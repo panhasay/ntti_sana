@@ -11,19 +11,37 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
     <style type="text/css">
         @import url(https://fonts.googleapis.com/css?family=Raleway:300,400,600);
-  
-        body{
+
+        body {
             margin: 0;
-            font-size: .9rem;
+            font-size: 0.9rem;
             font-weight: 400;
-            line-height: 1.6;
             color: #212529;
             text-align: left;
-            background-color: #f5f8fa;
+            background-color: #202020; /* Set a fallback dark color */
+            background-image: url('asset/NTTI/images/img_login.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            position: relative;
+            height: 900px;
+        }
+
+        /* Dark overlay effect */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(3, 3, 3, 0.578); /* Adjust opacity for darkness */
+            z-index: 0;
         }
         .navbar-laravel
         {
             box-shadow: 0 2px 4px rgba(0,0,0,.04);
+            background: #fbfbfb;
         }
         .navbar-brand , .nav-link, .my-form, .login-form
         {
@@ -82,7 +100,7 @@
                     </li> --}}
                 @else
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('logout') }}">Logout</a>
+                        {{-- <a class="nav-link" href="{{ route('logout') }}">Logout</a> --}}
                     </li>
                 @endguest
             </ul>

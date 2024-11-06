@@ -85,6 +85,7 @@
         <div class="container menu-list">
             <ul>
                 <li><a href="{{ url('student') }}">Students - បញ្ជីរាយនាមនិស្សិត</a></li>
+                <li><a href="{{ url('student/registration') }}">Registration-ចុះឈ្មោះចូលរៀន</a></li>
             </ul>
         </div>
     </div>

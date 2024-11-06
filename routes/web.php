@@ -41,14 +41,18 @@ Route::get('/greeting/{locale}', function (string $locale) {
     Route::get('/', function () {
         return view('auth.login');
     });
-    Route::get('/menu-reports', function () {
-        return view('general.main_menu_report');
-    });Route::get('user-dont-have-permission', function () {
-        return view('Error.permission_acces');
+    Route::get('/thank-you-for-submit', function () {
+        return view('/system.thank_you_for_submit');
+    });
+    // Route::get('/menu-reports', function () {
+    //     return view('general.main_menu_report');
+    // });
+    Route::get('user-dont-have-permission', function () {
+        return view('errors.permission_acces');
     });
     Route::get('login', [AuthController::class, 'index'])->name('login');
     Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');
-    Route::get('registration', [AuthController::class, 'registration'])->name('register');
+    Route::get('registration_hole', [AuthController::class, 'registration'])->name('register');
     Route::post('post-registration', [AuthController::class, 'postRegistration'])->name('register.post');
     Route::get('/department-menu', [AuthController::class, 'departmentMenu']);
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
@@ -187,7 +191,18 @@ Route::group(['perfix' => '/class-schedule'], function (){
     Route::post('/class-schedule/store', [ClassScheduleController::class, 'store']);
     Route::POST ('/class-schedule-delete', [ClassScheduleController::class, 'delete']);
     Route::POST ('/class-schedule/save-schedule', [ClassScheduleController::class, 'SaveSchedule']);
+    Route::get('/class-schedule-print',[ClassScheduleController::class,'printLine']);
 })->middleware('auth');
+
+
+
+Route::group(['perfix' => 'student'], function (){
+    Route::get('/student/registration',[StudnetController::class,'StudentRegistration']);
+    Route::get('/student/registration/transaction',[StudnetController::class,'StudentRegistrationTransaction']);
+    Route::POST('/student/registration/store',[StudnetController::class, 'storeRegistration']);
+    Route::POST('/student/registration/update',[StudnetController::class,'updateRegistration']);
+});
+
 
 
 
