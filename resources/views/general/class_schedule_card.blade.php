@@ -18,13 +18,13 @@
         <div class="col-md-6 col-sm-6  col-6">
             <div class="page-title page-title-custom">
                 <div class="title-page">
-                    <a href="{{ url('classes') }}"><i class="mdi mdi-format-list-bulleted"></i></a>
-                    @if($type == 'ed')
-                    កែប្រែ, {{ $records->name ?? '' }}
-                    @else
-                    បន្ថែមថ្មី
+                    <a href="{{ url('/class-schedule') }}"><i class="mdi mdi-format-list-bulleted"></i></a>
+                    @if($type != 'ed')
+                        បន្ថែមថ្មី 
                     @endif
-                    &nbsp;&nbsp; <button type="button" id="BtnSave" class="btn btn-success"> save </button>
+                    @if(count($record_sub_lines) <= 0)
+                        <button type="button" id="BtnSave" class="btn btn-success"> save </button>
+                    @endif
                 </div>
             </div>
         </div>
@@ -46,7 +46,7 @@
                         <input type="hidden" id="type" name="type" value="{{ $records->id ?? '' }}">
                         <span class="labels col-sm-3 col-form-label text-end">ចាប់ផ្តើមអនុវត្ត<strong style="color:red; font-size:15px;"> *</strong></span>
                         <div class="col-sm-9">
-                            <input type="date" class="form-control form-control-sm " id="start_date" name="start_date" value="{{ $records->start_date ?? ''}}" placeholder="ចាប់ផ្តើមអនុវត្ត" aria-label="ចាប់ផ្តើមអនុវត្ត">
+                            <input type="date" class="form-control form-control-sm " id="start_date" name="start_date" value="{{ $records->start_date ?? ''}}" placeholder="ចាប់ផ្តើមអនុវត្ត" aria-label="ចាប់ផ្តើមអនុវត្ត"  {{ (count($record_sub_lines) > 0) ? 'disabled' : '' }}>
                         </div>
                     </div>
                 </div>
@@ -55,7 +55,7 @@
                     <div class="form-group row">
                         <span class="labels col-sm-3 col-form-label text-end">ថា្នក់/ក្រុម<strong style="color:red; font-size:15px;"> *</strong></span>
                         <div class="col-sm-9">
-                            <select class="js-example-basic-single FieldRequired" id="class_code" name="class_code" style="width: 100%;">
+                            <select class="js-example-basic-single FieldRequired" id="class_code" name="class_code" style="width: 100%;" {{ (count($record_sub_lines) > 0) ? 'disabled' : '' }}>
                                 <option value="">&nbsp;</option>
                                 @foreach ($classs as $record)
                                 <option value="{{ $record->code ?? '' }}" {{ isset($records->class_code) && $records->class_code == $record->code ? 'selected' : '' }}>
@@ -71,7 +71,7 @@
                     <div class="form-group row">
                         <span class="labels col-sm-3 col-form-label text-end">វេន<strong style="color:red; font-size:15px;"> *</strong></span>
                         <div class="col-sm-9">
-                            <select class="js-example-basic-single FieldRequired" id="sections_code" name="sections_code" style="width: 100%;">
+                            <select class="js-example-basic-single FieldRequired" id="sections_code" name="sections_code" style="width: 100%;" {{ (count($record_sub_lines) > 0) ? 'disabled' : '' }}>
                                 <option value="">&nbsp;</option>
                                 @foreach ($sections as $record)
                                 <option value="{{ $record->code ?? '' }}" {{ isset($records->sections_code) && $records->sections_code == $record->code ? 'selected' : '' }}>
@@ -87,7 +87,7 @@
                     <div class="form-group row">
                         <span class="labels col-sm-3 col-form-label text-end">ជំនាញ<strong style="color:red; font-size:15px;"> *</strong></span>
                         <div class="col-sm-9">
-                            <select class="js-example-basic-single FieldRequired" id="skills_code" name="skills_code" style="width: 100%;">
+                            <select class="js-example-basic-single FieldRequired" id="skills_code" name="skills_code" style="width: 100%;" {{ (count($record_sub_lines) > 0) ? 'disabled' : '' }}>
                                 <option value="">&nbsp;</option>
                                 @foreach ($skills as $record)
                                 <option value="{{ $record->code ?? '' }}" {{ isset($records->skills_code) && $records->skills_code == $record->code ? 'selected' : '' }}>
@@ -103,7 +103,7 @@
                     <div class="form-group row">
                         <span class="labels col-sm-3 col-form-label text-end">ដេប៉ាតឺម៉ង់<strong style="color:red; font-size:15px;"> *</strong></span>
                         <div class="col-sm-9">
-                            <select class="js-example-basic-single FieldRequired" id="department_code" name="department_code" style="width: 100%;">
+                            <select class="js-example-basic-single FieldRequired" id="department_code" name="department_code" style="width: 100%;" {{ (count($record_sub_lines) > 0) ? 'disabled' : '' }}>
                                 <option value="">&nbsp;</option>
                                 @foreach ($department as $record)
                                 <option value="{{ $record->code ?? '' }}" {{ isset($records->department_code) && $records->department_code == $record->code ? 'selected' : '' }}>
@@ -119,7 +119,7 @@
                     <div class="form-group row">
                         <span class="labels col-sm-3 col-form-label text-end">ឆ្នាំសិក្សា<strong style="color:red; font-size:15px;"> *</strong></span>
                         <div class="col-sm-9">
-                            <select class="js-example-basic-single FieldRequired" id="school_year_code" name="school_year_code" style="width: 100%;">
+                            <select class="js-example-basic-single FieldRequired" id="school_year_code" name="school_year_code" style="width: 100%;" {{ (count($record_sub_lines) > 0) ? 'disabled' : '' }}>
                                 <option value="">&nbsp;</option>
                                 @foreach ($school_years as $record)
                                 <option value="{{ $record->code ?? '' }}" {{ isset($records->session_year_code) && $records->session_year_code == $record->code ? 'selected' : '' }}>
@@ -135,7 +135,7 @@
                     <div class="form-group row">
                         <span class="labels col-sm-3 col-form-label text-end">កម្រិត<strong style="color:red; font-size:15px;"> *</strong></span>
                         <div class="col-sm-9">
-                            <select class="js-example-basic-single" id="level" name="level" style="width: 100%;">
+                            <select class="js-example-basic-single" id="level" name="level" style="width: 100%;" {{ (count($record_sub_lines) > 0) ? 'disabled' : '' }}>
                                 <?php 
                             $options = [
                                     'បរិញ្ញាបត្រ' => 'បរិញ្ញាបត្រ',
@@ -158,7 +158,7 @@
                         <span class="labels col-sm-3 col-form-label text-end">ឆមាស<strong style="color:red; font-size:15px;">
                                 *</strong></span>
                         <div class="col-sm-9">
-                            <select class="js-example-basic-single form_data" id="semester" name="semester" style="width: 100%;">
+                            <select class="js-example-basic-single form_data" id="semester" name="semester" style="width: 100%;" {{ (count($record_sub_lines) > 0) ? 'disabled' : '' }}>
                                 <option value="1" {{ (isset($records->semester) && $records->semester == '1') ? '' : 'selected' }}>ឆមាសទី ១</option>
                                 <option value="2" {{ (isset($records->semester) && $records->semester == '2') ? 'selected' : '' }}>ឆមាសទី ២</option>
                             </select>
@@ -170,7 +170,7 @@
                     <div class="form-group row">
                         <span class="labels col-sm-3 col-form-label text-end">បរិញាប័ត្រ ឆ្នាំ<strong style="color:red; font-size:15px;"> *</strong></span>
                         <div class="col-sm-9">
-                            <select class="js-example-basic-single FieldRequired" id="years" name="years" style="width: 100%;">
+                            <select class="js-example-basic-single FieldRequired" id="years" name="years" style="width: 100%;" {{ (count($record_sub_lines) > 0) ? 'disabled' : '' }}>
                                 <option value="">&nbsp;</option>
                                 @foreach ($study_years as $record)
                                 <option value="{{ $record->code ?? '' }}" {{ isset($records->years) && $records->years == $record->code ? 'selected' : '' }}>
@@ -201,145 +201,8 @@
     </div>
 </div>
 <!-- Modal -->
-<div class="modal fade" id="ModalTeacherSchedule" tabindex="-1" aria-labelledby="ModalTeacherSchedule" aria-hidden="true">
-    <div class="modal-dialog" style="max-width: 100%;">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title text-dark" id="ModalTeacherSchedule">កាលវិភាគបង្រៀន</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body" style="height: 400px;">
-            <div class="control-table table-responsive custom-data-table-wrapper2">
-                <form id="frmDataSublist" role="form" class="form-sample" enctype="multipart/form-data">
-                    <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th class="text-center" rowspan="2">ឈ្មោះ​ សាស្រ្តាចារ្យ</th>
-                            <th class="text-center" colspan="2">ចន្ទ</th>
-                            <th class="text-center" colspan="2">អង្គា</th>
-                            <th class="text-center" colspan="2">ពុធ</th>
-                            <th class="text-center" colspan="2">ព្រហស្បត៏</th>
-                            <th class="text-center" colspan="2">សុក្រ</th>
-                            <th class="text-center" colspan="2">សៅរ៏</th>
-                        </tr>
-                        <tr class="general-data">
-                            <th class="text-center"><input class="formSublist" type="time" date-name="monday" id="start_time_monday" name="start_time_monday" value="10"></th>
-                            <th class="text-center"><input class="formSublist" type="time" date-name="monday" id="end_time_monday" name="end_time_monday"></th>
-            
-                            <th class="text-center"><input class="formSublist" type="time" date-name="tuesday" id="start_time_tuesday" name="start_time_tuesday"></th>
-                            <th class="text-center"><input class="formSublist" type="time" date-name="tuesday" id="end_time_tuesday" name="end_time_tuesday"></th>
-            
-                            <th class="text-center"><input class="formSublist" type="time" date-name="wednesday" id="start_time_wednesday" name="start_time_wednesday"></th>
-                            <th class="text-center"><input class="formSublist" type="time" date-name="wednesday" id="end_time" name="end_time"></th>
-            
-                            <th class="text-center"><input class="formSublist" type="time" date-name="thursday" id="start_time_thursday" name="start_time_thursday"></th>
-                            <th class="text-center"><input class="formSublist" type="time" date-name="thursday" id="end_time_thursday" name="end_time_thursday"></th>
-            
-                            <th class="text-center"><input class="formSublist" type="time" date-name="friday" id="start_time_friday" name="start_time_friday"></th>
-                            <th class="text-center"><input class="formSublist" type="time" date-name="friday" id="end_time_friday" name="end_time_friday"></th>
-            
-                            <th class="text-center"><input class="formSublist" type="time" date-name="saturday" id="start_time_saturday" name="start_time_saturday"></th>
-                            <th class="text-center"><input class="formSublist" type="time" date-name="saturday" id="end_time_saturday" name="end_time_saturday"></th>
-        
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="general-data">
-                            <td class="text-letf">
-                                <select class="js-example-basic-single FieldRequired formSublist" id="teacher_code_1" name="teacher_code" style="width: 100% !important;">
-                                    <option value="">សាស្រ្តាចារ្យ</option>
-                                    @foreach ($teachers as $record) 
-                                        <option value="{{ $record->code ?? '' }}" {{ isset($records->years) && $records->years == $record->code ? 'selected' : '' }}>
-                                        {{ isset($record->name) ? $record->name : '' }} -  {{ isset($record->name_2) ? $record->name_2 : '' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </td>
-                            <td class="text-center" colspan="2">
-                                <select class="js-example-basic-single FieldRequired formSublist" date-type="monday" id="subjects_code_monday" name="subjects_code_monday" style="width: 100%;">
-                                    <option value="">មុខវិជ្ជា</option>
-                                    @foreach ($subjects as $record) 
-                                        <option value="{{ $record->code ?? '' }}" {{ isset($records->years) && $records->years == $record->code ? 'selected' : '' }}>
-                                        {{ isset($record->name) ? $record->name : '' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <br>
-                                <input type="text" id="room" class="formSublist text-center" name="room_monday" date-room="monday" placeholder="H & Room" style="width: 100%;">
-                            </td>
-                            <td class="text-center" colspan="2">
-                                <select class="js-example-basic-single FieldRequired formSublist" date-type="tuesday" id="subjects_code_tuesday" name="subjects_code_tuesday" style="width: 100%;">
-                                    <option value="">មុខវិជ្ជា</option>
-                                    @foreach ($subjects as $record) 
-                                        <option value="{{ $record->code ?? '' }}" {{ isset($records->years) && $records->years == $record->code ? 'selected' : '' }}>
-                                        {{ isset($record->name) ? $record->name : '' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <br>
-                                <input type="text" id="room" class="formSublist text-center" name="room_tuesday" date-room="tuesday" placeholder="H & Room" style="width: 100%;">
-                            </td>
-                            <td class="text-center" colspan="2">
-                                <select class="js-example-basic-single FieldRequired formSublist" date-type="wednesday" id="subjects_code_wednesday" name="subjects_code_wednesday" style="width: 100%;">
-                                    <option value="">មុខវិជ្ជា</option>
-                                    @foreach ($subjects as $record) 
-                                        <option value="{{ $record->code ?? '' }}" {{ isset($records->years) && $records->years == $record->code ? 'selected' : '' }}>
-                                        {{ isset($record->name) ? $record->name : '' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <br>
-                                <input type="text" id="room" class="formSublist text-center" name="room_wednesday" date-room="wednesday" placeholder="H & Room" style="width: 100%;">
-                            </td>
-                            <td class="text-center" colspan="2">
-                                <select class="js-example-basic-single FieldRequired formSublist" date-type="thursday" id="subjects_code_thursday" name="subjects_code_thursday" style="width: 100%;">
-                                    <option value="">មុខវិជ្ជា</option>
-                                    @foreach ($subjects as $record) 
-                                        <option value="{{ $record->code ?? '' }}" {{ isset($records->years) && $records->years == $record->code ? 'selected' : '' }}>
-                                        {{ isset($record->name) ? $record->name : '' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <br>
-                                <input type="text" id="room" class="formSublist text-center" name="room_thursday" date-room="thursday" placeholder="H & Room" style="width: 100%;">
-                            </td>
-                            <td class="text-center" colspan="2">
-                                <select class="js-example-basic-single FieldRequired formSublist" date-type="friday" id="subjects_code_friday" name="subjects_code_friday" style="width: 100%;">
-                                    <option value="">មុខវិជ្ជា</option>
-                                    @foreach ($subjects as $record) 
-                                        <option value="{{ $record->code ?? '' }}" {{ isset($records->years) && $records->years == $record->code ? 'selected' : '' }}>
-                                        {{ isset($record->name) ? $record->name : '' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <br>
-                                <input type="text" id="room" class="formSublist text-center" name="room_friday" date-room="friday" placeholder="H & Room" style="width: 100%;">
-                            </td>
-                            <td class="text-center" colspan="2">
-                                <select class="js-example-basic-single FieldRequired formSublist" date-type="saturday" id="subjects_code_saturday" name="subjects_code_saturday" style="width: 100%;">
-                                    <option value="">មុខវិជ្ជា</option>
-                                    @foreach ($subjects as $record) 
-                                        <option value="{{ $record->code ?? '' }}" {{ isset($records->years) && $records->years == $record->code ? 'selected' : '' }}>
-                                        {{ isset($record->name) ? $record->name : '' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <br>
-                                <input type="text" id="room" class="formSublist text-center" name="room_saturday" date-room="saturday" placeholder="H & Room" style="width: 100%;">
-                            </td>
-                        </tr>
-                    </tbody>
-                    </table>
-                </form>
-            </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary khmer_os_b" data-bs-dismiss="modal">បិទ</button>
-          <button type="button" id="SaveTeacherSchedule" class="btn btn-primary khmer_os_b">រក្សាទុក</button>
-        </div>
-      </div>
-    </div>
-</div><br>
+
+@include('system.model_class_schedule')<br>
 <!---PRINT--->
 <div class="modal fade" id="ModelPrints" tabindex="-1" role="dialog" aria-labelledby="ModelPrints" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -366,9 +229,8 @@
   </div>
   <!-- Modal -->
 @include('general.class_schedule_sub_lists')
-@endsection
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
+    var header = "{{ $records }}"
     $(document).ready(function() {
         $('#BtnSave').on('click', function() {
             var formData = $('#frmDataCard').serialize();
@@ -400,8 +262,26 @@
             });
         });
         $("#AddTeacherSchedule").on('click', function() {
+            if (!header) {
+                notyf.error("សូមបំពេញ ព៏តមានថ្នាក់និងឆ្នាំសិក្សាខាងលើ");
+                return;
+            }
+            $('.js-example-basic-single').select2();
             $("#ModalTeacherSchedule").modal('show');
-        })
+            
+            $('#teachers, #subjects_code_monday, #subjects_code_tuesday, #subjects_code_wednesday, #subjects_code_thursday, #subjects_code_friday, #subjects_code_saturday').select2({
+                dropdownParent: $('#ModalTeacherSchedule') 
+            });
+            jQuery(function() {
+                $('#frmDataSublist')[0].reset();
+            });
+            const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+            days.forEach(day => {
+                $(`#subjects_code_${day}`).append(new Option("មុខវិជ្ជា", "", true, true));
+            });
+            $("#teachers").append(new Option("សាស្រ្តាចារ្យ", "", true, true));
+
+        });
         $("#SaveTeacherSchedule").on('click', function() {
             var frmDataSublist = $('#frmDataSublist').serialize();
             var code = "{{ isset($_GET['code']) ? addslashes($_GET['code']) : '' }}";
@@ -466,6 +346,79 @@
                 }
                 },
                 error: function(xhr, ajaxOptions, thrownError) {}
+            });
+        });
+        $(document).on('click', '.BtnEditeacher', function() {
+            var code = $(this).attr('data-code');
+            let url = 'update/class-schedule/transaction?id=' + code;
+            jQuery(function() {
+                $('#frmDataSublist')[0].reset();
+            });
+            $.ajax({
+                type: 'get',
+                url: url,
+                beforeSend: function() {
+                    $('.loader').show();
+                },
+                success: function(response) {
+                    $('.loader').hide();
+
+                    const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+                    days.forEach(day => {
+                        $(`#subjects_code_${day}`).append(new Option("មុខវិជ្ជា", "", true, true));
+                    });
+
+                    $("#teachers").append(new Option("សាស្រ្តាចារ្យ", "", true, true));
+
+                    if (response.status === "success") {
+                        $("#teachers").empty();
+                        $("#teachers").append(new Option(response.records.teacher.name_2, "", true, true));
+                        $.each(response.teachers, function(index, teacher) {
+                                let option = new Option(teacher.name_2, teacher.code, false, false);
+                                $("#teachers").append(option); 
+                        });
+                        
+                        const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+                        const day = response.records.date_name.toLowerCase();
+                        if (days.includes(day)) {
+                            // Define dynamic selectors based on the day
+                            const subjectCodeSelector = `#subjects_code_${day}`;
+                            const startTimeSelector = `#start_time_${day}`;
+                            const endTimeSelector = `#end_time_${day}`;
+                            const roomSelector = `#room_${day}`;
+                            // Clear and set the main subject
+                            $(subjectCodeSelector).empty().append(new Option(response.records.subject.name_2, "", true, true));
+                            // Parse and format times
+                            let [startHours, startMinutes] = response.records.start_time.split(":");
+                            startHours = startHours.padStart(2, '0');
+                            let endHours = parseInt(startHours) + 1;
+                            if (endHours === 24) endHours = 0;
+                            endHours = endHours.toString().padStart(2, '0');
+                            const formattedStartTime = `${startHours}:${startMinutes}`;
+                            const formattedEndTime = `${endHours}:${startMinutes}`;
+                            // Set time and room values
+                            $(startTimeSelector).val(formattedStartTime);
+                            $(endTimeSelector).val(formattedEndTime);
+                            $(roomSelector).val(response.records.room);
+                            // Append additional subjects to the dropdown
+                            response.subjects.forEach(subject => {
+                                $(subjectCodeSelector).append(new Option(subject.name, subject.code, false, false));
+                            });
+                            // Initialize or refresh select2 and reset the value
+                            $(subjectCodeSelector).select2().val("").trigger("change");
+                        }
+
+                    }
+                    $('.js-example-basic-single').select2();
+                    $("#ModalTeacherSchedule").modal("show");
+                    $('#teachers, #subjects_code_monday, #subjects_code_tuesday, #subjects_code_wednesday, #subjects_code_thursday, #subjects_code_friday, #subjects_code_saturday').select2({
+                        dropdownParent: $('#ModalTeacherSchedule') 
+                    });
+                    // Show the modal
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    $('.loader').hide();
+                }
             });
         });
     });
@@ -575,3 +528,5 @@
     }
 
 </script>
+@endsection
+

@@ -1,7 +1,6 @@
 <?php $index = 1; ?>
 @foreach ($records as $record)
 <?php 
-    // Set the locale to Khmer
     Carbon\Carbon::setLocale('km');
     $department = App\Models\SystemSetup\Department::where('code', $record->department_code ?? '')->value('name_2');
     $sections = \DB::table('sections')->where('code', $record->sections_code ?? '')->value('name_2');

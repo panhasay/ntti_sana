@@ -89,7 +89,6 @@ class AssingClassesController extends Controller
                 $records = AssingClasses::where('id', $this->services->Decr_string($_GET['code']))->first();
                 $Assingstudent = Student::where('class_code', $records->class_code ?? '')->get();
             }
-
             return view('general.assing_classes_card', compact($params));
         } catch (\Exception $ex) {
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());

@@ -15,6 +15,7 @@ use App\Service\service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Models\General\ClassSchedule;
 
 use function PHPSTORM_META\type;
 
@@ -32,8 +33,8 @@ class ClassScheduleController extends Controller
     {
         $this->services = new service();
         $this->page_id = "10001";
-        $this->page = "classSchedule";
-        $this->prefix = "classSchedule";
+        $this->page = "class-schedule";
+        $this->prefix = "class-schedule";
         $this->arrayJoin = ['10001', '10007', '10008'];
         $this->table_id = "10005";
     }
@@ -53,6 +54,7 @@ class ClassScheduleController extends Controller
         $page = $this->page;
         $page_url = $this->page;
         $records = null;
+        $record_sub_lines = AssingClasses::where('class_code', $data['type'])->get();
         $classs = Classes::orderBy('code', 'desc')->get();
         $sections = DB::table('sections')->get();
         $department = Department::get();
@@ -60,21 +62,20 @@ class ClassScheduleController extends Controller
         $skills = DB::table('skills')->get();
         $study_years = StudyYears::get();
         $teachers = Teachers::orderBy('code', 'asc')->get();
-        $subjects = Subjects::orderBy('code', 'asc')->get();
+        $subjects = Subjects::orderBy('code', 'asc')->get(); 
         try {
             $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'classs', 'study_years', 'teachers', 'subjects', 'record_sub_lines'];
             if ($type == 'cr') return view('general.class_schedule_card', compact($params));
             if (isset($_GET['code'])) {
                 $records = GeneralClassSchedule::where('id', $this->services->Decr_string($_GET['code']))->first();
                 $record_sub_lines = AssingClasses::where('class_code', $records->class_code)
-                                                    ->where('semester', $records->semester)
-                                                    ->where('years', $records->years)
-                                                    ->where('qualification', $records->qualification)
-                                                    ->where('sections_code', $records->sections_code)
-                                                    ->where('skills_code', $records->skills_code)
-                                                    ->where('department_code', $records->department_code)
-                                                    ->get();
-                                                              
+                                ->where('semester', $records->semester)
+                                ->where('years', $records->years)
+                                ->where('qualification', $records->qualification)
+                                ->where('sections_code', $records->sections_code)
+                                ->where('skills_code', $records->skills_code)
+                                ->where('department_code', $records->department_code)
+                                ->get();                    
             }
             return view('general.class_schedule_card', compact($params));
         } catch (\Exception $ex) {
@@ -191,7 +192,11 @@ class ClassScheduleController extends Controller
         $data = $request->all();
         $id = $this->services->Decr_string($data['code']);
         $header = GeneralClassSchedule::where('id', $id)->first();
+
+        dd($header);
+
         $assing = AssingClasses::latest('id')->first();
+
         if($assing){
             $assing_no = $assing->assing_no + 10;
         }else{
@@ -200,6 +205,7 @@ class ClassScheduleController extends Controller
 
         try {
             $records = new AssingClasses();
+            $records->class_schedule_id = $header->id;
             $records->teachers_code = $request->teachers_code;
             $records->class_code = $request->class_code;
             $records->sections_code = $request->sections_code;
@@ -210,9 +216,24 @@ class ClassScheduleController extends Controller
             $records->status = $request->status;
             $records->semester = $request->semester;
             $records->qualification = $request->qualification;
-            dd("tesr");
+
+            dd($records);
 
             return view('student.student_print', compact('records', 'class_record'));
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+    public function EditTeacherSchedule(Request $request)
+    {
+        $data = $request->all();
+        try {
+        $subjects = Subjects::orderBy('code')->get();
+        $teachers = Teachers::orderBy('code')->get();
+        $records = AssingClasses::with(['subject', 'teacher'])->where('id',  $data['id'])->first();
+        return response()->json(['status' => 'success', 'records' => $records, 'subjects' => $subjects, 'teachers'=>$teachers]);
         } catch (\Exception $ex) {
             DB::rollBack();
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());

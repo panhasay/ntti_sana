@@ -22,4 +22,8 @@ class ClassSchedule extends Model
     {
         return $this->belongsTo(Sections::class, 'sections_code', 'code');
     }
+    public function subject()
+    {
+        return $this->belongsTo(Subjects::class, 'subjects_code', 'code');
+    }
 }

@@ -76,8 +76,6 @@
 </div>
 @include('system.modal_comfrim_delet')
 @include('general.class_schedule_lists')
-@endsection
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
   $(document).ready(function() {
     $.ajaxSetup({
@@ -155,3 +153,4 @@
     });
   }
 </script>
+@endsection

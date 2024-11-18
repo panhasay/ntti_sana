@@ -192,9 +192,8 @@ Route::group(['perfix' => '/class-schedule'], function (){
     Route::POST ('/class-schedule-delete', [ClassScheduleController::class, 'delete']);
     Route::POST ('/class-schedule/save-schedule', [ClassScheduleController::class, 'SaveSchedule']);
     Route::get('/class-schedule-print',[ClassScheduleController::class,'printLine']);
+    Route::get('/update/class-schedule/transaction',[ClassScheduleController::class,'EditTeacherSchedule']);
 })->middleware('auth');
-
-
 
 Route::group(['perfix' => 'student'], function (){
     Route::get('/student/registration',[StudnetController::class,'StudentRegistration']);

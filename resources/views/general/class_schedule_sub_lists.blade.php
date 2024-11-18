@@ -26,7 +26,7 @@
             font-family: 'Khmer OS Battambang';
             font-size: 10.5px !important
       }.general-print>td>div{
-            padding: 2px;
+            padding: 1px;
             font-family: 'Khmer OS Battambang';
             font-size: 12px !important;
       } .general-prints>th>{
@@ -44,7 +44,7 @@
       }
     }
 </style>
-    @if($is_print ?? '' == 'Yes')
+@if($is_print ?? '' == 'Yes')
     <div class="row align-items-start">
         <div class="col-5 text-center KhmerOSMuolLight"><br>
             ក្រសួងការងារ និងបណ្តុះបណ្តាលវិជ្ជាជីវៈ<br>
@@ -78,11 +78,11 @@
                 <th class="text-center" colspan="2">ពុធ</th>
                 <th class="text-center" colspan="2">ព្រហស្បត៏</th>
                 <th class="text-center" colspan="2">សុក្រ</th>
-                <th class="text-center" colspan="2">សៅរ៏</th>
+                <th class="text-center" colspan="2">សៅរ៏ </th>
               </tr>
               <tr class="general-print">
-                @foreach ($record_sub_lines as $time)
-                    <th height="10" class="text-center">{{ $time->start_time ?? '' }}</th>
+                @foreach ($record_sub_lines->take(6) as $time)
+                    <th class="text-center">{{ $time->start_time ?? '' }}</th>
                     <th class="text-center">{{ $time->end_time ?? '' }}</th>
                 @endforeach
             </tr>
@@ -103,7 +103,7 @@
                                         {{-- Display the subject name in the correct column based on the day --}}
                                         <td class="text-center" colspan="2">
                                             {{ $record->subject->name ?? '' }} 
-                                            &nbsp; {{ $record->room ?? '' }}
+                                            &nbsp;<span style="font-size: 9px !important;"> {{ $record->room ?? '' }}</span>
                                         </td>
                                     @else
                                         {{-- Leave other columns empty --}}
@@ -117,7 +117,7 @@
             </tbody>
         </table>
         <div class="row align-items-start mt-1">
-            <div class="col-5 text-center KhmerOSMuolLight"><br><br><br><br>
+            <div class="col-5 text-center KhmerOSMuolLight"><br><br><br>
                 បានឃើញនិងឯកភាព<br />
                 នារយករងសិក្សា
             </div>
@@ -127,18 +127,9 @@
                 <div class="KhmerOSMuolLight">នាយករងសិក្សា</div>
             </div>
         </div>
-        <div class="div mt-2">
-            <table class="table-print-sm">
-                <thead>
-                    <tr class="general-print">
-                        <td>ISO 9001:2015/Cert:No720466</td>
-                    </tr>
-                </thead>
-            </table>
-        </div>
     </div>
 @else
-    <div class="control-table table-responsive custom-data-table    -wrapper2">
+    <div class="control-table table-responsive custom-data-table   -wrapper2">
         <form id="frmDataSublist" role="form" class="form-sample" enctype="multipart/form-data">
             <table class="table table-striped">
                 <thead>
@@ -153,7 +144,7 @@
                         <th class="text-center" colspan="2">សៅរ៏</th>
                     </tr>
                     <tr class="general-data">
-                        @foreach ($record_sub_lines as $time)
+                        @foreach ($record_sub_lines->take(6) as $time)
                             <th class="text-center">{{ $time->start_time ?? '' }}</th>
                             <th class="text-center">{{ $time->end_time ?? '' }}</th>
                         @endforeach
@@ -168,7 +159,10 @@
                         @foreach ($daysOfWeek as $day => $subjectCol)
                             @if ($record->date_name == $day)
                                 <tr>
-                                    <td class="text-center" rowspan="" width="10">{{ $index++ }}</td>
+                                    <td class="text-center" rowspan="" width="10">
+                                        <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2 BtnEditeacher" data-code="{{ $record->id ?? '' }}" href="javascript:;"><i class="mdi mdi-border-color"></i>Edit</a>
+                                        {{ $index++ }}
+                                    </td>
                                     <td class="text-left" rowspan="">{{ $record->teacher->name_2 ?? '' }}</td>
                                     @for ($i = 2; $i <= 12; $i += 2)
                                         @if ($i == $subjectCol)

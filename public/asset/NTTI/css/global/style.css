@@ -7,6 +7,7 @@
  * Copyright 2011-2021 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
+@import url('https://fonts.googleapis.com/css2?family=Khmer&family=Moul&display=swap');
 :root {
   --bs-blue: #5e50f9;
   --bs-indigo: #6610f2;
@@ -13983,8 +13984,8 @@ dl {
   text-align: center !important;
   padding: 15px 10px 21px 10px;
   font-size: 15px;
-  font-family: 'Mole';
-  font-family: 'Bayon', sans-serif;
+  font-family: 'Khmer OS Battambang' !important;
+  font-weight: 600;
 }
 .accordion {
   margin: auto;
@@ -14215,7 +14216,7 @@ dl {
   background: #82bfffb0;
 } */
 .title-page{
-  font-family: "Moul", serif;
+  font-family: "Moul", serif !important;
 }
 .mdi-keyboard-return:before {
   content: "\F311";
@@ -14326,8 +14327,16 @@ dl {
   font-family: 'Khmer OS Battambang' !important;
 }
 .KhmerOSMuolLight {
-    font-family: 'Khmer OS Muol Light';
+  font-family: "Moul", serif !important;
+  font-weight: 400;
+  font-style: normal;
 }
 .float-right{
   float: right;
+}
+.title-orerlay{
+  font-family: "Moul", serif !important;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 30px !important;
 }
