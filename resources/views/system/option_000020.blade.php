@@ -14,15 +14,7 @@
                     @endforeach
                 </select>
               </div>
-              <div class="col-sm-3 p-3">
-                <span class="labels">ឆ្មាំសិក្សា</span>
-                <select class="js-example-basic-single" id="session_id" name="session_id" style="width: 100%;">
-                  <option value="">&nbsp;</option>
-                  {{-- @foreach ($sessions as $session)
-                  <option value="{{ $session->id ?? ''}}">{{ $session->session ??'' }}</option>
-                  @endforeach --}}
-                </select>
-              </div>
+              
               <div class="col-sm-3 p-3">
                 <span class="labels">ជំនាញ</span>
                 <select class="js-example-basic-single" id="category_id" name="category_id" style="width: 100%;">

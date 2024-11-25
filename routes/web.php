@@ -61,7 +61,7 @@ Route::get('/greeting/{locale}', function (string $locale) {
     Route::get('/department-menu', [AuthController::class, 'departmentMenu']);
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::group(['perfix' => 'student',  'middleware' => 'permission'], function (){
+Route::group(['perfix' => 'student'], function (){
     Route::get('/student', [StudnetController::class, 'index'])->name('student');
     Route::get('/settings-customize-field', [StudnetController::class, 'SettingsCustomizeField'])->name('SettingsCustomizeField');
     Route::get('/student/print', [StudnetController::class, 'Print'])->name('Print');
@@ -83,7 +83,7 @@ Route::group(['perfix' => 'student',  'middleware' => 'permission'], function ()
 
 })->middleware('auth');
 
-Route::group(['perfix' => 'table', 'middleware' => 'permission'], function (){
+Route::group(['perfix' => 'table'], function (){
     Route::get('/table', [TableController::class, 'index']);
     Route::get('/table_field', [TableController::class, 'table_field']);
     Route::post('/build', [TableController::class, 'build']);
@@ -97,7 +97,7 @@ Route::group(['prefix' => 'table'], function () {
     Route::get('/ajaxpagination', [TableController::class, 'Ajaxpaginat']);
 })->middleware('auth');
 // report
-Route::group(['perfix' => 'reports-list-of-student', 'middleware' => 'permission'], function (){
+Route::group(['perfix' => 'reports-list-of-student'], function (){
     Route::get('reports-list-of-student', [ListOfStudentController::class, 'index'])->name('index');
     Route::get('reports-list-of-student-priview', [ListOfStudentController::class, 'Priview'])->name('Priview');
     Route::get('reports-list-of-student-print', [ListOfStudentController::class, 'Print'])->name('Print');
@@ -150,7 +150,7 @@ Route::group(['perfix' => 'classes'], function (){
     Route::POST ('/classes-delete', [ClassesController::class, 'delete']);
 })->middleware('auth');
 
-Route::group(['perfix' => 'skills', 'middleware' => 'permission'], function (){
+Route::group(['perfix' => 'skills'], function (){
     Route::get('/skills', [SkillsController::class, 'index']);
     Route::get('/skills/transaction', [SkillsController::class, 'transaction']);
     Route::post('/skills/update', [SkillsController::class, 'update']);
@@ -158,7 +158,7 @@ Route::group(['perfix' => 'skills', 'middleware' => 'permission'], function (){
     Route::POST ('/skills-delete', [SkillsController::class, 'delete']);
 })->middleware('auth');
 
-Route::group(['perfix' => 'subject' , 'middleware' => 'permission'], function (){
+Route::group(['perfix' => 'subject' ], function (){
     Route::get('/subject', [SubjectsController::class, 'index']);
     Route::get('/subjects/transaction', [SubjectsController::class, 'transaction']);
     Route::post('/subjects/update', [SubjectsController::class, 'update']);
@@ -166,7 +166,7 @@ Route::group(['perfix' => 'subject' , 'middleware' => 'permission'], function ()
     Route::POST ('/subjects-delete', [SubjectsController::class, 'delete']);
 })->middleware('auth');
 
-Route::group(['perfix' => 'teachers' , 'middleware' => 'permission'], function (){
+Route::group(['perfix' => 'teachers' ], function (){
     Route::get('/teachers', [TeacherController::class, 'index']);
     Route::get('/teachers/transaction', [TeacherController::class, 'transaction']);
     Route::post('/teachers/update', [TeacherController::class, 'update']);
@@ -175,7 +175,7 @@ Route::group(['perfix' => 'teachers' , 'middleware' => 'permission'], function (
     Route::get('/teachers/create-user-account',[TeacherController::class,'CreateUser']);
 })->middleware('auth');
 
-Route::group(['perfix' => 'teachers' , 'middleware' => 'permission'], function (){
+Route::group(['perfix' => 'teachers' ], function (){
     Route::get('/assign-classes', [AssingClassesController::class, 'index']);
     Route::get('/assign-classes/transaction', [AssingClassesController::class, 'transaction']);
     Route::post('/assign-classes/update', [AssingClassesController::class, 'update']);
@@ -193,10 +193,11 @@ Route::group(['perfix' => 'teachers' , 'middleware' => 'permission'], function (
     Route::get('/get-exam-results',[AssingClassesController::class,'GetExamResults']);
     Route::get('/get-exam-results-print-exam',[AssingClassesController::class,'PrintExamResults']);
 })->middleware('auth');
-Route::group(['prefix' => 'attendance', 'middleware' => 'permission'], function () {
-    Route::get('/attendance', [AttendanceController::class, 'index']);
+Route::group(['prefix' => 'attendance'], function () {
+    Route::get('/dashboards-attendance', [AttendanceController::class, 'index']);
+
 })->middleware('auth');
-Route::group(['perfix' => '/class-schedule', 'middleware' => 'permission'], function (){
+Route::group(['perfix' => '/class-schedule'], function (){
     Route::get('/class-schedule', [ClassScheduleController::class, 'index']);
     Route::get('/class-schedule/transaction', [ClassScheduleController::class, 'transaction']);
     Route::post('/class-schedule/update', [ClassScheduleController::class, 'update']);
@@ -222,12 +223,7 @@ Route::group(['perfix' => 'class-new'], function (){
     Route::get('/class-new/get-student-register', [DividedNewClassesController::class, 'GEteStudentRegister']);
     Route::POST ('/class-new/add-student-register', [DividedNewClassesController::class, 'AddStudentRegister']);
 
-    Route::post('/class-schedule/store', [DividedNewClassesController::class, 'store']);
-    Route::POST ('/class-schedule-delete', [DividedNewClassesController::class, 'delete']);
-    Route::POST ('/class-schedule/save-schedule', [DividedNewClassesController::class, 'SaveSchedule']);
-    Route::get('/class-schedule-print',[DividedNewClassesController::class,'printLine']);
-    Route::get('/update/class-schedule/transaction',[DividedNewClassesController::class,'EditTeacherSchedule']);
-    Route::POST('/class-new/add-student-register-deleteline',[DividedNewClassesController::class,'DeleteStudentRegisterDeleteline']);
+
 })->middleware('auth');
 
 

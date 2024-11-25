@@ -500,6 +500,7 @@
             text: '{{ session('error') }}',
         });
     @endif
+    
   </script>
 </body>
 </html>
