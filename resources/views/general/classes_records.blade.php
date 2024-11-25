@@ -17,7 +17,7 @@
         <td class="text-center">{{ $record->name }}</td>
         <td class="text-center">{{ $sections ?? '' }}</td>
         <td class="text-center">{{ $skills ?? '' }}</td>
-        <td class="text-center">{{ $record->level ?? '' }}</td>
+        <td class="text-center">{{ $record->level ?? '' }} </td>
         <td class="text-center">{{ $department ?? '' }}</td>
         <td class="text-center">{{ $record->school_year_code }}</td>
         <td class="text-center">

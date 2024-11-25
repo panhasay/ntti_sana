@@ -89,7 +89,7 @@
         <div class="title"><i class="icon fa fa-warning"></i></div>
         <h1>{{ $name ?? ''}}</h1>
         <div class="description">404 - Page Not Found</div>
-        <a href="/" class="btn hvr-bounce-in"><i class="fa fa-home"></i> Home</a>
+        <a href="/department-menu" class="btn hvr-bounce-in"><i class="fa fa-home"></i> Home</a>
         <div class="sm_description">{{ date('Y') }} &copy;NTTI</div>
     </div>
 </div>

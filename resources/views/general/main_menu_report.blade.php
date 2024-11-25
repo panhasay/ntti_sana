@@ -16,7 +16,7 @@
   </div>
   <div class="container">
     <ul>
-        <li><a href="{{ url('/reports-list-of-student') }}">តារាងក្រុមបញ្ចីនិស្សិត​ ឆ្នាំសិក្សា2023-2024</a></li>
+        <li><a href="{{ url('/report-first-year-student-registration') }}">ស្ថិតិសិស្សដាក់ពាក្យចុះឈ្មោះចូលរៀនឆ្នាំទី១</a></li>
       </ul>
   </div>
   @endsection

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\General;
 
 use App\Http\Controllers\Controller;
 use App\Models\General\Skills;
+use App\Models\SystemSetup\Department;
 use App\Service\service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,7 +31,7 @@ class SkillsController extends Controller
     }
     public function index(){
         $page = $this->page;
-        $records = Skills::orderBy('name', 'asc')->paginate(10);
+        $records = Skills::with(['department'])->orderBy('name', 'asc')->paginate(10);
         if(!Auth::check()){
             return redirect("login")->withSuccess('Opps! You do not have access');
         }  
@@ -43,10 +44,11 @@ class SkillsController extends Controller
         $page = $this->page;
         $page_url = $this->page;
         $records = null;
-        $school_years = DB::table('school_years')->get();   
+        $school_years = DB::table('session_year')->get();   
         $skills = DB::table('skills')->get();
+        $departments = Department::get();
         try {
-            $params = ['records', 'type', 'page', 'skills'];
+            $params = ['records', 'type', 'page', 'skills', 'departments'];
             if ($type == 'cr') return view('general.skills_card', compact($params));
             if (isset($_GET['code'])) {
                 $records = Skills::where('code', $this->services->Decr_string($_GET['code']))->first();
@@ -82,6 +84,7 @@ class SkillsController extends Controller
                 $records->code = $request->code;
                 $records->name = $request->name;
                 $records->name_2 = $request->name_2;
+                $records->department_code = $request->department_code;
                 $records->status = $request->status;
                 $records->update();
             }
@@ -104,6 +107,7 @@ class SkillsController extends Controller
             $records->code = $request->code;
             $records->name = $request->name;
             $records->name_2 = $request->name_2;
+            $records->department_code = $request->department_code;
             $records->status = $request->status;
             $records->save();
             return response()->json(['store' => 'yes', 'msg' => 'ទិន្នន័យ បន្ថែមជោគជ័យ!']);

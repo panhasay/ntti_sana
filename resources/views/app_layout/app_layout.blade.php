@@ -8,14 +8,14 @@
   <meta property="og:site_name" content="Metronic by Keenthemes" />
 
   <title>NTTI</title>
-  <link rel="preconnect" href="{{asset('https://fonts.googleapis.com')}}">
+  {{-- <link rel="preconnect" href="{{asset('https://fonts.googleapis.com')}}">
   <link rel="preconnect" href="{{asset('https://fonts.googleapis.comhttps://fonts.gstatic.com')}}" crossorigin>
   <link href="{{asset('https://fonts.googleapis.com/css2?family=Moul&display=swap')}}" rel="stylesheet">
   <link href="{{asset('https://fonts.googleapis.com/css2?family=Kdam+Thmor+Pro&family=Moul&family=Odor+Mean+Chey&display=swap')}}"
- rel="stylesheet">
+ rel="stylesheet"> --}}
   <!---front ---> 
   <!-- plugins:css -->
-  <link rel="stylesheet" href="{{ asset('asset/NTTI/vendors/mdi/css/materialdesignicons.min.css') }}">
+  {{-- <link rel="stylesheet" href="{{ asset('asset/NTTI/vendors/mdi/css/materialdesignicons.min.css') }}">
   <link rel="stylesheet" href="{{asset('asset/NTTI/vendors/flag-icon-css/css/flag-icon.min.css')}}">
   <link rel="stylesheet" href="{{asset('asset/NTTI/vendors/css/vendor.bundle.base.css')}}">
 
@@ -33,12 +33,15 @@
   <!-- End layout styles -->
   {{-- <link rel="shortcut icon" href="asset/NTTI/images/favicon.png" /> --}}
   <link rel="shortcut icon" href="{{asset('https://nttiportal.com/./uploads/school_content/logo/front_fav_icon-619eeffe4674b6.56720560.png')}}" type="image/x-icon">
-  <link rel="stylesheet" href="{{asset('https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css')}}">
+  <link rel="stylesheet" href="{{asset('https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css')}}"> 
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <!---google chart -->
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+
 </head>
 <body class="addClass">
   <div class="loader" id="loader-1"></div>
@@ -104,7 +107,7 @@
                   </div>
                 </a>
                 <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">
-                  <a class="dropdown-item" href="#">
+                  <a class="dropdown-item" href="{{ url('profile') }}">
                     <i class="mdi mdi-account me-2 text-success"></i> Profile </a>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="{{ route('logout') }}">
@@ -273,7 +276,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"
   integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous">
 </script>
-<script src="{{ asset('asset/NTTI/vendors/js/vendor.bundle.base.js') }}"></script>
+<script src="{{ asset('/asset/NTTI/vendors/js/vendor.bundle.base.js') }}"></script>
 
   <!-- endinject -->
   <!-- Plugin js for this page -->
@@ -423,7 +426,7 @@
                       return;
                       break;
               }
-              if ($('#search_data').val().trim().length > 3) {
+              if ($('#search_data').val().trim()) {
                   let page = $(this).attr('data-page');
                   $.ajax({
                       type: 'GET',
@@ -460,6 +463,43 @@
               $(this).val(uppercasedValue);
           });
         });
+
+
+
+    //     document.addEventListener('DOMContentLoaded', function () {
+    //     // Trigger an AJAX call when clicking the link
+    //     const link = document.querySelector('a[href="/blue/test-middleware"]');
+    //     link.addEventListener('click', function (e) {
+    //         e.preventDefault(); // Prevent default link behavior
+    //         // Perform AJAX request
+    //         fetch('/blue/test-middleware')
+    //             .then(response => {
+    //                 if (!response.ok) {
+    //                     return response.json().then(error => {
+    //                         throw error;
+    //                     });
+    //                 }
+    //                 return response.json();
+    //             })
+    //             .catch(error => {
+    //                 if (error.message) {
+    //                     Swal.fire({
+    //                         icon: 'warning',
+    //                         title: 'NTTI PORTAL',
+    //                         text: error.message,
+    //                     });
+    //                 }
+    //             });
+    //     });
+    // });
+
+    @if(session('error'))
+        Swal.fire({
+            icon: 'warning',
+            title: 'NTTI PORTAL',
+            text: '{{ session('error') }}',
+        });
+    @endif
   </script>
 </body>
 </html>

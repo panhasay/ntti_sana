@@ -140,20 +140,14 @@
 
         <div class="col-md-6">
           <div class="form-group row">
-            <span class="labels col-sm-3 col-form-label text-end">សកម្មភាព<strong
+            <span class="labels col-sm-3 col-form-label text-end">កម្រិត<strong
                 style="color:red; font-size:15px;"> *</strong></span>
             <div class="col-sm-9">
               <select class="js-example-basic-single" id="level" name="level" style="width: 100%;">
-                  <?php 
-                      $options = [
-                        'បរិញ្ញាបត្រ' => 'បរិញ្ញាបត្រ',
-                        'សញ្ញាបត្រជាន់ខ្ពស់បច្ចេកទេស' => 'សញ្ញាបត្រជាន់ខ្ពស់បច្ចេកទេស',
-                        'បន្តបរិញ្ញាបត្របច្ចេកវីទ្យា' => 'បន្តបរិញ្ញាបត្របច្ចេកវីទ្យា',
-                    ];
-                  ?>
-                  @foreach ($options as $value => $label)
-                      <option value="{{ $value }}" {{ isset($records->level) && $records->level == $value ? 'selected' : '' }}>
-                          {{ $label }}
+                  <option value="">&nbsp;</option>
+                  @foreach ($qualifications as $value => $label)
+                      <option value="{{ $label->code }}" {{ isset($records->level) && $records->level == $label->code ? 'selected' : '' }}>
+                          {{ $label->code ?? ''}}
                       </option>
                   @endforeach
               </select>

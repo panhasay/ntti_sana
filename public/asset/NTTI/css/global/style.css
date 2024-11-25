@@ -11692,8 +11692,9 @@ code {
       color: #ffffff; }
 
 /* Forms */
-.form-group {
-  margin-bottom: 1.5rem; }
+.form-group{
+  margin-bottom: 13px !important;
+}
 
 .input-group-append,
 .input-group-prepend {
@@ -11712,7 +11713,8 @@ code {
   border: 1px solid #e4e9f0;
   font-family: "Open Sans", sans-serif;
   font-weight: 400;
-  font-size: 0.8125rem; }
+  font-size: 14px !important;
+ }
   .form-control:focus, .select2-container--default .select2-selection--single:focus, .select2-container--default .select2-selection--single .select2-search__field:focus, .typeahead:focus,
   .tt-query:focus,
   .tt-hint:focus {
@@ -14236,7 +14238,7 @@ dl {
     border: 1px solid red;
   }
   .title-report{
-    font-family: "Moul", serif;
+    font-family: 'Khmer OS Muol Light' !important;
   }
   .text-right{
     text-align: right ;

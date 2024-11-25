@@ -2,6 +2,7 @@
 
 namespace App\Models\General;
 
+use App\Models\SystemSetup\Department;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,4 +16,11 @@ class Skills extends Model
     protected $fillable = [
         '*',
     ];
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_code', 'code');
+    }
+
+
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SystemSetup;
 use Exception;
 use App\Http\Controllers\Controller;
 use App\Models\General\Skills;
+use App\Models\General\StudentRegistration;
 use App\Models\General\Subjects;
 use App\Models\General\Teachers;
 use App\Models\Student\Student;
@@ -95,6 +96,10 @@ class SystemSettingController extends Controller
                     $records = Teachers::whereRaw($extract_query)->paginate(1000);
                     $blade_file_record = 'general.teachers_lists';
                 break;
+                case 'student_registration':
+                    $records = StudentRegistration::with(['session_year'])->whereRaw($extract_query)->paginate(1000);
+                    $blade_file_record = 'general.student_register_lists';
+                break;
                 case 'warehouses':
                     // $records = WarehouseModel::whereRaw($extract_query)->paginate(15);
                     break;
@@ -165,6 +170,13 @@ class SystemSettingController extends Controller
                             ->orWhere('name_2', 'like', $search_value . "%")
                             ->where('code', '<>', null)->get();
                     $blade_file_record = 'general.teachers_lists';
+                }else if ($page == 'student_registration'){
+                    $menus = StudentRegistration::where('name','like', $search_value . "%")
+                            ->orWhere('code', 'like', $search_value . "%")
+                            ->orWhere('name_2', 'like', $search_value . "%")
+                            ->where('department_code', Auth::user()->department_code)
+                            ->where('code', '<>', null)->get();
+                    $blade_file_record = 'general.student_register_lists';
                 }
 
                 if (count($menus) > 0) {
@@ -216,6 +228,13 @@ class SystemSettingController extends Controller
                             ->orWhere('name_2', 'like', $search_value . "%")
                             ->where('code', '<>', null)->paginate(1000);
                     $blade_file_record = 'general.teachers_lists';
+                }else if($page == 'student_registration'){
+                    $menus = DB::table('student_registration')->where('name','like', $search_value . "%")
+                            ->orWhere('code', 'like', $search_value . "%")
+                            ->orWhere('name_2', 'like', $search_value . "%")
+                            ->where('department_code', Auth::user()->department_code)
+                            ->where('code', '<>', null)->paginate(1000);
+                    $blade_file_record = 'general.student_register_lists';
                 }
             }
         
@@ -234,6 +253,8 @@ class SystemSettingController extends Controller
                     $records = DB::table('subjects')->where('code', null)->paginate(1000);
                 }else if($page == 'teachers'){
                     $records = Teachers::where('code', null)->paginate(1000);
+                }else if($page == 'student_registration'){
+                    $records = StudentRegistration::where('department_code', Auth::user()->department_code)->paginate(1000);
                 }
             }
             $view = view($blade_file_record,compact('records'))->render();

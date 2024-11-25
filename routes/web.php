@@ -7,16 +7,19 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\General\AssingClassesController;
 use App\Http\Controllers\General\AttendanceController;
 use App\Http\Controllers\General\ClassScheduleController;
+use App\Http\Controllers\General\DividedNewClassesController;
 use App\Http\Controllers\General\SkillsController;
 use App\Http\Controllers\Report\ListOfStudentController;
 use App\Http\Controllers\General\StudnetController;
 use App\Http\Controllers\General\SubjectsController;
 use App\Http\Controllers\General\TeacherController;
+use App\Http\Controllers\Report\ReportFirstYearStudentRegistrationController;
 use App\Http\Controllers\SystemSetup\DashboardController;
 use App\Http\Controllers\SystemSetup\DepartmentController;
 use App\Http\Controllers\SystemSetup\SystemSettingController;
 use App\Http\Controllers\SystemSetup\TableController;
 use App\Http\Controllers\SystemSetup\UsersController;
+use App\Models\General\DividedNewClasses;
 use GuzzleHttp\Middleware;
 use Illuminate\support\Facades\App;
 
@@ -30,6 +33,7 @@ use Illuminate\support\Facades\App;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
 Route::get('/greeting/{locale}', function (string $locale) {
     if (! in_array($locale, ['en', 'kh'])) {
         abort(400);
@@ -44,9 +48,9 @@ Route::get('/greeting/{locale}', function (string $locale) {
     Route::get('/thank-you-for-submit', function () {
         return view('/system.thank_you_for_submit');
     });
-    // Route::get('/menu-reports', function () {
-    //     return view('general.main_menu_report');
-    // });
+    Route::get('/menu-reports', function () {
+        return view('general.main_menu_report');
+    });
     Route::get('user-dont-have-permission', function () {
         return view('errors.permission_acces');
     });
@@ -57,7 +61,7 @@ Route::get('/greeting/{locale}', function (string $locale) {
     Route::get('/department-menu', [AuthController::class, 'departmentMenu']);
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::group(['perfix' => 'student'], function (){
+Route::group(['perfix' => 'student',  'middleware' => 'permission'], function (){
     Route::get('/student', [StudnetController::class, 'index'])->name('student');
     Route::get('/settings-customize-field', [StudnetController::class, 'SettingsCustomizeField'])->name('SettingsCustomizeField');
     Route::get('/student/print', [StudnetController::class, 'Print'])->name('Print');
@@ -79,7 +83,7 @@ Route::group(['perfix' => 'student'], function (){
 
 })->middleware('auth');
 
-Route::group(['perfix' => 'table'], function (){
+Route::group(['perfix' => 'table', 'middleware' => 'permission'], function (){
     Route::get('/table', [TableController::class, 'index']);
     Route::get('/table_field', [TableController::class, 'table_field']);
     Route::post('/build', [TableController::class, 'build']);
@@ -93,19 +97,27 @@ Route::group(['prefix' => 'table'], function () {
     Route::get('/ajaxpagination', [TableController::class, 'Ajaxpaginat']);
 })->middleware('auth');
 // report
-Route::group(['perfix' => 'reports-list-of-student'], function (){
+Route::group(['perfix' => 'reports-list-of-student', 'middleware' => 'permission'], function (){
     Route::get('reports-list-of-student', [ListOfStudentController::class, 'index'])->name('index');
     Route::get('reports-list-of-student-priview', [ListOfStudentController::class, 'Priview'])->name('Priview');
     Route::get('reports-list-of-student-print', [ListOfStudentController::class, 'Print'])->name('Print');
     Route::get('reports-list-of-student-print/export/', [ListOfStudentController::class, 'export']);
 })->middleware('auth');
+
+Route::group(['perfix' => 'report-first-year-student-registration'], function (){
+    Route::get('report-first-year-student-registration', [ReportFirstYearStudentRegistrationController::class, 'index'])->name('index');
+    Route::get('reports-list-of-student-priview', [ReportFirstYearStudentRegistrationController::class, 'Priview'])->name('Priview');
+    Route::get('reports-list-of-student-print', [ReportFirstYearStudentRegistrationController::class, 'Print'])->name('Print');
+    Route::get('reports-list-of-student-print/export/', [ReportFirstYearStudentRegistrationController::class, 'export']);
+})->middleware('auth');
+
 Route::group(['perfix' => 'dashboard'], function (){
     Route::get('dashboard', [DashboardController::class, 'index'])->name('index');
     // Route::get('reports-list-of-student-priview', [DashboardController::class, 'Priview'])->name('Priview');
     Route::get('dahhboard-student-print', [DashboardController::class, 'Print'])->name('Print');
     Route::get('dahhboard-student-account', [DashboardController::class, 'StudentUserAccount'])->name('StudentUserAccount');
 })->middleware('auth');
-Route::group(['perfix' => 'department'], function (){
+Route::group(['perfix' => 'department' ,  'middleware' => 'permission'], function (){
     Route::get('department-setup', [DepartmentController::class, 'index'])->name('index');
     Route::post('department-delete', [DepartmentController::class, 'delete'])->name('delete');
     Route::get('departments/transaction', [DepartmentController::class, 'transaction'])->name('transaction');
@@ -116,7 +128,7 @@ Route::group(['perfix' => 'department'], function (){
 })->middleware('auth');
 Route::group(['perfix' => 'Users'], function (){
     Route::get('users', [UsersController::class, 'index'])->name('index');
-    // Route::post('department-delete', [UsersController::class, 'delete'])->name('delete');
+    Route::get('profile', [UsersController::class, 'Profile'])->name('Profile');
     // Route::get('departments/transaction', [UsersController::class, 'transaction'])->name('transaction');
     // Route::post('departments/update', [UsersController::class, 'update'])->name('update');
     // Route::post('departments/store', [UsersController::class, 'store'])->name('store');
@@ -138,7 +150,7 @@ Route::group(['perfix' => 'classes'], function (){
     Route::POST ('/classes-delete', [ClassesController::class, 'delete']);
 })->middleware('auth');
 
-Route::group(['perfix' => 'skills'], function (){
+Route::group(['perfix' => 'skills', 'middleware' => 'permission'], function (){
     Route::get('/skills', [SkillsController::class, 'index']);
     Route::get('/skills/transaction', [SkillsController::class, 'transaction']);
     Route::post('/skills/update', [SkillsController::class, 'update']);
@@ -146,7 +158,7 @@ Route::group(['perfix' => 'skills'], function (){
     Route::POST ('/skills-delete', [SkillsController::class, 'delete']);
 })->middleware('auth');
 
-Route::group(['perfix' => 'subject'], function (){
+Route::group(['perfix' => 'subject' , 'middleware' => 'permission'], function (){
     Route::get('/subject', [SubjectsController::class, 'index']);
     Route::get('/subjects/transaction', [SubjectsController::class, 'transaction']);
     Route::post('/subjects/update', [SubjectsController::class, 'update']);
@@ -154,7 +166,7 @@ Route::group(['perfix' => 'subject'], function (){
     Route::POST ('/subjects-delete', [SubjectsController::class, 'delete']);
 })->middleware('auth');
 
-Route::group(['perfix' => 'teachers'], function (){
+Route::group(['perfix' => 'teachers' , 'middleware' => 'permission'], function (){
     Route::get('/teachers', [TeacherController::class, 'index']);
     Route::get('/teachers/transaction', [TeacherController::class, 'transaction']);
     Route::post('/teachers/update', [TeacherController::class, 'update']);
@@ -163,7 +175,7 @@ Route::group(['perfix' => 'teachers'], function (){
     Route::get('/teachers/create-user-account',[TeacherController::class,'CreateUser']);
 })->middleware('auth');
 
-Route::group(['perfix' => 'teachers'], function (){
+Route::group(['perfix' => 'teachers' , 'middleware' => 'permission'], function (){
     Route::get('/assign-classes', [AssingClassesController::class, 'index']);
     Route::get('/assign-classes/transaction', [AssingClassesController::class, 'transaction']);
     Route::post('/assign-classes/update', [AssingClassesController::class, 'update']);
@@ -181,10 +193,10 @@ Route::group(['perfix' => 'teachers'], function (){
     Route::get('/get-exam-results',[AssingClassesController::class,'GetExamResults']);
     Route::get('/get-exam-results-print-exam',[AssingClassesController::class,'PrintExamResults']);
 })->middleware('auth');
-Route::group(['prefix' => 'teachers'], function () {
-    Route::get('/assign-classesddd', [AttendanceController::class, 'index']);
+Route::group(['prefix' => 'attendance', 'middleware' => 'permission'], function () {
+    Route::get('/attendance', [AttendanceController::class, 'index']);
 })->middleware('auth');
-Route::group(['perfix' => '/class-schedule'], function (){
+Route::group(['perfix' => '/class-schedule', 'middleware' => 'permission'], function (){
     Route::get('/class-schedule', [ClassScheduleController::class, 'index']);
     Route::get('/class-schedule/transaction', [ClassScheduleController::class, 'transaction']);
     Route::post('/class-schedule/update', [ClassScheduleController::class, 'update']);
@@ -200,7 +212,23 @@ Route::group(['perfix' => 'student'], function (){
     Route::get('/student/registration/transaction',[StudnetController::class,'StudentRegistrationTransaction']);
     Route::POST('/student/registration/store',[StudnetController::class, 'storeRegistration']);
     Route::POST('/student/registration/update',[StudnetController::class,'updateRegistration']);
-});
+    Route::get('/student/registration/prints',[StudnetController::class,'PrintRegistration']);
+    Route::POST('/student/register/delete',[StudnetController::class,'DeleteRegistration']);
+})->middleware('auth');
+
+Route::group(['perfix' => 'class-new'], function (){
+    Route::get('/class-new',[DividedNewClassesController::class,'index']);
+    Route::get('/class-new/transaction', [DividedNewClassesController::class, 'transaction']);
+    Route::get('/class-new/get-student-register', [DividedNewClassesController::class, 'GEteStudentRegister']);
+    Route::POST ('/class-new/add-student-register', [DividedNewClassesController::class, 'AddStudentRegister']);
+
+    Route::post('/class-schedule/store', [DividedNewClassesController::class, 'store']);
+    Route::POST ('/class-schedule-delete', [DividedNewClassesController::class, 'delete']);
+    Route::POST ('/class-schedule/save-schedule', [DividedNewClassesController::class, 'SaveSchedule']);
+    Route::get('/class-schedule-print',[DividedNewClassesController::class,'printLine']);
+    Route::get('/update/class-schedule/transaction',[DividedNewClassesController::class,'EditTeacherSchedule']);
+    Route::POST('/class-new/add-student-register-deleteline',[DividedNewClassesController::class,'DeleteStudentRegisterDeleteline']);
+})->middleware('auth');
 
 
 

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\SystemSetup;
 
 use App\Http\Controllers\Controller;
+use App\Models\General\Teachers;
+use App\Models\Student\Student;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,11 +32,25 @@ class UsersController extends Controller
     }
     public function index(){
         $records = User::paginate(10);
+        return view('system_setup.users', compact('records', 'page_title'));	
+    }
+    public function Profile(){
+        $user = Auth::user();
+
+        $records = User::where('id', $user->id)->first();
+
+        if($records->role == "student"){
+            $records_by_user = Student::where('code', $records->user_code)->first();
+        }else if($records->role == "teachers"){
+            $records_by_user = Teachers::where('code', $records->user_code)->first();
+        }else{
+            $records_by_user = Student::where('code', $records->user_code)->first();
+        }
         $page_title = $this->page;
         if(!Auth::check()){
             return redirect("login")->withSuccess('Opps! You do not have access');
         }   
-        return view('system_setup.users', compact('records', 'page_title'));	
+        return view('general.profile', compact('records', 'records_by_user'));	
     }
     public function transaction(request $request)
     {

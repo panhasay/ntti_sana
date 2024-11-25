@@ -249,6 +249,7 @@ class TeacherController extends Controller
             $records->password = Hash::make($data['password']);
             $records->role = 'teachers';
             $records->user_code = $data['code'];
+            $records->department_code = $record->department_code;
             $records->save();
             return response()->json(['status' => 'success', 'msg' => 'User Student Create success!']);
         } catch (\Exception $ex) {

@@ -19,8 +19,9 @@
     <div class="col-md-6 col-sm-6 col-6">
       <div class="page-title page-title-custom text-right">
         <h4 class="text-right">
-          <a id="btnShowMenuSetting" onclick="history.back()" href="javascript:void(0);"><i
-              class="mdi mdi-keyboard-return"></i></a>
+          <a href="{{ url('/assign-classes?years=' . ($records->years ?? '') . '&type=' . ($records->qualification ?? '')) }}">
+            <i class="mdi mdi-keyboard-return"></i>
+          </a>
       </div>
     </div>
   </div>
@@ -48,7 +49,7 @@
             </div>
           </div>
         </div>
-
+        
         <div class="col-md-6">
           <div class="form-group row">
             <span class="labels col-sm-3 col-form-label text-end">ថា្នក់/ក្រុម<strong

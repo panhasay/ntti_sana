@@ -23,7 +23,6 @@ class ListOfStudentController extends Controller
         $this->page = 'eports-list-of-student';
     }
     public function index()
-    
     {
             $type = null;
         try {
@@ -128,4 +127,6 @@ class ListOfStudentController extends Controller
     {
         return Excel::download(new UsersExport, 'users.xlsx');
     }
+
+
 }

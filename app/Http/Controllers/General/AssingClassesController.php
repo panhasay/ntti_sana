@@ -58,7 +58,6 @@ class AssingClassesController extends Controller
                 '4' => '៤'
             ];
             $years = $school_year_map[$school_year] ?? '';
-
              return view('general.assing_classes',compact('years', 'type', 'records'));
         }catch (\Exception $ex) {
             return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
@@ -88,6 +87,48 @@ class AssingClassesController extends Controller
             if (isset($_GET['code'])) {
                 $records = AssingClasses::where('id', $this->services->Decr_string($_GET['code']))->first();
                 $Assingstudent = Student::where('class_code', $records->class_code ?? '')->get();
+            }
+    
+            $student_codes = $recordsLine->pluck('student_code')->toArray(); // Convert to an array
+            // Fetch attendance scores for all students
+            $attendances = DB::table('assing_classes_student_line')
+                ->select('student_code')
+                ->selectRaw('
+                    SUM(
+                        COALESCE(score_week_1, 0) + COALESCE(score_week_2, 0) + COALESCE(score_week_3, 0) + COALESCE(score_week_4, 0) + 
+                        COALESCE(score_week_5, 0) + COALESCE(score_week_6, 0) + COALESCE(score_week_7, 0) + COALESCE(score_week_8, 0) + 
+                        COALESCE(score_week_9, 0) + COALESCE(score_week_10, 0) + COALESCE(score_week_11, 0) + COALESCE(score_week_12, 0) + 
+                        COALESCE(score_week_13, 0) + COALESCE(score_week_14, 0) + COALESCE(score_week_15, 0) + COALESCE(score_week_16, 0) + 
+                        COALESCE(score_week_17, 0) + COALESCE(score_week_18, 0)
+                    ) AS Total_Raw_Score')
+                ->selectRaw('
+                    ROUND(
+                        (SUM(
+                            COALESCE(score_week_1, 0) + COALESCE(score_week_2, 0) + COALESCE(score_week_3, 0) + COALESCE(score_week_4, 0) + 
+                            COALESCE(score_week_5, 0) + COALESCE(score_week_6, 0) + COALESCE(score_week_7, 0) + COALESCE(score_week_8, 0) + 
+                            COALESCE(score_week_9, 0) + COALESCE(score_week_10, 0) + COALESCE(score_week_11, 0) + COALESCE(score_week_12, 0) + 
+                            COALESCE(score_week_13, 0) + COALESCE(score_week_14, 0) + COALESCE(score_week_15, 0) + COALESCE(score_week_16, 0) + 
+                            COALESCE(score_week_17, 0) + COALESCE(score_week_18, 0)
+                        ) / 36.0) * 15, 2
+                    ) AS Scaled_Attendance_Score')
+                ->whereIn('student_code', $student_codes)
+                ->where('assing_line_no', $data['assing_no'])
+                ->groupBy('student_code') // Group by student_code for proper aggregation
+                ->get();
+
+            // Update the attendance for each student
+            foreach ($attendances as $attendance) {
+                // Find the record to update
+                $record = AssingClassesStudentLine::where('assing_line_no', $data['assing_no'])
+                    ->where('student_code', $attendance->student_code)
+                    ->first();
+
+                if ($record) {
+                    $record->attendance = $attendance->Scaled_Attendance_Score; // Update attendance score
+                    $record->save(); // Save the changes
+                }
+                // dd("data upate successful");
+
             }
             return view('general.assing_classes_card', compact($params));
         } catch (\Exception $ex) {
@@ -244,6 +285,7 @@ class AssingClassesController extends Controller
                     ->where('assing_line_no', $data['assing_no'])
                     ->get();
             $header = AssingClasses::where('assing_no', $data['assing_no'])->first();
+
             return view('general.assing_attendant_lists', compact('records', 'header'));
 
         } catch (\Exception $ex) {
@@ -273,6 +315,7 @@ class AssingClassesController extends Controller
     public function UpdateAttendanScoretDateStudent(Request $request)
     {
         $data = $request->all();
+
         try {
 
             $records = AssingClassesStudentLine::where('assing_line_no', $data['assing_no'])
@@ -282,6 +325,41 @@ class AssingClassesController extends Controller
                 $records->{$data['name']} = $data['value'];
                 $records->update();  
             }
+
+            $attendances = DB::table('assing_classes_student_line')
+                ->select('student_code')
+                ->selectRaw('
+                    SUM(
+                        COALESCE(score_week_1, 0) + COALESCE(score_week_2, 0) + COALESCE(score_week_3, 0) + COALESCE(score_week_4, 0) + 
+                        COALESCE(score_week_5, 0) + COALESCE(score_week_6, 0) + COALESCE(score_week_7, 0) + COALESCE(score_week_8, 0) + 
+                        COALESCE(score_week_9, 0) + COALESCE(score_week_10, 0) + COALESCE(score_week_11, 0) + COALESCE(score_week_12, 0) + 
+                        COALESCE(score_week_13, 0) + COALESCE(score_week_14, 0) + COALESCE(score_week_15, 0) + COALESCE(score_week_16, 0) + 
+                        COALESCE(score_week_17, 0) + COALESCE(score_week_18, 0)
+                    ) AS Total_Raw_Score')
+                ->selectRaw('
+                    ROUND(
+                        (SUM(
+                            COALESCE(score_week_1, 0) + COALESCE(score_week_2, 0) + COALESCE(score_week_3, 0) + COALESCE(score_week_4, 0) + 
+                            COALESCE(score_week_5, 0) + COALESCE(score_week_6, 0) + COALESCE(score_week_7, 0) + COALESCE(score_week_8, 0) + 
+                            COALESCE(score_week_9, 0) + COALESCE(score_week_10, 0) + COALESCE(score_week_11, 0) + COALESCE(score_week_12, 0) + 
+                            COALESCE(score_week_13, 0) + COALESCE(score_week_14, 0) + COALESCE(score_week_15, 0) + COALESCE(score_week_16, 0) + 
+                            COALESCE(score_week_17, 0) + COALESCE(score_week_18, 0)
+                        ) / 36.0) * 15, 2
+                    ) AS Scaled_Attendance_Score')
+                ->where('student_code', $data['student_code'])
+                ->where('assing_line_no', $data['assing_no'])
+                ->groupBy('student_code') // Group by student_code for proper aggregation
+                ->first();
+
+                $data_attendance = AssingClassesStudentLine::where('assing_line_no', $data['assing_no'])
+                ->where('student_code', $data['student_code'])
+                ->first();
+
+                if ($data_attendance) {
+                    $data_attendance->attendance = $attendances->Scaled_Attendance_Score; // Update attendance score
+                    $data_attendance->save(); // Save the changes
+                }
+                $attendance = $data_attendance->attendance;
             return response()->json(['status' => 'success', 'msg' => 'បានដាក់ ពិន្ទុ!']);
 
         } catch (\Exception $ex) {

@@ -15,7 +15,7 @@
                               $name = $records->name ?? '';
                               $name = strtolower($name) ??  '';
                               $name = str_replace([' ', 'es'], ['', 'er'], $name);
-                              $email = $name."@gmail.com";
+                              $email = $records->email ?? '';
                             ?>
                             <input type="text" class="form-control form-control-sm" id="email" name="email" value="{{ $email ?? '' }}"
                             placeholder="email" aria-label="email" disabled>

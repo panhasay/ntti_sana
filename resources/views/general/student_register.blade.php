@@ -23,10 +23,10 @@
 <div class="page-header flex-wrap">
   <div class="header-left">
     <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="BntCreate"
-      href="{{url('/student/registration/transaction?type=cr')}}"><i class="mdi mdi-account-plus"></i> Add New</i></a>
+      href="{{url('/student/registration/transaction?type=cr')}}"><i class="mdi mdi-account-plus"></i> បន្ថែមថ្មី</i></a>
   </div>
   <div class="d-grid d-md-flex justify-content-md-end p-3">
-    <input type="text" class="form-control mb-2 mb-md-0 me-2" id="search_data" data-page="student" name="search_data"
+    <input type="text" class="form-control mb-2 mb-md-0 me-2" id="search_data" data-page="student_registration" name="search_data"
       placeholder="Serch...." aria-label="Recipient's username" aria-describedby="basic-addon2">
     <div>
       {{-- <button type="button" class="btn btn-outline-primary"> Seacrh </button> --}}
@@ -49,12 +49,12 @@
             </div>
             <div class="col-sm-3">
               <span class="labels">គោត្តនាម និងនាម</span>
-              <input type="text" class="form-control form-control-sm" id="name" name="name" value=""
+              <input type="text" class="form-control form-control-sm" id="name_2" name="name_2" value=""
                 placeholder="គោត្តនាម និងនាម" aria-label="គោត្តនាម និងនាម">
             </div>
             <div class="col-sm-3">
               <span class="labels"> ឈ្មោះជាឡាតាំង</span>
-              <input type="text" class="form-control form-control-sm" id="name_2" name="name_2" value=""
+              <input type="text" class="form-control form-control-sm" id="name" name="name" value=""
                 placeholder="	ឈ្មោះជាឡាតាំង" aria-label="	ឈ្មោះជាឡាតាំង">
             </div>
             <div class="col-sm-3">
@@ -63,7 +63,7 @@
                 placeholder="ថ្ងៃខែឆ្នាំកំណើត" aria-label="ថ្ងៃខែឆ្នាំកំណើត">
             </div>
           </div>
-          <button type="button" class="btn btn-primary text-white" data-page="student" id="btn-adSearch">Search</button>
+          <button type="button" class="btn btn-primary text-white" data-page="student_registration" id="btn-adSearch">Search</button>
         </div>
       </div>
     </form>
@@ -93,7 +93,6 @@
 @include('system.modal_comfrim_delet')
 @include('general.student_register_lists')
 @include('system.model_upload_excel')
-@endsection
 <script>
   $(document).ready(function() {
     $.ajaxSetup({
@@ -110,7 +109,7 @@
       var code = $(this).attr('data-code');
       $.ajax({
         type: "POST",
-        url: `/student/delete`,
+        url: `/student/register/delete`,
         data: {
           code: code
         },
@@ -283,3 +282,4 @@
     $("#divUplocadExcel").modal('show');
   }
 </script>
+@endsection

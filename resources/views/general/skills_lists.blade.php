@@ -5,8 +5,9 @@
         <tr>
           <th width="50"></th>
           <th class="text-center" width="10">លេខកូដ</th>
-          <th class="text-center">ជំនាញ</th>
-          <th class="text-center">ជំនាញ ភាសាខ្មែរ</th>
+          <th class="">ជំនាញ</th>
+          <th class="">ជំនាញ ភាសាខ្មែរ</th>
+          <th class="">ដេប៉ាតាម៉ង់</th>
           <th class="text-center">សកម្មភាព</th>
         </tr>
       </thead>

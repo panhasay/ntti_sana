@@ -35,7 +35,7 @@
       <div class="col-md-6 col-sm-6 col-6">
         <div class="page-title page-title-custom text-right">
           <h4 class="text-right">
-            <a id="btnShowMenuSetting" onclick="history.back()" href="javascript:void(0);">
+            <a  href="{{ '/assign-classes/transaction?type=ed&code=' . App\Service\service::Encr_string($header->id) }}&years={{ $header->years ?? '' }}&type={{ $header->qualification ?? '' }}&assing_no={{ $header->assing_no ?? '' }}">
               <i class="mdi mdi-keyboard-return"></i>
             </a>
           </h4>

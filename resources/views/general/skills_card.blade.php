@@ -53,15 +53,34 @@
         </div>
 
         <div class="col-md-6">
-            <div class="form-group row">
-              <span class="labels col-sm-3 col-form-label text-end">ជំនាញ ភាសាខ្មែរ<strong
-                  style="color:red; font-size:15px;"> *</strong></span>
-              <div class="col-sm-9">
-                <input type="text" class="form-control form-control-sm " id="name_2" name="name_2" value="{{ $records->name_2 ?? ''}}"
-                  placeholder="ជំនាញ ភាសាខ្មែរ" aria-label="ជំនាញ ភាសាខ្មែរ">
-              </div>
+          <div class="form-group row">
+            <span class="labels col-sm-3 col-form-label text-end">ជំនាញ ភាសាខ្មែរ<strong
+                style="color:red; font-size:15px;"> *</strong></span>
+            <div class="col-sm-9">
+              <input type="text" class="form-control form-control-sm " id="name_2" name="name_2" value="{{ $records->name_2 ?? ''}}"
+                placeholder="ជំនាញ ភាសាខ្មែរ" aria-label="ជំនាញ ភាសាខ្មែរ">
             </div>
           </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group row">
+            <span class="labels col-sm-3 col-form-label text-end">ដេប៉ាតឺម៉ង់<strong style="color:red; font-size:15px;">
+                *</strong></span>
+            <div class="col-sm-9">
+              <select class="js-example-basic-single FieldRequired form_data" id="department_code"
+                name="department_code" style="width: 100%;">
+                <option value="">&nbsp;</option>
+                @foreach ($departments as $record)
+                <option value="{{ $record->code ?? '' }}"
+                  {{ isset($records->department_code) && $records->department_code == $record->code ? 'selected' : '' }}>
+                  {{ isset($record->code) ? $record->code : '' }} - {{ isset($record->name_2) ? $record->name_2 : '' }}
+                </option>
+                @endforeach
+              </select>
+            </div>
+          </div>
+        </div>
 
         <div class="col-md-6">
           <div class="form-group row">

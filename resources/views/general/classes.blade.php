@@ -103,6 +103,8 @@
               $("#divConfirmation").modal('hide');
               $("#row" + code).remove();
               notyf.success(response.msg);
+            }else if (response.status == 'error') {
+              notyf.error(response.msg);
             }
           }
         });

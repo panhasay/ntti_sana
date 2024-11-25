@@ -24,8 +24,10 @@ use App\Exports\ExportData;
 use App\Imports\ImportExcell;
 use App\Models\General\Picture;
 use App\Models\General\Skills;
+use App\Models\General\StudentRegistration;
 use Illuminate\Auth\Events\Validated;
 use App\Models\General\StudyYears;
+
 use UserImport;
 
 class StudnetController extends Controller
@@ -73,8 +75,30 @@ class StudnetController extends Controller
         }
     }
     public function StudentRegistration(Request $request){
-        $records = Student::where('study_type', 'new student')->orderBy('code', 'asc')->paginate(15);
-        return view('general.student_register', compact('records'));
+        $user = Auth::user();
+
+       
+
+        if($user->role == "teachers"){
+            $total_records = StudentRegistration::select(
+                DB::raw('COUNT(name) AS total_count'),  
+            
+            )->where('study_type', 'new student')
+             ->where('department_code', $user->department_code)
+             ->get();
+            $records = StudentRegistration::with(['session_year'])
+            ->where('study_type', 'new student')
+            ->where('department_code', $user->department_code)
+            ->orderBy('code', 'desc')->paginate(15);
+        }else{
+            $total_records = StudentRegistration::select(
+                DB::raw('COUNT(name) AS total_count'),  
+            
+            )->where('study_type', 'new student')
+             ->get();
+            $records = StudentRegistration::with(['session_year'])->where('study_type', 'new student')->orderBy('code', 'desc')->paginate(15);
+        }
+        return view('general.student_register', compact('records', 'total_records'));
     }
     public function transaction(request $request)
     {
@@ -120,7 +144,7 @@ class StudnetController extends Controller
         $records = null;
         $user_student = '';
         $skills = Skills::get();
-        $school_years = DB::table('session_year')->get();
+        $school_years = DB::table('session_year')->orderBy('code', 'desc')->get();
         $study_years = StudyYears::get();
         try {
             $params = ['records', 'class_record', 'type', 'skills_records', 'sections', 'department', 'user_student', 'currentDate', 'skills', 'school_years', 'study_years'];
@@ -128,7 +152,7 @@ class StudnetController extends Controller
                 return view('general.student_register_card', compact($params));
 
             if (isset($_GET['code'])) {
-                $records = Student::where('code', $this->services->Decr_string($_GET['code']))->first();
+                $records = StudentRegistration::where('code', $this->services->Decr_string($_GET['code']))->first();
                 $string = $records->name;
                 $data_string = str_replace(' ', '_', $string);
                 $user_student = $data_string;
@@ -190,18 +214,18 @@ class StudnetController extends Controller
         $requiredFields = [
             'name' => 'សូមបំពេញ ខ្ញុំបាទ/នាងខ្ញុំឈ្មោះ',
             'name_2' => 'សូមបំពេញឈ្មោះ អក្សរឡាតាំង',
+            'gender' => 'សូមបំពេញឈ្មោះ ភេទ',
             'date_of_birth' => 'សូមបំពេញ ថ្ងៃ ខែ ឆ្នាំកំណើត',
             'student_address' => 'សូមបំពេញ ទីកន្លែងកំណើត',
             'current_address' => 'សូមបំពេញ អាសយដ្ឋានបច្ចុប្បន្ន!',
             'phone_student' => 'សូមបំពេញ លេខទូរស័ព្ទ!',
-            'guardian_name' => 'សូមបំពេញ​ ឈ្មោះអាណាព្យាបាល',
-            'guardian_phone' => 'សូមបំពេញ លេខទូរស័ព្ទ',
             'father_name' => 'សូមបំពេញ​ ​ឈ្មោះឪពុក',
             'mother_name' => 'សូមបំពេញ​ ឈ្មោះម្ដាយ',
             'skills_code' => 'សូមបំពេញ​ ជំនាញ',
             'sections_code' => 'សូមបំពេញ​ វេន',
             'apply_year' => 'សូមបំពេញ​ សុំចូលរៀន',
             'qualification' => 'សូមបំពេញ​ កម្រិត',
+            'session_year_code' => 'សូមបំពេញ​ ឆ្នាំសិក្សា',
         ];
 
         foreach ($requiredFields as $field => $message) {
@@ -210,23 +234,28 @@ class StudnetController extends Controller
             }
         }
 
-        $lastRecord = Student::latest('code')->first();
+        $lastRecord = StudentRegistration::latest('code')->first();
         $code =  $lastRecord->code;
-        $record = Student::where('name_2',$request->name_2)->first();
+        $record = StudentRegistration::where('name_2',$request->name_2)->first();
 
         if (isset($record->name_2) && $record->name_2 == $request->name_2){
             return response()->json(['status' => 'error', 'msg' => "ឈ្មោះ\"{$request->name_2}\"មានរួចហើយ​!"]);
         }
-
+        $department_code = Skills::where('code',  $input['skills_code'])->first();
+        if($department_code) {
+            $department_code = $department_code->department_code;
+        }
         $status = ($input['status'] == 'no') ? 'no' : 'yes';
         $phone_student = $this->services->convertKhmerToEnglishNumber($request->phone_student);
         $guardian_phone = $this->services->convertKhmerToEnglishNumber($request->guardian_phone);
+
+        $date_of_birth = \Carbon\Carbon::parse($request->date_of_birth)->format('Y-m-d'); 
         try {
-            $records = new Student();
+            $records = new StudentRegistration();
             $records->code = $lastRecord ? $lastRecord->code + 1 : 1;
             $records->name_2 = $request->name_2;
             $records->name = $request->name; 
-            $records->date_of_birth = $request->date_of_birth; 
+            $records->date_of_birth = $date_of_birth; 
             $records->student_address = $request->student_address;
             $records->current_address = $request->current_address;
             $records->occupation = $request->occupation; 
@@ -245,9 +274,28 @@ class StudnetController extends Controller
             $records->status = $request->status; 
             $records->register_date = Carbon::now();
             $records->study_type = "new student";
-            $records->gender = $request->gender;;
+            $records->gender = $request->gender;
+            $records->session_year_code = $request->session_year_code;
+            $records->semester = $request->semester;
+            $records->department_code = $department_code;
+
+            $records->user_id = Auth::user()->id;
+
+            $records->bakdop_results = $request->bakdop_results;
+            $records->year_final = $request->year_final;
+            $records->bakdop_index = $request->bakdop_index;
+            $records->bakdop_province = $request->bakdop_province;
+            $records->bakdop_type = $request->bakdop_type;
+            $records->scholarship = $request->scholarship;
+            $records->scholarship_type = $request->scholarship_type;
+            $records->submit_your_application = $request->submit_your_application;
+            $records->educational_institutions = $request->educational_institutions;
             $records->save(); 
-            return response()->json(['store' => 'yes', 'msg' => 'លោកអ្នកបាន ចុះឈ្មោះជោជ័យ']);
+
+            $code_last = StudentRegistration::latest('code')->first();
+
+            $code_transetion = \App\Service\service::Encr_string($code_last->code);
+            return response()->json(['code_transetion'=> $code_transetion,'store' => 'yes', 'msg' => 'លោកអ្នកបាន ចុះឈ្មោះជោជ័យ']);
         } catch (\Exception $ex) {
             DB::rollBack();
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
@@ -259,14 +307,27 @@ class StudnetController extends Controller
         $input = $request->all();
         $code = $input['type'];
        
-        $records = Student::where('code', $code)->first();
+        $records = StudentRegistration::where('code', $code)->first();
+        
         $status = ($input['status'] == 'no') ? 'no' : 'yes';
+        $department_code = Skills::where('code',  $input['skills_code'])->first();
+        if($department_code) {
+            $department_code = $department_code->department_code;
+        }
         $phone_student = $this->services->convertKhmerToEnglishNumber($request->phone_student);
         $guardian_phone = $this->services->convertKhmerToEnglishNumber($request->guardian_phone);
+        // if ($request->date_of_birth = \Carbon\Carbon::parse($request->date_of_birth)->format('Ymd')) {
+        //     return response()->json([
+        //         'error' => 'invalid_date',
+        //         'msg' => 'សូម ពិនិត្យមើល ថ្ងៃខែឆ្នាំម្ដងទៀត​!',
+        //     ]);
+        // }
+
+        $date_of_birth = \Carbon\Carbon::parse($request->date_of_birth)->format('Y-m-d'); 
         try {
                 $records->name_2 = $request->name_2;
                 $records->name = $request->name; 
-                $records->date_of_birth = $request->date_of_birth; 
+                $records->date_of_birth = $date_of_birth; 
                 $records->student_address = $request->student_address;
                 $records->current_address = $request->current_address;
                 $records->occupation = $request->occupation; 
@@ -285,12 +346,28 @@ class StudnetController extends Controller
                 $records->status = $request->status; 
                 $records->register_date = Carbon::now();
                 $records->study_type = "new student";
-                $records->gender = $request->gender;;
+                $records->gender = $request->gender;
+                $records->session_year_code = $request->session_year_code;
+                $records->semester = $request->semester;
+                $records->department_code = $department_code;
+
+                $records->bakdop_results = $request->bakdop_results;
+                $records->year_final = $request->year_final;
+                $records->bakdop_index = $request->bakdop_index;
+                $records->bakdop_province = $request->bakdop_province;
+                $records->bakdop_type = $request->bakdop_type;
+                $records->scholarship = $request->scholarship;
+                $records->scholarship_type = $request->scholarship_type;
+                $records->submit_your_application = $request->submit_your_application;
+                $records->educational_institutions = $request->educational_institutions;
                 $records->update(); 
             return response()->json(['status' => 'success', 'msg' => 'Data Update Success !', '$records' => $records]);
         } catch (\Exception $ex) {
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
-            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+            return response()->json([
+                'error' => 'invalid_date',
+                'msg' => 'សូម ពិនិត្យមើល ថ្ងៃខែឆ្នាំម្ដងទៀត​!',
+            ]);
         }
     }
     public function update(Request $request)
@@ -337,6 +414,19 @@ class StudnetController extends Controller
         try {
             $code = $request->code;
             $records = Student::where('code', $code)->first();
+            $records->delete();
+            DB::commit();
+            return response()->json(['status' => 'success', 'msg' => 'File has been delete']);
+        } catch (\Exception $ex) {
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+    public function DeleteRegistration(Request $request)
+    {
+        try {
+            $code = $request->code;
+            $records = StudentRegistration::where('code', $code)->first();
             $records->delete();
             DB::commit();
             return response()->json(['status' => 'success', 'msg' => 'File has been delete']);
@@ -591,5 +681,28 @@ class StudnetController extends Controller
             DB::rollBack();
             return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
         } 
+    }
+    public function PrintRegistration(Request $request)
+    {
+        $data = $request->all();
+        $type = $data['type'];
+        try {
+            $records = StudentRegistration::where('code', $data['code']) ->first();
+            $skills = Skills::where('code', $records->skills_code) ->first();
+           // Set the locale to Khmer
+            Carbon::setLocale('km');
+            $dates = Carbon::now();
+            // Format the date to Khmer style
+            $formattedDate = 'ថ្ងៃទី ' . $dates->day . ' ខែ ' . $dates->translatedFormat('F') . ' ឆ្នាំ ' . $dates->year;
+
+            $date = $records->date_of_birth;
+            $DateFormartKhmer = service::DateFormartKhmer($date);
+            
+
+            return view('general.student_register_print', compact('records', 'type', 'skills', 'formattedDate', 'DateFormartKhmer'));
+        } catch (\Exception $ex) {
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
     }
 }

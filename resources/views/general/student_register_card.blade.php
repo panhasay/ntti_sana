@@ -1,4 +1,4 @@
-<base href="/public">
+@extends('app_layout.app_layout')
 <style>
   .col-md-6 {
     -webkit-box-flex: 0;
@@ -16,18 +16,34 @@
   }
 
   .labels {
+    text-align: right !important;
     font-family: 'Khmer OS Battambang';
     padding: 9px 8px 6px 16px !important;
   }
 </style>
-@extends('app_layout.app_layout')
 @section('content')
 <div class="page-head page-head-custom">
   <div class="row border-bottom p-2">
-    <div class="col-md-12 col-sm-12 col-12">
-      <div class="page-title page-title-custom text-center">
-        <h4 class="text-center">
-          ពាក្យសុំចូលរៀន
+    <div class="col-md-6 col-sm-12 col-6">
+      <div class="page-title page-title-custom text-left bold">
+        <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="BntCreate"
+          href="{{url('/student/registration/transaction?type=cr')}}"><i class="mdi mdi-account-plus"></i>
+          បន្ថែមថ្មី</i></a>
+        <button type="button" id="BtnSave" class="btn btn-success btn-icon-text btn-sm text-center">
+          <i class="mdi mdi-content-save"></i> រក្សាទុក
+        </button>
+        @if(isset($records->code) && $records->code)
+        <button type="button" id="prints" class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2">បោះពុម្ភ
+          <i class="mdi mdi-printer btn-icon-append"></i>
+        </button>
+        @endif
+        ពាក្យសុំចូលរៀន
+      </div>
+    </div>
+    <div class="col-md-6 col-sm-12 col-6">
+      <div class="page-title page-title-custom text-right">
+        <h4 class="text-right">
+          <a id="" href="{{ url('student/registration') }}"><i class="mdi mdi-keyboard-return"></i></a>
         </h4>
       </div>
     </div>
@@ -64,12 +80,15 @@
 
         <div class="col-md-6 col-sm-12">
           <div class="form-group row">
-            <span class="labels col-sm-3 col-form-label dateInput">ថ្ងៃ ខែ ឆ្នាំកំណើត<strong style="color:red; font-size:15px;">
+            <span class="labels col-sm-3 col-form-label dateInput">ថ្ងៃ ខែ ឆ្នាំកំណើត<strong
+                style="color:red; font-size:15px;">
                 *</strong></span>
             <div class="col-sm-9">
-              <input type="date" class="form-control form-control-sm " min="1995-01-01" max="2010-12-31" id="date_of_birth" name="date_of_birth"
-                value="{{ $records->date_of_birth ?? ''}}" placeholder="ថ្ងៃ ខែ ឆ្នាំកំណើត"
-                aria-label="ថ្ងៃ ខែ ឆ្នាំកំណើត">
+              <input type="text" class="form-control form-control-sm"
+                id="date_of_birth" name="date_of_birth"
+                value="{{ isset($records->date_of_birth) ? \Carbon\Carbon::parse($records->date_of_birth)->format('d-m-Y') : '' }}"
+                min="1970-01-01" max="2010-12-31"
+                placeholder="ថ្ងៃ-ខែ-ឆ្នាំកំណើត" aria-label="ថ្ងៃ-ខែ-ឆ្នាំកំណើត">
             </div>
           </div>
         </div>
@@ -78,25 +97,28 @@
           <div class="row">
             <div class="col-md-6 col-sm-12">
               <div class="form-group row">
-               <span class="labels col-sm-6 col-form-label">សញ្ជាតិ<strong style="color:red; font-size:15px;">
-                   *</strong></span>
-               <div class="col-sm-6">
-                 <input type="text" class="form-control form-control-sm " id="" name=""
-                   value="ខ្មែរ" placeholder="សញ្ជាតិ" aria-label="សញ្ជាតិ">
-               </div>
-             </div>
-           </div>
-           <div class="col-md-6 col-sm-12">
-            <div class="form-group row">
-              <span class="labels col-sm-3 col-form-label">ភេទ</span>
-              <div class="col-sm-9">
-                <select class="js-example-basic-single" id="gender" name="gender" style="width: 100%;">
-                  <option value="ប្រុស" {{ isset($records->gender) && $records->gender ==  'ប្រុស' ? 'selected' : '' }}>ប្រុស</option>
-                  <option value="ស្រី" {{ isset($records->gender) && $records->gender ==  'ស្រី' ? 'selected' : '' }}>ស្រី</option>
-                </select>
+                <span class="labels col-sm-6 col-form-label">សញ្ជាតិ<strong style="color:red; font-size:15px;">
+                    *</strong></span>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control form-control-sm " id="" name="" value="ខ្មែរ"
+                    placeholder="សញ្ជាតិ" aria-label="សញ្ជាតិ">
+                </div>
               </div>
             </div>
-           </div>
+            <div class="col-md-6 col-sm-12">
+              <div class="form-group row">
+                <span class="labels col-sm-3 col-form-label">ភេទ</span>
+                <div class="col-sm-9">
+                  <select class="js-example-basic-single" id="gender" name="gender" style="width: 100%;">
+                    <option value="">&nbsp;</option>
+                    <option value="ប្រុស" {{ isset($records->gender) && $records->gender == 'ប្រុស' ? 'selected' : ''
+                      }}>ប្រុស</option>
+                    <option value="ស្រី" {{ isset($records->gender) && $records->gender == 'ស្រី' ? 'selected' : ''
+                      }}>ស្រី</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -139,7 +161,7 @@
             <span class="labels col-sm-3 col-form-label">លេខទូរស័ព្ទ<strong style="color:red; font-size:15px;">
                 *</strong></span>
             <div class="col-sm-9">
-              <input type="text" class="form-control form-control-sm " id="phone_student" name="phone_student"
+              <input type="number" class="form-control form-control-sm " id="phone_student" name="phone_student"
                 value="{{ $records->phone_student ?? ''}}" placeholder="លេខទូរស័ព្ទ" aria-label="លេខទូរស័ព្ទ">
             </div>
           </div>
@@ -147,8 +169,7 @@
 
         <div class="col-md-6 col-sm-12 col-12">
           <div class="form-group row">
-            <span class="labels col-sm-3 col-form-label">អាណាព្យាបាល<strong style="color:red; font-size:15px;">
-                *</strong></span>
+            <span class="labels col-sm-3 col-form-label">អាណាព្យាបាល</span>
             <div class="col-sm-9">
               <input type="text" class="form-control form-control-sm " id="guardian_name" name="guardian_name"
                 value="{{ $records->guardian_name ?? ''}}" placeholder="អាណាព្យាបាល" aria-label="អាណាព្យាបាល">
@@ -160,7 +181,7 @@
             <span class="labels col-sm-3 col-form-label">លេខទូរស័ព្ទ<strong style="color:red; font-size:15px;">
                 *</strong></span>
             <div class="col-sm-9">
-              <input type="text" class="form-control form-control-sm " id="guardian_phone" name="guardian_phone"
+              <input type="number" class="form-control form-control-sm " id="guardian_phone" name="guardian_phone"
                 value="{{ $records->guardian_phone ?? ''}}" placeholder="លេខទូរស័ព្ទ" aria-label="លេខទូរស័ព្ទ">
             </div>
           </div>
@@ -208,34 +229,9 @@
           </div>
         </div>
 
-        <div class="col-lg-6 col-md-12 col-sm-12 col-12">
-          <div class="form-group row">
-            <span class="labels col-sm-3 col-form-label">កម្រិតវប្បធម៌<strong style="color:red; font-size:15px;">
-                *</strong></span>
-            <div class="col-sm-9">
-                <select class="js-example-basic-single" id="education_Level" name="education_Level" style="width: 100%;">
-                  <?php 
-                    $options = [
-                            '' => '',
-                            'បឋមសិក្សាសិក្សាទុតិយភូមិ' => 'បឋមសិក្សាសិក្សាទុតិយភូមិ',
-                            'មធ្យមសិក្សាទុតិយភូមិ' => 'មធ្យមសិក្សាទុតិយភូមិ',
-                        ];
-                    ?>
-                  @foreach ($options as $value => $label)
-                  <option value="{{ $value }}" {{ isset($records->education_Level) && $records->education_Level == $value ?
-                    'selected' : '' }}>
-                    {{ $label }}
-                  </option>
-                  @endforeach
-                </select>
-
-            </div>
-          </div>
-        </div>
-
         <div class="col-md-6">
           <div class="form-group row">
-            <span class="label col-sm-3 col-form-label">ជំនាញ<strong style="color:red; font-size:15px;">
+            <span class="labels col-sm-3 col-form-label">ជំនាញ<strong style="color:red; font-size:15px;">
                 *</strong></span>
             <div class="col-sm-9">
               <select class="js-example-basic-single FieldRequired" id="skills_code" name="skills_code"
@@ -254,7 +250,8 @@
 
         <div class="col-md-6">
           <div class="form-group row">
-            <span class="label col-sm-3 col-form-label">វេន<strong style="color:red; font-size:15px;"> *</strong></span>
+            <span class="labels col-sm-3 col-form-label">វេន<strong style="color:red; font-size:15px;">
+                *</strong></span>
             <div class="col-sm-9">
               <select class="js-example-basic-single FieldRequired" id="sections_code" name="sections_code"
                 style="width: 100%;">
@@ -262,7 +259,7 @@
                 @foreach ($sections as $record)
                 <option value="{{ $record->code ?? '' }}" {{ isset($records->sections_code) && $records->sections_code
                   == $record->code ? 'selected' : '' }}>
-                  {{ isset($record->code) ? $record->code : '' }} - {{ isset($record->name_2) ? $record->name_2 : '' }}
+                  វេន-{{ isset($record->name_2) ? $record->name_2 : '' }}
                 </option>
                 @endforeach
               </select>
@@ -272,7 +269,7 @@
 
         <div class="col-md-6">
           <div class="form-group row">
-            <span class="label col-sm-3 col-form-label">សុំចូលរៀនឆ្នាំទី<strong style="color:red; font-size:15px;">
+            <span class="labels col-sm-3 col-form-label">សុំចូលរៀនឆ្នាំទី<strong style="color:red; font-size:15px;">
                 *</strong></span>
             <div class="col-sm-9">
               <select class="js-example-basic-single FieldRequired" id="apply_year" name="apply_year"
@@ -291,19 +288,18 @@
 
         <div class="col-md-6">
           <div class="form-group row">
-            <span class="label col-sm-3 col-form-label ">កម្រិត<strong style="color:red; font-size:15px;">
+            <span class="labels col-sm-3 col-form-label ">កម្រិត<strong style="color:red; font-size:15px;">
                 *</strong></span>
             <div class="col-sm-9">
               <select class="js-example-basic-single" id="qualification" name="qualification" style="width: 100%;">
                 <?php 
                   $options = [
-                         
                           'បរិញ្ញាបត្រ' => 'បរិញ្ញាបត្រ',
                           'បរិញ្ញាបត្ររង' => 'បរិញ្ញាបត្ររង',
                           'អនុបណ្ឌិត' => 'អនុបណ្ឌិត',
-                          'បរិញ្ញាបត្រ C1' => 'បរិញ្ញាបត្រ C1',
-                          'បរិញ្ញាបត្រ C2' => 'បរិញ្ញាបត្រ C2',
-                          'បរិញ្ញាបត្រ C3' => 'បរិញ្ញាបត្រ C3',
+                          'សញ្ញាបត្រ C1' => 'សញ្ញាបត្រ C1',
+                          'សញ្ញាបត្រ C2' => 'សញ្ញាបត្រ C2',
+                          'សញ្ញាបត្រ C3' => 'សញ្ញាបត្រ C3',
                       ];
                   ?>
                 @foreach ($options as $value => $label)
@@ -316,13 +312,330 @@
             </div>
           </div>
         </div>
-        <div class="col-md-12 d-flex justify-content-center mt-2">
-            <button type="button" id="BtnSave" class="btn btn-success btn-icon-text btn-sm mb-2 text-center" style="width: 110px;">
-                <i class="mdi mdi-content-save"></i> រក្សាទុក
-            </button>
+
+
+        <div class="col-md-6">
+          <div class="form-group row">
+            <span class="labels col-sm-3 col-form-label">ឆ្នាំសិក្សា<strong style="color:red; font-size:15px;">
+                *</strong></span>
+            <div class="col-sm-9">
+              <select class="js-example-basic-single FieldRequired" id="session_year_code" name="session_year_code"
+                style="width: 100%;">
+                <option value="">&nbsp;</option>
+                @foreach ($school_years as $record)
+                <option value="{{ $record->code ?? '' }}" {{ isset($records->session_year_code) &&
+                  $records->session_year_code == $record->code ? 'selected' : '' }}>
+                  {{ isset($record->name) ? $record->name : '' }}
+                </option>
+                @endforeach
+              </select>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="col-md-6">
+          <div class="form-group row">
+            <span class="labels col-sm-3 col-form-label">ឆមាស<strong style="color:red; font-size:15px;">
+                *</strong></span>
+            <div class="col-sm-9">
+              <select class="js-example-basic-single FieldRequired" id="semester" name="semester" style="width: 100%;">
+                <option value="1" {{ (isset($records->semester) && $records->semester == '1') ? '' : 'selected'
+                  }}>ឆមាសទី ១</option>
+                <option value="2" {{ (isset($records->semester) && $records->semester == '2') ? 'selected' : ''
+                  }}>ឆមាសទី ២</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="headingThree" class="card-header bg-white shadow-sm border-0">
+          <h2 class="mb-0">
+            <button type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false"
+              aria-controls="collapseThree"
+              class="btn collapsed text-dark font-weight-bold text-uppercase collapsible-link general-accordion">ពត៏មាន
+              ផ្សេងៗ</button>
+          </h2>
+        </div>
+
+        <div class="col-md-6 col-sm-12 mt-2">
+          <div class="row">
+            <div class="col-md-6 col-sm-12">
+              <div class="form-group row">
+                <span class="labels col-sm-6 col-form-label">ថា្នក់សិក្សា<strong style="color:red; font-size:15px;">
+                    *</strong></span>
+                <div class="col-sm-6">
+                  <select class="js-example-basic-single" id="bakdop_type" name="bakdop_type" style="width: 100%;"
+                    placeholder="វិទ្យាសាស្រ្ដពិត">
+                    <?php 
+                  $options = [
+                      'វិទ្យាសាស្រ្តពិត' => 'វិទ្យាសាស្រ្តពិត',
+                      'វិទ្យាសាស្រ្តសង្គម' => 'វិទ្យាសាស្រ្តសង្គម',
+                      'ផ្សេងៗ' => 'ផ្សេងៗ',
+                  ];
+                  ?>
+                    <option value="">&nbsp;</option>
+                    @foreach ($options as $value => $label)
+                    <option value="{{ $value }}" {{ isset($records->bakdop_type) && $records->bakdop_type == $value ?
+                      'selected' : '' }}>
+                      {{ $label }}
+                    </option>
+                    @endforeach
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6 col-sm-12">
+              <div class="form-group row">
+                <span class="labels col-sm-5 col-form-label">លទ្ធិផលបាក់ឌុប</span>
+                <div class="col-sm-7">
+                  <select class="js-example-basic-single" id="bakdop_results" name="bakdop_results"
+                    style="width: 100%;">
+                    <?php 
+                    $options = [
+                            'ជាប់' => 'ជាប់',
+                            'ធ្លាក់' => 'ធ្លាក់',
+                            'C3' => 'C3',
+                            'ផ្សេងៗ' => 'ផ្សេងៗ',
+                        ];
+                    ?>
+                    <option value="">&nbsp;</option>
+                    @foreach ($options as $value => $label)
+                    <option value="{{ $value }}" {{ isset($records->bakdop_results) && $records->bakdop_results ==
+                      $value ?
+                      'selected' : '' }}>
+                      {{ $label }}
+                    </option>
+                    @endforeach
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="col-md-6 col-sm-12 mt-2">
+          <div class="row">
+            <div class="col-md-6 col-sm-12">
+              <div class="form-group row">
+                <span class="labels col-sm-6 col-form-label">និទ្ទេស</span>
+                <div class="col-sm-6">
+                  <select class="js-example-basic-single" id="bakdop_index" name="bakdop_index" style="width: 100%;">
+                    <?php 
+                      $options = [
+                              'A' => 'A',
+                              'B' => 'B',
+                              'C' => 'C',
+                              'D' => 'D',
+                              'E' => 'E',
+                              'F' => 'F',
+                              'Auto' => 'Auto',
+                          ];
+                      ?>
+                    <option value="">&nbsp;</option>
+                    @foreach ($options as $value => $label)
+                    <option value="{{ $value }}" {{ isset($records->bakdop_index) && $records->bakdop_index == $value ?
+                      'selected' : '' }}>
+                      {{ $label }}
+                    </option>
+                    @endforeach
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-12">
+              <div class="form-group row">
+                <span class="labels col-sm-5 col-form-label">ឆ្នាំបញ្ចាប់</span>
+                <div class="col-sm-7">
+                  <select class="js-example-basic-single" id="year_final" name="year_final" style="width: 100%;">
+                    <?php 
+                    $options = [
+                            '2025' => '2025',
+                            '2024' => '2024',
+                            '2023' => '2023',
+                            '2022' => '2022',
+                            '2021' => '2021',
+                            '2020' => '2020',
+                            '2019' => '2019',
+                            '2018' => '2018',
+                        ];
+                    ?>
+                    <option value="">&nbsp;</option>
+                    @foreach ($options as $value => $label)
+                    <option value="{{ $value }}" {{ isset($records->year_final) && $records->year_final == $value ?
+                      'selected' : '' }}>
+                      {{ $label }}
+                    </option>
+                    @endforeach
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
+      <div class="row">
+        <div class="col-md-6 col-sm-12 mt-2">
+          <div class="row">
+            <div class="col-md-6 col-sm-12">
+              <div class="form-group row">
+                <span class="labels col-sm-6 col-form-label">បេក្ខជន មកពីខេត្ត<strong
+                    style="color:red; font-size:15px;">
+                    *</strong></span>
+                <div class="col-sm-6">
+                  <select class="js-example-basic-single" id="bakdop_province" name="bakdop_province"
+                    style="width: 100%;">
+                    <?php 
+                    $options = [
+                        'ភ្នំពេញ' => 'ភ្នំពេញ',
+                        'កណ្ដាល' => 'កណ្ដាល',
+                        'កែប' => 'កែប',
+                        'កោះកុង' => 'កោះកុង',
+                        'កំពង់ចាម' => 'កំពង់ចាម',
+                        'កំពង់ឆ្នាំង' => 'កំពង់ឆ្នាំង',
+                        'កំពង់ធំ' => 'កំពង់ធំ',
+                        'កំពង់ស្ពឺ' => 'កំពង់ស្ពឺ',
+                        'កំពត' => 'កំពត',
+                        'ក្រចេះ' => 'ក្រចេះ',
+                        'តាកែវ' => 'តាកែវ',
+                        'ត្បូងឃ្មុំ' => 'ត្បូងឃ្មុំ',
+                        'បន្ទាយមានជ័យ' => 'បន្ទាយមានជ័យ',
+                        'បាត់ដំបង' => 'បាត់ដំបង',
+                        'ប៉ៃលិន' => 'ប៉ៃលិន',
+                        'ពោធិ៍សាត់' => 'ពោធិ៍សាត់',
+                        'ព្រៃវែង' => 'ព្រៃវែង',
+                        'ព្រះវិហារ' => 'ព្រះវិហារ',
+                        'ព្រះសីហនុ' => 'ព្រះសីហនុ',
+                        'មណ្ឌលគិរី' => 'មណ្ឌលគិរី',
+                        'រតនគិរី' => 'រតនគិរី',
+                        'សៀមរាប' => 'សៀមរាប',
+                        'ស្ទឹងត្រែង' => 'ស្ទឹងត្រែង',
+                        'ស្វាយរៀង' => 'ស្វាយរៀង',
+                        'ឧត្ដរមានជ័យ' => 'ឧត្ដរមានជ័យ',
+                    ];
+                    ?>
+                    <option value="">&nbsp;</option>
+                    @foreach ($options as $value => $label)
+                    <option value="{{ $value }}" {{ isset($records->bakdop_province) && $records->bakdop_province ==
+                      $value ?
+                      'selected' : '' }}>
+                      {{ $label }}
+                    </option>
+                    @endforeach
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-12">
+              <div class="form-group row">
+                <span class="labels col-sm-5 col-form-label">អាហារូបករណ៍</span>
+                <div class="col-sm-7">
+                  <select class="js-example-basic-single" id="scholarship" name="scholarship" style="width: 100%;"
+                    placeholder="វិទ្យាសាស្រ្ដពិត">
+                    <?php 
+                    $options = [
+                        '100' => '100',
+                        '95' => '95',
+                        '90' => '90',
+                        '85' => '85',
+                        '80' => '80',
+                        '75' => '75',
+                        '70' => '70',
+                        '65' => '65',
+                        '60' => '60',
+                        '55' => '55',
+                        '50' => '50',
+                        '45' => '45',
+                        '40' => '40',
+                        '35' => '35',
+                        '30' => '30',
+                        '25' => '25',
+                        '20' => '20',
+                        '15' => '15',
+                        '10' => '10',
+                        '5' => '5',
+                    ];
+                    ?>
+                    <option value="">&nbsp;</option>
+                    @foreach ($options as $value => $label)
+                    <option value="{{ $value }}" {{ isset($records->scholarship) && $records->scholarship == $value ?
+                      'selected' : '' }}>
+                      {{ $label }} %
+                    </option>
+                    @endforeach
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          
+        </div>
+        <div class="col-md-6" style="margin-top: -20px;">
+          <div class="form-group row">
+            <span class="labels col-sm-3 col-form-label ">ប្រភព អាហារូបករណ៍</span>
+            <div class="col-sm-9">
+              <input type="text" class="form-control form-control-sm " id="scholarship_type" name="scholarship_type"
+              value="{{ $records->scholarship_type ?? ''}}" placeholder="ប្រភព អាហារូបករណ៍" aria-label="ប្រភព អាហារូបករណ៍">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+          <div class="col-md-6" >
+            <div class="form-group row">
+              <span class="labels col-sm-3 col-form-label ">ស្គាល់សាលា តាមរយះ</span>
+              <div class="col-sm-9">
+                {{-- <input type="text" class="form-control form-control-sm " id="submit_your_application" name="submit_your_application"
+                value="{{ $records->submit_your_application ?? ''}}" placeholder="ដាក់ពាក្សសិក្សា តាមរយះ" aria-label="ដាក់ពាក្សសិក្សា តាមរយះ"> --}}
+
+                <select class="js-example-basic-single" id="submit_your_application" name="submit_your_application" style="width: 100%;">
+                  <?php 
+                  $options = [
+                          'មិត្តភ័ក ឬ​​ គ្រួសារ' => 'មិត្តភ័ក ឬ​​ គ្រួសារ',
+                          'លោកគ្រូ​ អ្នកគ្រូ' => 'លោកគ្រូ អ្នកគ្រូ',
+                          'ទស្សនកិច្ចនៅវវិទ្យាស្ថាន' => 'ទស្សនកិច្ចនៅវវិទ្យាស្ថាន',
+                          'ផ្សព្វផ្សាយ តាមវិទ្យាល័យសិក្សា' => 'ផ្សព្វផ្សាយ តាមវិទ្យាល័យសិក្សា',
+                          'ទស្សនកិច្ចនៅ តាមបណ្ដាលក្រុមហ៊ុន' => 'ទស្សនកិច្ចនៅ តាមបណ្ដាលក្រុមហ៊ុន',
+                          'ប្រព័ន្ធផ្សព្វផ្សាយរបស់ វិទ្យាស្ថានតាម (Social Meadia)' => 'ប្រព័ន្ធផ្សព្វផ្សាយរបស់ វិទ្យាស្ថានតាម (Social Meadia)',
+                          'ប្រព័ន្ធផ្សព្វផ្សាយរបស់​ កម្មវិធីបណ្តុះបណ្តាលជំនាញ TVET' => 'ប្រព័ន្ធផ្សព្វផ្សាយរបស់​ កម្មវិធីបណ្តុះបណ្តាលជំនាញ TVET',
+                          'ប្រព័ន្ធផ្សព្វផ្សាយរបស់​ ក្រសួងការងារ និងបណ្តុះបណ្តាលវិជ្ជាជីវៈ' => 'ប្រព័ន្ធផ្សព្វផ្សាយរបស់​ ក្រសួងការងារ និងបណ្តុះបណ្តាលវិជ្ជាជីវៈ',
+                          'ផ្សេងៗ' => 'ផ្សេងៗ',
+                      ];
+                  ?>
+                  <option value="">&nbsp;</option>
+                  @foreach ($options as $value => $label)
+                  <option value="{{ $value }}" {{ isset($records->submit_your_application) && $records->submit_your_application == $value ?
+                    'selected' : '' }}>
+                    {{ $label }}
+                  </option>
+                  @endforeach
+                </select>
+              </div>
+            </div>
+          </div>
+        <div class="col-md-6">
+          <div class="form-group row">
+            <span class="labels col-sm-3 col-form-label ">មកពី វិទ្យាល័យ</span>
+            <div class="col-sm-9">
+              <input type="text" class="form-control form-control-sm " id="educational_institutions" name="educational_institutions"
+              value="{{ $records->educational_institutions ?? ''}}" placeholder="គ្រឹះស្ថាន សិក្សា ឫ វិទ្យាល័យសិក្សា" aria-label="គ្រឹះស្ថាន សិក្សា ឫ វិទ្យាល័យសិក្សា">
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      
+      
     </div>
     <div class="row border-bottom">
       <div class="col-md-12 col-sm-12 col-12">
@@ -330,17 +643,85 @@
           <div class="title-page text-center">
           </div>
         </div>
-      </div><br><br><br>
+      </div>
+      <br><br><br><br> <br><br><br><br> <br><br><br><br> <br><br><br><br>
     </div>
   </form>
+</div>
 
+@include('system.modal_create_user_student')
+<!---PRINT--->
+<div class="modal fade" id="ModelPrints" tabindex="-1" role="dialog" aria-labelledby="ModelPrints" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-m-header">
+        <h5 class="modal-title" id="divConfirmation">Confirmation</h5>
+      </div>
+      <div class="modal-body">
+        <h4 class="modal-confirmation-text text-center p-4"></h4>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="YesPrints" data-code="{{ $records->code ?? '' }}" data-id=""
+          class="btn btn-primary">បោះពុម្ភ</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!---PRINT CONNECT--->
+<div class="print" style="display: none">
+  <div class="print-content">
 
-  <!--Model--->
-  @include('system.modal_create_user_student')
-  <!--End Model-->
-</div><br><br>
+  </div>
+</div>
+<br><br>
 <script>
   $(document).ready(function() {
+    $('#date_of_birth').on('input', function () {
+      // Allow only numeric characters and specific symbols (-, ., /)
+      let rawValue = $(this).val().replace(/[^0-9\-\.\/]/g, ''); 
+
+      // Update the input value with the cleaned value
+      $(this).val(rawValue);
+
+      // Check if rawValue contains invalid characters
+      if (/[^0-9\-\.\/]/.test($(this).val())) {
+          notyf.error("សូមវាយលេខ (0-9) និងសញ្ញា (-, ., /)!");
+          return;
+      }
+
+      // Process input only if the raw numeric length is exactly 8 (ddmmyyyy)
+      const numericValue = rawValue.replace(/[^0-9]/g, ''); // Remove symbols to check numeric length
+      if (numericValue.length === 8) {
+          const day = numericValue.substring(0, 2);
+          const month = numericValue.substring(2, 4);
+          const year = numericValue.substring(4, 8);
+
+          // Validate date components
+          const isValidDate = validateDate(day, month, year);
+
+          if (isValidDate) {
+              const formattedDate = `${day}-${month}-${year}`;
+              $(this).val(formattedDate); // Update input with formatted date
+              $('#error_message').text(''); // Clear error message
+          } else {
+              notyf.error("សូម ពិនិត្យមើល ថ្ងៃខែឆ្នាំម្ដងទៀត​!");
+          }
+      }
+  });
+
+
+      // Date validation function
+      function validateDate(day, month, year) {
+          const date = new Date(`${year}-${month}-${day}`);
+          return (
+              date &&
+              date.getFullYear() == year &&
+              date.getMonth() + 1 == month &&
+              date.getDate() == day
+          );
+      }
+
+
     $('#BtnSave').on('click', function() {
         var formData = $('#frmDataCard').serialize();
         var type = $('#type').val();
@@ -363,7 +744,7 @@
                 if (response.status == 'success') {
                   notyf.success(response.msg);
                 }else if(response.store == 'yes'){
-                  window.location.href = '/thank-you-for-submit';
+                    window.location.href = '/student/registration/transaction?type=ed&code=' + response.code_transetion;
                 }else {
                     notyf.error(response.msg);
                 }
@@ -406,6 +787,7 @@
         let uppercasedValue = inputValue.toUpperCase();
         $(this).val(uppercasedValue);
     });
+
     $('#name_2').on('input', function() {
         // Regular expression for Khmer Unicode range
         let khmerPattern = /^[\u1780-\u17FF\s]*$/;
@@ -419,6 +801,7 @@
             notyf.error("សូមបំពេញឈ្មោះជាអក្សខ្មែរ");
         }
     });
+
     $('#name').on('input', function() {
         // Regular expression for English letters and spaces
         let englishPattern = /^[A-Za-z\s]*$/;
@@ -435,17 +818,65 @@
             notyf.error("សូម បំពេញជា ភាសាអង់គ្លេស");
         }
     });
+
     $('.dateInput').on('input', function() {
-        const minDate = new Date("1990-01-01");
+        const minDate = new Date("1970-01-01");
         const maxDate = new Date("2010-12-31");
         const selectedDate = new Date($(this).val());
 
         if (selectedDate < minDate) {
-            $(this).val("1990-01-01");
+            $(this).val("1970-01-01");
         } else if (selectedDate > maxDate) {
             $(this).val("2010-12-31");
         }
     });
+    
+    $('#bakdop_results').on('change', function(event) {
+        var selectedValue = $(this).val();
+        
+        if (selectedValue == "ធ្លាក់") {
+            if ($('#bakdop_index option[value="F"]').length == 0) {
+                $('#bakdop_index').append('<option value="F">Option F</option>');
+            }
+        }
+    });
+
+    $(document).on('click', '#prints', function() {
+      let name = @json($records->name_2 ?? '');
+      $(".modal-confirmation-text").html(`បោះពុម្ផពាក្យសុំចូលរៀន ឈ្មោះ ${name}`);
+      $("#YesPrints").attr('data-code', $(this).attr('data-type'));
+      $("#ModelPrints").modal('show');
+    });
+
+    $(document).on('click', '#YesPrints', function() {
+      var code = $(this).attr('data-code');
+      var url = '/student/registration/prints?code=' + code + '&type=is_print';
+      data = $("#advance_search").serialize();
+      $.ajax({
+        type: 'get',
+        url: url,
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        beforeSend: function() {
+          $('.loader').show();
+        },
+        success: function(response) {
+          if (response.status != 'success') {
+            $('.loader').hide();
+            $('.print-content').printThis({});
+            $('.print-content').html(response);
+            $('#ModelPrints').modal('hide');
+            
+          } else {
+            $('.loader').hide();
+            notyf.error("Error: " + response.msg);
+          }
+        },
+        error: function(xhr, ajaxOptions, thrownError) {}
+      });
+    });
+
   });
 
   function DownlaodExcel() {

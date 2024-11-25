@@ -41,16 +41,17 @@ class service{
         curl_close($ch);
         return $result;
     }
-    public function telegramSendUserLog($email,$role, $department, $ip, $userAgent, $city, $type) {
+    public function telegramSendUserLog($email,$role, $department, $ip, $userAgent, $city, $type, $user_name) {
         $text = " ";
         $bot_api = "https://api.telegram.org";
 
         $telegram_id = "-4557828405";
         $telegram_token = "7286298295:AAG9-EFlyITzikQWsr1xz1URTez7vLrRaTc";
-
+        
         $apiUri = sprintf('%s/bot%s/%s', $bot_api, $telegram_token, 'sendMessage');
-        $text .= "\n" ."====== User Log NTTI Portal=======";
+        $text .= "\n" ."=== User Log NTTI Portal===";
         $text .= "\nLog Type : " .$type ?? '';
+        $text .= "\nName : " .$user_name ?? '';
         $text .= "\nUser : " .$email ?? '';
         $text .= "\nUrl : ".request()->path();
         $text .= "\nRole : ".$role;
@@ -200,7 +201,7 @@ class service{
 
         $khmerDay = date('d', strtotime($date));
 
-        $khmerDate = $khmerDay . '-' . $khmerMonth . 'ឆ្នាំ' . $khmerYear;
+        $khmerDate = $khmerDay . '-' . $khmerMonth . '-'. 'ឆ្នាំ' . $khmerYear;
 
         return $khmerDate;
     }
@@ -286,6 +287,30 @@ class service{
         return str_replace($khmerDigits, $englishDigits, $khmerNumber);
     }
     // end  format day khmer 
+    public static function DateFormartKhmer($date) {
+        // Define Khmer numerals
+        $khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+    
+        // Convert the input date to a DateTime object
+        $dateTime = DateTime::createFromFormat('Y-m-d', $date);
+    
+        // Check if the date conversion was successful
+        if (!$dateTime) {
+            // Return a meaningful error message or handle the invalid input
+            return "មិនមាន​ ថ្ងៃ ខែ ឆ្នាំ";
+        }
+    
+        // Format the date as dd.mm.yyyy
+        $formattedDate = $dateTime->format('d.m.Y');
+    
+        // Replace English numbers with Khmer numbers
+        $khmerDate = str_replace(range(0, 9), $khmerNumbers, $formattedDate);
+    
+        return $khmerDate;
+    }
+    
+
+
 
 
 

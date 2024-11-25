@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Auth;
 use Stevebauman\Location\Facades\Location;
 
-
 use Illuminate\Support\Facades\DB;
 use Session;
 use App\Models\User;
@@ -58,7 +57,7 @@ class AuthController extends Controller
         ]);
         $permission = User::where('email', '=', $request->email)->first();
         if(!$permission){
-            return redirect("user-dont-have-permission")->withSuccess('Opps! You do not have access');
+            return redirect()->back()->with('message','អ៊ីមែល​មិន​ត្រឹមត្រូវ !');
         }
         $user = $permission;
         $email =  $request->email;
@@ -69,11 +68,12 @@ class AuthController extends Controller
         $ipAddress = request()->ip(); // Get the IP address
         $city = "Phnom Penh";
         $type = "Login";
+        $user_name = $user->name ?? '';
         
 
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
-            $this->services->telegramSendUserLog($email,$role, $department, $ip, $userAgent, $city, $type);
+            $this->services->telegramSendUserLog($email,$role, $department, $ip, $userAgent, $city, $type, $user_name);
             if($permission->role == "student"){
                 return redirect()->intended('dahhboard-student-account')
                 ->withSuccess('You have Successfully loggedin');
@@ -95,7 +95,7 @@ class AuthController extends Controller
         // // OR
         // return Schema::getColumnListing($table);
 
-        return redirect()->back()->with('message','Incorrect Password !');
+        return redirect()->back()->with('message','ពាក្យសម្ងាត់មិនត្រឹមត្រូវ!');
     }
     /**
      * Write code on Method
@@ -160,7 +160,8 @@ class AuthController extends Controller
         $ipAddress = request()->ip(); // Get the IP address
         $city = "Phnom Penh";
         $type = "Logout";
-        $this->services->telegramSendUserLog($email,$role, $department, $ip, $userAgent, $city, $type);
+        $user_name = $user->name ?? 'N/A';
+        $this->services->telegramSendUserLog($email,$role, $department, $ip, $userAgent, $city, $type, $user_name);
         Session::flush();
         Auth::logout();
         return Redirect('login');

@@ -9,8 +9,9 @@
             <button class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="btnDelete" data-code="{{ $record->code ?? '' }}"><i class="mdi mdi-delete-forever"></i> Delete</button>
         </td>
         <td class="text-center">{{ $record->code }}</td>
-        <td class="text-center">{{ $record->name }}</td>
-        <td class="text-center">{{ $record->name_2 }}</td>
+        <td class="">{{ $record->name }}</td>
+        <td class="">{{ $record->name_2 }}</td>
+        <td class="">{{ $record->department->name_2 ?? '' }}</td>
         <td class="text-center">
             <label class="badge {{ $record->status == 'no' ? 'badge-danger' : 'badge-success' }} btn-sm mb-2 mb-md-0 me-2">
                 {{ $record->status ?? '' }}

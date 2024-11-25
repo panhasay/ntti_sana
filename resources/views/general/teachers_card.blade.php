@@ -36,7 +36,7 @@
         <div id="headingOne" class="card-header bg-white shadow-sm border-0">
           <h2 class="mb-0">
             <button type="button" data-toggle="collapse" data-target="#General" aria-expanded="true"
-              aria-controls="General" class="btn text-dark font-weight-bold collapsible-link general-accordion">សិស្សទូទៅ</button>
+              aria-controls="General" class="btn text-dark font-weight-bold collapsible-link general-accordion">សាស្ត្រាចារ្យ លោកគ្រូអ្នកគ្រូ</button>
           </h2>
         </div>
         <div id="General" aria-labelledby="headingOne" data-parent="#accordion_formData" class="collapse show">
@@ -156,7 +156,7 @@
                         <option value="">&nbsp;</option>
                           @foreach ($department as $record) 
                               <option value="{{ $record->code ?? '' }}" {{ isset($records->department_code) && $records->department_code == $record->code ? 'selected' : '' }}>
-                              {{ isset($record->code) ? $record->code : '' }} -  {{ isset($record->name_2) ? $record->name_2 : '' }}
+                                  {{ isset($record->name_2) ? $record->name_2 : '' }}
                               </option>
                           @endforeach
                       </select>

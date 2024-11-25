@@ -4,6 +4,8 @@ namespace App\Http\Controllers\General;
 
 use App\Http\Controllers\Controller;
 use App\Models\General\Classes;
+use App\Models\General\Qualifications;
+use App\Models\Student\Student;
 use App\Models\SystemSetup\Department;
 use App\Service\service;
 use Illuminate\Http\Request;
@@ -31,7 +33,7 @@ class ClassesController extends Controller
     }
     public function index(){
         $page = $this->page;
-        $records = Classes::orderBy('name', 'asc')->paginate(10);
+        $records = Classes::orderBy('name', 'desc')->paginate(10);
         if(!Auth::check()){
             return redirect("login")->withSuccess('Opps! You do not have access');
         }  
@@ -50,8 +52,9 @@ class ClassesController extends Controller
         $department = Department::get();
         $school_years = DB::table('session_year')->get();   
         $skills = DB::table('skills')->get();
+        $qualifications = Qualifications::get();
         try {
-            $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills'];
+            $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'qualifications'];
             if ($type == 'cr') return view('general.classes_card', compact($params));
             if (isset($_GET['code'])) {
                 $records = Classes::where('code', $this->services->Decr_string($_GET['code']))->first();
@@ -65,6 +68,12 @@ class ClassesController extends Controller
     public function delete(Request $request)
     {
         $code = $request->code;
+
+        $check = Student::where('class_code', $code)->first();
+        if ($check) {
+            return response()->json(['status' => 'error', 'msg' => 'មិនអាចលុប ថ្នាក់/ក្រុមនេះបានទេមាន ព៍តមានរូចហើយ !']);
+        }
+
         try {
             $records = Classes::where('code',$code);
             $records->delete();
@@ -81,6 +90,13 @@ class ClassesController extends Controller
         $record = Classes::where('code', $input['code'])->first();
         if (!$record) return response()->json(['status' => 'error', 'msg' => "មិនអាចកែប្រ លេខកូដ!"]);
         $code = $input['type'];
+
+        $check = Student::where('class_code', $code)->first();
+        if ($check) {
+            return response()->json(['status' => 'error', 'msg' => 'មិនអាចកែប្រែ ថ្នាក់/ក្រុមនេះបានទេមាន ព៍តមានរូចហើយ !']);
+        }
+
+
         try {
             $records = Classes::where('code', $code)->first();
             if ($records) {
@@ -117,6 +133,7 @@ class ClassesController extends Controller
             $records->department_code = $request->department_code;
             $records->school_year_code = $request->school_year_code;
             $records->is_active = $request->is_active;
+            $records->level = $request->level;
             $records->save();
             return response()->json(['store' => 'yes', 'msg' => 'Records Add Succesfully !!']);
         } catch (\Exception $ex) {
