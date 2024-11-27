@@ -8,6 +8,7 @@ use App\Http\Controllers\General\AssingClassesController;
 use App\Http\Controllers\General\AttendanceController;
 use App\Http\Controllers\General\ClassScheduleController;
 use App\Http\Controllers\General\DividedNewClassesController;
+use App\Http\Controllers\General\ExamScheduleController;
 use App\Http\Controllers\General\SkillsController;
 use App\Http\Controllers\Report\ListOfStudentController;
 use App\Http\Controllers\General\StudnetController;
@@ -222,9 +223,14 @@ Route::group(['perfix' => 'class-new'], function (){
     Route::get('/class-new/transaction', [DividedNewClassesController::class, 'transaction']);
     Route::get('/class-new/get-student-register', [DividedNewClassesController::class, 'GEteStudentRegister']);
     Route::POST ('/class-new/add-student-register', [DividedNewClassesController::class, 'AddStudentRegister']);
-
-
 })->middleware('auth');
+Route::group(['perfix' => 'exam-schedule'], function (){
+    Route::get('/exam-schedule',[ExamScheduleController::class,'index']);
+    Route::get('/class-new/transaction', [ExamScheduleController::class, 'transaction']);
+    Route::get('/class-new/get-student-register', [ExamScheduleController::class, 'GEteStudentRegister']);
+    Route::POST ('/class-new/add-student-register', [ExamScheduleController::class, 'AddStudentRegister']);
+})->middleware('auth');
+
 
 
 

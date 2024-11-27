@@ -79,7 +79,6 @@
 @include('system.modal_comfrim_delet')
 @include('general.assing_classes_lists')
 @include('modals.modals_create_assing_classde')
-
 <script>
     $(document).ready(function() {
       $.ajaxSetup({

@@ -73,8 +73,8 @@
 <div class="modal" id="ModalExamResults">
   <div class="modal-dialog modal-fullscreen">
     <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title text-dark modal-title-exam-results khmer_os_b"></h4>
+      <div class="modal-header bg-m-header">
+        <h4 class="modal-title text-white modal-title-exam-results khmer_os_b"></h4>
         <div class="pull-right" style="float: right;margin-left: 10px;">
           <button type="button" data-type="skill" id="prints" class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2 pull-right" style="float: right !important;"> Print
             <i class="mdi mdi-printer btn-icon-append"></i>

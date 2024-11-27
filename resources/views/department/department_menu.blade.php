@@ -44,11 +44,11 @@
     <div class="column">
         <div class="effect-9">
             <div class="effect-img">
-            <a href="{{ url('/class-schedule') }}">
+            <a href="{{ url('exam-schedule') }}">
                 <img src="https://img.freepik.com/free-vector/flat-hand-drawn-multitask-business-woman_23-2148845328.jpg?t=st=1713584703~exp=1713588303~hmac=4927f2f41e3767ac90324d547bb191a2cce8817ce5d7bdc673974ee266553686&w=996" alt="Team Image">
             </a>
             </div>
-            <div class="title-department">ប្រព័ន្ធគ្រប់គ្រងបុគ្គិល</div>
+            <div class="title-department">កាលវិភាគ កាប្រឡង</div>
         </div>
     </div>
     <div class="column">
@@ -89,7 +89,6 @@
         <div class="container menu-list">
             <ul>
                 <li><a href="{{ url('student/registration') }}">បញ្ជីរាយនាមនិស្សិតដែរចុះឈ្មោះឆ្នាំទី១</a></li>
-                <li><a href="{{ url('student/registration/transaction?type=cr') }}">ចុះឈ្មោះចូលរៀនឆ្នាំទី១</a></li>
             </ul>
         </div>
     </div>
@@ -101,6 +100,8 @@
         <div class="container menu-list">
             <ul>
                 <li><a href="{{ url('class-new') }}">បែងចែកថ្នាក់ថ្មី</a></li>
+                <li><a href="{{ url('attendance/dashboards-attendance') }}">វត្តមានថ្ងៃប្រចាំថ្ងៃ</a></li>
+                <li><a href="{{ url('exam-schedule') }}">កាលវិភាគ កាប្រឡង</a></li>
             </ul>
         </div>
     </div>

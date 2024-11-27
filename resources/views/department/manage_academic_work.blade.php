@@ -98,7 +98,7 @@
             <div class="effect-img">
             <img src="https://img.freepik.com/free-vector/online-certification-illustration-style_23-2148570822.jpg?semt=ais_user" alt="Team Image">
             </div>
-            <div class="title-department">គ្រប់គ្រង កាសិក្សាឆ្នាំទី(៤)បរិញ្ញាប័ត្ររង</div>
+            <div class="title-department">គ្រប់គ្រង កាសិក្សាឆ្នាំទី(៤)</div>
         </div>
         <a href="{{ url('/assign-classes?years=1&type=បរិញ្ញាប័ត្ររង') }}" style="text-decoration: none;">
             <div class="title-orerlay text-center">
@@ -111,7 +111,7 @@
             <div class="effect-img">
             <img src="https://img.freepik.com/free-vector/online-certification-illustration-style_23-2148570822.jpg?semt=ais_user" alt="Team Image">
             </div>
-            <div class="title-department">គ្រប់គ្រង កាសិក្សាឆ្នាំទី(២)​បរិញ្ញាប័ត្ររង</div>
+            <div class="title-department">គ្រប់គ្រង កាសិក្សាឆ្នាំទី(២)</div>
         </div>
         <a href="{{ url('/assign-classes?years=2&type=បរិញ្ញាប័ត្ររង') }}" style="text-decoration: none;">
             <div class="title-orerlay text-center">
@@ -125,7 +125,7 @@
             <div class="effect-img">
             <img src="https://img.freepik.com/free-vector/online-certification-illustration-style_23-2148570822.jpg?semt=ais_user" alt="Team Image">
             </div>
-            <div class="title-department">គ្រប់គ្រង កាសិក្សាឆ្នាំទី(៣)បរិញ្ញាប័ត្របន្ត</div>
+            <div class="title-department">គ្រប់គ្រង កាសិក្សាឆ្នាំទី(៣)</div>
         </div>
         <a href="{{ url('/assign-classes?years=3&type=បរិញ្ញាប័ត្របន្ត') }}" style="text-decoration: none;">
             <div class="title-orerlay text-center">
@@ -138,7 +138,7 @@
             <div class="effect-img">
             <img src="https://img.freepik.com/free-vector/online-certification-illustration-style_23-2148570822.jpg?semt=ais_user" alt="Team Image">
             </div>
-            <div class="title-department">គ្រប់គ្រង កាសិក្សាឆ្នាំទី(៤)​បរិញ្ញាប័ត្របន្ត</div>
+            <div class="title-department">គ្រប់គ្រង កាសិក្សាឆ្នាំទី(៤)</div>
         </div>
         <a href="{{ url('/assign-classes?years=4&type=បរិញ្ញាប័ត្របន្ត') }}" style="text-decoration: none;">
             <div class="title-orerlay text-center">

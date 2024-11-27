@@ -1,182 +1,112 @@
 @extends('app_layout.app_layout')
 @section('content')
-<style>
+<div class="container-fluid">
+    <h6 class="my-profile mt-3">My Profile</h6>
+    <!-- Top Buttons -->
+    <div class="top-buttons">
+        <button class="btn-update">Update</button>
+    </div>
 
-</style>
-<div class="page-head page-head-custom">
-    <div class="row">
-        <div class="container">
-            <h1 class="page-title">My Profile</h1>
+    <div class="content-wrapper">
+        <!-- Left Profile -->
+        <div class="profile-section">
+            <img src="profile-image.jpg" alt="Profile" class="profile-img">
+            <h2 class="name">SengHeang</h2>
+            <p class="role">President</p>
+            <p class="department">Small/Medium</p>
+            <p class="account">Account No : 9</p>
+            <button class="btn-upload">Upload</button>
+        </div>
 
-            <div class="action-buttons">
-                <button class="btn">
-                    <i class="fas fa-cog"></i> System Setting
-                </button>
-                <button class="btn">
-                    <i class="fas fa-info-circle"></i> Company Information
-                </button>
-                <button class="btn">
-                    <i class="fas fa-lock"></i> Two Factor Auth <i class="fas fa-chevron-down ms-1"></i>
-                </button>
-                <button class="btn btn-update">Update</button>
-            </div>
-
-            <div class="row">
-                <!-- Left Profile Section -->
-                <div class="col-md-3">
-                    <div class="profile-card">
-                        <div class="profile-section">
-                            <img src="{{ asset('assets/heang.jpg') }}" class="profile-image" alt="Profile">
-                            <h4 class="profile-name">SengHeang</h4>
-                            <p class="profile-title">President Small/Medium</p>
-                            <p class="account-no">Account No : 9</p>
-                            <button class="upload-btn">
-                                <i class="fas fa-upload text-primary"></i> Upload
-                            </button>
+        <!-- Right Forms -->
+        <div class="forms-section">
+            <!-- General Section -->
+            <div class="form-card">
+                <div class="card-title">General</div>
+                <div class="form-grid">
+                    <div class="form-row">
+                        <label>Email <span class="required">*</span></label>
+                        <input type="email" value="Panhaboy@gmail.com">
+                    </div>
+                    <div class="form-row">
+                        <label>First Name <span class="required">*</span></label>
+                        <input type="text" value="panha">
+                    </div>
+                    <div class="form-row">
+                        <label>Last Name <span class="required">*</span></label>
+                        <input type="text" value="Blue">
+                    </div>
+                    <div class="form-row">
+                        <label>Gender <span class="required">*</span></label>
+                        <select>
+                            <option>Select Gender</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>Date of Birth <span class="required">*</span></label>
+                        <input type="text" value="24-Nov-2024">
+                    </div>
+                    <div class="form-row">
+                        <label>Phone Number <span class="required">*</span></label>
+                        <div class="phone-input">
+                            <div class="country-select">
+                            
+                                <select class="country-list">
+                                    <option value="+855">+855</option>
+                                    <option value="+1">+1</option>
+                                    <option value="+44">+44</option>
+                                    <option value="+81">+81</option>
+                                    <option value="+86">+86</option>
+                                    <!-- Add more country codes as needed -->
+                                </select>
+                            </div>
+                            <input type="text" class="phone-number" placeholder="Phone No.">
                         </div>
+                    </div>
+                    <div class="form-row">
+                        <label>Organization Name <span class="required">*</span></label>
+                        <input type="text" value="PH-01">
+                    </div>
+                    <div class="form-row">
+                        <label>Id Card No</label>
+                        <input type="text" placeholder="Id Card No">
+                    </div>
+                    <div class="form-row full-width">
+                        <label>Tag</label>
+                        <input type="text" value="Amsterdam,Washington,Sydney,Beijing,Cairo">
                     </div>
                 </div>
-                <!-- Right Form Section -->
-                <div class="col-md-9">
-                    <!-- General Section -->
-                    <div class="card-form mb-4">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5>General</h5>
-                            <i class="fas fa-chevron-up"></i>
-                        </div>
-                        <div>
-                            <form action="">
-                                <div class="row mt-3">
-                                    <div class="col-md-6 col-sm-12">
-                                        <div class="form-group row">
-                                            <input type="hidden" id="type" name="type" value="">
-                                            <span class="labels col-sm-3 col-form-label text-right">Email</span>
-                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control form-control-sm " id="Email" name="Email" value="{{ $records->email ?? '' }}" placeholder="Email" aria-label="Email">
-                                            </div>
-                                        </div>
-                                    </div>
+            </div>
 
-                                    <div class="col-md-6 col-sm-12">
-                                        <div class="form-group row">
-                                            <span class="labels col-sm-3 col-form-label text-right">Name</span>
-                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control form-control-sm " id="name" name="name" value="{{ $records->name ?? '' }}" placeholder="" aria-label="">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row mt-3">
-                                    <div class="col-md-6 col-sm-12">
-                                        <div class="form-group row">
-                                            <input type="hidden" id="type" name="type" value="">
-                                            <span class="labels col-sm-3 col-form-label text-right">Gender</span>
-                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control form-control-sm " id="Email" name="Email" value="{{ $records_by_user->gender ?? '' }}" placeholder="Email" aria-label="Email">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-sm-12">
-                                        <div class="form-group row">
-                                            <span class="labels col-sm-3 col-form-label text-right">Phone Number</span>
-                                            <div class="col-sm-9">
-                                                <input type="text" class="form-control form-control-sm " id="name" name="name" value="{{ $records_by_user->phone_no ?? $records_by_user->phone_student }}" placeholder="" aria-label="">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </form>
-                        </div>
+            <!-- Communication Section -->
+            <div class="form-card">
+                <div class="card-title">Communication</div>
+                <div class="form-grid">
+                    <div class="form-row">
+                        <label>Address <span class="required">*</span></label>
+                        <input type="text" placeholder="Address">
                     </div>
-
-                    <!-- Communication Section -->
-
+                    <div class="form-row">
+                        <label>Address 2 <span class="required">*</span></label>
+                        <input type="text" placeholder="Address 2">
+                    </div>
+                    <div class="form-row">
+                        <label>Country Code <span class="required">*</span></label>
+                        <select>
+                            <option>Select Country</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>City/Town <span class="required">*</span></label>
+                        <input type="text" placeholder="City/Town">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-    $(document).ready(function() {
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        })
-        $(document).on('click', '#btnDelete', function() {
-            $(".modal-confirmation-text").html('Do you want to delete?');
-            $("#btnYes").attr('data-code', $(this).attr('data-code'));
-            $("#divConfirmation").modal('show');
-        });
-        $(document).on('click', '#btnYes', function() {
-            var code = $(this).attr('data-code');
-            $.ajax({
-                type: "POST"
-                , url: `/classes-delete`
-                , data: {
-                    code: code
-                }
-                , success: function(response) {
-                    if (response.status == 'success') {
-                        $("#divConfirmation").modal('hide');
-                        $("#row" + code).remove();
-                        notyf.success(response.msg);
-                    } else if (response.status == 'error') {
-                        notyf.error(response.msg);
-                    }
-                }
-            });
-        });
-    });
+<style>
 
-    function prints(ctrl) {
-        var url = 'departments/print';
-        var data = '';
-        data = $("#advance_search").serialize();
-        $.ajax({
-            type: 'get'
-            , url: url
-            , data: data
-            , headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-            , beforeSend: function() {
-                $('.loader').show();
-            }
-            , success: function(response) {
-                $('.loader').hide();
-                $('.print-content').html(response);
-                $('.print-content').printThis({});
-            }
-            , error: function(xhr, ajaxOptions, thrownError) {}
-        });
-    }
-
-    function DownlaodExcel() {
-        var url = '/student/downlaodexcel/';
-        if ($('#search_data').val() == '') {
-            data = $("#advance_search").serialize();
-        } else {
-            data = 'value=' + $('#search_data').val();
-        }
-        data = $("#advance_search").serialize();
-        $.ajax({
-            type: "post"
-            , url: url
-            , data: data
-            , headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-            , beforeSend: function() {}
-            , success: function(response) {
-                notyf.error(response.msg);
-            }
-            , error: function(xhr, ajaxOptions, thrownError) {}
-        });
-    }
-
-</script>
+</style>
 @endsection
