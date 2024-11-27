@@ -77,7 +77,7 @@
                 <li><a href="{{ url('skills') }}">skills-ជំនាញ</a></li>
                 <li><a href="{{ url('subject') }}">Subject-មុខវិជ្ជា</a></li>
                 <li><a href="{{ url('teachers') }}">Teachers-សាស្ត្រាចារ្យ លោកគ្រូអ្នកគ្រូ</a></li>
-                <li><a href="{{ url('attendance') }}">Attendance-អវត្តមាន</a></li>
+                <li><a href="{{ url('attendance/dashboards-attendance') }}">Attendance-អវត្តមាន</a></li>
             </ul>
         </div>
     </div>

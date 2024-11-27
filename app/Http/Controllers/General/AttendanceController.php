@@ -3,97 +3,52 @@
 namespace App\Http\Controllers\General;
 
 use App\Http\Controllers\Controller;
+use App\Models\General\ClassSchedule;
+use App\Models\General\AssingClasses;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
 {
-    //
     public function index()
     {
-        $attendanceData = [
-            [
-                'teacher' => 'John Doe',
-                'subject' => 'Mathematics',
-                'emoji' => '📐',
-                'avatarUrl' => 'path/to/avatar.jpg',
-                'time' => '09:00 AM',
-                'checked' => true,
-            ],
-            [
-                'teacher' => 'Jane Smith', 
-                'subject' => 'Science',
-                'emoji' => '🔬',
-                'avatarUrl' => 'path/to/avatar.jpg',
-                'time' => '10:30 AM',
-                'checked' => false,
-            ],
-            [
-                'teacher' => 'Michael Chen',
-                'subject' => 'Physics',
-                'emoji' => '⚡️',
-                'avatarUrl' => 'path/to/avatar.jpg',
-                'time' => '11:30 AM',
-                'checked' => true,
-            ],
-            [
-                'teacher' => 'Sarah Wilson',
-                'subject' => 'English Literature',
-                'emoji' => '📚',
-                'avatarUrl' => 'path/to/avatar.jpg',
-                'time' => '01:00 PM',
-                'checked' => false,
-            ],
-            [
-                'teacher' => 'Robert Garcia',
-                'subject' => 'History',
-                'emoji' => '🏛',
-                'avatarUrl' => 'path/to/avatar.jpg',
-                'time' => '02:15 PM',
-                'checked' => true,
-            ],
-            [
-                'teacher' => 'Emily Brown',
-                'subject' => 'Chemistry',
-                'emoji' => '🧪',
-                'avatarUrl' => 'path/to/avatar.jpg',
-                'time' => '03:30 PM',
-                'checked' => false,
-            ],
-            [
-                'teacher' => 'David Kim',
-                'subject' => 'Computer Science',
-                'emoji' => '💻',
-                'avatarUrl' => 'path/to/avatar.jpg',
-                'time' => '04:45 PM',
-                'checked' => true,
-            ],
-            [
-                'teacher' => 'Lisa Anderson',
-                'subject' => 'Art',
-                'emoji' => '🎨',
-                'avatarUrl' => 'path/to/avatar.jpg',
-                'time' => '09:45 AM',
-                'checked' => false,
-            ],
-            [
-                'teacher' => 'James Taylor',
-                'subject' => 'Music',
-                'emoji' => '🎵',
-                'avatarUrl' => 'path/to/avatar.jpg',
-                'time' => '02:45 PM',
-                'checked' => true,
-            ],
-            [
-                'teacher' => 'Maria Rodriguez',
-                'subject' => 'Spanish',
-                'emoji' => '🌎',
-                'avatarUrl' => 'path/to/avatar.jpg',
-                'time' => '03:15 PM',
-                'checked' => false,
-            ],
-        ];
+        // Get today's day name in lowercase
+        $today = strtolower(Carbon::now()->format('l'));
+        
+        // Get the class schedules and related assignments for today
+        $schedules = ClassSchedule::with(['section', 'subject'])
+            ->whereDate('start_date', '<=', Carbon::now())
+            ->orderBy('start_date', 'asc')
+            ->get()
+            ->map(function ($schedule) use ($today) {
+                // Get assignments for this schedule that match today
+                $assignments = AssingClasses::where('class_schedule_id', $schedule->id)
+                    ->where('date_name', $today)
+                    ->with(['teacher', 'subject'])
+                    ->get();
 
+                // Format the schedule data
+                return [
+                    'class_code' => $schedule->class_code,
+                    'section' => $schedule->section->name ?? '',
+                    'start_date' => $schedule->start_date,
+                    'schedule_items' => $assignments->map(function ($assignment) {
+                        return [
+                            'teacher' => $assignment->teacher->name_2 ?? '',
+                            'subject' => $assignment->subject->name ?? '',
+                            'time' => $assignment->start_time . ' - ' . $assignment->end_time,
+                            'room' => $assignment->room,
+                            'checked' => (bool) $assignment->status,
+                        ];
+                    })->toArray(),
+                ];
+            })
+            // Filter out schedules with no items for today
+            ->filter(function ($schedule) {
+                return !empty($schedule['schedule_items']);
+            })
+            ->values();
 
-        return view('dashboard.dashboard_attendance_student', compact('attendanceData'));
+        return view('dashboard.dashboard_attendance_student', compact('schedules'));
     }
 }
