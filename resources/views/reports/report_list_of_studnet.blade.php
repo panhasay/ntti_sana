@@ -24,8 +24,9 @@
     <button type="button" onclick="prints()" class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2"> Print
       <i class="mdi mdi-printer btn-icon-append"></i>
       <button type="button" id="BtnDownlaodExcel"
-        class="btn btn-outline-success btn-icon-text btn-sm mb-2 mb-md-0 me-2">Excel <i
-          class="mdi mdi-printer btn-icon-append"></i> </button>
+          class="btn btn-outline-success btn-icon-text btn-sm mb-2 mb-md-0 me-2">Excel <i
+          class="mdi mdi-printer btn-icon-append"></i> 
+      </button>
   </div>
   <div class="d-grid d-md-flex justify-content-md-end p-3">
     <div>

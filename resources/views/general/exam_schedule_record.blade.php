@@ -11,16 +11,18 @@
     <tr id="row{{$record->code ?? ''}}">
         <td class="">
             <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2"
-                target="_blank" href="{{'/class-new/transaction?type=ed&code='.\App\Service\service::Encr_string($record->code ?? '') }}">
+                href="{{'/exam-schedule/transaction?type=ed&code='.\App\Service\service::Encr_string($record->id ?? '') }}">
                 <i class="mdi mdi-border-color"></i> Open
             </a>
         </td>
-        <td class="">{{ $record->code ?? '' }}</td>
-        <td class="">{{ $sections ?? '' }}</td>
-        <td class="">{{ $skills ?? '' }}</td>
-        <td class="">{{ $record->level ?? '' }}</td>
-        <td class="">{{ $department ?? '' }}</td>
-        <td class="">{{ $record->school_year_code ? \Illuminate\Support\Str::replace('_', '-', $record->school_year_code) : '' }}
-        </td>
+        <td class="text-center">{{ $index++ }}</td>
+        <td class="text-center">{{ $record->class_code ?? '' }}</td>
+        <td class="text-center">{{ $sections ?? '' }}</td>
+        <td class="text-center">{{ $skills ?? '' }}</td>
+        <td class="text-center">{{ $record->qualification ?? '' }}</td>
+        <td class="text-center">{{ $department ?? '' }}</td>
+        <td class="text-center">{{ $formattedDate  ?? '' }}</td>
+        <td class="text-center">{{ $record->session_year_code ?? '' }}</td>
+        <td class="text-center">ឆ្នាំទី​ {{ $record->years ?? '' }}​</td>
     </tr>
 @endforeach

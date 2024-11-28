@@ -23,7 +23,12 @@
 <div class="page-header flex-wrap">
   <div class="header-left">
     <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="BntCreate"
-      href="{{url('/student/registration/transaction?type=cr')}}"><i class="mdi mdi-account-plus"></i> បន្ថែមថ្មី</i></a>
+      href="{{url('/student/registration/transaction?type=cr')}}"><i class="mdi mdi-account-plus"></i> បន្ថែមថ្មី</i>
+    </a>
+      <button type="button" id="BtnDownlaodExcel"
+          class="btn btn-outline-success btn-icon-text btn-sm mb-2 mb-md-0 me-2">Excel <i
+          class="mdi mdi-printer btn-icon-append"></i> 
+      </button>
   </div>
   <div class="d-grid d-md-flex justify-content-md-end p-3">
     <input type="text" class="form-control mb-2 mb-md-0 me-2" id="search_data" data-page="student_registration" name="search_data"
@@ -52,16 +57,59 @@
               <input type="text" class="form-control form-control-sm" id="name_2" name="name_2" value=""
                 placeholder="គោត្តនាម និងនាម" aria-label="គោត្តនាម និងនាម">
             </div>
+           
             <div class="col-sm-3">
-              <span class="labels"> ឈ្មោះជាឡាតាំង</span>
-              <input type="text" class="form-control form-control-sm" id="name" name="name" value=""
-                placeholder="	ឈ្មោះជាឡាតាំង" aria-label="	ឈ្មោះជាឡាតាំង">
+              <span class="labels">ដេប៉ាតឺម៉ង់</span>
+              <select class="js-example-basic-single FieldRequired" id="department_code" name="department_code" style="width: 100%;">
+                <option value="">&nbsp;</option>
+                @foreach ($department as $record)
+                <option value="{{ $record->code ?? '' }}" {{ isset($records->department_code) && $records->department_code == $record->code ? 'selected' : '' }}>
+                    {{ isset($record->name_2) ? $record->name_2 : '' }}
+                </option>
+                @endforeach
+            </select>
             </div>
+
             <div class="col-sm-3">
-              <span class="labels">ថ្ងៃខែឆ្នាំកំណើត</span>
-              <input type="text" class="form-control form-control-sm" id="date_of_birth" name="date_of_birth" value=""
-                placeholder="ថ្ងៃខែឆ្នាំកំណើត" aria-label="ថ្ងៃខែឆ្នាំកំណើត">
+              <span class="labels">ជំនាញ</span>
+                <select class="js-example-basic-single FieldRequired" id="skills_code" name="skills_code" style="width: 100%;">
+                    <option value="">&nbsp;</option>
+                    @foreach ($skills as $record)
+                    <option value="{{ $record->code ?? '' }}" {{ isset($records->skills_code) && $records->skills_code == $record->code ? 'selected' : '' }}>
+                        {{ isset($record->code) ? $record->code : '' }} - {{ isset($record->name_2) ? $record->name_2 : '' }}
+                    </option>
+                    @endforeach
+                </select>
             </div>
+
+            <div class="col-sm-3">
+              <span class="labels">វេន</span>
+              <div class="col-sm-9">
+                <select class="js-example-basic-single FieldRequired" id="sections_code" name="sections_code" style="width: 130%;">
+                    <option value="">&nbsp;</option>
+                    @foreach ($sections as $record)
+                    <option value="{{ $record->code ?? '' }}" {{ isset($records->sections_code) && $records->sections_code == $record->code ? 'selected' : '' }}>
+                        {{ isset($record->code) ? $record->code : '' }} - {{ isset($record->name_2) ? $record->name_2 : '' }}
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+            </div>
+
+            <div class="col-sm-3">
+              <span class="labels col-sm-3 col-form-label text-end">កម្រិត<strong style="color:red; font-size:15px;"> *</strong></span>
+                <div class="col-sm-9">
+                    <select class="js-example-basic-single" id="qualification" name="qualification" style="width: 130%;">
+                        <option value="">&nbsp;</option>
+                        @foreach ($qualifications as $value => $label)
+                            <option value="{{ $label->code }}" {{ isset($records->qualification) && $records->qualification == $label->code ? 'selected' : '' }}>
+                                {{ $label->code ?? ''}}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
           </div>
           <button type="button" class="btn btn-primary text-white" data-page="student_registration" id="btn-adSearch">Search</button>
         </div>
@@ -91,6 +139,7 @@
   </div>
 </div>
 @include('system.modal_comfrim_delet')
+@include('system.modal_comfrim_donwload')
 @include('general.student_register_lists')
 @include('system.model_upload_excel')
 <script>
@@ -230,7 +279,47 @@
         }
       });
     });
+
+    $(document).on('click', '#BtnDownlaodExcel', function() {
+      $(".modal-confirmation-text").html('Do you want to Downlaod Excel ?');
+      $("#btnYesExcel").attr('data-code', $(this).attr('data-type'));
+      $("#divConfirmationExcel").modal('show');
+    });
+    $(document).on('click', '#btnYesExcel', function() {
+      DownlaodExcel();
+    });
+
   });
+
+  function DownlaodExcel() {
+    var url = '/student/registration-downlaodexcel';
+    if ($('#search_data').val() == '') {
+      data = $("#advance_search").serialize();
+    } else {
+      data = 'value=' + $('#search_data').val();
+    }
+    data = $("#advance_search").serialize();
+    $.ajax({
+      type: "get",
+      url: url,
+      data: data,
+      headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      beforeSend: function() {
+        $('.loader').show();
+      },
+      success: function(response) {
+        $("#divConfirmationExcel").modal('hide');
+        $('.loader').hide();
+        notyf.success(response.msg);
+        location.href = response.path;
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        $('.loader').hide();
+      }
+    });
+  }
 
   function prints(ctrl) {
     var url = '/student/print';
@@ -250,29 +339,6 @@
         $('.loader').hide();
         $('.print-content').html(response);
         $('.print-content').printThis({});
-      },
-      error: function(xhr, ajaxOptions, thrownError) {}
-    });
-  }
-
-  function DownlaodExcel() {
-    var url = '/student/downlaodexcel/';
-    if ($('#search_data').val() == '') {
-      data = $("#advance_search").serialize();
-    } else {
-      data = 'value=' + $('#search_data').val();
-    }
-    data = $("#advance_search").serialize();
-    $.ajax({
-      type: "post",
-      url: url,
-      data: data,
-      headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-      },
-      beforeSend: function() {},
-      success: function(response) {
-        notyf.error(response.msg);
       },
       error: function(xhr, ajaxOptions, thrownError) {}
     });

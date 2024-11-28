@@ -59,14 +59,15 @@
         }
     }
 </style>
+<div class="containner">
 @extends('app_layout.app_layout')
 @section('content')
-<div class="containner">
+
     <script src="https://cdn.tailwindcss.com"></script>
-</div>
+
 <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
-        <h1 class="scroll-m-20  text-2xl sm:text-3xl lg:text-4xl tracking-tight khmer-moul">វត្តមានថ្ងៃនេះ</h1>
+        <h1 class="scroll-m-20  text-2xl sm:text-3xl lg:text-4xl khmer-moul">វត្តមានថ្ងៃនេះ</h1>
         <div class="text-sm sm:text-base text-muted-foreground khmer-font">
             {{ Carbon\Carbon::now()->locale('km')->isoFormat('ថ្ងៃdddd ទីD ខែMMMM ឆ្នាំY') }}
         </div>
@@ -127,8 +128,6 @@
     </div>
     @endsection
 </div>
-
-
 
 
 

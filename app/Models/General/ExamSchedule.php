@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ExamSchedule extends Model
 {
     use HasFactory;
-    protected $table = 'class_schedule';
+    protected $table = 'exam_schedule';
     // protected $primaryKey = 'code';
     // protected $foreignKey = 'code'; // Corrected property name
     protected $primaryKey = 'id';

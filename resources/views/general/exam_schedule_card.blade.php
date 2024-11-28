@@ -17,15 +17,14 @@
     <div class="row border-bottom p-2">
         <div class="col-md-6 col-sm-6  col-6">
             <div class="page-title page-title-custom">
-                <div class="title-report">
+                <div class="title-page">
                     <a href="{{ url('/class-schedule') }}"><i class="mdi mdi-format-list-bulleted"></i></a>
                     @if($type != 'ed')
-                       
+                        បន្ថែមថ្មី 
                     @endif
-                    {{-- @if(count($record_sub_lines) <= 0)
+                    @if(count($record_sub_lines) <= 0)
                         <button type="button" id="BtnSave" class="btn btn-success"> save </button>
-                    @endif --}}
-                   បញ្ចូលនិស្សិតចូល ក្រុម/ថា្នក់​:{{ $records->name ??'' }}
+                    @endif
                 </div>
             </div>
         </div>
@@ -42,7 +41,7 @@
     <form id="frmDataCard" role="form" class="form-sample" enctype="multipart/form-data">
         <div class="card-body p-3">
             <div class="row">
-                {{-- <div class="col-md-6">
+                <div class="col-md-6">
                     <div class="form-group row">
                         <input type="hidden" id="type" name="type" value="{{ $records->id ?? '' }}">
                         <span class="labels col-sm-3 col-form-label text-end">ចាប់ផ្តើមអនុវត្ត<strong style="color:red; font-size:15px;"> *</strong></span>
@@ -50,7 +49,7 @@
                             <input type="date" class="form-control form-control-sm " id="start_date" name="start_date" value="{{ $records->start_date ?? ''}}" placeholder="ចាប់ផ្តើមអនុវត្ត" aria-label="ចាប់ផ្តើមអនុវត្ត"  {{ (count($record_sub_lines) > 0) ? 'disabled' : '' }}>
                         </div>
                     </div>
-                </div> --}}
+                </div>
 
                 <div class="col-md-6">
                     <div class="form-group row">
@@ -59,7 +58,7 @@
                             <select class="js-example-basic-single FieldRequired" id="class_code" name="class_code" style="width: 100%;" {{ (count($record_sub_lines) > 0) ? 'disabled' : '' }}>
                                 <option value="">&nbsp;</option>
                                 @foreach ($classs as $record)
-                                <option value="{{ $record->code ?? '' }}" {{ isset($records->code) && $records->code == $record->code ? 'selected' : '' }}>
+                                <option value="{{ $record->code ?? '' }}" {{ isset($records->class_code) && $records->class_code == $record->code ? 'selected' : '' }}>
                                     {{ isset($record->code) ? $record->code : '' }} - {{ isset($record->name) ? $record->name : '' }}
                                 </option>
                                 @endforeach
@@ -108,7 +107,7 @@
                                 <option value="">&nbsp;</option>
                                 @foreach ($department as $record)
                                 <option value="{{ $record->code ?? '' }}" {{ isset($records->department_code) && $records->department_code == $record->code ? 'selected' : '' }}>
-                                    {{ isset($record->name_2) ? $record->name_2 : '' }}
+                                    {{ isset($record->code) ? $record->code : '' }} - {{ isset($record->name_2) ? $record->name_2 : '' }}
                                 </option>
                                 @endforeach
                             </select>
@@ -122,10 +121,10 @@
                         <div class="col-sm-9">
                             <select class="js-example-basic-single FieldRequired" id="school_year_code" name="school_year_code" style="width: 100%;" {{ (count($record_sub_lines) > 0) ? 'disabled' : '' }}>
                                 <option value="">&nbsp;</option>
-                                @foreach ($school_years as $record) 
-                                    <option value="{{ $record->code ?? '' }}" {{ isset($records->school_year_code) && $records->school_year_code == $record->code ? 'selected' : '' }}>
-                                      {{ isset($record->name) ? $record->name : '' }}
-                                    </option>
+                                @foreach ($school_years as $record)
+                                <option value="{{ $record->code ?? '' }}" {{ isset($records->session_year_code) && $records->session_year_code == $record->code ? 'selected' : '' }}>
+                                    {{ isset($record->name) ? $record->name : '' }}
+                                </option>
                                 @endforeach
                             </select>
                         </div>
@@ -137,16 +136,52 @@
                         <span class="labels col-sm-3 col-form-label text-end">កម្រិត<strong style="color:red; font-size:15px;"> *</strong></span>
                         <div class="col-sm-9">
                             <select class="js-example-basic-single" id="level" name="level" style="width: 100%;" {{ (count($record_sub_lines) > 0) ? 'disabled' : '' }}>
-                                <option value="">&nbsp;</option>
-                                @foreach ($qualifications as $value => $label)
-                                    <option value="{{ $label->code }}" {{ isset($records->level) && $records->level == $label->code ? 'selected' : '' }}>
-                                        {{ $label->code ?? ''}}
-                                    </option>
+                                <?php 
+                            $options = [
+                                    'បរិញ្ញាបត្រ' => 'បរិញ្ញាបត្រ',
+                                    'សញ្ញាបត្រជាន់ខ្ពស់បច្ចេកទេស' => 'សញ្ញាបត្រជាន់ខ្ពស់បច្ចេកទេស',
+                                    'បន្តបរិញ្ញាបត្របច្ចេកវីទ្យា' => 'បន្តបរិញ្ញាបត្របច្ចេកវីទ្យា',
+                                ];
+                            ?>
+                                @foreach ($options as $value => $label)
+                                <option value="{{ $value }}" {{ isset($records->level) && $records->level == $value ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
                 </div>
+
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <span class="labels col-sm-3 col-form-label text-end">ឆមាស<strong style="color:red; font-size:15px;">
+                                *</strong></span>
+                        <div class="col-sm-9">
+                            <select class="js-example-basic-single form_data" id="semester" name="semester" style="width: 100%;" {{ (count($record_sub_lines) > 0) ? 'disabled' : '' }}>
+                                <option value="1" {{ (isset($records->semester) && $records->semester == '1') ? '' : 'selected' }}>ឆមាសទី ១</option>
+                                <option value="2" {{ (isset($records->semester) && $records->semester == '2') ? 'selected' : '' }}>ឆមាសទី ២</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <span class="labels col-sm-3 col-form-label text-end">បរិញាប័ត្រ ឆ្នាំ<strong style="color:red; font-size:15px;"> *</strong></span>
+                        <div class="col-sm-9">
+                            <select class="js-example-basic-single FieldRequired" id="years" name="years" style="width: 100%;" {{ (count($record_sub_lines) > 0) ? 'disabled' : '' }}>
+                                <option value="">&nbsp;</option>
+                                @foreach ($study_years as $record)
+                                <option value="{{ $record->code ?? '' }}" {{ isset($records->years) && $records->years == $record->code ? 'selected' : '' }}>
+                                    {{ isset($record->code) ? $record->code : '' }} - {{ isset($record->name_2) ? $record->name_2 : '' }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </form>
@@ -154,39 +189,20 @@
 
 <div class="container-fluid p-2">
     <div class="row">
-        <div class="col-md-12 col-sm-12 col-6">
-            <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="GetStudnetRegister" href="javascript:void(0);"><i class="mdi mdi-account-plus"></i> Add New</a>
-            {{-- <button type="button" id="prints" class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2">Print
+        <div class="col-md-6 col-sm-6 col-6">
+            <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="AddTeacherSchedule" href="javascript:void(0);"><i class="mdi mdi-account-plus"></i> Add New</a>
+            <button type="button" id="prints" class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2">Print
                 <i class="mdi mdi-printer btn-icon-append"></i>
-            </button> --}}
-            <span class="title-report">
-                បន្ថែបពត៍មាននិស្សិតចូលថ្នាក់ {{ $records->code ?? '' }} សរុបចំនួន ​{{ count($record_sub_lines ?? '') }} / 55 នាក់
-            </span>
+            </button>
+        </div>
+        <div class="col-md-6 col-sm-6 col-6 khmer_os_b bold">
+            ឈ្មោះគ្រូនិង មុខវិជ្ចាប្រឡង
         </div>
     </div>
 </div>
 <!-- Modal -->
 
-<div class="modal fade" id="ModalStudnetRegister" tabindex="-1" aria-labelledby="ModalStudnetRegister" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen" style="max-width: 100%;">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title text-dark" id="ModalStudnetRegister">ឈ្មោះនិស្សិតឆ្នាំទី១ ក្រុម/ថ្នាក់​ {{ $records->code ?? '' }}</h5>
-          <button type="button" id="btnClose" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body" style="height: 400px;">
-            <div class="control-table table-responsive custom-data-table-wrapper2 contain-getStudentRegister">
-                
-            </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" id="btnClose" class="btn btn-secondary khmer_os_b" data-bs-dismiss="modal">បិទ</button>
-          {{-- <button type="button" id="SaveTeacherSchedule" class="btn btn-primary khmer_os_b">រក្សាទុក</button> --}}
-        </div>
-      </div>
-    </div>
-</div>
-
+@include('system.model_exam_schedule')<br>
 <!---PRINT--->
 <div class="modal fade" id="ModelPrints" tabindex="-1" role="dialog" aria-labelledby="ModelPrints" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -198,7 +214,7 @@
           <h4 class="modal-confirmation-text text-center p-4"></h4>
         </div>
         <div class="modal-footer">
-          <button type="button"  class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" id="btnClose" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <button type="button" id="YesPrints" data-code="{{ $_GET['assing_no'] ?? '' }}" data-id=""
             class="btn btn-primary">Yes</button>
         </div>
@@ -212,26 +228,7 @@
     </div>
   </div>
   <!-- Modal -->
-
-<div class="modal fade" id="divConfirmationline" tabindex="-1" role="dialog" aria-labelledby="divConfirmationline"
-  aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header bg-m-header">
-        <h5 class="modal-title" id="divConfirmationline">Confirmation</h5>
-      </div>
-      <div class="modal-body">
-        <h4 class="modal-confirmation-text text-center p-4"></h4>
-      </div>
-      <div class="modal-footer">
-        <button type="button" id="btnClose" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" id="btnYesLine" data-code="" class="btn btn-primary">Yes</button>
-      </div>
-    </div>
-  </div>
-</div>
-@include('general.divided_new_classes_sub_lists')
-
+@include('general.class_schedule_sub_lists')
 <script>
     var header = "{{ $records }}"
     $(document).ready(function() {
@@ -264,114 +261,27 @@
                 }
             });
         });
-        $("#GetStudnetRegister").on('click', function() {
+        $("#AddTeacherSchedule").on('click', function() {
             if (!header) {
                 notyf.error("សូមបំពេញ ព៏តមានថ្នាក់និងឆ្នាំសិក្សាខាងលើ");
                 return;
             }
             $('.js-example-basic-single').select2();
-            let code = "{{ isset($_GET['code']) ? addslashes($_GET['code']) : '' }}";
-            let url = '/class-new/get-student-register?code=' + code;
-            $.ajax({
-                type: 'get',
-                url: url,
-                headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                beforeSend: function() {
-                    $('.loader').show();
-                },
-                success: function(response) {
-                    $('.loader').hide(); // Hide the loader
-                    $("#ModalStudnetRegister").modal('show'); // Show the modal
-                    $('.contain-getStudentRegister').html(response); // Update the content of the modal body
-                },
-                error: function(xhr, ajaxOptions, thrownError) {}
+            $("#ModalTeacherSchedule").modal('show');
+            
+            $('#teachers, #subjects_code_monday, #subjects_code_tuesday, #subjects_code_wednesday, #subjects_code_thursday, #subjects_code_friday, #subjects_code_saturday').select2({
+                dropdownParent: $('#ModalTeacherSchedule') 
             });
-        });
-
-        $(document).on('click', '#btnAddStudentToClasses', function() {
-            var code = $(this).attr('data-code');
-            var class_code = $(this).attr('data-class');
-            var url = `/class-new/add-student-register?code=${code}&class_code=${class_code}`;
-
-            $.ajax({
-                type: "POST",
-                url: url,
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    notyf.success("Student added successfully");
-                    // Update the row with new data
-                    $(`#row${code}`).replaceWith(response); 
-                },
-                error: function(error) {
-                    notyf.error("Failed to add student");
-                }
+            jQuery(function() {
+                $('#frmDataSublist')[0].reset();
             });
-        });
-        $("#btnClose").on('click', function() {
-            window.location.reload(); 
-        });
-        
-        $(document).on('click', '#btnDeleteLine', function() {
-            $(".modal-confirmation-text").html('Do you want to delete?');
-            $("#btnYesLine").attr('data-code', $(this).attr('data-code'));
-            $("#divConfirmationline").modal('show');
-        });
-        $(document).on('click', '#btnYesLine', function() {
-            var code = $(this).attr('data-code');
-            $.ajax({
-                type: "POST",
-                url: `/class-new/add-student-register-deleteline`,
-                data: {
-                    code: code
-                },
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')  // Correct header location
-                },
-                success: function(response) {
-                    if (response.status == 'success') {
-                        $("#divConfirmationline").modal('hide');
-                        $("#row_line" + code).remove();
-                        notyf.success(response.msg);
-                    }
-                },
-                error: function() {
-                    notyf.error("Something went wrong. Please try again.");
-                }
+            const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+            days.forEach(day => {
+                $(`#subjects_code_${day}`).append(new Option("មុខវិជ្ជា", "", true, true));
             });
+            $("#teachers").append(new Option("សាស្រ្តាចារ្យ", "", true, true));
+
         });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         $("#SaveTeacherSchedule").on('click', function() {
             var frmDataSublist = $('#frmDataSublist').serialize();
             var code = "{{ isset($_GET['code']) ? addslashes($_GET['code']) : '' }}";
@@ -438,7 +348,6 @@
                 error: function(xhr, ajaxOptions, thrownError) {}
             });
         });
-
         $(document).on('click', '.BtnEditeacher', function() {
             var code = $(this).attr('data-code');
             let url = 'update/class-schedule/transaction?id=' + code;
@@ -617,7 +526,6 @@
         }
         return inValid;
     }
-    
 
 </script>
 @endsection

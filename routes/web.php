@@ -216,6 +216,7 @@ Route::group(['perfix' => 'student'], function (){
     Route::POST('/student/registration/update',[StudnetController::class,'updateRegistration']);
     Route::get('/student/registration/prints',[StudnetController::class,'PrintRegistration']);
     Route::POST('/student/register/delete',[StudnetController::class,'DeleteRegistration']);
+    Route::get('/student/registration-downlaodexcel',[StudnetController::class,'StudentDownlaodRegistrationDownlaodexcel']);
 })->middleware('auth');
 
 Route::group(['perfix' => 'class-new'], function (){
@@ -223,12 +224,17 @@ Route::group(['perfix' => 'class-new'], function (){
     Route::get('/class-new/transaction', [DividedNewClassesController::class, 'transaction']);
     Route::get('/class-new/get-student-register', [DividedNewClassesController::class, 'GEteStudentRegister']);
     Route::POST ('/class-new/add-student-register', [DividedNewClassesController::class, 'AddStudentRegister']);
+    Route::POST('/class-new/add-student-register-deleteline',[DividedNewClassesController::class,'DeleteStudentRegisterDeleteline']);
 })->middleware('auth');
+
 Route::group(['perfix' => 'exam-schedule'], function (){
     Route::get('/exam-schedule',[ExamScheduleController::class,'index']);
-    Route::get('/class-new/transaction', [ExamScheduleController::class, 'transaction']);
-    Route::get('/class-new/get-student-register', [ExamScheduleController::class, 'GEteStudentRegister']);
-    Route::POST ('/class-new/add-student-register', [ExamScheduleController::class, 'AddStudentRegister']);
+    Route::get('/exam-schedule/transaction', [ExamScheduleController::class, 'transaction']);
+    Route::post('/exam-schedule/update', [ExamScheduleController::class, 'update']);
+    Route::post('/exam-schedule/store', [ExamScheduleController::class, 'store']);
+    Route::POST ('/exam-schedule-delete', [ExamScheduleController::class, 'delete']);
+    Route::POST ('/exam-schedule/save-schedule', [ExamScheduleController::class, 'SaveSchedule']);
+    Route::get('/exam-schedule-print',[ExamScheduleController::class,'printLine']);
 })->middleware('auth');
 
 

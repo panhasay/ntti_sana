@@ -3,11 +3,19 @@
 namespace App\Http\Controllers\General;
 
 use App\Http\Controllers\Controller;
+use App\Models\General\AssingClasses;
+use App\Models\General\Classes;
+use App\Models\General\ClassSchedule as GeneralClassSchedule;
 use App\Models\General\ExamSchedule;
+use App\Models\General\StudyYears;
+use App\Models\General\Subjects;
+use App\Models\General\Teachers;
+use App\Models\SystemSetup\Department;
 use App\Service\service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\DB;
+use Models\General\ClassSchedule;
 class ExamScheduleController extends Controller
 {
     //
@@ -30,11 +38,10 @@ class ExamScheduleController extends Controller
     public function index(){
         $page = $this->page;
         $records = ExamSchedule::orderBy('session_year_code', 'asc')->paginate(20);
-        // dd($records);
         if(!Auth::check()){
             return redirect("login")->withSuccess('Opps! You do not have access');
         }  
-        return view('general.class_schedule', compact('records','page'));	
+        return view('general.exam_schedule', compact('records','page'));	
     }
     public function transaction(request $request)
     {
@@ -66,7 +73,7 @@ class ExamScheduleController extends Controller
                                 ->where('department_code', $records->department_code)
                                 ->get();                    
             }
-            return view('general.class_schedule_card', compact($params));
+            return view('general.exam_schedule_card', compact($params));
         } catch (\Exception $ex) {
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);

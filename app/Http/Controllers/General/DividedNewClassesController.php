@@ -33,18 +33,23 @@ class DividedNewClassesController extends Controller
     {
         $this->services = new service();
         $this->page_id = "10001";
-        $this->page = "class-schedule";
-        $this->prefix = "class-schedule";
+        $this->page = "class-new";
+        $this->prefix = "class-new";
         $this->arrayJoin = ['10001', '10007', '10008'];
         $this->table_id = "10005";
     }
     public function index(){
         $page = $this->page;
-        $records = Classes::orderBy('code', 'desc')->paginate(10);
+        $sections = DB::table('sections')->get();
+        $department = Department::get();
+        $skills = DB::table('skills')->get();
+        $qualifications = Qualifications::get();
+        
+        $records = Classes::orderBy('created_at', 'desc')->paginate(20);
         if(!Auth::check()){
             return redirect("login")->withSuccess('Opps! You do not have access');
         }  
-        return view('general.divided_new_classes', compact('records','page'));	
+        return view('general.divided_new_classes', compact('records','page', 'department', 'sections', 'skills', 'qualifications'));	
     }
     public function transaction(request $request)
     {
@@ -206,9 +211,6 @@ class DividedNewClassesController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-
-
-
 
     public function update(Request $request)
     {

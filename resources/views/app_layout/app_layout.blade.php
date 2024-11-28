@@ -42,6 +42,12 @@
 
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+  <style>
+    .loader{
+      position: absolute !important;
+      z-index: 100000000000000000;
+    }
+  </style>
 </head>
 <body class="addClass">
   <div class="loader" id="loader-1"></div>
@@ -380,8 +386,13 @@
               type: "GET",
               url: `/system/avanceSearch/${page}`,
               data: data,
+              beforeSend: function() {
+                $('.loader').show();
+              },
               success: function (response) {
                   if(response.status == 'success'){
+                      $(".collapse").removeClass('show');
+                      $('.loader').hide();
                       $('.control-table').html("");
                       $('.control-table').html(response.view);
                   } 

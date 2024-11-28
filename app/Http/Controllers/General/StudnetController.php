@@ -27,7 +27,9 @@ use App\Models\General\Skills;
 use App\Models\General\StudentRegistration;
 use Illuminate\Auth\Events\Validated;
 use App\Models\General\StudyYears;
-
+use App\Models\SystemSetup\Department;
+use App\Models\General\Qualifications;
+use App\Models\General\Sections;
 use UserImport;
 
 class StudnetController extends Controller
@@ -52,6 +54,7 @@ class StudnetController extends Controller
     {
         try {
             $user = Auth::user();
+
             if(isset($user->role) && $user->role == 'user_department'){
                 $records = Student::where('department_code', $user->childs)
                 ->orderBy('code', 'asc')
@@ -76,7 +79,10 @@ class StudnetController extends Controller
     }
     public function StudentRegistration(Request $request){
         $user = Auth::user();
-
+        $sections = DB::table('sections')->get();
+        $department = Department::get();
+        $skills = DB::table('skills')->get();
+        $qualifications = Qualifications::get();
        
 
         if($user->role == "teachers"){
@@ -98,7 +104,7 @@ class StudnetController extends Controller
              ->get();
             $records = StudentRegistration::with(['session_year'])->where('study_type', 'new student')->orderBy('code', 'desc')->paginate(15);
         }
-        return view('general.student_register', compact('records', 'total_records'));
+        return view('general.student_register', compact('records', 'total_records', 'qualifications', 'skills', 'department', 'sections', 'sections'));
     }
     public function transaction(request $request)
     {
@@ -370,6 +376,71 @@ class StudnetController extends Controller
             ]);
         }
     }
+
+
+    public function StudentDownlaodRegistrationDownlaodexcel(Request $request)
+    {
+        try {
+            $filter = $request->all();
+            $department = $filter['department_code'];
+            $department = Department::where('code', $department)->first();
+            if ($department){
+                $department = $department->name_2;
+            }
+            $skills = $filter['skills_code'];
+            $skills = Skills::where('code', $skills)->first();
+            if ($skills){
+                $skills = $skills->name_2;
+            }
+            $sections = $filter['sections_code'];
+            $sections = Sections::where('code', $sections)->first();
+            if ($sections){
+                $sections = $sections->name_2;
+            }
+            $qualification = $filter['qualification'];
+            $qualification = Qualifications::where('code', $qualification)->first();
+            if ($qualification) {
+                $qualification = $qualification->name_2;
+            }
+
+            $class_record = null;
+            $extract_query = $this->services->extractQuery($filter);
+            $dowmloadexcel = "dowmloadexcel";
+            $records = StudentRegistration::with(['session_year'])->whereRaw($extract_query)
+                                            ->where('study_type', 'new student')
+                                            ->paginate(100000);
+
+            $blade_download = "general.student_register_lists_excel";
+            $parmas = ['records','class_record','dowmloadexcel'];
+            $token = openssl_random_pseudo_bytes(10); // Random SSL value for generate file name
+            $token = bin2hex($token); // convert to hex
+            $save_to_path = 'export';
+            $param = [
+                'records' => $records,
+                'excel' => true,
+                'dowmloadexcel' => $dowmloadexcel,
+                // Remove 'blade_download' from this array since it's passed separately
+            ];
+            $file_path = "registration.xlsx";
+            if (!file_exists($save_to_path)) mkdir($save_to_path, 0777, true);
+            $http = $request->getSchemeAndHttpHost();
+            $result = Excel::store(new ExportData($param, $blade_download, $department, $skills, $sections, $qualification), "$file_path",'local');
+            $url =  "$http/app/$file_path";
+            // dd($url);
+            if (!$result)   return response()->json(['status' => 'warning', 'msg' => 'Something went wrong']);
+
+            // dd($url);
+            // exit();
+            return response()->json(['status' => 'success', 'msg' => 'Successfully export excell', 'path' => $url]);
+    
+            $view = view('general.student_register_lists',compact($parmas))->render();
+            return response()->json(['status' =>'success','view' =>$view]);
+        } catch (\Exception $ex){
+            $this->services->telegram($ex->getMessage(),'list of student',$ex->getLine());
+            return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
+        }
+    }
+
     public function update(Request $request)
     {
         $input = $request->all();

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SystemSetup;
 use Exception;
 use App\Http\Controllers\Controller;
+use App\Models\General\Classes;
 use App\Models\General\Skills;
 use App\Models\General\StudentRegistration;
 use App\Models\General\Subjects;
@@ -72,6 +73,7 @@ class SystemSettingController extends Controller
             if($page == 'location') $page = 'location';
             $extract_query = $this->service->extractQuery($data);
             $link_record = null;
+            $total_records = null;
             switch($page){
                 case 'student':
                     if($data['class_code'] != null ){
@@ -98,7 +100,19 @@ class SystemSettingController extends Controller
                 break;
                 case 'student_registration':
                     $records = StudentRegistration::with(['session_year'])->whereRaw($extract_query)->paginate(1000);
+
+                    $total_records = StudentRegistration::selectRaw(
+                        DB::raw('COUNT(name) AS total_count'),
+                    )->where('study_type', 'new student')
+                    ->whereRaw($extract_query)
+                     ->get();
+
                     $blade_file_record = 'general.student_register_lists';
+                break;
+                case 'class-new':
+                    $records = Classes::whereRaw($extract_query)->paginate(1000);
+
+                    $blade_file_record = 'general.divided_new_classes_lists';
                 break;
                 case 'warehouses':
                     // $records = WarehouseModel::whereRaw($extract_query)->paginate(15);
@@ -108,7 +122,7 @@ class SystemSettingController extends Controller
                
                     break; 
             }
-            $view = view($blade_file_record,compact('records','class_record'))->render();
+            $view = view($blade_file_record,compact('records','class_record', 'total_records'))->render();
             return response()->json(['status' =>'success','view' =>$view]);
         } catch (Exception $ex){
             $this->service->telegram($ex->getMessage(),$page,$ex->getLine());
@@ -177,6 +191,13 @@ class SystemSettingController extends Controller
                             ->where('department_code', Auth::user()->department_code)
                             ->where('code', '<>', null)->get();
                     $blade_file_record = 'general.student_register_lists';
+                }else if ($page == 'class-new'){
+                    $menus = Classes::where('name','like', $search_value . "%")
+                            ->orWhere('code', 'like', $search_value . "%")
+                            ->orWhere('name_2', 'like', $search_value . "%")
+                            ->where('department_code', Auth::user()->department_code)
+                            ->where('code', '<>', null)->get();
+                    $blade_file_record = 'general.divided_new_classes_lists';
                 }
 
                 if (count($menus) > 0) {
@@ -235,6 +256,13 @@ class SystemSettingController extends Controller
                             ->where('department_code', Auth::user()->department_code)
                             ->where('code', '<>', null)->paginate(1000);
                     $blade_file_record = 'general.student_register_lists';
+                }else if($page == 'class-new'){
+                    $menus = DB::table('classes')->where('name','like', $search_value . "%")
+                            ->orWhere('code', 'like', $search_value . "%")
+                            ->orWhere('name_2', 'like', $search_value . "%")
+                            ->where('department_code', Auth::user()->department_code)
+                            ->where('code', '<>', null)->paginate(1000);
+                    $blade_file_record = 'general.divided_new_classes_lists';
                 }
             }
         
@@ -255,6 +283,8 @@ class SystemSettingController extends Controller
                     $records = Teachers::where('code', null)->paginate(1000);
                 }else if($page == 'student_registration'){
                     $records = StudentRegistration::where('department_code', Auth::user()->department_code)->paginate(1000);
+                }else if($page == 'class-new'){
+                    $records = Classes::where('department_code', Auth::user()->department_code)->paginate(1000);
                 }
             }
             $view = view($blade_file_record,compact('records'))->render();

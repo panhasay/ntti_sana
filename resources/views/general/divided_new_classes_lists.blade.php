@@ -4,7 +4,6 @@
     <thead>
       <tr>
         <th width="50"></th>
-        <th class="" width="10">ល.រ</th>
         <th class="">ថា្នក់/ក្រុម</th>
         <th class="">វេនសិក្សា</th>
         <th class="">ជំនាញ</th>
