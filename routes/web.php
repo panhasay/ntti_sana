@@ -217,6 +217,8 @@ Route::group(['perfix' => 'student'], function (){
     Route::get('/student/registration/prints',[StudnetController::class,'PrintRegistration']);
     Route::POST('/student/register/delete',[StudnetController::class,'DeleteRegistration']);
     Route::get('/student/registration-downlaodexcel', [StudnetController::class, 'StudentDownlaodRegistrationDownlaodexcel']);
+
+    Route::get('/student/scholarship', [StudnetController::class, 'IndexStudentScholarshipc']);
 })->middleware('auth');
 
 Route::group(['perfix' => 'class-new'], function (){

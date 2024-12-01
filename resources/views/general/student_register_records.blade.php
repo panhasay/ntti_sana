@@ -7,7 +7,7 @@
       $gender = ($record->gender == 'male') ? 'ប្រុស' : 'ស្រី';
       $department = DB::table('department')->where('code',$record->department_code)->value('name_2');
       $date = $record->date_of_birth;
-      $khmerDate = App\Service\service::DateFormartKhmer($date);
+      $khmerDate = App\Service\service::DateYearKH($date);
       $postingDate = $record->posting_date;
       $year_student = App\Service\service::calculateDateDifference($postingDate);
       $picture =  App\Models\General\Picture::where('code', $record->code)->where('type','student')->value('picture_ori');

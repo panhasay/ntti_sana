@@ -89,6 +89,7 @@
         <div class="container menu-list">
             <ul>
                 <li><a href="{{ url('student/registration') }}">បញ្ជីរាយនាមនិស្សិតដែរចុះឈ្មោះឆ្នាំទី១</a></li>
+                <li><a href="{{ url('student/scholarship') }}">បញ្ជីរាយនាមនិស្សិតអាហារូបករណ៏</a></li>
             </ul>
         </div>
     </div>

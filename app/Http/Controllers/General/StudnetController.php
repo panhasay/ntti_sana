@@ -87,9 +87,14 @@ class StudnetController extends Controller
        
 
         if($user->role == "teachers"){
+            $total_student_have_class = Student::select(
+                DB::raw('COUNT(name) AS total_count'),  
+            )->where('study_type', 'new student')
+            ->where('department_code', $user->department_code)
+            ->whereNotNull('class_code')
+            ->get();
             $total_records = StudentRegistration::select(
                 DB::raw('COUNT(name) AS total_count'),  
-            
             )->where('study_type', 'new student')
              ->where('department_code', $user->department_code)
              ->get();
@@ -104,7 +109,7 @@ class StudnetController extends Controller
             )->where('study_type', 'new student')
              ->get();
 
-             $total_student_have_class = Student::select(
+            $total_student_have_class = Student::select(
                 DB::raw('COUNT(name) AS total_count'),  
             )->where('study_type', 'new student')
             ->whereNotNull('class_code')
@@ -394,7 +399,6 @@ class StudnetController extends Controller
         }
     }
 
-
     public function StudentDownlaodRegistrationDownlaodexcel(Request $request)
     {
         try {
@@ -535,6 +539,25 @@ class StudnetController extends Controller
         return response()->json(['status' => 'success', 'msg' => 'Table Build Successfuly', 'view' => $view]);
         //  response()->json(['status'=>'success','msg' =>'Table Build Successfuly']);
     }
+
+    public function IndexStudentScholarshipc(Request $request){
+        $user = Auth::user();
+        $sections = DB::table('sections')->get();
+        $department = Department::get();
+        $skills = DB::table('skills')->get();
+        $qualifications = Qualifications::get();
+        $total_records = StudentRegistration::select(
+            DB::raw('COUNT(name) AS total_count'),  
+        )->where('study_type', 'new student')
+         ->where('department_code', $user->department_code)
+         ->get();
+       
+        $records = Student::where('study_type', 'new student')
+                            ->whereNotNull('scholarship')
+                            ->orderBy('code', 'desc')->paginate(20);
+        return view('general.student_scholarship', compact('records', 'total_records', 'qualifications', 'skills', 'department', 'sections', 'sections'));
+    }
+    
     public function sendmessage()
     {
         return dd('sendmessage');

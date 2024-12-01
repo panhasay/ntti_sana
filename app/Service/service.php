@@ -205,6 +205,43 @@ class service{
 
         return $khmerDate;
     }
+    public static function DateYearKH($date) {
+        // Define the Khmer months
+        $khmerMonths = [
+            '01' => 'មករា',
+            '02' => 'កុម្ភៈ',
+            '03' => 'មិនា',
+            '04' => 'មេសា',
+            '05' => 'ឧសភា',
+            '06' => 'មិថុនា',
+            '07' => 'កក្កដា',
+            '08' => 'សីហា',
+            '09' => 'កញ្ញា',
+            '10' => 'តុលា',
+            '11' => 'វិច្ឆិកា',
+            '12' => 'ធ្នូ',
+        ];
+    
+        // Convert the date to a Carbon instance
+        $carbonDate = \Carbon\Carbon::createFromFormat('Y-m-d', $date);
+    
+        // Extract the day, month, and year
+        $day = $carbonDate->format('d');
+        $month = $carbonDate->format('m');
+        $year = $carbonDate->format('Y');
+    
+        // Convert to Khmer numerals
+        $toKhmerNumerals = function ($number) {
+            $khmerDigits = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+            return str_replace(range(0, 9), $khmerDigits, $number);
+        };
+    
+        // Build the Khmer date format
+        $khmerDate = $toKhmerNumerals($day) . '-' . $khmerMonths[$month] . '-' . $toKhmerNumerals($year);
+    
+        return $khmerDate;
+    }
+    
     public static function calculateDateDifference($postingDate)
     {
         $currentDate = Carbon::now()->toDateString();

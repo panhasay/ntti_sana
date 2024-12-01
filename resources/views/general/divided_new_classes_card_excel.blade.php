@@ -28,7 +28,7 @@
         <th style="font-weight: 700" width="10">លទ្ធផងបាក់ឌុប</th>
         <th style="font-weight: 700" width="25">ថ្នាក់សិក្សា(សង្គម/វិទ្យាសាស្រ្ត)</th>
         <th style="font-weight: 700" width="15">លេខទូរស័ព្ទ</th>
-        <th style="font-weight: 700" width="10">ក្រុម</th>
+        {{-- <th style="font-weight: 700" width="10">ក្រុម</th> --}}
         <th style="font-weight: 700" width="10">ជំនាញ</th>
         <th style="font-weight: 700" width="20">%អាហារូបករណ៏</th>
         <th style="font-weight: 700" width="50">ប្រភពអាហារូបករណ៏</th>
@@ -42,7 +42,7 @@
           <td>{{ $record->name_2  }}</td>
           <td>{{ $record->name ?? '' }}</td>
           <td>{{ $record->gender ?? ''}}</td>
-          <td>{{ $record->khmerDate ?? ''}}</td>
+          <td>{{ App\Service\service::DateYearKH($record->date_of_birth) ?? '' }}</td>
           <td>{{ $record->student_address ?? ''}}</td>
           <td>
             @if($record->bakdop_results != '')
@@ -53,7 +53,7 @@
           </td>
           <td>{{ $record->bakdop_type ?? ''}}</td>
           <td>{{ $record->phone_student ?? ''}}</td>
-          <td>{{ $record->class_code  ?? ''}}</td>
+          {{-- <td>{{ $record->class_code  ?? ''}}</td> --}}
           <td>{{ $record->skills ?? ''}}</td>
           <td>{{ $record->scholarship ?? '' }}</td>
           <td>{{ $record->scholarship_type ?? ''}}</td>

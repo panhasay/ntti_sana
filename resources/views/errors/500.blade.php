@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Access denied</title>
+    <title>500 Error</title>
 
     <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet" type="text/css">
     <link href="/assets/global/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
@@ -87,8 +87,8 @@
     <div class="content">
         <div class="title"><i class="icon fa fa-warning"></i></div>
         <h1>{{ $name ?? ''}}</h1>
-        <div class="description">User Don't have Permission </div>
-        <a href="/" class="btn hvr-bounce-in"><i class="fa fa-home"></i> Home</a>
+        <div class="description">500 - SERVER</div>
+        <a href="/login" class="btn hvr-bounce-in"><i class="fa fa-home"></i> Home</a>
         <div class="sm_description">{{ date('Y') }} &copy;NTTI</div>
     </div>
 </div>
