@@ -74,6 +74,7 @@ class SystemSettingController extends Controller
             $extract_query = $this->service->extractQuery($data);
             $link_record = null;
             $total_records = null;
+            $total_student_have_class = null;
             switch($page){
                 case 'student':
                     if($data['class_code'] != null ){
@@ -101,17 +102,49 @@ class SystemSettingController extends Controller
                 case 'student_registration':
                     $records = StudentRegistration::with(['session_year'])->whereRaw($extract_query)->paginate(1000);
 
+
                     $total_records = StudentRegistration::selectRaw(
                         DB::raw('COUNT(name) AS total_count'),
                     )->where('study_type', 'new student')
                     ->whereRaw($extract_query)
-                     ->get();
+                    ->get();
+
+
+                    $total_student_have_class = Student::select(
+                        DB::raw('COUNT(name) AS total_count'),  
+                    )->where('study_type', 'new student')
+                    ->whereRaw($extract_query)
+                    ->whereNotNull('class_code')
+                    ->get();
+
+        
 
                     $blade_file_record = 'general.student_register_lists';
                 break;
                 case 'class-new':
                     $records = Classes::whereRaw($extract_query)->paginate(1000);
 
+                    $updated_query = $extract_query;
+                    if (!empty($data['code'])) {
+                        $updated_query = preg_replace("/code=('.*?')/", "class_code=$1", $extract_query);
+                    }
+
+                    if (!empty($data['level'])) {
+                        $updated_query = preg_replace("/level=('.*?')/", "qualification=$1", $extract_query);
+                    }
+
+                    $total_records = Student::selectRaw('COUNT(DISTINCT code) AS total_count')
+                        ->where('study_type', 'new student')
+                     
+                        ->whereRaw($updated_query);
+                        // ->groupBy('code');
+                    if (!empty($updated_query)) {
+                        $total_records = $total_records->whereRaw($updated_query);
+                    }
+
+                    $total_records = $total_records->get();
+
+                    
                     $blade_file_record = 'general.divided_new_classes_lists';
                 break;
                 case 'warehouses':
@@ -122,7 +155,7 @@ class SystemSettingController extends Controller
                
                     break; 
             }
-            $view = view($blade_file_record,compact('records','class_record', 'total_records'))->render();
+            $view = view($blade_file_record,compact('records','class_record', 'total_records', 'total_student_have_class'))->render();
             return response()->json(['status' =>'success','view' =>$view]);
         } catch (Exception $ex){
             $this->service->telegram($ex->getMessage(),$page,$ex->getLine());

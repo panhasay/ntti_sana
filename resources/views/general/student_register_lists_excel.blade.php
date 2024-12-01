@@ -1,5 +1,10 @@
 
-<div class="row">
+@if (count($records) > 0)
+  <style>
+    table{
+      font-family: "Khmer OS Battambang" !important;
+    }
+  </style>
   <table>
     <tr>
       <th colspan="6"><img src="asset/NTTI/images/logo.png" alt="logo"></th>
@@ -12,9 +17,7 @@
       <th style="font-weight: 700; font-family: Moul, serif !important;" colspan="12">filter : {{ $department ?? '' }} {{'ជំនាញ'. $skills ?? '' }} {{ 'វេន'. $sections ?? '' }}</th>
     </tr>
   </table>
-</div>
-<div class="control-table table-responsive custom-data-table-wrapper2">
-  <table class="table table-striped">
+  <table>
     <thead>
       <tr class="general-data">
         <th style="font-weight: 700" width="10">អត្តលេខ</th>
@@ -32,38 +35,25 @@
         <th style="font-weight: 700" width="20">ឆ្នាំសិក្សា</th>
       </tr>
     </thead>
+
     <tbody>
       @foreach ($records as $record)
-      <?php 
-              $skills = DB::table('skills')->where('code',$record->skills_code)->value('name_2');
-              $classes = DB::table('classes')->where('code',$record->class_code)->value('name');
-              $section =  DB::table('sections')->where('code',$record->sections_code)->value('name_2');
-              $gender = ($record->gender == 'male') ? 'ប្រុស' : 'ស្រី';
-              $department = DB::table('department')->where('code',$record->department_code)->value('name_2');
-              $date = $record->date_of_birth;
-              $khmerDate = App\Service\service::DateFormartKhmer($date);
-              $postingDate = $record->posting_date;
-              $year_student = App\Service\service::calculateDateDifference($postingDate);
-              $picture =  App\Models\General\Picture::where('code', $record->code)->where('type','student')->value('picture_ori');
-          ?>
-      <tr id="row{{$record->code}}">
-        <td class="text-center"> {{ $record->code ?? '' }}</td>
-        <td>{{ $record->name_2 ?? ''}}</td>
-        <td> {{ $record->name ?? ''}}</td>
-        <td>{{ $record->gender ?? ''}}</td>
-        <td>{{ $khmerDate ?? ''}}</td>
-        <td>{{ $record->student_address ?? ''}}</td>
-        <td>{{ $record->phone_student ?? ''}}</td>
-        <td>{{ $skills ?? ''}}</td>
-        <td>{{ $record->qualification ?? ''}}</td>
-        <td>{{ $section ?? ''}}</td>
-
-        <td>{{ $record->mother_name ?? ''}}</td>
-        <td>{{ $record->father_name ?? ''}}</td>
-        <td>{{ $record->session_year->name ?? ''}}</td>
+      <tr>
+          <td> {{ $record->code }}</td>
+          <td>{{ $record->name_2 }}</td>
+          <td>{{ $record->name }}</td>
+          <td>{{ $record->gender }}</td>
+          <td>{{ $record->khmerDate }}</td>
+          <td>{{ $record->student_address }}</td>
+          <td>{{ $record->phone_student }}</td>
+          <td>{{ $record->skills }}</td>
+          <td>{{ $record->qualification }}</td>
+          <td>{{ $record->section }}</td>
+          <td>{{ $record->mother_name }}</td>
+          <td>{{ $record->father_name }}</td>
+          <td>{{ $record->session_year->name }}</td>
       </tr>
       @endforeach
     </tbody>
   </table>
-  {{$records->links("pagination::bootstrap-4")}}
-</div><br><br>
+@endif

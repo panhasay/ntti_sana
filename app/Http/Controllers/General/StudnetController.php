@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Auth;
 // use Vtiful\Kernel\Excel;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ExportData;
+use App\Exports\UsersExport;
 use App\Imports\ImportExcell;
 use App\Models\General\Picture;
 use App\Models\General\Skills;
@@ -97,14 +98,21 @@ class StudnetController extends Controller
             ->where('department_code', $user->department_code)
             ->orderBy('code', 'desc')->paginate(15);
         }else{
+
             $total_records = StudentRegistration::select(
                 DB::raw('COUNT(name) AS total_count'),  
-            
             )->where('study_type', 'new student')
              ->get();
+
+             $total_student_have_class = Student::select(
+                DB::raw('COUNT(name) AS total_count'),  
+            )->where('study_type', 'new student')
+            ->whereNotNull('class_code')
+            ->get();
+
             $records = StudentRegistration::with(['session_year'])->where('study_type', 'new student')->orderBy('code', 'desc')->paginate(15);
         }
-        return view('general.student_register', compact('records', 'total_records', 'qualifications', 'skills', 'department', 'sections', 'sections'));
+        return view('general.student_register', compact('records', 'total_records', 'qualifications', 'skills', 'department', 'sections', 'sections', 'total_student_have_class'));
     }
     public function transaction(request $request)
     {
@@ -312,6 +320,15 @@ class StudnetController extends Controller
     {
         $input = $request->all();
         $code = $input['type'];
+
+        $check_classe = Student::where('code', $code)->first();
+
+        if ($check_classe && $check_classe->class_code) {
+            return response()->json([
+                'error' => 'invalid_date',
+                'msg' => 'មិនអាចក្រែប្រែ ទិន្ន័យសិស្សបានទេ​ ឈ្មោះ' . $check_classe->name_2 . 'មាន ក្រុមរួចហើយ ' . $check_classe->class_code,
+            ]);
+        } 
        
         $records = StudentRegistration::where('code', $code)->first();
         
@@ -382,6 +399,7 @@ class StudnetController extends Controller
     {
         try {
             $filter = $request->all();
+            $header = null;
             $department = $filter['department_code'];
             $department = Department::where('code', $department)->first();
             if ($department){
@@ -403,37 +421,33 @@ class StudnetController extends Controller
                 $qualification = $qualification->name_2;
             }
 
-            $class_record = null;
             $extract_query = $this->services->extractQuery($filter);
-            $dowmloadexcel = "dowmloadexcel";
-            $records = StudentRegistration::with(['session_year'])->whereRaw($extract_query)
-                                            ->where('study_type', 'new student')
-                                            ->paginate(100000);
+           
+            // Use get() instead of paginate() for exporting
+            $records = StudentRegistration::with(['session_year'])
+            ->whereRaw($extract_query)
+            ->where('study_type', 'new student')
+            ->get()
+            ->map(function ($record) {
+                $record->skills = DB::table('skills')->where('code', $record->skills_code)->value('name_2');
+                $record->classes = DB::table('classes')->where('code', $record->class_code)->value('name');
+                $record->section = DB::table('sections')->where('code', $record->sections_code)->value('name_2');
+                $record->gender = $record->gender;
+                $record->department = DB::table('department')->where('code', $record->department_code)->value('name_2');
+                $record->khmerDate = service::DateFormartKhmer($record->date_of_birth);
+                $record->year_student = service::calculateDateDifference($record->posting_date);
+                $record->picture = Picture::where('code', $record->code)
+                    ->where('type', 'student')
+                    ->value('picture_ori');
+                return $record;
+            });
+
 
             $blade_download = "general.student_register_lists_excel";
-            $parmas = ['records','class_record','dowmloadexcel'];
-            $token = openssl_random_pseudo_bytes(10); // Random SSL value for generate file name
-            $token = bin2hex($token); // convert to hex
-            $save_to_path = 'export';
-            $param = [
-                'records' => $records,
-                'excel' => true,
-                'dowmloadexcel' => $dowmloadexcel,
-                // Remove 'blade_download' from this array since it's passed separately
-            ];
-            $file_path = "registration.xlsx";
-            if (!file_exists($save_to_path)) mkdir($save_to_path, 0777, true);
-            $http = $request->getSchemeAndHttpHost();
-            $result = Excel::store(new ExportData($param, $blade_download, $department, $skills, $sections, $qualification), "$file_path",'local');
-            $url =  "$http/app/$file_path";
-            // dd($url);
-            if (!$result)   return response()->json(['status' => 'warning', 'msg' => 'Something went wrong']);
 
-            // dd($url);
-            // exit();
-            return response()->json(['status' => 'success', 'msg' => 'Successfully export excell', 'path' => $url]);
-    
-            $view = view('general.student_register_lists',compact($parmas))->render();
+            // Create an instance of ExportData and pass the necessary parameters
+            return Excel::download(new ExportData($records, $blade_download, $department, $sections, $skills, $qualification, $header), 'registration.xlsx');
+
             return response()->json(['status' =>'success','view' =>$view]);
         } catch (\Exception $ex){
             $this->services->telegram($ex->getMessage(),'list of student',$ex->getLine());
@@ -497,9 +511,18 @@ class StudnetController extends Controller
     {
         try {
             $code = $request->code;
+            $check_classe = Student::where('code', $code)->first();
+
+            if ($check_classe && $check_classe->class_code) {
+                return response()->json([
+                    'status' => 'error',
+                    'msg' => 'មិនអាចលុប ទិន្ន័យសិស្សបានទេ​ ឈ្មោះ' . $check_classe->name_2 . 'មាន ក្រុមរួចហើយ ' . $check_classe->class_code,
+                ]);
+            } 
             $records = StudentRegistration::where('code', $code)->first();
             $records->delete();
             DB::commit();
+
             return response()->json(['status' => 'success', 'msg' => 'File has been delete']);
         } catch (\Exception $ex) {
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());

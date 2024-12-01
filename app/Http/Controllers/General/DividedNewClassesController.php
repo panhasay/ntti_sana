@@ -8,6 +8,8 @@ use App\Models\General\Classes;
 use App\Models\General\DividedNewClasses;
 use App\Models\General\Picture;
 use App\Models\General\Qualifications;
+use App\Models\General\Sections;
+use App\Models\General\Skills;
 use App\Models\General\StudentRegistration;
 use App\Models\General\StudyYears;
 use App\Models\General\Subjects;
@@ -18,6 +20,9 @@ use App\Service\service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Exports\ExportData;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class DividedNewClassesController extends Controller
 {
@@ -45,11 +50,20 @@ class DividedNewClassesController extends Controller
         $skills = DB::table('skills')->get();
         $qualifications = Qualifications::get();
         
-        $records = Classes::orderBy('created_at', 'desc')->paginate(20);
+        $records = Classes::leftJoin('student', 'student.class_code', '=', 'classes.code')
+            ->select('classes.code',  'classes.level', 'classes.department_code', 'classes.school_year_code', 'classes.name', 'classes.skills_code', 'classes.sections_code', DB::raw('COUNT(student.name) as totals_student'))
+            ->groupBy('classes.code',  'classes.level', 'classes.department_code', 'classes.school_year_code', 'classes.name', 'classes.skills_code', 'classes.sections_code') 
+            ->orderBy('totals_student', 'desc')
+            ->orderBy('classes.department_code', 'desc')
+            ->paginate(20);
+        $total_records = Student::select(
+            DB::raw('COUNT(name) AS total_count'),  
+        )->where('study_type', 'new student')
+         ->get();
         if(!Auth::check()){
             return redirect("login")->withSuccess('Opps! You do not have access');
         }  
-        return view('general.divided_new_classes', compact('records','page', 'department', 'sections', 'skills', 'qualifications'));	
+        return view('general.divided_new_classes', compact('records','page', 'department', 'sections', 'skills', 'qualifications', 'total_records'));	
     }
     public function transaction(request $request)
     {
@@ -92,17 +106,16 @@ class DividedNewClassesController extends Controller
         $data = $request->all();
         try {
             $class = Classes::where('code', $this->services->Decr_string($_GET['code']))->first();
-
             if (!$class) {
                 return response()->json(['status' => 'error', 'msg' => 'Class not found'], 404);
             }
-            
             $records_student = StudentRegistration::where('skills_code', $class->skills_code)
                 ->where('qualification', $class->level)
                 ->where('sections_code', $class->sections_code)
-                ->take(55)  // Correct method to limit the results
+                ->where('department_code', $class->department_code)
                 ->get();   // Use get() to fetch the records
-            $class_code = $class->code;
+
+                $class_code = $class->code;
 
             // / Prepare additional data for each student
             $students = $records_student->map(function ($record) use ($class) {
@@ -110,7 +123,7 @@ class DividedNewClassesController extends Controller
                     'code' => $record->code,
                     'name' => $record->name,
                     'name_2' => $record->name_2,
-                    'gender' => $record->gender == 'male' ? 'ប្រុស' : 'ស្រី',
+                    'gender' => $record->gender,
                     'date_of_birth' => service::DateFormartKhmer($record->date_of_birth),
                     'phone_student' => $record->phone_student,
                     'skills' => DB::table('skills')->where('code', $record->skills_code)->value('name_2'),
@@ -212,6 +225,52 @@ class DividedNewClassesController extends Controller
         }
     }
 
+
+    public function ClassNewDownloadExcel(Request $request)
+    {
+        try {
+            $filter = $request->all();
+            $extract_query = $this->services->extractQuery($filter);
+            $header = Classes::where('code', $this->services->Decr_string($_GET['code']))->first();
+            $code_class = $this->services->Decr_string($_GET['code']);
+
+            $excel_name = $code_class . '_class.xlsx';
+            // Fetch student records with relationships to avoid N+1 queries
+            $records = Student::where('class_code', $this->services->Decr_string($_GET['code']))
+                ->where('study_type', 'new student')
+                ->get()
+                ->map(function ($record) {
+                    $record->skills = DB::table('skills')->where('code', $record->skills_code)->value('name_2');
+                    $record->classes = DB::table('classes')->where('code', $record->class_code)->value('name');
+                    $record->section = DB::table('sections')->where('code', $record->sections_code)->value('name_2');
+                    $record->gender = $record->gender;
+                    $record->department = DB::table('department')->where('code', $record->department_code)->value('name_2');
+                    $record->khmerDate = $this->services->DateFormartKhmer($record->date_of_birth);
+                    $record->year_student = $this->services->calculateDateDifference($record->posting_date);
+                    $record->picture = Picture::where('code', $record->code)
+                        ->where('type', 'student')
+                        ->value('picture_ori');
+                    return $record;
+                });
+            
+            // Optimize header-related queries
+            $department = optional(Department::where('code', $header->department_code)->first())->name_2;
+            $skills = optional(Skills::where('code', $header->skills_code)->first())->name_2;
+            $sections = optional(Sections::where('code', $header->sections_code)->first())->name_2;
+            $qualification = optional(Qualifications::where('code', $header->level)->first())->name_2;
+            
+            $blade_download = "general.divided_new_classes_card_excel";
+            
+            // Export data to Excel
+            return Excel::download(new ExportData($records, $blade_download, $department, $sections, $skills, $qualification, $header), $excel_name);
+            
+        } catch (\Exception $ex){
+            $this->services->telegram($ex->getMessage(),'list of student',$ex->getLine());
+            return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
+        }
+    }
+
+
     public function update(Request $request)
     {
         $input = $request->all();
@@ -282,20 +341,22 @@ class DividedNewClassesController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-    public function printLine(Request $request)
+    public function ClassNewPrintLine(Request $request)
     {
+     
         $data = $request->all();
         $is_print = "yes";
         try {
-            $records = GeneralClassSchedule::where('id', $this->services->Decr_string($_GET['code']))->first();
-            $record_sub_lines = AssingClasses::where('class_code', $records->class_code)
-                                                ->where('semester', $records->semester)
-                                                ->where('years', $records->years)
-                                                ->where('qualification', $records->qualification)
-                                                ->where('sections_code', $records->sections_code)
-                                                ->where('skills_code', $records->skills_code)
-                                                ->where('department_code', $records->department_code)
-                                                ->get();
+            $records = Classes::where('code', $this->services->Decr_string($_GET['code']))->first();
+            $record_sub_lines = Student::where('class_code', $records->class_code)
+                                        ->where('semester', $records->semester)
+                                        ->where('years', $records->years)
+                                        ->where('qualification', $records->qualification)
+                                        ->where('sections_code', $records->sections_code)
+                                        ->where('skills_code', $records->skills_code)
+                                        ->where('department_code', $records->department_code)
+                                        ->get();
+
             return view('general.class_schedule_sub_lists', compact('records', 'record_sub_lines', 'is_print'));
         } catch (\Exception $ex) {
             DB::rollBack();

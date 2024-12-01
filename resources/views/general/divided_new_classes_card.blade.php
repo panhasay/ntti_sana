@@ -159,6 +159,10 @@
             {{-- <button type="button" id="prints" class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2">Print
                 <i class="mdi mdi-printer btn-icon-append"></i>
             </button> --}}
+            <button type="button" id="BtnDownlaodExcel"
+                class="btn btn-outline-success btn-icon-text btn-sm mb-2 mb-md-0 me-2">Excel <i
+                class="mdi mdi-printer btn-icon-append"></i> 
+            </button>
             <span class="title-report">
                 បន្ថែបពត៍មាននិស្សិតចូលថ្នាក់ {{ $records->code ?? '' }} សរុបចំនួន ​{{ count($record_sub_lines ?? '') }} / 55 នាក់
             </span>
@@ -230,6 +234,7 @@
     </div>
   </div>
 </div>
+@include('system.modal_comfrim_donwload')
 @include('general.divided_new_classes_sub_lists')
 
 <script>
@@ -343,6 +348,14 @@
                 }
             });
         });
+        $(document).on('click', '#BtnDownlaodExcel', function() {
+            $(".modal-confirmation-text").html('Do you want to Downlaod Excel ?');
+            $("#btnYesExcel").attr('data-code', $(this).attr('data-type'));
+            $("#divConfirmationExcel").modal('show');
+        });
+        $(document).on('click', '#btnYesExcel', function() {
+            DownlaodExcel();
+        });
 
 
 
@@ -414,7 +427,7 @@
         });
         $(document).on('click', '#YesPrints', function() {
             let code = "{{ isset($_GET['code']) ? addslashes($_GET['code']) : '' }}";
-            let url = '/class-schedule-print?code=' + code;
+            let url = '/class-new-print?code=' + code;
             $.ajax({
                 type: 'get',
                 url: url,
@@ -515,39 +528,37 @@
     });
 
     function DownlaodExcel() {
-        var url = '/student/downlaodexcel/';
+        var url = 'class-new/transaction/download-excel';
+        var data;
+        let code = "{{ isset($_GET['code']) ? addslashes($_GET['code']) : '' }}";
         if ($('#search_data').val() == '') {
             data = $("#advance_search").serialize();
         } else {
-            data = 'value=' + $('#search_data').val();
+            data = 'code=' + code;
         }
-        data = $("#advance_search").serialize();
-        $.ajax({
-            type: "post"
-            , url: url
-            , data: data
-            , headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-            , beforeSend: function() {
-                // $.LoadingOverlay("show", {
-                //   custom: loadingOverlayCustomElement
-                // });
-                // loadingOverlayCustomElement.text('Request Processing...');
-            }
-            , success: function(response) {
-                $.LoadingOverlay("hide", true);
-                if (response.status == 'success') {
-                    $('#divPassword').modal('hide');
-                    location.href = response.path;
-                    // myfn.showNotify(response['status'], 'lime', 'top', 'right', response['message']);
-                } else {
-                    $('.secure_msg').html(response.message);
-                    $('.secure_msg').show();
-                }
-            }
-            , error: function(xhr, ajaxOptions, thrownError) {}
+        // Create a form to submit the data
+        var form = $('<form>', {
+            action: url,
+            method: 'GET'
         });
+
+        // Append the serialized data to the form
+        $.each(data.split('&'), function(i, field) {
+            var parts = field.split('=');
+            form.append($('<input>', {
+                type: 'hidden',
+                name: decodeURIComponent(parts[0]),
+                value: decodeURIComponent(parts[1])
+            }));
+        });
+
+        // Append the form to the body and submit it
+        $('body').append(form);
+        form.submit();
+
+        // Optionally, you can show a loader here
+        $('.loader').hide();
+        $("#divConfirmationExcel").modal('hide');
     }
 
     function FieldRequired() {

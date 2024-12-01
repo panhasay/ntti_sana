@@ -2,7 +2,7 @@
 @foreach ($records as $record)
   <?php 
       $skills = DB::table('skills')->where('code',$record->skills_code)->value('name_2');
-      $classes = DB::table('classes')->where('code',$record->class_code)->value('name');
+      $classes = DB::table('student')->where('code',$record->code)->value('class_code');
       $section =  DB::table('sections')->where('code',$record->sections_code)->value('name_2');
       $gender = ($record->gender == 'male') ? 'ប្រុស' : 'ស្រី';
       $department = DB::table('department')->where('code',$record->department_code)->value('name_2');
@@ -11,6 +11,8 @@
       $postingDate = $record->posting_date;
       $year_student = App\Service\service::calculateDateDifference($postingDate);
       $picture =  App\Models\General\Picture::where('code', $record->code)->where('type','student')->value('picture_ori');
+    
+
   ?>
   <tr id="row{{$record->code}}">
     <td>
@@ -24,6 +26,7 @@
     <td >{{ $khmerDate ?? ''}}</td>
     <td>{{ $record->student_address ?? ''}}</td>
     <td >{{ $record->phone_student ?? ''}}</td>
+    <td>{{ $classes ?? ''}}</td>
     <td>{{ $skills ?? ''}}</td>
     <td>{{ $record->qualification ?? ''}}</td>
     <td>{{ $section ?? ''}}</td>
@@ -33,5 +36,6 @@
     <td>{{ $record->session_year->name ?? ''}}</td>
   </tr>
 @endforeach
+
  
 

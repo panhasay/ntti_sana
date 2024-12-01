@@ -216,7 +216,7 @@ Route::group(['perfix' => 'student'], function (){
     Route::POST('/student/registration/update',[StudnetController::class,'updateRegistration']);
     Route::get('/student/registration/prints',[StudnetController::class,'PrintRegistration']);
     Route::POST('/student/register/delete',[StudnetController::class,'DeleteRegistration']);
-    Route::get('/student/registration-downlaodexcel',[StudnetController::class,'StudentDownlaodRegistrationDownlaodexcel']);
+    Route::get('/student/registration-downlaodexcel', [StudnetController::class, 'StudentDownlaodRegistrationDownlaodexcel']);
 })->middleware('auth');
 
 Route::group(['perfix' => 'class-new'], function (){
@@ -225,6 +225,8 @@ Route::group(['perfix' => 'class-new'], function (){
     Route::get('/class-new/get-student-register', [DividedNewClassesController::class, 'GEteStudentRegister']);
     Route::POST ('/class-new/add-student-register', [DividedNewClassesController::class, 'AddStudentRegister']);
     Route::POST('/class-new/add-student-register-deleteline',[DividedNewClassesController::class,'DeleteStudentRegisterDeleteline']);
+    Route::get('/class-new-print', [DividedNewClassesController::class, 'ClassNewPrintLine']);
+    Route::get('/class-new/transaction/download-excel', [DividedNewClassesController::class, 'ClassNewDownloadExcel']);
 })->middleware('auth');
 
 Route::group(['perfix' => 'exam-schedule'], function (){

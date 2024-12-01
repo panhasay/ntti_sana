@@ -110,6 +110,17 @@
                 </div>
             </div>
 
+            <div class="col-sm-3">
+              <span class="labels col-sm-3 col-form-label text-end">មានថ្នាក់/មិនមានថ្នាក់<strong style="color:red; font-size:15px;"> *</strong></span>
+                <div class="col-sm-9">
+                    <select class="js-example-basic-single" id="class_code" name="class_code" style="width: 130%;">
+                        <option value="">&nbsp;</option>
+                        {{-- <option value="true">មានថ្នាក់</option> --}}
+                        <option value="null">មិនមានថ្នាក់</option>
+                    </select>
+                </div>
+            </div>
+
           </div>
           <button type="button" class="btn btn-primary text-white" data-page="student_registration" id="btn-adSearch">Search</button>
         </div>
@@ -167,6 +178,8 @@
             $("#divConfirmation").modal('hide');
             $("#row" + code).remove();
             notyf.success(response.msg);
+          }else if (response.status == 'error'){
+            notyf.error(response.msg);
           }
         }
       });
@@ -291,35 +304,71 @@
 
   });
 
+  // function DownlaodExcel() {
+  //   var url = '/student/registration-downlaodexcel';
+  //   if ($('#search_data').val() == '') {
+  //     data = $("#advance_search").serialize();
+  //   } else {
+  //     data = 'value=' + $('#search_data').val();
+  //   }
+  //   data = $("#advance_search").serialize();
+  //   $.ajax({
+  //     type: "get",
+  //     url: url,
+  //     data: data,
+  //     headers: {
+  //       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+  //     },
+  //     beforeSend: function() {
+  //       $('.loader').show();
+  //     },
+  //     success: function(response) {
+  //       $("#divConfirmationExcel").modal('hide');
+  //       $('.loader').hide();
+  //       notyf.success(response.msg);
+  //       // location.href = response.path;
+  //     },
+  //     error: function(xhr, ajaxOptions, thrownError) {
+  //       $('.loader').hide();
+  //     }
+  //   });
+  // }
+
   function DownlaodExcel() {
     var url = '/student/registration-downlaodexcel';
+    var data;
+
     if ($('#search_data').val() == '') {
-      data = $("#advance_search").serialize();
+        data = $("#advance_search").serialize();
     } else {
-      data = 'value=' + $('#search_data').val();
+        data = 'value=' + $('#search_data').val();
     }
-    data = $("#advance_search").serialize();
-    $.ajax({
-      type: "get",
-      url: url,
-      data: data,
-      headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-      },
-      beforeSend: function() {
-        $('.loader').show();
-      },
-      success: function(response) {
-        $("#divConfirmationExcel").modal('hide');
-        $('.loader').hide();
-        notyf.success(response.msg);
-        location.href = response.path;
-      },
-      error: function(xhr, ajaxOptions, thrownError) {
-        $('.loader').hide();
-      }
+
+    // Create a form to submit the data
+    var form = $('<form>', {
+        action: url,
+        method: 'GET'
     });
+
+    // Append the serialized data to the form
+    $.each(data.split('&'), function(i, field) {
+        var parts = field.split('=');
+        form.append($('<input>', {
+            type: 'hidden',
+            name: decodeURIComponent(parts[0]),
+            value: decodeURIComponent(parts[1])
+        }));
+    });
+
+    // Append the form to the body and submit it
+    $('body').append(form);
+    form.submit();
+
+    // Optionally, you can show a loader here
+    $('.loader').hide();
+    $("#divConfirmationExcel").modal('hide');
   }
+
 
   function prints(ctrl) {
     var url = '/student/print';

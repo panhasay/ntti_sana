@@ -12,7 +12,9 @@ class ExportData implements FromView
     protected $skills;
     protected $sections;
     protected $qualification;
-    public function __construct($data, $blade_download, $department, $skills, $sections, $qualification)
+    protected $header;
+
+    public function __construct($data, $blade_download, $department, $skills, $sections, $qualification, $header)
     {
         $this->data = $data;
         $this->blade_download = $blade_download;
@@ -20,17 +22,20 @@ class ExportData implements FromView
         $this->skills = $skills;
         $this->sections = $sections;
         $this->qualification = $qualification;
+        $this->header = $header;
     }
 
     public function view(): View
     {
-        $this->data['department'] = $this->department;
-        $this->data['skills'] = $this->skills;
-        $this->data['sections'] = $this->sections;
-        $this->data['qualification'] = $this->qualification;
-        // Use the instance property $this->blade_download
-        return view($this->blade_download, $this->data);
-    } 
+        return view($this->blade_download, [
+            'records' => $this->data,
+            'department' => $this->department,
+            'skills' => $this->skills,
+            'sections' => $this->sections,
+            'qualification' => $this->qualification,
+            'header' =>  $this->header,
+        ]);
+    }
 }
 
 

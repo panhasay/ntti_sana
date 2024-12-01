@@ -10,6 +10,7 @@
     <td>{{ $record->gender ?? '' }}</td>
     <td>{{ App\Service\service::DateFormartKhmer($record->date_of_birth) ?? '' }}</td>
     <td>{{ $record->phone_student ?? '' }}</td>
+    <td>{{ $record->class_code ?? '' }}</td>
     <td>{{ DB::table('skills')->where('code', $record->skills_code)->value('name_2') ?? '' }}</td>
     <td>{{ $record->qualification ?? '' }}</td>
     <td>{{ DB::table('sections')->where('code', $record->sections_code)->value('name_2') ?? '' }}</td>

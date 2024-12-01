@@ -11,6 +11,7 @@
           <th>ថ្ងៃខែឆ្នាំកំណើត</th>
           <th>ទីកន្លែងកំណើត</th>
           <th width="20">លេខទូរស័ព្ទ</th>
+          <th>ក្រុម/ថ្នាក់</th>
           <th>ជំនាញ</th>
           <th>កម្រិត</th>
           <th>វេនសិក្សា</th>
@@ -23,6 +24,13 @@
           @include('general.student_register_records')
         </tbody>
     </table>
-    <span>សរុប : {{ $total_records[0]->total_count ?? ''}} នាក់</span>
+    <span>
+        សរុប : {{ $total_records[0]->total_count ?? '' }} នាក់
+        មានក្រុម : {{ $total_student_have_class[0]->total_count ?? '' }} នាក់
+        មិនមានក្រុម : 
+        {{
+            ($total_records[0]->total_count ?? 0) - ($total_student_have_class[0]->total_count ?? 0)
+        }}
+    </span>
     {{$records->links("pagination::bootstrap-4")}} 
 </div><br><br>

@@ -432,6 +432,7 @@
                               'E' => 'E',
                               'F' => 'F',
                               'Auto' => 'Auto',
+                              'ផ្សេងៗ' => 'ផ្សេងៗ',
                           ];
                       ?>
                     <option value="">&nbsp;</option>
@@ -447,12 +448,11 @@
             </div>
             <div class="col-md-6 col-sm-12">
               <div class="form-group row">
-                <span class="labels col-sm-5 col-form-label">ឆ្នាំបញ្ចាប់</span>
+                <span class="labels col-sm-5 col-form-label">ឆ្នាំបញ្ចាប់ទុតិយភូម</span>
                 <div class="col-sm-7">
                   <select class="js-example-basic-single" id="year_final" name="year_final" style="width: 100%;">
                     <?php 
                     $options = [
-                            '2025' => '2025',
                             '2024' => '2024',
                             '2023' => '2023',
                             '2022' => '2022',
