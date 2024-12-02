@@ -7,6 +7,7 @@ use App\Models\General\AssingClasses;
 use App\Models\General\Classes;
 use App\Models\General\ClassSchedule as GeneralClassSchedule;
 use App\Models\General\ExamSchedule;
+use App\Models\General\ExamScheduleLine;
 use App\Models\General\StudyYears;
 use App\Models\General\Subjects;
 use App\Models\General\Teachers;
@@ -50,7 +51,7 @@ class ExamScheduleController extends Controller
         $page = $this->page;
         $page_url = $this->page;
         $records = null;
-        $record_sub_lines = AssingClasses::where('class_code', $data['type'])->get();
+        $record_sub_lines = null;
         $classs = Classes::orderBy('code', 'desc')->get();
         $sections = DB::table('sections')->get();
         $department = Department::get();
@@ -63,15 +64,8 @@ class ExamScheduleController extends Controller
             $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'classs', 'study_years', 'teachers', 'subjects', 'record_sub_lines'];
             if ($type == 'cr') return view('general.class_schedule_card', compact($params));
             if (isset($_GET['code'])) {
-                $records = GeneralClassSchedule::where('id', $this->services->Decr_string($_GET['code']))->first();
-                $record_sub_lines = AssingClasses::where('class_code', $records->class_code)
-                                ->where('semester', $records->semester)
-                                ->where('years', $records->years)
-                                ->where('qualification', $records->qualification)
-                                ->where('sections_code', $records->sections_code)
-                                ->where('skills_code', $records->skills_code)
-                                ->where('department_code', $records->department_code)
-                                ->get();                    
+                $records = ExamSchedule::where('id', $this->services->Decr_string($_GET['code']))->first();
+                $record_sub_lines = ExamScheduleLine::where('exam_schedule_id', $records->id)->get();
             }
             return view('general.exam_schedule_card', compact($params));
         } catch (\Exception $ex) {

@@ -228,7 +228,7 @@
     </div>
   </div>
   <!-- Modal -->
-@include('general.class_schedule_sub_lists')
+@include('general.exam_schedule_sub_lists')
 <script>
     var header = "{{ $records }}"
     $(document).ready(function() {

@@ -20,6 +20,7 @@
         <td class="text-center">{{ $sections ?? '' }}</td>
         <td class="text-center">{{ $skills ?? '' }}</td>
         <td class="text-center">{{ $record->qualification ?? '' }}</td>
+        <td class="text-center">ឆមាសទី{{ $record->semester ?? '' }}</td>
         <td class="text-center">{{ $department ?? '' }}</td>
         <td class="text-center">{{ $formattedDate  ?? '' }}</td>
         <td class="text-center">{{ $record->session_year_code ?? '' }}</td>
