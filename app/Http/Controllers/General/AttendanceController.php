@@ -10,11 +10,10 @@ use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // Get today's day name in lowercase
         $today = strtolower(Carbon::now()->format('l'));
-        
         // Get the class schedules and related assignments for today
         $schedules = ClassSchedule::with(['section', 'subject'])
             ->whereDate('start_date', '<=', Carbon::now())
@@ -48,6 +47,8 @@ class AttendanceController extends Controller
                 return !empty($schedule['schedule_items']);
             })
             ->values();
+          
+
 
         return view('dashboard.dashboard_attendance_student', compact('schedules'));
     }

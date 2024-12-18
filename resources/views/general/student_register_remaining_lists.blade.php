@@ -21,15 +21,8 @@
         </tr>
       </thead>
         <tbody>
-          @include('general.student_register_records')
+          @include('general.student_register_remaining_records')
         </tbody>
     </table>
-    <span>
-        សរុប : {{ $total_records[0]->total_count ?? '' }} នាក់
-        មានក្រុម : {{ $total_student_have_class[0]->total_count ?? '' }} នាក់
-        <a target="_blank" href="{{ url('/student/registration-remaining') }}">
-          មិនមានក្រុម : {{ ($total_records[0]->total_count ?? 0) - ($total_student_have_class[0]->total_count ?? 0) }}
-        </a>
-    </span>
     {{$records->links("pagination::bootstrap-4")}} 
 </div><br><br>

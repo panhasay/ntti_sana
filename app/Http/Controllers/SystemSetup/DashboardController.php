@@ -3,11 +3,16 @@
 namespace App\Http\Controllers\SystemSetup;
 
 use App\Http\Controllers\Controller;
+use App\Models\General\AssingClasses;
 use Illuminate\Http\Request;
 use App\Service\service;
-use App\Models\Student\Student;
+use App\Models\Student\Student; 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\General\Teachers;
+use App\Models\General\ClassSchedule;
+use Carbon\Carbon;
+
 class DashboardController extends Controller
 {
     public $services;
@@ -160,8 +165,41 @@ class DashboardController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
+    // public function teacherDashboard(Request $request) {
+    //     $code = $request->input('code'); // or Route Parameter
+    //     $teacher = Teachers::where('code', $code)->first();
+        
+    //     return view('teacher.dashboard', compact('teacher'));
+    // }
+    public function teacherDashboard()
+    {
+        $record = Teachers::where('code', Auth::user()->user_code)->first(); 
+        if (!$record) {
+            $record = (object) ['name' => 'No Teacher Available'];
+        }
+        $total_class = AssingClasses::where('teachers_code', $record->code)->count();
+        $total_subject = AssingClasses::where('teachers_code', $record->code)
+                                        ->Groupby('subjects_code')->count();
+
+        
+            $schedules = ClassSchedule::with(['section', 'subject'])
+                    ->whereDate('start_date', '<=', Carbon::now())
+                    ->orderBy('start_date', 'asc')
+                    ->get();
+
+            // Extract class_schedule IDs as an array
+            $class_schedule_ids = $schedules->pluck('id')->toArray();
+            $date_name  = $schedules->pluck('date_name')->toArray(); 
+
+            $today = strtolower(Carbon::now()->format('l'));
+            // Fetch assigned classes with matching class_schedule_ids and teacher's code
+            $assignedClasses = AssingClasses::whereIn('class_schedule_id', $class_schedule_ids)
+                ->where('teachers_code', $record->code)
+                ->where('date_name', $today)
+                ->get();
+            $Classes_history = AssingClasses::where('teachers_code', $record->code)
+                ->get();
+        return view('dashboard.dashboard_teacher', compact('record', 'total_class', 'total_subject', 'assignedClasses', 'Classes_history'));
+    }    
+    
 }
-
-
-
-

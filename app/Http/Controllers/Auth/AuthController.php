@@ -70,6 +70,10 @@ class AuthController extends Controller
         $type = "Login";
         $user_name = $user->name ?? '';
         
+        $record = User::where('email', $user->email)->first();
+        $record->session_token =  $record->remember_token;
+        $record->remember_token =  Hash::make($user->email);
+        $record->update();
 
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
@@ -77,9 +81,13 @@ class AuthController extends Controller
             if($permission->role == "student"){
                 return redirect()->intended('dahhboard-student-account')
                 ->withSuccess('You have Successfully loggedin');
+            }elseif($permission->role == "attendant"){
+                return redirect()->intended('attendance/dashboards-attendance');
+            }elseif($permission->role == "teachers"){
+                return redirect()->intended('teacher-dashboard');
             }else{
                 return redirect()->intended('department-menu')
-                ->withSuccess('You have Successfully loggedin');
+                ->withSuccess('You have Successfully loggedin');    
             }
         }
         // for testb
@@ -154,6 +162,11 @@ class AuthController extends Controller
         $user = $permission;
         
         $role = $user->role;
+
+        $record = User::where('email', $user->email)->first();
+        $record->session_token =  "";
+        $record->update();
+
         $department = $user->department->name_2;
         $ip = request()->ip();
         $userAgent = request()->header('User-Agent');

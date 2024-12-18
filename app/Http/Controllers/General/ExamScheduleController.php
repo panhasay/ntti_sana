@@ -51,7 +51,7 @@ class ExamScheduleController extends Controller
         $page = $this->page;
         $page_url = $this->page;
         $records = null;
-        $record_sub_lines = null;
+        $record_sub_lines = ExamScheduleLine::where('id', '')->get();
         $classs = Classes::orderBy('code', 'desc')->get();
         $sections = DB::table('sections')->get();
         $department = Department::get();
@@ -62,7 +62,7 @@ class ExamScheduleController extends Controller
         $subjects = Subjects::orderBy('code', 'asc')->get(); 
         try {
             $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'classs', 'study_years', 'teachers', 'subjects', 'record_sub_lines'];
-            if ($type == 'cr') return view('general.class_schedule_card', compact($params));
+            if ($type == 'cr') return view('general.exam_schedule_card', compact($params));
             if (isset($_GET['code'])) {
                 $records = ExamSchedule::where('id', $this->services->Decr_string($_GET['code']))->first();
                 $record_sub_lines = ExamScheduleLine::where('exam_schedule_id', $records->id)->get();
@@ -90,10 +90,10 @@ class ExamScheduleController extends Controller
     {
         $input = $request->all();
         $code = $input['type'];
-        $record = GeneralClassSchedule::where('id', $code)->first();
+        $record = ExamSchedule::where('id', $code)->first();
         if (!$record) return response()->json(['status' => 'error', 'msg' => "មិនអាចកែប្រ លេខកូដ!"]);
         try {
-            $records = GeneralClassSchedule::where('id', $code)->first();
+            $records = ExamSchedule::where('id', $code)->first();
             if ($records) {
                 $records->start_date = $request->start_date;
                 $records->sections_code = $request->sections_code;
@@ -132,7 +132,7 @@ class ExamScheduleController extends Controller
             }
         }
         try {
-            $records = new GeneralClassSchedule();
+            $records = new ExamSchedule();
             $records->start_date = $request->start_date;
             $records->sections_code = $request->sections_code;
             $records->skills_code = $request->skills_code;
@@ -144,7 +144,7 @@ class ExamScheduleController extends Controller
             $records->years = $request->years;
             $records->save();
 
-            $record = GeneralClassSchedule::latest('id')->first();
+            $record = ExamSchedule::latest('id')->first();
             if (isset($record->id)) {
                 $encryptedCode = \App\Service\service::Encr_string($record->id);
                 $url = "/class-schedule/transaction?type=ed&code=" . $encryptedCode;

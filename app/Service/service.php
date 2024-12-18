@@ -1,5 +1,7 @@
 <?php
 namespace App\Service;
+
+use App\Models\Student\Student;
 use App\Models\SystemSetup\TableField;
 use App\Models\TableFieldModel;
 use Illuminate\Support\Facades\Auth;
@@ -77,6 +79,61 @@ class service{
         curl_close($ch);
         return $result;
     }
+    public function telegramSendDeleteStudent($records, $type) {
+        // Define the API URL and Telegram details
+        $bot_api = "https://api.telegram.org";
+        $telegram_id = "-4557828405"; // Replace with your Telegram group/channel/chat ID
+        $telegram_token = "7286298295:AAG9-EFlyITzikQWsr1xz1URTez7vLrRaTc"; // Replace with your bot token
+        
+        // Fetch student data
+        $data = Student::where('code', '=', $records->code)->first();
+        $user = Auth::user();
+    
+        if (!$data) {
+            return "No student found for the given code.";
+        }
+    
+        // Start building the message
+        $text = "=== User Log NTTI Portal ===";
+        $text .= "\nType : " .$type ?? '';
+        $text .= "\nEmail : " .$user->email ?? '';
+        $text .= "\nName : " .$user->name ?? '';
+    
+        foreach ($data->toArray() as $key => $value) {
+            $text .= "\n" . ucfirst(str_replace('_', ' ', $key)) . " : " . ($value ?? '');
+        }
+    
+        // Prepare the API endpoint and payload
+        $apiUri = sprintf('%s/bot%s/%s', $bot_api, $telegram_token, 'sendMessage');
+        $params = [
+            'chat_id' => $telegram_id,
+            'text'    => $text
+        ];
+    
+        // Send request using cURL
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $apiUri);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+    
+        // Execute the request
+        $result = curl_exec($ch);
+    
+        // Check for errors
+        if (curl_errno($ch)) {
+            $error = curl_error($ch);
+            curl_close($ch);
+            return "cURL Error: $error";
+        }
+    
+        curl_close($ch);
+    
+        return $result;
+    }
+    
     public static function Encr_string($string,$param='AES-128-ECB',$password = 'per_hast_Cehck'){
         $encrypted_string=openssl_encrypt($string,'AES-128-ECB',"per_hast_Cehck");
         return $encrypted_string;

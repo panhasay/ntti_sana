@@ -55,13 +55,16 @@ Route::get('/greeting/{locale}', function (string $locale) {
     Route::get('user-dont-have-permission', function () {
         return view('errors.permission_acces');
     });
+
     Route::get('login', [AuthController::class, 'index'])->name('login');
     Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');
     Route::get('registration_hole', [AuthController::class, 'registration'])->name('register');
     Route::post('post-registration', [AuthController::class, 'postRegistration'])->name('register.post');
-    Route::get('/department-menu', [AuthController::class, 'departmentMenu']);
+   
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
-
+Route::group(['perfix' => 'department', 'middleware' => 'user_permission'], function (){
+    Route::get('/department-menu', [AuthController::class, 'departmentMenu']);
+});
 Route::group(['perfix' => 'student'], function (){
     Route::get('/student', [StudnetController::class, 'index'])->name('student');
     Route::get('/settings-customize-field', [StudnetController::class, 'SettingsCustomizeField'])->name('SettingsCustomizeField');
@@ -117,6 +120,7 @@ Route::group(['perfix' => 'dashboard'], function (){
     // Route::get('reports-list-of-student-priview', [DashboardController::class, 'Priview'])->name('Priview');
     Route::get('dahhboard-student-print', [DashboardController::class, 'Print'])->name('Print');
     Route::get('dahhboard-student-account', [DashboardController::class, 'StudentUserAccount'])->name('StudentUserAccount');
+    Route::get('teacher-dashboard', [DashboardController::class, 'TeacherDashboard'])->name('TeacherDashboard');
 })->middleware('auth');
 Route::group(['perfix' => 'department' ,  'middleware' => 'permission'], function (){
     Route::get('department-setup', [DepartmentController::class, 'index'])->name('index');
@@ -217,8 +221,10 @@ Route::group(['perfix' => 'student'], function (){
     Route::get('/student/registration/prints',[StudnetController::class,'PrintRegistration']);
     Route::POST('/student/register/delete',[StudnetController::class,'DeleteRegistration']);
     Route::get('/student/registration-downlaodexcel', [StudnetController::class, 'StudentDownlaodRegistrationDownlaodexcel']);
+  
 
     Route::get('/student/scholarship', [StudnetController::class, 'IndexStudentScholarshipc']);
+    Route::get('/student/registration-remaining', [StudnetController::class, 'StudentRemaining']);
 })->middleware('auth');
 
 Route::group(['perfix' => 'class-new'], function (){
@@ -229,6 +235,8 @@ Route::group(['perfix' => 'class-new'], function (){
     Route::POST('/class-new/add-student-register-deleteline',[DividedNewClassesController::class,'DeleteStudentRegisterDeleteline']);
     Route::get('/class-new-print', [DividedNewClassesController::class, 'ClassNewPrintLine']);
     Route::get('/class-new/transaction/download-excel', [DividedNewClassesController::class, 'ClassNewDownloadExcel']);
+    Route::get('/class-new/transaction/update-student', [DividedNewClassesController::class, 'ClassNewUpdateStudent']);
+    Route::POST('/class-new/student/registration/update', [DividedNewClassesController::class, 'ClassNewUpdateStudentTransaction']);
 })->middleware('auth');
 
 Route::group(['perfix' => 'exam-schedule'], function (){

@@ -7,6 +7,7 @@ use App\Models\General\AssingClasses;
 use App\Models\General\Classes;
 use App\Models\General\DividedNewClasses;
 use App\Models\General\Picture;
+use Carbon\Carbon;
 use App\Models\General\Qualifications;
 use App\Models\General\Sections;
 use App\Models\General\Skills;
@@ -43,27 +44,28 @@ class DividedNewClassesController extends Controller
         $this->arrayJoin = ['10001', '10007', '10008'];
         $this->table_id = "10005";
     }
-    public function index(){
+    public function index()
+    {
         $page = $this->page;
         $sections = DB::table('sections')->get();
         $department = Department::get();
         $skills = DB::table('skills')->get();
         $qualifications = Qualifications::get();
-        
+
         $records = Classes::leftJoin('student', 'student.class_code', '=', 'classes.code')
             ->select('classes.code',  'classes.level', 'classes.department_code', 'classes.school_year_code', 'classes.name', 'classes.skills_code', 'classes.sections_code', DB::raw('COUNT(student.name) as totals_student'))
-            ->groupBy('classes.code',  'classes.level', 'classes.department_code', 'classes.school_year_code', 'classes.name', 'classes.skills_code', 'classes.sections_code') 
+            ->groupBy('classes.code',  'classes.level', 'classes.department_code', 'classes.school_year_code', 'classes.name', 'classes.skills_code', 'classes.sections_code')
             ->orderBy('totals_student', 'desc')
             ->orderBy('classes.department_code', 'desc')
             ->paginate(20);
         $total_records = Student::select(
-            DB::raw('COUNT(name) AS total_count'),  
+            DB::raw('COUNT(name) AS total_count'),
         )->where('study_type', 'new student')
-         ->get();
-        if(!Auth::check()){
+            ->get();
+        if (!Auth::check()) {
             return redirect("login")->withSuccess('Opps! You do not have access');
-        }  
-        return view('general.divided_new_classes', compact('records','page', 'department', 'sections', 'skills', 'qualifications', 'total_records'));	
+        }
+        return view('general.divided_new_classes', compact('records', 'page', 'department', 'sections', 'skills', 'qualifications', 'total_records'));
     }
     public function transaction(request $request)
     {
@@ -77,11 +79,11 @@ class DividedNewClassesController extends Controller
         $classs = Classes::orderBy('code', 'desc')->get();
         $sections = DB::table('sections')->get();
         $department = Department::get();
-        $school_years = DB::table('session_year')->orderBy('code', 'desc')->get();   
+        $school_years = DB::table('session_year')->orderBy('code', 'desc')->get();
         $skills = DB::table('skills')->get();
         $study_years = StudyYears::get();
         $teachers = Teachers::orderBy('code', 'asc')->get();
-        $subjects = Subjects::orderBy('code', 'asc')->get(); 
+        $subjects = Subjects::orderBy('code', 'asc')->get();
         $qualifications = Qualifications::orderBy('code', 'desc')->get();
         try {
             $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'classs', 'study_years', 'teachers', 'subjects', 'record_sub_lines', 'qualifications', 'records_student'];
@@ -89,13 +91,13 @@ class DividedNewClassesController extends Controller
             if (isset($_GET['code'])) {
                 $records = Classes::where('code', $this->services->Decr_string($_GET['code']))->first();
                 $record_sub_lines = Student::where('class_code', $records->code)
-                                ->where('qualification', $records->level)
-                                ->where('sections_code', $records->sections_code)
-                                ->where('skills_code', $records->skills_code)
-                                ->where('department_code', $records->department_code)
-                                ->get();  
+                    ->where('qualification', $records->level)
+                    ->where('sections_code', $records->sections_code)
+                    ->where('skills_code', $records->skills_code)
+                    ->where('department_code', $records->department_code)
+                    ->get();
             }
-        return view('general.divided_new_classes_card', compact($params));
+            return view('general.divided_new_classes_card', compact($params));
         } catch (\Exception $ex) {
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
@@ -115,7 +117,7 @@ class DividedNewClassesController extends Controller
                 ->where('department_code', $class->department_code)
                 ->get();   // Use get() to fetch the records
 
-                $class_code = $class->code;
+            $class_code = $class->code;
 
             // / Prepare additional data for each student
             $students = $records_student->map(function ($record) use ($class) {
@@ -130,11 +132,11 @@ class DividedNewClassesController extends Controller
                     'qualification' => $record->qualification,
                     'section' => DB::table('sections')->where('code', $record->sections_code)->value('name_2'),
                     'department' => DB::table('department')->where('code', $record->department_code)->value('name_2'),
-                    'session_year_code' => $record->session_year_code 
-                        ? str_replace('_', '-', $record->session_year_code) 
+                    'session_year_code' => $record->session_year_code
+                        ? str_replace('_', '-', $record->session_year_code)
                         : '',
                     'posting_date' => $record->posting_date,
-                    'year_student' =>service::calculateDateDifference($record->posting_date),
+                    'year_student' => service::calculateDateDifference($record->posting_date),
                     'picture' => Picture::where('code', $record->code)
                         ->where('type', 'student')
                         ->value('picture_ori'),
@@ -148,42 +150,195 @@ class DividedNewClassesController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
+    public function ClassNewUpdateStudent(request $request)
+    {
+        $data = $request->all();
+        $classes = DB::table('classes')->get();
+        $class_record = DB::table('classes')->get();
+        $skills_records = DB::table('skills')->get();
+        $sections = DB::table('sections')->get();
+        $department = DB::table('department')->get();
+        $currentDate = Carbon::now()->toDateString(); // Get the current date in the format 'YYYY-MM-DD'
+        $records = null;
+        $user_student = '';
+        $skills = Skills::get();
+        $school_years = DB::table('session_year')->orderBy('code', 'desc')->get();
+        $study_years = StudyYears::get();
+
+        try {
+            $records = Student::where('code', $this->services->Decr_string($_GET['code']))->first();
+            if (!$records) {
+                return response()->json(['status' => 'error', 'msg' => 'Class not found'], 404);
+            }
+
+            return view('general.divided_new_classes_student_card', compact('records', 'class_record', 'skills_records', 'study_years', 'school_years', 'skills', 'sections', 'classes'));
+        } catch (\Exception $ex) {
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+
+    public function ClassNewUpdateStudentTransaction(Request $request)
+    {
+        $input = $request->all();
+        $code = $input['type'];
+
+        // dd($input);
+
+        $check_classe = Student::where('code', $code)->first();
+
+        // if ($check_classe && $check_classe->class_code) {
+        //     return response()->json([
+        //         'error' => 'invalid_date',
+        //         'msg' => 'មិនអាចក្រែប្រែ ទិន្ន័យសិស្សបានទេ​ ឈ្មោះ' . $check_classe->name_2 . 'មាន ក្រុមរួចហើយ ' . $check_classe->class_code,
+        //     ]);
+        // } 
+       
+        $records = StudentRegistration::where('code', $code)->first();
+        $records_student = Student::where('code', $code)->first();
+        
+        $status = ($input['status'] == 'no') ? 'no' : 'yes';
+        $department_code = Skills::where('code',  $input['skills_code'])->first();
+        if($department_code) {
+            $department_code = $department_code->department_code;
+        }
+        $phone_student = $this->services->convertKhmerToEnglishNumber($request->phone_student);
+        $guardian_phone = $this->services->convertKhmerToEnglishNumber($request->guardian_phone);
+        
+        // if ($request->date_of_birth = \Carbon\Carbon::parse($request->date_of_birth)->format('Ymd')) {
+        //     return response()->json([
+        //         'error' => 'invalid_date',
+        //         'msg' => 'សូម ពិនិត្យមើល ថ្ងៃខែឆ្នាំម្ដងទៀត​!',
+        //     ]);
+        // }
+
+        $date_of_birth = \Carbon\Carbon::parse($request->date_of_birth)->format('Y-m-d'); 
+        try {
+                $records->name_2 = $request->name_2;
+                $records->name = $request->name; 
+                $records->date_of_birth = $date_of_birth; 
+                $records->student_address = $request->student_address;
+                $records->current_address = $request->current_address;
+                $records->occupation = $request->occupation; 
+                $records->phone_student = $phone_student; 
+                $records->guardian_name = $request->guardian_name; 
+                $records->guardian_phone = $guardian_phone; 
+                $records->father_name = $request->father_name; 
+                $records->father_occupation = $request->father_occupation; 
+                $records->mother_name = $request->mother_name; 
+                $records->mother_occupation = $request->mother_occupation; 
+                $records->education_Level = $request->education_Level; 
+                $records->skills_code = $request->skills_code; 
+                $records->sections_code = $request->sections_code; 
+                $records->apply_year = $request->apply_year; 
+                $records->qualification = $request->qualification; 
+                $records->status = $request->status; 
+                $records->register_date = Carbon::now();
+                $records->study_type = "new student";
+                $records->gender = $request->gender;
+                $records->session_year_code = $request->session_year_code;
+                $records->semester = $request->semester;
+                $records->department_code = $department_code;
+
+                $records->bakdop_results = $request->bakdop_results;
+                $records->year_final = $request->year_final;
+                $records->bakdop_index = $request->bakdop_index;
+                $records->bakdop_province = $request->bakdop_province;
+                $records->bakdop_type = $request->bakdop_type;
+                $records->scholarship = $request->scholarship;
+                $records->scholarship_type = $request->scholarship_type;
+                $records->submit_your_application = $request->submit_your_application;
+                $records->educational_institutions = $request->educational_institutions;
+                $records->update(); 
+
+
+                $records_student->name_2 = $request->name_2;
+                $records_student->name = $request->name; 
+                $records_student->date_of_birth = $date_of_birth; 
+                $records_student->student_address = $request->student_address;
+                $records_student->current_address = $request->current_address;
+                $records_student->occupation = $request->occupation; 
+                $records_student->phone_student = $phone_student; 
+                $records_student->guardian_name = $request->guardian_name; 
+                $records_student->guardian_phone = $guardian_phone; 
+                $records_student->father_name = $request->father_name; 
+                $records_student->father_occupation = $request->father_occupation; 
+                $records_student->mother_name = $request->mother_name; 
+                $records_student->mother_occupation = $request->mother_occupation; 
+                $records_student->education_Level = $request->education_Level; 
+                $records_student->skills_code = $request->skills_code; 
+                $records_student->sections_code = $request->sections_code; 
+                $records_student->apply_year = $request->apply_year; 
+                $records_student->qualification = $request->qualification; 
+                $records_student->status = $request->status; 
+                $records_student->register_date = Carbon::now();
+                $records_student->study_type = "new student";
+                $records_student->gender = $request->gender;
+                $records_student->session_year_code = $request->session_year_code;
+                $records_student->semester = $request->semester;
+                $records_student->department_code = $department_code;
+
+                $records_student->bakdop_results = $request->bakdop_results;
+                $records_student->year_final = $request->year_final;
+                $records_student->bakdop_index = $request->bakdop_index;
+                $records_student->bakdop_province = $request->bakdop_province;
+                $records_student->bakdop_type = $request->bakdop_type;
+                $records_student->scholarship = $request->scholarship;
+                $records_student->scholarship_type = $request->scholarship_type;
+                $records_student->submit_your_application = $request->submit_your_application;
+                $records_student->educational_institutions = $request->educational_institutions;
+                $records_student->update(); 
+
+                $type = "Update Student. $records->class_code";
+                $this->services->telegramSendDeleteStudent($records, $type);
+
+            return response()->json(['status' => 'success', 'msg' => 'Data Update Success !', '$records' => $records]);
+        } catch (\Exception $ex) {
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json([
+                'error' => 'invalid_date',
+                'msg' => 'សូម ពិនិត្យមើល ថ្ងៃខែឆ្នាំម្ដងទៀត​!',
+            ]);
+        }
+    }
+
+
     public function AddStudentRegister(request $request)
     {
         $data = $request->all();
 
         $check =  Student::where('code', $data['code'])->first();
-        if($check){
+        if ($check) {
             return response()->json(['msg' => 'ទិន្ន័យមានរួចហើយ']);
         }
         try {
             $records_student = StudentRegistration::where('code', $data['code'])->first();
             $records = new Student();
-            if(!$records_student){
+            if (!$records_student) {
                 return response()->json(['msg' => 'មិនមាន ទិន្ន័យ !']);
             }
             $records = new Student();
             $records->code = $records_student->code;
             $records->class_code = $data['class_code'];
             $records->name_2 = $records_student->name_2;
-            $records->name = $records_student->name; 
-            $records->date_of_birth = $records_student->date_of_birth; 
+            $records->name = $records_student->name;
+            $records->date_of_birth = $records_student->date_of_birth;
             $records->student_address = $records_student->student_address;
             $records->current_address = $records_student->current_address;
-            $records->occupation = $records_student->occupation; 
-            $records->phone_student = $records_student->phone_student; 
-            $records->guardian_name = $records_student->guardian_name; 
-            $records->guardian_phone = $records_student->guardian_phone; 
-            $records->father_name = $records_student->father_name; 
-            $records->father_occupation = $records_student->father_occupation; 
-            $records->mother_name = $records_student->mother_name; 
-            $records->mother_occupation = $records_student->mother_occupation; 
-            $records->education_Level = $records_student->education_Level; 
-            $records->skills_code = $records_student->skills_code; 
-            $records->sections_code = $records_student->sections_code; 
-            $records->apply_year = $records_student->apply_year; 
-            $records->qualification = $records_student->qualification; 
-            $records->status = $records_student->status; 
+            $records->occupation = $records_student->occupation;
+            $records->phone_student = $records_student->phone_student;
+            $records->guardian_name = $records_student->guardian_name;
+            $records->guardian_phone = $records_student->guardian_phone;
+            $records->father_name = $records_student->father_name;
+            $records->father_occupation = $records_student->father_occupation;
+            $records->mother_name = $records_student->mother_name;
+            $records->mother_occupation = $records_student->mother_occupation;
+            $records->education_Level = $records_student->education_Level;
+            $records->skills_code = $records_student->skills_code;
+            $records->sections_code = $records_student->sections_code;
+            $records->apply_year = $records_student->apply_year;
+            $records->qualification = $records_student->qualification;
+            $records->status = $records_student->status;
             $records->register_date = $records_student->register_date;
             $records->study_type = "new student";
             $records->gender = $records_student->gender;
@@ -200,12 +355,18 @@ class DividedNewClassesController extends Controller
             $records->scholarship_type = $records_student->scholarship_type;
             $records->submit_your_application = $records_student->submit_your_application;
             $records->educational_institutions = $records_student->educational_institutions;
-            $records->save(); 
+            $records->save();
+
+            
 
             $code_last = Student::latest('code')->first();
+            $records = $code_last;
+            $type = "add form Class . $records->class_code";
+            $this->services->telegramSendDeleteStudent($records, $type);
+
             $code_transetion = \App\Service\service::Encr_string($code_last->code);
 
-            return response()->json(['code_transetion'=> $code_transetion,'store' => 'yes', 'msg' => 'លោកអ្នកបាន ចុះឈ្មោះជោជ័យ']);
+            return response()->json(['code_transetion' => $code_transetion, 'store' => 'yes', 'msg' => 'លោកអ្នកបាន ចុះឈ្មោះជោជ័យ']);
         } catch (\Exception $ex) {
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
@@ -213,18 +374,40 @@ class DividedNewClassesController extends Controller
     }
     public function DeleteStudentRegisterDeleteline(Request $request)
     {
-        $code = $request->code;
+        // Start the database transaction
+        DB::beginTransaction();
         try {
-            $records = Student::where('code',$code);
+            // Get the student record by code
+            $code = $request->code;
+            $records = Student::where('code', $code)->first();
+
+            // Check if student record exists
+            if (!$records) {
+                return response()->json(['status' => 'error', 'msg' => 'Student record not found.']);
+            }
+            $type = "DELTE form Class . $records->class_code";
+            // Send Telegram notification
+            $this->services->telegramSendDeleteStudent($records, $type);
+            // Delete the student record
             $records->delete();
+            // Update StudentRegistration (if it exists)
+            $update_class = StudentRegistration::where('code', $code)->first();
+            if ($update_class) {
+                $update_class->class_code = null;
+                $update_class->save();
+            }
+            // Commit the transaction
             DB::commit();
             return response()->json(['status' => 'success', 'msg' => 'ទិន្ន័យត្រូវបាន លុប​!']);
         } catch (\Exception $ex) {
+            // Rollback the transaction on error
+            DB::rollBack();
+            // Log the error to Telegram
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
-            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+
+            return response()->json(['status' => 'warning', 'msg' => 'An error occurred: ' . $ex->getMessage()]);
         }
     }
-
 
     public function ClassNewDownloadExcel(Request $request)
     {
@@ -252,24 +435,22 @@ class DividedNewClassesController extends Controller
                         ->value('picture_ori');
                     return $record;
                 });
-            
+
             // Optimize header-related queries
             $department = optional(Department::where('code', $header->department_code)->first())->name_2;
             $skills = optional(Skills::where('code', $header->skills_code)->first())->name_2;
             $sections = optional(Sections::where('code', $header->sections_code)->first())->name_2;
             $qualification = optional(Qualifications::where('code', $header->level)->first())->name_2;
-            
+
             $blade_download = "general.divided_new_classes_card_excel";
-            
+
             // Export data to Excel
             return Excel::download(new ExportData($records, $blade_download, $department, $sections, $skills, $qualification, $header), $excel_name);
-            
-        } catch (\Exception $ex){
-            $this->services->telegram($ex->getMessage(),'list of student',$ex->getLine());
-            return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
+        } catch (\Exception $ex) {
+            $this->services->telegram($ex->getMessage(), 'list of student', $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-
 
     public function update(Request $request)
     {
@@ -343,19 +524,19 @@ class DividedNewClassesController extends Controller
     }
     public function ClassNewPrintLine(Request $request)
     {
-     
+
         $data = $request->all();
         $is_print = "yes";
         try {
             $records = Classes::where('code', $this->services->Decr_string($_GET['code']))->first();
             $record_sub_lines = Student::where('class_code', $records->class_code)
-                                        ->where('semester', $records->semester)
-                                        ->where('years', $records->years)
-                                        ->where('qualification', $records->qualification)
-                                        ->where('sections_code', $records->sections_code)
-                                        ->where('skills_code', $records->skills_code)
-                                        ->where('department_code', $records->department_code)
-                                        ->get();
+                ->where('semester', $records->semester)
+                ->where('years', $records->years)
+                ->where('qualification', $records->qualification)
+                ->where('sections_code', $records->sections_code)
+                ->where('skills_code', $records->skills_code)
+                ->where('department_code', $records->department_code)
+                ->get();
 
             return view('general.class_schedule_sub_lists', compact('records', 'record_sub_lines', 'is_print'));
         } catch (\Exception $ex) {
@@ -374,9 +555,9 @@ class DividedNewClassesController extends Controller
 
         $assing = AssingClasses::latest('id')->first();
 
-        if($assing){
+        if ($assing) {
             $assing_no = $assing->assing_no + 10;
-        }else{
+        } else {
             $assing_no = 10;
         }
 
@@ -407,10 +588,10 @@ class DividedNewClassesController extends Controller
     {
         $data = $request->all();
         try {
-        $subjects = Subjects::orderBy('code')->get();
-        $teachers = Teachers::orderBy('code')->get();
-        $records = AssingClasses::with(['subject', 'teacher'])->where('id',  $data['id'])->first();
-        return response()->json(['status' => 'success', 'records' => $records, 'subjects' => $subjects, 'teachers'=>$teachers]);
+            $subjects = Subjects::orderBy('code')->get();
+            $teachers = Teachers::orderBy('code')->get();
+            $records = AssingClasses::with(['subject', 'teacher'])->where('id',  $data['id'])->first();
+            return response()->json(['status' => 'success', 'records' => $records, 'subjects' => $subjects, 'teachers' => $teachers]);
         } catch (\Exception $ex) {
             DB::rollBack();
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
@@ -418,7 +599,7 @@ class DividedNewClassesController extends Controller
         }
     }
 
-    public function Search (Request $request,$page)
+    public function Search(Request $request, $page)
     {
         dd("helo");
         $input = $request->all();
@@ -438,15 +619,15 @@ class DividedNewClassesController extends Controller
                 }
                 $search_value = rtrim($search_value, " ");
                 // check page
-                if($page == 'student'){
-                    $menus = DB::table('student')->where('name','like', $search_value . "%")
-                                        ->orWhere('code', 'like', $search_value . "%")
-                                        ->orWhere('name_2', 'like', $search_value . "%")
-                                        ->where('class_code', '<>', null)->get();
+                if ($page == 'student') {
+                    $menus = DB::table('student')->where('name', 'like', $search_value . "%")
+                        ->orWhere('code', 'like', $search_value . "%")
+                        ->orWhere('name_2', 'like', $search_value . "%")
+                        ->where('class_code', '<>', null)->get();
                     $blade_file_record = 'student.student_list';
-                }else if($page == 'department'){
-                    $menus = DB::table('department')->where('department_name','like', $search_value . "%")
-                                        ->where('id', '<>', null)->get();
+                } else if ($page == 'department') {
+                    $menus = DB::table('department')->where('department_name', 'like', $search_value . "%")
+                        ->where('id', '<>', null)->get();
                     $blade_file_record = 'department.department_list';
                 }
 
@@ -458,38 +639,36 @@ class DividedNewClassesController extends Controller
                         $menu->url = $menu->url . ($strings[0] == 'NEW' ? "type=cr" : "type=ed&code=" . $this->service->Encr_string($strings[count($strings) - 1]));
                     }
                 }
-            }else{
+            } else {
                 for ($i = 0; $i < count($strings); $i++) {
                     $search_value .= $strings[$i] . " ";
                 }
                 $search_value = rtrim($search_value, " ");
-                if($page == 'student'){
+                if ($page == 'student') {
                     $menus = DB::table('student')->where('name', 'like', $search_value . "%")
                         ->orWhere('code', 'like', $search_value . "%")
                         ->orWhere('name_2', 'like', $search_value . "%")
                         ->where('class_code', '<>', null)->paginate(1000);
                     $blade_file_record = 'student.student_list';
-                }else if($page == 'department'){
-                    $menus = DB::table('department')->where('department_name','like', $search_value . "%")
-                            ->where('id', '<>', null)->paginate(1000);
+                } else if ($page == 'department') {
+                    $menus = DB::table('department')->where('department_name', 'like', $search_value . "%")
+                        ->where('id', '<>', null)->paginate(1000);
                     $blade_file_record = 'department.department_list';
                 }
             }
-           
+
             if (count($menus) > 0) {
                 $records = $menus;
-            }else{
-                if($page == 'student'){
-                    $records = Student::where('department_code',$user->childs)->paginate(10);
-                }else if($page == 'department'){
+            } else {
+                if ($page == 'student') {
+                    $records = Student::where('department_code', $user->childs)->paginate(10);
+                } else if ($page == 'department') {
                     $records = Department::paginate(15);
                 }
             }
-            $view = view($blade_file_record,compact('records'))->render();
-            return response()->json(['status' =>'success','view' =>$view]);
+            $view = view($blade_file_record, compact('records'))->render();
+            return response()->json(['status' => 'success', 'view' => $view]);
         }
         return 'none';
     }
-    
 }
-

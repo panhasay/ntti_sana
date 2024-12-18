@@ -23,6 +23,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ExportData;
 use App\Exports\UsersExport;
 use App\Imports\ImportExcell;
+use App\Models\General\Classes;
 use App\Models\General\Picture;
 use App\Models\General\Skills;
 use App\Models\General\StudentRegistration;
@@ -79,6 +80,14 @@ class StudnetController extends Controller
         }
     }
     public function StudentRegistration(Request $request){
+        $sql = "
+            UPDATE student_registration AS reg
+            INNER JOIN student AS stu ON stu.code = reg.code
+            SET reg.class_code = stu.class_code
+            WHERE reg.code = stu.code AND reg.department_code = stu.department_code
+        ";
+        DB::statement($sql);
+        
         $user = Auth::user();
         $sections = DB::table('sections')->get();
         $department = Department::get();
@@ -93,6 +102,7 @@ class StudnetController extends Controller
             ->where('department_code', $user->department_code)
             ->whereNotNull('class_code')
             ->get();
+
             $total_records = StudentRegistration::select(
                 DB::raw('COUNT(name) AS total_count'),  
             )->where('study_type', 'new student')
@@ -114,6 +124,8 @@ class StudnetController extends Controller
             )->where('study_type', 'new student')
             ->whereNotNull('class_code')
             ->get();
+
+            // dd($total_student_have_class);  
 
             $records = StudentRegistration::with(['session_year'])->where('study_type', 'new student')->orderBy('code', 'desc')->paginate(15);
         }
@@ -328,12 +340,12 @@ class StudnetController extends Controller
 
         $check_classe = Student::where('code', $code)->first();
 
-        if ($check_classe && $check_classe->class_code) {
-            return response()->json([
-                'error' => 'invalid_date',
-                'msg' => 'មិនអាចក្រែប្រែ ទិន្ន័យសិស្សបានទេ​ ឈ្មោះ' . $check_classe->name_2 . 'មាន ក្រុមរួចហើយ ' . $check_classe->class_code,
-            ]);
-        } 
+        // if ($check_classe && $check_classe->class_code) {
+        //     return response()->json([
+        //         'error' => 'invalid_date',
+        //         'msg' => 'មិនអាចក្រែប្រែ ទិន្ន័យសិស្សបានទេ​ ឈ្មោះ' . $check_classe->name_2 . 'មាន ក្រុមរួចហើយ ' . $check_classe->class_code,
+        //     ]);
+        // } 
        
         $records = StudentRegistration::where('code', $code)->first();
         
@@ -428,9 +440,11 @@ class StudnetController extends Controller
             $extract_query = $this->services->extractQuery($filter);
            
             // Use get() instead of paginate() for exporting
-            $records = StudentRegistration::with(['session_year'])
-            ->whereRaw($extract_query)
+            $records = Student::whereRaw($extract_query)
             ->where('study_type', 'new student')
+            ->orderBy('class_code')
+            ->orderBy('department_code')
+            ->orderByRaw("name_2 COLLATE utf8mb4_general_ci")
             ->get()
             ->map(function ($record) {
                 $record->skills = DB::table('skills')->where('code', $record->skills_code)->value('name_2');
@@ -817,6 +831,26 @@ class StudnetController extends Controller
             
 
             return view('general.student_register_print', compact('records', 'type', 'skills', 'formattedDate', 'DateFormartKhmer'));
+        } catch (\Exception $ex) {
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+    public function StudentRemaining(Request $request)
+    {
+        $data = $request->all();
+        $class_record = Classes::get();
+        $department = Department::get();
+        $skills = Skills::get();
+        $sections  = Sections::get();
+        $qualifications = Qualifications::get();
+        try {
+
+            $records = StudentRegistration::where('study_type', 'new student')
+            ->whereNull('class_code')
+            ->paginate(20);
+
+            return view('general.student_register_remaining', compact('records', 'class_record', 'department', 'skills', 'sections', 'qualifications'));
         } catch (\Exception $ex) {
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);

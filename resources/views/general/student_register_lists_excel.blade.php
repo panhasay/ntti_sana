@@ -29,6 +29,7 @@
         <th style="font-weight: 700" width="20">លេខទូរស័ព្ទ</th>
         <th style="font-weight: 700" width="20">ជំនាញ</th>
         <th style="font-weight: 700" width="20">កម្រិត</th>
+        <th style="font-weight: 700" width="20">ក្រុម</th>
         <th style="font-weight: 700" width="20">វេនសិក្សា</th>
         <th style="font-weight: 700" width="20">ឈ្មោះម្ដាយ</th>
         <th style="font-weight: 700" width="20">ឈ្មោះឪពុក</th>
@@ -48,10 +49,11 @@
           <td>{{ $record->phone_student }}</td>
           <td>{{ $record->skills }}</td>
           <td>{{ $record->qualification }}</td>
+          <td>{{ $record->class_code }}</td>
           <td>{{ $record->section }}</td>
           <td>{{ $record->mother_name }}</td>
           <td>{{ $record->father_name }}</td>
-          <td>{{ $record->session_year->name }}</td>
+          <td>{{ $record->session_year_code ?? '' }}</td>
       </tr>
       @endforeach
     </tbody>

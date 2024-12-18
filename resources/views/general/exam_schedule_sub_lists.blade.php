@@ -4,7 +4,7 @@
             <tr>
                 <th width="10" rowspan="2">ល.រ</th>
                 <th rowspan="2">កាលបរិច្ឆេទ</th>
-                <th colspan="2" class="text-center">{{ $records->class_code }}</th>
+                <th colspan="2" class="text-center">{{ $records->class_code ?? ''}}</th>
             </tr>
             <tr>
                 <th>មុខវិជ្ជា</th>

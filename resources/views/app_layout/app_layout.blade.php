@@ -314,8 +314,49 @@
   <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
   {{-- Google Chart --}}
 
-
   <script>
+   let logoutTimer;
+    const logoutAfter = 2400 * 1000; 
+
+    function resetTimer() {
+      clearTimeout(logoutTimer); 
+      logoutTimer = setTimeout(() => {
+
+          const swalWithBootstrapButtons = Swal.mixin({
+              customClass: {
+                  confirmButton: "btn btn-success",
+                  cancelButton: "btn btn-danger"
+              },
+              buttonsStyling: false
+          });
+
+          swalWithBootstrapButtons.fire({
+              title: "សូម login System ម្ដងទៀត",
+              text: "You won't be able to revert this!",
+              icon: "warning",
+              confirmButtonText: "OK!",
+              // showCancelButton: true,
+              
+              reverseButtons: true
+          }).then((result) => {
+              if (result.isConfirmed) {
+                  // Redirect to logout
+                  window.location.href = '/logout';
+              } else if (result.dismiss === Swal.DismissReason.cancel) {
+                  swalWithBootstrapButtons.fire({
+                      title: "Cancelled",
+                      text: "Your imaginary file is safe :)",
+                      icon: "error"
+                  });
+              }
+          });
+      }, logoutAfter);
+    }
+    // Reset the timer on user interaction
+    window.onload = resetTimer;
+    document.onmousemove = resetTimer;
+    document.onkeypress = resetTimer;
+
     // success, info, warning, error, and none
     var cleaSearch = ('.container-scroller');
         var notyf = new Notyf({

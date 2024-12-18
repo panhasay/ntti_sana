@@ -1,5 +1,6 @@
 <tr id="row_line{{ $record->code }}">
     <td>
+        <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" href="{{ 'class-new/transaction/update-student?type=ed&code='.\App\Service\service::Encr_string($record->code) }}"><i class="mdi mdi-border-color"></i> Edit</a>
         <button class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="btnDeleteLine" data-code="{{ $record->code ?? '' }}">
             <i class="mdi mdi-delete-forever"></i> Delete
         </button>

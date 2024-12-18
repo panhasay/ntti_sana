@@ -150,7 +150,13 @@ class SystemSettingController extends Controller
                 case 'warehouses':
                     // $records = WarehouseModel::whereRaw($extract_query)->paginate(15);
                     break;
-                
+                case 'student_registration_remaining':
+
+                    $records = StudentRegistration::whereRaw($extract_query)->where('study_type', 'new student')
+                        ->whereNull('class_code')
+                        ->paginate(1000);
+                    $blade_file_record = 'general.student_register_remaining_lists';
+                break;
                 default:
                
                     break; 

@@ -65,5 +65,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'setec' => \App\Http\Middleware\SetecMiddleWare::class,
         'permission' => \App\Http\Middleware\CheckPermission::class,
+        'user_permission' => \App\Http\Middleware\UserPermission::class,
     ];
 }

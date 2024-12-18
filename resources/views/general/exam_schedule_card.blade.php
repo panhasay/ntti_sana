@@ -238,9 +238,9 @@
             var url;
             if (!type) {
                 if (FieldRequired()) return;
-                url = `/class-schedule/store`;
+                url = `/exam-schedule/store`;
             } else {
-                url = `/class-schedule/update`;
+                url = `/exam-schedule/update`;
             }
             $.ajax({
                 type: "POST"
@@ -267,10 +267,10 @@
                 return;
             }
             $('.js-example-basic-single').select2();
-            $("#ModalTeacherSchedule").modal('show');
+            $("#examModal").modal('show');
             
-            $('#teachers, #subjects_code_monday, #subjects_code_tuesday, #subjects_code_wednesday, #subjects_code_thursday, #subjects_code_friday, #subjects_code_saturday').select2({
-                dropdownParent: $('#ModalTeacherSchedule') 
+            $('#teacher_code, #subjects_code, #subjects_code_tuesday, #subjects_code_wednesday, #subjects_code_thursday, #subjects_code_friday, #subjects_code_saturday').select2({
+                dropdownParent: $('#examModal') 
             });
             jQuery(function() {
                 $('#frmDataSublist')[0].reset();
@@ -350,7 +350,7 @@
         });
         $(document).on('click', '.BtnEditeacher', function() {
             var code = $(this).attr('data-code');
-            let url = 'update/class-schedule/transaction?id=' + code;
+            let url = 'update/exam-schedule/transaction?id=' + code;
             jQuery(function() {
                 $('#frmDataSublist')[0].reset();
             });
