@@ -75,15 +75,14 @@
     
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 pb-8 sm:pb-16">
         @foreach ($schedules as $schedule)
-            <div class="rounded-xl border-1 border-green-600 bg-card text-card-foreground shadow-sm hover:shadow-md transition-all cursor-pointer hover:scale-105 transform duration-300 ease-in-out relative">
-                <div class="p-4 sm:p-6 flex flex-col h-full">
-                    <div class="text-base font-semibold mb-4  flex flex-row items-center justify-between">
-                        <span >ក្រុម : {{ $schedule['class_code'] }}</span>
-                        <span class="text-muted-foreground khmer-font text-sm">វេន : {{ $schedule['section'] === 'Night' ? 'យប់' : $schedule['section'] }}</span>
-                    </div>
-                    <!-- Combined Class and Section as Title -->
+            @foreach ($schedule['schedule_items'] as $item)
+                <div class="rounded-xl border-1 border-green-600 bg-card text-card-foreground shadow-sm hover:shadow-md transition-all cursor-pointer hover:scale-105 transform duration-300 ease-in-out relative" 
+                    onclick="window.location.href='{{ url('get-attendant-student?assing_no=' . $item['assing_no']) }}'">
+                    <div class="p-4 sm:p-6 flex flex-col h-full">
+                        <div class="text-base font-semibold mb-4 flex flex-row items-center justify-between">
+                            <span>ក្រុម : {{ $schedule['class_code'] }}</span>
+                        </div>
 
-                    @foreach ($schedule['schedule_items'] as $item)
                         <!-- Teacher and Subject Info -->
                         <div class="flex items-center space-x-3 sm:space-x-4 mb-4">
                             <span class="relative flex h-10 sm:h-12 w-10 sm:w-12 shrink-0 overflow-hidden rounded-full">
@@ -121,9 +120,9 @@
                                 <div class="check-status {{ $item['checked'] ? 'status-checked' : 'status-unchecked' }}"></div>
                             </div>
                         </div>
-                    @endforeach
+                    </div>
                 </div>
-            </div>
+            @endforeach
         @endforeach
     </div>
     @endsection
