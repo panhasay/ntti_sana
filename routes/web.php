@@ -23,7 +23,7 @@ use App\Http\Controllers\SystemSetup\UsersController;
 use App\Models\General\DividedNewClasses;
 use GuzzleHttp\Middleware;
 use Illuminate\support\Facades\App;
-
+use App\Http\Controllers\Certificates\CertificateController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -249,7 +249,11 @@ Route::group(['perfix' => 'exam-schedule'], function (){
     Route::get('/exam-schedule-print',[ExamScheduleController::class,'printLine']);
 })->middleware('auth');
 
-
+Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static function () {
+    Route::controller(CertificateController::class)->group(function () {
+        Route::post('/level_shift_skill', 'showLevelShiftSkill');
+    });
+});
 
 
 

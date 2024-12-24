@@ -88,15 +88,16 @@
             <ul class="navbar-nav mr-lg-2">
               <li class="nav-item nav-search d-none d-lg-block">
                 <div class="input-group">
-                  <div class="input-group-prepend hover-cursor" id="navbar-search-icon">
+                  {{-- <div class="input-group-prepend hover-cursor" id="navbar-search-icon">
                     <span class="input-group-text" id="search">
                       <i class="mdi mdi-magnify"></i>
                     </span>
-                  </div>
+                  </div> --}}
+                  
                   {{-- <input id="search_menu_function" class="form-control btn-circle-right" type="text"
                     name="search_menu_function" placeholder="{{ trans('greetings.Search').'...' }}"> --}}
-                  <input type="text" class="form-control" id="search_menu_function" name="search_menu_function"
-                    placeholder="Search" aria-label="search" aria-describedby="search" />
+                  {{-- <input type="text" class="form-control" id="search_menu_function" name="search_menu_function"
+                    placeholder="Search" aria-label="search" aria-describedby="search" /> --}}
                   @include('system.menu_search_list')
                 </div>
               </li>

@@ -24,16 +24,18 @@
     <!-- Teacher Stats -->
     <div class="row mb-4">
         <div class="col-md-3">
-            <div class="card text-white" style="border-radius: 15px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-                <div class="card-body position-relative" style="background: linear-gradient(45deg, #43b1e9, #edbd9d); padding: 1.5rem;">
-                    <div class="position-absolute" style="top: 0; right: 0; padding: 1rem;">
-                        <i class="mdi mdi-teach" style="font-size: 2.5rem; opacity: 0.3;"></i>
+            <a href="{{ url('/manage-academic-work') }}" style="text-decoration: none;">
+                <div class="card text-white" style="border-radius: 15px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    <div class="card-body position-relative" style="background: linear-gradient(45deg, #43b1e9, #edbd9d); padding: 1.5rem;">
+                        <div class="position-absolute" style="top: 0; right: 0; padding: 1rem;">
+                            <i class="mdi mdi-teach" style="font-size: 2.5rem; opacity: 0.3;"></i>
+                        </div>
+                        <h5 class="card-title" style="font-size: 1.1rem; margin-bottom: 1rem;">ចំនួនថ្នាក់ដែលត្រូវបង្រៀន</h5>
+                        <h2 class="card-text mb-1" style="font-size: 2.5rem; font-weight: bold;">{{ $total_class ?? '' }}</h2>
+                        <small class="text-white-50">ឆមាសនេះ</small>
                     </div>
-                    <h5 class="card-title" style="font-size: 1.1rem; margin-bottom: 1rem;">ចំនួនថ្នាក់ដែលត្រូវបង្រៀន</h5>
-                    <h2 class="card-text mb-1" style="font-size: 2.5rem; font-weight: bold;">{{ $total_class ?? '' }}</h2>
-                    <small class="text-white-50">ឆមាសនេះ</small>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-md-3">
             <div class="card text-white" style="border-radius: 15px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
