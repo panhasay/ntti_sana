@@ -194,6 +194,7 @@
     $(document).on('click', '.btn-browse', function() {
       $('.upload-item').trigger('click');
     });
+
     $(document).on('click', '#btn-Image', function() {
       let code = $(this).attr('data-code');
       $.ajax({
@@ -214,6 +215,7 @@
         }
       });
     });
+
     $(document).on('change', '#file', function() {
       let file = $('#file').val();
       let data = new FormData(formimg);

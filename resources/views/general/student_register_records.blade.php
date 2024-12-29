@@ -21,7 +21,7 @@
     </td>
     <td class="text-center"> {{ $record->code ?? '' }}</td>
     <td>{{ $record->name_2 ?? ''}}</td>
-    <td> {{ $record->name ?? ''}}</td>
+    <td>{{ ucwords(strtolower($record->name ?? '')) }} </td>
     <td>{{ $record->gender ?? ''}}</td>
     <td >{{ $khmerDate ?? ''}}</td>
     <td>{{ $record->student_address ?? ''}}</td>

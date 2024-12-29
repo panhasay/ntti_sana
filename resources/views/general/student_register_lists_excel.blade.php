@@ -42,7 +42,7 @@
       <tr>
           <td> {{ $record->code }}</td>
           <td>{{ $record->name_2 }}</td>
-          <td>{{ $record->name }}</td>
+          <td>{{ ucwords(strtolower($record->name ?? '')) }}</td>
           <td>{{ $record->gender }}</td>
           <td>{{ $record->khmerDate }}</td>
           <td>{{ $record->student_address }}</td>

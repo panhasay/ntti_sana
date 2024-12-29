@@ -106,7 +106,33 @@
               <li class="nav-item nav-profile dropdown">
                 <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                   <div class="nav-profile-img">
-                    <img src="{{asset('asset/NTTI/images/faces/default_User.jpg')}}" alt="image" />
+                    
+                    <?php
+                        $user = Auth::user();
+
+                        $records = App\Models\User::where('id', $user->id)->first();
+                        if($records->role == "student"){
+                          $records_by_user = DB::table('student')->where('code', $records->user_code)->first();
+                        }else if($records->role == "teachers"){
+                            $records_by_user = App\Models\General\Teachers::where('code', $records->user_code)->first();
+                        }else if($records->role == "admin"){
+                          $records_by_user = DB::table('student')->where('code', $records->user_code)->first();
+                        }else{
+                          $records_by_user = DB::table('student')->where('code', $records->user_code)->first();
+                        }
+                        
+
+                        $picture =  App\Models\General\Picture::where('code', $records_by_user->code ?? '')->where('type','student')->value('picture_ori');
+                    ?>
+
+                    @if(isset($picture) && $picture != null)
+                      <img class="btn-Image" id="btn-Image" data-code ='{{$records_by_user->code ?? ''}}' src="{{ $picture ?? '' }}" width="1000" height="1000">
+                    @else
+                      <img class="btn-Image" id="btn-Image" data-code ='{{$records_by_user->code ?? ''}}' src="asset/NTTI/images/faces/default_User.jpg" width="1000" height="1000">
+                    @endif
+                    {{-- <img src="{{asset('asset/NTTI/images/faces/default_User.jpg')}}" alt="image" /> --}}
+
+
                   </div>
                   <div class="nav-profile-text">
                     <p class="text-black font-weight-semibold m-0"> {{ Auth::user()->name ?? ''}} </p>

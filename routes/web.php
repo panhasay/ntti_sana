@@ -23,6 +23,8 @@ use App\Http\Controllers\SystemSetup\UsersController;
 use App\Models\General\DividedNewClasses;
 use GuzzleHttp\Middleware;
 use Illuminate\support\Facades\App;
+
+use App\Models\General\ExamSchedule;
 use App\Http\Controllers\Certificates\CertificateController;
 /*
 |--------------------------------------------------------------------------
@@ -134,6 +136,7 @@ Route::group(['perfix' => 'department' ,  'middleware' => 'permission'], functio
 Route::group(['perfix' => 'Users'], function (){
     Route::get('users', [UsersController::class, 'index'])->name('index');
     Route::get('profile', [UsersController::class, 'Profile'])->name('Profile');
+    Route::get('profile/reset-password', [UsersController::class, 'ResetPassword'])->name('ResetPassword');
     // Route::get('departments/transaction', [UsersController::class, 'transaction'])->name('transaction');
     // Route::post('departments/update', [UsersController::class, 'update'])->name('update');
     // Route::post('departments/store', [UsersController::class, 'store'])->name('store');
@@ -243,9 +246,15 @@ Route::group(['perfix' => 'exam-schedule'], function (){
     Route::get('/exam-schedule',[ExamScheduleController::class,'index']);
     Route::get('/exam-schedule/transaction', [ExamScheduleController::class, 'transaction']);
     Route::post('/exam-schedule/update', [ExamScheduleController::class, 'update']);
-    Route::post('/exam-schedule/store', [ExamScheduleController::class, 'store']);
-    Route::POST ('/exam-schedule-delete', [ExamScheduleController::class, 'delete']);
-    Route::POST ('/exam-schedule/save-schedule', [ExamScheduleController::class, 'SaveSchedule']);
+    
+    Route::get('/exam-schedule/create', [ExamScheduleController::class, 'GetDataForCreateExamSchedule'])->name('exam.schedule.create');
+    Route::post('/exam-schedule/save', [ExamScheduleController::class, 'SaveExamSchedule'])->name('save.exam.schedule');
+    Route::get('/get-exam-schedules', [ExamScheduleController::class, 'getSchedules'])->name('get.exam.schedules');
+    Route::post('/exam-schedule/update/{id}', [ExamScheduleController::class, 'updateExamSchedule']);
+    Route::post('/exam-schedule/upload-document', [ExamScheduleController::class, 'uploadDocument'])->name('exam-schedule.upload-document');
+    Route::get('/exam-schedule/view-pdf/{filename}', [ExamScheduleController::class, 'viewPdf'])->name('viewPdf');
+    Route::delete('/exam-schedule/delete/{id}', [ExamScheduleController::class, 'deleteExamSchedule']);
+    Route::post ('/exam-schedule/save-schedule', [ExamScheduleController::class, 'SaveSchedule']);
     Route::get('/exam-schedule-print',[ExamScheduleController::class,'printLine']);
 })->middleware('auth');
 

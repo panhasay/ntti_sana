@@ -11,7 +11,7 @@
       $year_student = App\Service\service::calculateDateDifference($postingDate);
   ?>
   <tr id="row{{$record->code}}">
-    <td height="35">{{ $record->name_2  }}</td>
+    <td height="35">{{ $record->name_2 }}</td>
     <td>{{ $record->name ?? '' }}</td>
     <td>{{ $record->gender ?? ''}}</td>
     <td>{{ $khmerDate ?? ''}}</td>

@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Models\General\ClassSchedule;
+
 class ExamScheduleController extends Controller
 {
     //
@@ -36,14 +37,98 @@ class ExamScheduleController extends Controller
         $this->arrayJoin = ['10001', '10007', '10008'];
         $this->table_id = "10005";
     }
-    public function index(){
+    public function index()
+    {
         $page = $this->page;
         $records = ExamSchedule::orderBy('session_year_code', 'asc')->paginate(20);
-        if(!Auth::check()){
+        if (!Auth::check()) {
             return redirect("login")->withSuccess('Opps! You do not have access');
-        }  
-        return view('general.exam_schedule', compact('records','page'));	
+        }
+        return view('general.exam_schedule', compact('records', 'page'));
     }
+    public function saveExamSchedule(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $data = $request->all();
+            $header = ExamSchedule::findOrFail($data['exam_schedule']);
+
+            $dates = $request->input('date');
+            $subjects = $request->input('subjects_code');
+            $teachers = $request->input('teacher_code');
+            $documents = $request->input('document_exam');
+
+            foreach ($dates as $key => $date) {
+                if (!empty($date) && !empty($subjects[$key])) {
+                    ExamScheduleLine::create([
+                        'exam_schedule_id' => $header->id,
+                        'date' => $date,
+                        'subjects_code' => $subjects[$key],
+                        'teacher_code' => $teachers[$key] ?? null,
+                        'document_exam' => $documents[$key] ?? null,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'msg' => 'Exam Schedule saved successfully!'
+            ]);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'msg' => $ex->getMessage()
+            ]);
+        }
+    }
+
+    public function updateExamSchedule(Request $request, $id)
+    {
+        try {
+            $record = ExamScheduleLine::findOrFail($id);
+            $record->update([
+                'date' => $request->input('date'),
+                'subjects_code' => $request->input('subjects_code'),
+                'teacher_code' => $request->input('teacher_code'),
+                'updated_at' => now()
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'msg' => 'Exam Schedule updated successfully!'
+            ]);
+        } catch (\Exception $ex) {
+            return response()->json([
+                'status' => 'error',
+                'msg' => $ex->getMessage()
+            ]);
+        }
+    }
+
+    public function deleteExamSchedule($id)
+    {
+        try {
+            $record = ExamScheduleLine::findOrFail($id); // Check if record exists
+            $record->delete(); // Perform delete
+
+            return response()->json([
+                'status' => 'success',
+                'msg' => 'Exam Schedule deleted successfully!'
+            ]);
+        } catch (\Exception $ex) {
+            return response()->json([
+                'status' => 'error',
+                'msg' => $ex->getMessage()
+            ]);
+        }
+    }
+
+
     public function transaction(request $request)
     {
         $data = $request->all();
@@ -55,11 +140,11 @@ class ExamScheduleController extends Controller
         $classs = Classes::orderBy('code', 'desc')->get();
         $sections = DB::table('sections')->get();
         $department = Department::get();
-        $school_years = DB::table('session_year')->orderBy('code', 'desc')->get();   
+        $school_years = DB::table('session_year')->orderBy('code', 'desc')->get();
         $skills = DB::table('skills')->get();
         $study_years = StudyYears::get();
         $teachers = Teachers::orderBy('code', 'asc')->get();
-        $subjects = Subjects::orderBy('code', 'asc')->get(); 
+        $subjects = Subjects::orderBy('code', 'asc')->get();
         try {
             $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'classs', 'study_years', 'teachers', 'subjects', 'record_sub_lines'];
             if ($type == 'cr') return view('general.exam_schedule_card', compact($params));
@@ -77,7 +162,7 @@ class ExamScheduleController extends Controller
     {
         $code = $request->code;
         try {
-            $records = Skills::where('code',$code);
+            $records = Skills::where('code', $code);
             $records->delete();
             DB::commit();
             return response()->json(['status' => 'success', 'msg' => 'ទិន្ន័យត្រូវបាន លុប​!']);
@@ -163,13 +248,13 @@ class ExamScheduleController extends Controller
         try {
             $records = GeneralClassSchedule::where('id', $this->services->Decr_string($_GET['code']))->first();
             $record_sub_lines = AssingClasses::where('class_code', $records->class_code)
-                                                ->where('semester', $records->semester)
-                                                ->where('years', $records->years)
-                                                ->where('qualification', $records->qualification)
-                                                ->where('sections_code', $records->sections_code)
-                                                ->where('skills_code', $records->skills_code)
-                                                ->where('department_code', $records->department_code)
-                                                ->get();
+                ->where('semester', $records->semester)
+                ->where('years', $records->years)
+                ->where('qualification', $records->qualification)
+                ->where('sections_code', $records->sections_code)
+                ->where('skills_code', $records->skills_code)
+                ->where('department_code', $records->department_code)
+                ->get();
             return view('general.class_schedule_sub_lists', compact('records', 'record_sub_lines', 'is_print'));
         } catch (\Exception $ex) {
             DB::rollBack();
@@ -187,9 +272,9 @@ class ExamScheduleController extends Controller
 
         $assing = AssingClasses::latest('id')->first();
 
-        if($assing){
+        if ($assing) {
             $assing_no = $assing->assing_no + 10;
-        }else{
+        } else {
             $assing_no = 10;
         }
 
@@ -220,10 +305,10 @@ class ExamScheduleController extends Controller
     {
         $data = $request->all();
         try {
-        $subjects = Subjects::orderBy('code')->get();
-        $teachers = Teachers::orderBy('code')->get();
-        $records = AssingClasses::with(['subject', 'teacher'])->where('id',  $data['id'])->first();
-        return response()->json(['status' => 'success', 'records' => $records, 'subjects' => $subjects, 'teachers'=>$teachers]);
+            $subjects = Subjects::orderBy('code')->get();
+            $teachers = Teachers::orderBy('code')->get();
+            $records = AssingClasses::with(['subject', 'teacher'])->where('id',  $data['id'])->first();
+            return response()->json(['status' => 'success', 'records' => $records, 'subjects' => $subjects, 'teachers' => $teachers]);
         } catch (\Exception $ex) {
             DB::rollBack();
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
@@ -231,7 +316,7 @@ class ExamScheduleController extends Controller
         }
     }
 
-    public function Search (Request $request,$page)
+    public function Search(Request $request, $page)
     {
         dd("helo");
         $input = $request->all();
@@ -250,16 +335,15 @@ class ExamScheduleController extends Controller
                     }
                 }
                 $search_value = rtrim($search_value, " ");
-                // check page
-                if($page == 'student'){
-                    $menus = DB::table('student')->where('name','like', $search_value . "%")
-                                        ->orWhere('code', 'like', $search_value . "%")
-                                        ->orWhere('name_2', 'like', $search_value . "%")
-                                        ->where('class_code', '<>', null)->get();
+                if ($page == 'student') {
+                    $menus = DB::table('student')->where('name', 'like', $search_value . "%")
+                        ->orWhere('code', 'like', $search_value . "%")
+                        ->orWhere('name_2', 'like', $search_value . "%")
+                        ->where('class_code', '<>', null)->get();
                     $blade_file_record = 'student.student_list';
-                }else if($page == 'department'){
-                    $menus = DB::table('department')->where('department_name','like', $search_value . "%")
-                                        ->where('id', '<>', null)->get();
+                } else if ($page == 'department') {
+                    $menus = DB::table('department')->where('department_name', 'like', $search_value . "%")
+                        ->where('id', '<>', null)->get();
                     $blade_file_record = 'department.department_list';
                 }
 
@@ -271,37 +355,115 @@ class ExamScheduleController extends Controller
                         $menu->url = $menu->url . ($strings[0] == 'NEW' ? "type=cr" : "type=ed&code=" . $this->service->Encr_string($strings[count($strings) - 1]));
                     }
                 }
-            }else{
+            } else {
                 for ($i = 0; $i < count($strings); $i++) {
                     $search_value .= $strings[$i] . " ";
                 }
                 $search_value = rtrim($search_value, " ");
-                if($page == 'student'){
+                if ($page == 'student') {
                     $menus = DB::table('student')->where('name', 'like', $search_value . "%")
                         ->orWhere('code', 'like', $search_value . "%")
                         ->orWhere('name_2', 'like', $search_value . "%")
                         ->where('class_code', '<>', null)->paginate(1000);
                     $blade_file_record = 'student.student_list';
-                }else if($page == 'department'){
-                    $menus = DB::table('department')->where('department_name','like', $search_value . "%")
-                            ->where('id', '<>', null)->paginate(1000);
+                } else if ($page == 'department') {
+                    $menus = DB::table('department')->where('department_name', 'like', $search_value . "%")
+                        ->where('id', '<>', null)->paginate(1000);
                     $blade_file_record = 'department.department_list';
                 }
             }
-           
+
             if (count($menus) > 0) {
                 $records = $menus;
-            }else{
-                if($page == 'student'){
-                    $records = Student::where('department_code',$user->childs)->paginate(10);
-                }else if($page == 'department'){
+            } else {
+                if ($page == 'student') {
+                    $records = Student::where('department_code', $user->childs)->paginate(10);
+                } else if ($page == 'department') {
                     $records = Department::paginate(15);
                 }
             }
-            $view = view($blade_file_record,compact('records'))->render();
-            return response()->json(['status' =>'success','view' =>$view]);
+            $view = view($blade_file_record, compact('records'))->render();
+            return response()->json(['status' => 'success', 'view' => $view]);
         }
         return 'none';
     }
+
+ public function uploadDocument(Request $request)
+ {
+     $code = $request->query('code'); 
+ 
+     $request->validate([
+         'document_exam' => 'required|mimes:pdf|max:10240', 
+     ]);
+ 
+     $record = ExamScheduleLine::find($code);
+ 
+     if (!$record) {
+         return response()->json(['status' => 'error', 'message' => 'Record not found'], 404);
+     }
+ 
+     try {
+         if (!empty($record->document_exam) && file_exists(public_path('storage/' . $record->document_exam))) {
+             unlink(public_path('storage/' . $record->document_exam));
+         }
+         if ($request->hasFile('document_exam') && $request->file('document_exam')->isValid()) {
+             $file = $request->file('document_exam');
+             $directory = public_path('storage/documents/exam');
+             if (!file_exists($directory)) {
+                 mkdir($directory, 0777, true); 
+             }
+             $filename = time() . '_' . $file->getClientOriginalName();
+             $file->move($directory, $filename);
+             $filePath = 'documents/exam/' . $filename;
+             $record->document_exam = $filePath;
+             $record->save();
+ 
+             return response()->json([
+                 'status' => 'success',
+                 'message' => 'File uploaded successfully',
+                 'path' => $filePath,
+             ]);
+         }
+
+     } catch (\Exception $e) {
+         // Catch and log any exceptions
+         \Log::error('File upload error:', ['error' => $e->getMessage()]);
+         return response()->json([
+             'status' => 'error',
+             'message' => 'An error occurred during file upload. Please try again.',    
+         ], 500);
+     }
+ }
+
+ public function deleteExamScheduleLine($id)
+ {
+     $record = ExamScheduleLine::find($id);
+ 
+     if (!$record) {
+         return response()->json(['status' => 'error', 'message' => 'Record not found'], 404);
+     }
+ 
+     try {
+         $record->delete();
+         return response()->json(['status' => 'success', 'message' => 'Record and file deleted successfully']);
+     } catch (\Exception $e) {
+        //  \Log::error('Error deleting record:', ['error' => $e->getMessage()]);
+         return response()->json(['status' => 'error', 'message' => 'Failed to delete record. Please try again.'], 500);
+     }
+ }
+ public function viewPdf($filename)
+ {
+     $filePath = public_path('storage/documents/exam/' . $filename);
+
+     if (!file_exists($filePath)) {
+         abort(404, 'File not found');
+     }
+
+     return response()->file($filePath, [
+         'Content-Type' => 'application/pdf',
+         'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"',
+     ]);
+ }
+
     
 }
