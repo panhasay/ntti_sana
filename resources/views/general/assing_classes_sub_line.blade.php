@@ -159,7 +159,7 @@
               </td>
               <td class="text-center">
                 <input type="text" class="form-control-line form-control-sm form_data_line" data-id="{{ $line->id }}"
-                  student-code="{{ $line->student_code }}" id="assessment" name="assessment" value="{{ $line->assessment }}"
+                  student-code="{{ $line->student_code }}"  id="assessment" name="assessment" value="{{ $line->assessment }}"
                   placeholder="0" aria-label="0">
               </td>
               <td class="text-center">

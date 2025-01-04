@@ -441,13 +441,26 @@
       });
     });
     $('.form_data_line').on('change', function() {
+      var maxValues = {
+        assessment: 15,
+        midterm: 15,
+        final: 55,
+      };
+
       var name = $(this).attr('name');
       var value = $(this).val();
       var id = $(this).attr('data-id');
       var student_code = $(this).attr('student-code');
       var assing_no = "{{ isset($_GET['assing_no']) ? addslashes($_GET['assing_no']) : '' }}";
+
+      if (name in maxValues && (isNaN(value) || value > maxValues[name])) {
+        notyf.error(`ពិន្ទុ ${name.charAt(0).toUpperCase() + name.slice(1)} មិនអាចធំជា ${maxValues[name]} ពិន្ទុ`);
+        return;
+      }
+      
       var url = '/assign-student-line/update?assing_line_no=' + assing_no + '&name=' + name + '&value=' +
         value + '&id=' + id + '&student_code=' + student_code;
+
       $.ajax({
         type: "POST",
         url: url,

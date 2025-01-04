@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2024-12-24 18:54:42
+Date: 2024-12-31 18:27:42
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -43,7 +43,7 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('10', '1', 'PANHA', 'D_IT', 'saypanha500@gmail.com', null, '$2y$10$nOhYQamcRddtkc2edAcuP.Dj2.RMU3x8Hdz5GiHm2FTMxaYMfTXOi', '$2y$10$vXd2SeWAw/ddIwEpRc5HGOPaM6x9OW/gk82CRqlazLeQAR3cQOeZq', '475433', '2024-01-30 14:38:25', '2024-12-24 18:53:28', 'administrator', 'admin', 'admin', null, '$2y$10$H3AYpieG0mJE.WolNWgULuu6j00g5HPKwR4I/4JL6An.XZEmnQNLe');
+INSERT INTO `users` VALUES ('10', '1', 'PANHA', 'D_IT', 'saypanha500@gmail.com', null, '$2y$10$M0vs4IfFyURLqIlDjvRVI.AXdI5BHA5zgRaNp.lTBMzlUjngta5Gq', '$2y$10$xf0TXVAkh2MUgPUvkbyIkug8hXlBWyEvAmPrfr9I/uLdjBWeu4et6', '475433', '2024-01-30 14:38:25', '2024-12-31 18:23:23', 'administrator', 'admin', 'admin', '89214054', 'G0gLfG2N4uYuvM7VrLiVlc9z0gr9wcWIjrhcmHSoh8SHG8jt1zgskfselAPi');
 INSERT INTO `users` VALUES (null, '40', 'kemnorngme', 'D_IT', 'kemnorngme@email.com', null, '$2y$10$nOhYQamcRddtkc2edAcuP.Dj2.RMU3x8Hdz5GiHm2FTMxaYMfTXOi', 'fpE2FKiinXDXodgth1iIq2YIOJND3S0eSHywwQHNJbMhTppfT1qb0QwnhcwD', '475435', '2024-09-28 08:26:58', '2024-09-28 08:26:58', null, 'student', null, null, null);
 INSERT INTO `users` VALUES (null, '41', 'ruonchanpheakdey', 'D_IT', 'ruonchanpheakdey@email.com', null, '$2y$10$H9R.AXaf2phN9AWajJuthOu5slAqwtv2DWyeFZVLwdWL7OZTn8aZy', 'fpE2FKiinXDXodgth1iIq2YIOJND3S0eSHywwQHNJbMhTppfT1qb0QwnhcwD', '500354', '2024-10-19 01:36:08', '2024-10-19 01:36:08', null, 'student', null, null, null);
 INSERT INTO `users` VALUES (null, '42', 'songveasna', 'D_IT', 'songveasna@email.com', null, '$2y$10$gyom/6087VrnN43OR.beaOjumvAFIQ0Ok6wWOtZvzuuBWj85VXfHq', 'fpE2FKiinXDXodgth1iIq2YIOJND3S0eSHywwQHNJbMhTppfT1qb0QwnhcwD', '475177', '2024-10-26 08:04:14', '2024-10-26 08:04:14', null, 'student', null, null, null);

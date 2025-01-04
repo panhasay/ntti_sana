@@ -58,8 +58,20 @@ Route::get('/greeting/{locale}', function (string $locale) {
         return view('errors.permission_acces');
     });
 
+
+        // Login Route
+    // Route::post('login', [AuthController::class, 'login'])->middleware('limit.logins')->name('login.post');
+
+    // Blocked Route
+    Route::get('/login-blocked', function () {
+        return view('errors.login_block'); // Create a view to show the blocked message
+    })->name('login.blocked');
+
+    Route::get('/return-login', [AuthController::class, 'returnlogin'])->name('returnlogin');
+
+
     Route::get('login', [AuthController::class, 'index'])->name('login');
-    Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');
+    Route::post('post-login', [AuthController::class, 'postLogin'])->middleware('limit.logins')->name('login.post');
     Route::get('registration_hole', [AuthController::class, 'registration'])->name('register');
     Route::post('post-registration', [AuthController::class, 'postRegistration'])->name('register.post');
    
@@ -216,19 +228,17 @@ Route::group(['perfix' => '/class-schedule'], function (){
     Route::get('/update/class-schedule/transaction',[ClassScheduleController::class,'EditTeacherSchedule']);
 })->middleware('auth');
 
-Route::group(['perfix' => 'student'], function (){
-    Route::get('/student/registration',[StudnetController::class,'StudentRegistration']);
-    Route::get('/student/registration/transaction',[StudnetController::class,'StudentRegistrationTransaction']);
-    Route::POST('/student/registration/store',[StudnetController::class, 'storeRegistration']);
-    Route::POST('/student/registration/update',[StudnetController::class,'updateRegistration']);
-    Route::get('/student/registration/prints',[StudnetController::class,'PrintRegistration']);
-    Route::POST('/student/register/delete',[StudnetController::class,'DeleteRegistration']);
+Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
+    Route::get('/student/registration', [StudnetController::class, 'StudentRegistration']);
+    Route::get('/student/registration/transaction', [StudnetController::class, 'StudentRegistrationTransaction']);
+    Route::post('/student/registration/store', [StudnetController::class, 'storeRegistration']);
+    Route::post('/student/registration/update', [StudnetController::class, 'updateRegistration']);
+    Route::get('/student/registration/prints', [StudnetController::class, 'PrintRegistration']);
+    Route::post('/student/register/delete', [StudnetController::class, 'DeleteRegistration']);
     Route::get('/student/registration-downlaodexcel', [StudnetController::class, 'StudentDownlaodRegistrationDownlaodexcel']);
-  
-
     Route::get('/student/scholarship', [StudnetController::class, 'IndexStudentScholarshipc']);
     Route::get('/student/registration-remaining', [StudnetController::class, 'StudentRemaining']);
-})->middleware('auth');
+});
 
 Route::group(['perfix' => 'class-new'], function (){
     Route::get('/class-new',[DividedNewClassesController::class,'index']);

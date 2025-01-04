@@ -89,8 +89,7 @@ class AssingClassesController extends Controller
                 $Assingstudent = Student::where('class_code', $records->class_code ?? '')->get();
             }
     
-            $student_codes = $recordsLine->pluck('student_code')->toArray(); // Convert to an array
-            // Fetch attendance scores for all students
+            $student_codes = $recordsLine->pluck('student_code')->toArray(); 
             $attendances = DB::table('assing_classes_student_line')
                 ->select('student_code')
                 ->selectRaw('
@@ -127,7 +126,6 @@ class AssingClassesController extends Controller
                     $record->attendance = $attendance->Scaled_Attendance_Score; // Update attendance score
                     $record->save(); // Save the changes
                 }
-                // dd("data upate successful");
 
             }
             return view('general.assing_classes_card', compact($params));

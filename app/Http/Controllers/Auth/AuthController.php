@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Auth;
 use Stevebauman\Location\Facades\Location;
+use Illuminate\Support\Facades\Cache;
 
 use Illuminate\Support\Facades\DB;
 use Session;
@@ -30,6 +31,7 @@ class AuthController extends Controller
      *
      * @return response()
      */
+
     public function index()
     {
         return view('auth.login');
@@ -40,16 +42,28 @@ class AuthController extends Controller
      *
      * @return response()
      */
+    
     public function registration()
     {
         return view('auth.registration');
     }
-      
+    public function returnlogin(Request $request)
+    {
+        // Clear login attempts for the user's IP
+        $ipAddress = $request->ip();
+        $key = 'login_attempts_' . $ipAddress;
+        Cache::forget($key);
+
+        // Redirect to the login page
+        return redirect()->route('login')->with('success', 'You can try logging in again.');
+    }
+    
     /**
      * Write code on Method
      *
      * @return response()
      */
+
     public function postLogin(Request $request)
     {
         $request->validate([
@@ -77,19 +91,30 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
+
             $this->services->telegramSendUserLog($email,$role, $department, $ip, $userAgent, $city, $type, $user_name);
             if($permission->role == "student"){
                 return redirect()->intended('dahhboard-student-account')
                 ->withSuccess('You have Successfully loggedin');
-            }elseif($permission->role == "attendant"){
-                return redirect()->intended('attendance/dashboards-attendance');
-            }elseif($permission->role == "teachers"){
-                return redirect()->intended('teacher-dashboard');
             }else{
                 return redirect()->intended('department-menu')
                 ->withSuccess('You have Successfully loggedin');    
             }
         }
+
+        // if($permission->role == "student"){
+        //     return redirect()->intended('dahhboard-student-account')
+        //     ->withSuccess('You have Successfully loggedin');
+        // }elseif($permission->role == "attendant"){
+        //     return redirect()->intended('attendance/dashboards-attendance');
+        // }elseif($permission->role == "teachers"){
+        //     return redirect()->intended('teacher-dashboard');
+        // }else{
+        //     return redirect()->intended('department-menu')
+        //     ->withSuccess('You have Successfully loggedin');    
+        // }
+
+
         // for testb
         // $longitude = 'hello world';
         // $ip = '103.216.50.143'; /* Static IP address */
@@ -157,6 +182,11 @@ class AuthController extends Controller
      * @return response()
      */
     public function logout() {
+       
+        if (!auth()->user() || !auth()->user()->email) {
+            return redirect('login')->with('error', 'Oops! You do not have access.');
+        }
+        
         $email = auth()->user()->email;
         $permission = User::where('email', '=', $email)->first();
         $user = $permission;

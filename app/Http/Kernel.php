@@ -67,4 +67,9 @@ class Kernel extends HttpKernel
         'permission' => \App\Http\Middleware\CheckPermission::class,
         'user_permission' => \App\Http\Middleware\UserPermission::class,
     ];
+
+    protected $routeMiddleware = [
+        // Other middlewares
+        'limit.logins' => \App\Http\Middleware\LimitLoginAttempts::class,
+    ];
 }
