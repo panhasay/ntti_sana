@@ -256,7 +256,7 @@ Route::group(['perfix' => 'exam-schedule'], function (){
     Route::get('/exam-schedule',[ExamScheduleController::class,'index']);
     Route::get('/exam-schedule/transaction', [ExamScheduleController::class, 'transaction']);
     Route::post('/exam-schedule/update', [ExamScheduleController::class, 'update']);
-    
+    Route::post('/exam-schedule/store', [ExamScheduleController::class, 'store']);
     Route::get('/exam-schedule/create', [ExamScheduleController::class, 'GetDataForCreateExamSchedule'])->name('exam.schedule.create');
     Route::post('/exam-schedule/save', [ExamScheduleController::class, 'SaveExamSchedule'])->name('save.exam.schedule');
     Route::get('/get-exam-schedules', [ExamScheduleController::class, 'getSchedules'])->name('get.exam.schedules');

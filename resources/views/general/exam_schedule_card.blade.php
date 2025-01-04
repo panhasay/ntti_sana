@@ -23,9 +23,9 @@
                     @if($type != 'ed')
                     បន្ថែមថ្មី
                     @endif
-                    @if(count($record_sub_lines) <= 0) <button type="button" id="BtnSave" class="btn btn-success"> save
-                        </button>
-                        @endif
+                    @if(count($record_sub_lines) <= 0) 
+                    <button type="button" id="BtnSave" class="btn btn-success"> save </button>
+                    @endif
                 </div>
             </div>
         </div>
@@ -66,7 +66,7 @@
                                 <option value="">&nbsp;</option>
                                 @foreach ($classs as $record)
                                 <option value="{{ $record->code ?? '' }}" {{ isset($records->class_code) &&
-                                    $records->class_code == $record->code ? 'selected' : '' }}>
+                                    $records->class_code ?? '' == $record->code ? 'selected' : '' }}>
                                     {{ isset($record->code) ? $record->code : '' }} -
                                     {{ isset($record->name) ? $record->name : '' }}
                                 </option>
@@ -219,7 +219,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </form>
@@ -228,10 +227,14 @@
 <div class="container-fluid p-2">
     <div class="row">
         <div class="col-md-5 col-sm-5 col-5">
-            <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" data-bs-toggle="modal"
+            
+            @if(isset($records->id) && $records->id)
+                <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" data-bs-toggle="modal"
                 data-bs-target="#examScheduleModal" data-exam-schedule="{{ $records->id ?? '' }}"
                 href="{{ url('/exam-schedule/create?exam_schedule=' . $records->id ?? '') }}">
                 <i class="mdi mdi-account-plus"></i> Add New</a>
+            @endif
+            
 
             <button type="button" id="print_exam_schedule"
                 class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2" data-bs-toggle="modal"
@@ -331,21 +334,63 @@
 </div>
 
 @include('general.exam_schedule_sub_lists')
-
 <script>
     $(document).ready(function() {
         const notyf = new Notyf();
-        
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
+        
+        $('#BtnSave').on('click', function () {
+            var formData = $('#frmDataCard').serialize();
+            var type = $('#type').val();
+            var url;
 
-        $('.js-example-basic-single').select2({
-            dropdownParent: $('#editModal')
+            if (!type) {
+                url = `/exam-schedule/store`;
+            } else {
+                url = `/exam-schedule/update`;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') 
+                },
+                success: function (response) {
+                    try {
+                      
+                        if (response.status === 'success') {
+                            notyf.success(response.msg);
+                        } else if (response.store === 'yes') {
+                            window.location.href = response.url; 
+                            notyf.success(response.msg);
+                        } else {
+                            notyf.error(response.msg);
+                        }
+                    } catch (e) {
+                        console.error("Error processing the response:", e);
+                        notyf.error("Unexpected error occurred while processing the response.");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", status, error);
+                    var errorMessage = xhr.responseText ? xhr.responseText : "An unknown error occurred.";
+                    notyf.error(`Failed to process request: ${errorMessage}`);
+                }
+            });
         });
 
+    
+        
+        // $('.js-example-basic-single').select2({
+        //     dropdownParent: $('#editModal')
+        // });
+        
         $('.edit-btn').on('click', function() {
             const id = $(this).data('id');
             const date = $(this).data('date');

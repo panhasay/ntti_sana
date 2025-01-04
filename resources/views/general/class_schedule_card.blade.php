@@ -266,12 +266,14 @@
                 notyf.error("សូមបំពេញ ព៏តមានថ្នាក់និងឆ្នាំសិក្សាខាងលើ");
                 return;
             }
+            $('#frmDataSublist').find('input, select').val('').trigger('change');
             $('.js-example-basic-single').select2();
             $("#ModalTeacherSchedule").modal('show');
             
-            $('#teachers, #subjects_code_monday, #subjects_code_tuesday, #subjects_code_wednesday, #subjects_code_thursday, #subjects_code_friday, #subjects_code_saturday').select2({
+            $('#teachers_code, #subjects_code, #date_name, #subjects_code_wednesday, #subjects_code_thursday, #subjects_code_friday, #subjects_code_saturday').select2({
                 dropdownParent: $('#ModalTeacherSchedule') 
             });
+
             jQuery(function() {
                 $('#frmDataSublist')[0].reset();
             });
@@ -285,7 +287,8 @@
         $("#SaveTeacherSchedule").on('click', function() {
             var frmDataSublist = $('#frmDataSublist').serialize();
             var code = "{{ isset($_GET['code']) ? addslashes($_GET['code']) : '' }}";
-            url = `/class-schedule/save-schedule?code=${code}`;
+            var dataId = $(this).attr('data-id');
+            var url = `/class-schedule/save-schedule?code=${code}&dataId=${dataId}`;
             $.ajax({
                 type: "POST"
                 , url: url
@@ -294,7 +297,13 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
                 , success: function(response) {
-                 
+                    if (response.status == "success"){
+                        notyf.success(response.msg);
+                        $('#classScheduleContainer').html(response.view);
+                        $("#ModalTeacherSchedule").modal('hide');
+                    }else if(response.status == "error"){
+                        notyf.error(response.msg);
+                    }
                 }
             });
         })
@@ -348,79 +357,37 @@
                 error: function(xhr, ajaxOptions, thrownError) {}
             });
         });
-        $(document).on('click', '.BtnEditeacher', function() {
+        $(document).on('click', '.BtnEditeacher', function () {
             var code = $(this).attr('data-code');
             let url = 'update/class-schedule/transaction?id=' + code;
-            jQuery(function() {
-                $('#frmDataSublist')[0].reset();
-            });
+            $('#frmDataSublist')[0].reset();
             $.ajax({
                 type: 'get',
                 url: url,
-                beforeSend: function() {
+                beforeSend: function () {
                     $('.loader').show();
                 },
-                success: function(response) {
+                success: function (response) {
                     $('.loader').hide();
-
-                    const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-                    days.forEach(day => {
-                        $(`#subjects_code_${day}`).append(new Option("មុខវិជ្ជា", "", true, true));
-                    });
-
-                    $("#teachers").append(new Option("សាស្រ្តាចារ្យ", "", true, true));
-
                     if (response.status === "success") {
-                        $("#teachers").empty();
-                        $("#teachers").append(new Option(response.records.teacher.name_2, "", true, true));
-                        $.each(response.teachers, function(index, teacher) {
-                                let option = new Option(teacher.name_2, teacher.code, false, false);
-                                $("#teachers").append(option); 
-                        });
-                        
-                        const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-                        const day = response.records.date_name.toLowerCase();
-                        if (days.includes(day)) {
-                            // Define dynamic selectors based on the day
-                            const subjectCodeSelector = `#subjects_code_${day}`;
-                            const startTimeSelector = `#start_time_${day}`;
-                            const endTimeSelector = `#end_time_${day}`;
-                            const roomSelector = `#room_${day}`;
-                            // Clear and set the main subject
-                            $(subjectCodeSelector).empty().append(new Option(response.records.subject.name_2, "", true, true));
-                            // Parse and format times
-                            let [startHours, startMinutes] = response.records.start_time.split(":");
-                            startHours = startHours.padStart(2, '0');
-                            let endHours = parseInt(startHours) + 1;
-                            if (endHours === 24) endHours = 0;
-                            endHours = endHours.toString().padStart(2, '0');
-                            const formattedStartTime = `${startHours}:${startMinutes}`;
-                            const formattedEndTime = `${endHours}:${startMinutes}`;
-                            // Set time and room values
-                            $(startTimeSelector).val(formattedStartTime);
-                            $(endTimeSelector).val(formattedEndTime);
-                            $(roomSelector).val(response.records.room);
-                            // Append additional subjects to the dropdown
-                            response.subjects.forEach(subject => {
-                                $(subjectCodeSelector).append(new Option(subject.name, subject.code, false, false));
-                            });
-                            // Initialize or refresh select2 and reset the value
-                            $(subjectCodeSelector).select2().val("").trigger("change");
-                        }
-
+                        const records = response.records;
+                        $('#teachers_code').val(records.teacher.code).trigger('change');
+                        $('#subjects_code').val(records.subject.code).trigger('change');
+                        $('#date_name').val(records.date_name).trigger('change');
+                        $('#start_time').val(records.start_time);
+                        $('#end_time').val(records.end_time);
+                        $('#room').val(records.room);
+                        $("#ModalTeacherSchedule").modal("show");
+                        $('#SaveTeacherSchedule').attr('data-id', records.id);
                     }
-                    $('.js-example-basic-single').select2();
-                    $("#ModalTeacherSchedule").modal("show");
-                    $('#teachers, #subjects_code_monday, #subjects_code_tuesday, #subjects_code_wednesday, #subjects_code_thursday, #subjects_code_friday, #subjects_code_saturday').select2({
-                        dropdownParent: $('#ModalTeacherSchedule') 
-                    });
-                    // Show the modal
                 },
-                error: function(xhr, ajaxOptions, thrownError) {
+                error: function (xhr, ajaxOptions, thrownError) {
                     $('.loader').hide();
+                    console.error(thrownError);
                 }
             });
         });
+
     });
 
     function DownlaodExcel() {

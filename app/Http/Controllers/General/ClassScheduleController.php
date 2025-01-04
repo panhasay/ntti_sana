@@ -38,14 +38,15 @@ class ClassScheduleController extends Controller
         $this->arrayJoin = ['10001', '10007', '10008'];
         $this->table_id = "10005";
     }
-    public function index(){
+    public function index()
+    {
         $page = $this->page;
         $records = GeneralClassSchedule::orderBy('session_year_code', 'asc')->paginate(20);
         // dd($records);
-        if(!Auth::check()){
+        if (!Auth::check()) {
             return redirect("login")->withSuccess('Opps! You do not have access');
-        }  
-        return view('general.class_schedule', compact('records','page'));	
+        }
+        return view('general.class_schedule', compact('records', 'page'));
     }
     public function transaction(request $request)
     {
@@ -58,24 +59,28 @@ class ClassScheduleController extends Controller
         $classs = Classes::orderBy('code', 'desc')->get();
         $sections = DB::table('sections')->get();
         $department = Department::get();
-        $school_years = DB::table('session_year')->orderBy('code', 'desc')->get();   
+        $school_years = DB::table('session_year')->orderBy('code', 'desc')->get();
         $skills = DB::table('skills')->get();
         $study_years = StudyYears::get();
         $teachers = Teachers::orderBy('code', 'asc')->get();
-        $subjects = Subjects::orderBy('code', 'asc')->get(); 
+        $subjects = Subjects::orderBy('code', 'asc')->get();
+        $date_name = DB::table('date_name')->orderBy('index', 'asc')->get();
+        $days = $date_name->pluck('name')->toArray();
+
+        // dd($date_name);
         try {
-            $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'classs', 'study_years', 'teachers', 'subjects', 'record_sub_lines'];
+            $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'classs', 'study_years', 'teachers', 'subjects', 'record_sub_lines', 'date_name', 'days'];
             if ($type == 'cr') return view('general.class_schedule_card', compact($params));
             if (isset($_GET['code'])) {
                 $records = GeneralClassSchedule::where('id', $this->services->Decr_string($_GET['code']))->first();
                 $record_sub_lines = AssingClasses::where('class_code', $records->class_code)
-                                ->where('semester', $records->semester)
-                                ->where('years', $records->years)
-                                ->where('qualification', $records->qualification)
-                                ->where('sections_code', $records->sections_code)
-                                ->where('skills_code', $records->skills_code)
-                                ->where('department_code', $records->department_code)
-                                ->get();                    
+                    ->where('semester', $records->semester)
+                    ->where('years', $records->years)
+                    ->where('qualification', $records->qualification)
+                    ->where('sections_code', $records->sections_code)
+                    ->where('skills_code', $records->skills_code)
+                    ->where('department_code', $records->department_code)
+                    ->get();
             }
             return view('general.class_schedule_card', compact($params));
         } catch (\Exception $ex) {
@@ -87,7 +92,7 @@ class ClassScheduleController extends Controller
     {
         $code = $request->code;
         try {
-            $records = Skills::where('code',$code);
+            $records = Skills::where('code', $code);
             $records->delete();
             DB::commit();
             return response()->json(['status' => 'success', 'msg' => 'ទិន្ន័យត្រូវបាន លុប​!']);
@@ -170,17 +175,19 @@ class ClassScheduleController extends Controller
     {
         $data = $request->all();
         $is_print = "yes";
+        $date_name = DB::table('date_name')->orderBy('index', 'asc')->get();
+        $days = $date_name->pluck('name')->toArray();
         try {
             $records = GeneralClassSchedule::where('id', $this->services->Decr_string($_GET['code']))->first();
             $record_sub_lines = AssingClasses::where('class_code', $records->class_code)
-                                                ->where('semester', $records->semester)
-                                                ->where('years', $records->years)
-                                                ->where('qualification', $records->qualification)
-                                                ->where('sections_code', $records->sections_code)
-                                                ->where('skills_code', $records->skills_code)
-                                                ->where('department_code', $records->department_code)
-                                                ->get();
-            return view('general.class_schedule_sub_lists', compact('records', 'record_sub_lines', 'is_print'));
+                ->where('semester', $records->semester)
+                ->where('years', $records->years)
+                ->where('qualification', $records->qualification)
+                ->where('sections_code', $records->sections_code)
+                ->where('skills_code', $records->skills_code)
+                ->where('department_code', $records->department_code)
+                ->get();
+            return view('general.class_schedule_sub_lists', compact('records', 'record_sub_lines', 'is_print', 'date_name', 'days'));
         } catch (\Exception $ex) {
             DB::rollBack();
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
@@ -190,36 +197,102 @@ class ClassScheduleController extends Controller
     public function SaveSchedule(Request $request)
     {
         $data = $request->all();
+
         $id = $this->services->Decr_string($data['code']);
         $header = GeneralClassSchedule::where('id', $id)->first();
+        $requiredFields = [
+            'teachers_code' => 'សាស្រ្តាចារ្យ​ ត្រូវបំពេញ!',
+            'subjects_code' => 'មុខវិជ្ជា​ ត្រូវបំពេញ!',
+            'date_name' => 'ថ្ងៃបង្រៀន ត្រូវបំពេញ!',
+        ];
 
-        dd($header);
+        foreach ($requiredFields as $field => $message) {
+            if (empty($data[$field])) {
+                return response()->json(['status' => 'error', 'msg' => $message]);
+            }
+        }
 
         $assing = AssingClasses::latest('id')->first();
 
-        if($assing){
+        if ($assing) {
             $assing_no = $assing->assing_no + 10;
-        }else{
+        } else {
             $assing_no = 10;
         }
-
         try {
-            $records = new AssingClasses();
-            $records->class_schedule_id = $header->id;
-            $records->teachers_code = $request->teachers_code;
-            $records->class_code = $request->class_code;
-            $records->sections_code = $request->sections_code;
-            $records->skills_code = $request->skills_code;
-            $records->department_code = $request->department_code;
-            $records->session_year_code = $request->session_year_code;
-            $records->subjects_code = $request->subjects_code;
-            $records->status = $request->status;
-            $records->semester = $request->semester;
-            $records->qualification = $request->qualification;
+            if (isset($data['dataId']) && $data['dataId']) {
+                $records = AssingClasses::where('class_schedule_id', $id)->where('id', $data['dataId'])->first();
+                $records->room = $request->room;
+                $records->teachers_code = $request->teachers_code;
+                $records->date_name = $request->date_name;
+                $records->start_time = $request->start_time;
+                $records->end_time = $request->end_time;
+                $records->subjects_code = $request->subjects_code;
+                $records->update();
 
-            dd($records);
+                $is_print = "No";
+                $date_name = DB::table('date_name')->orderBy('index', 'asc')->get();
+                $days = $date_name->pluck('name')->toArray();
+                $records = GeneralClassSchedule::where('id', $id)->first();
+                $record_sub_lines = AssingClasses::where('class_code', $records->class_code)
+                    ->where('semester', $records->semester)
+                    ->where('years', $records->years)
+                    ->where('qualification', $records->qualification)
+                    ->where('sections_code', $records->sections_code)
+                    ->where('skills_code', $records->skills_code)
+                    ->where('department_code', $records->department_code)
+                    ->get();
 
-            return view('student.student_print', compact('records', 'class_record'));
+                if ($is_print == 'Yes') {
+                    $view = view('general.class_schedule_sub_lists', compact('records', 'days', 'record_sub_lines', 'is_print'))->render();
+                    return response()->json(['status' => 'success', 'msg' => 'Data Udpate successfully', 'view' => $view]);
+                } else {
+                    $view = view('general.class_schedule_sub_lists', compact('records', 'days', 'record_sub_lines'))->render();
+                    return response()->json(['status' => 'success', 'msg' => 'Data Udpate successfully', 'view' => $view]);
+                }
+            } else {
+                $records = new AssingClasses();
+                $records->class_schedule_id = $header->id;
+                $records->assing_no = $assing_no;
+                $records->teachers_code = $request->teachers_code;
+                $records->class_code = $header->class_code;
+                $records->sections_code = $header->sections_code;
+                $records->skills_code = $header->skills_code;
+                $records->department_code = $header->department_code;
+                $records->session_year_code = $header->session_year_code;
+                $records->subjects_code = $request->subjects_code;
+                $records->status = $request->status;
+                $records->semester = $header->semester;
+                $records->qualification = $header->qualification;
+                $records->years = $header->years;
+
+                $records->room = $request->room;
+                $records->date_name = $request->date_name;
+                $records->start_time = $request->start_time;
+                $records->end_time = $request->end_time;
+                $records->save();
+
+                $is_print = "No";
+                $date_name = DB::table('date_name')->orderBy('index', 'asc')->get();
+                $days = $date_name->pluck('name')->toArray();
+                $records = GeneralClassSchedule::where('id', $id)->first();
+                $record_sub_lines = AssingClasses::where('class_code', $records->class_code)
+                    ->where('semester', $records->semester)
+                    ->where('years', $records->years)
+                    ->where('qualification', $records->qualification)
+                    ->where('sections_code', $records->sections_code)
+                    ->where('skills_code', $records->skills_code)
+                    ->where('department_code', $records->department_code)
+                    ->get();
+
+                if ($is_print == 'Yes') {
+                    $view = view('general.class_schedule_sub_lists', compact('records', 'days', 'record_sub_lines', 'is_print'))->render();
+                    return response()->json(['status' => 'success', 'msg' => 'Data add successfully', 'view' => $view]);
+                } else {
+                    $view = view('general.class_schedule_sub_lists', compact('records', 'days', 'record_sub_lines'))->render();
+                    return response()->json(['status' => 'success', 'msg' => 'Data add successfully', 'view' => $view]);
+                }
+            }
         } catch (\Exception $ex) {
             DB::rollBack();
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
@@ -230,10 +303,10 @@ class ClassScheduleController extends Controller
     {
         $data = $request->all();
         try {
-        $subjects = Subjects::orderBy('code')->get();
-        $teachers = Teachers::orderBy('code')->get();
-        $records = AssingClasses::with(['subject', 'teacher'])->where('id',  $data['id'])->first();
-        return response()->json(['status' => 'success', 'records' => $records, 'subjects' => $subjects, 'teachers'=>$teachers]);
+            $subjects = Subjects::orderBy('code')->get();
+            $teachers = Teachers::orderBy('code')->get();
+            $records = AssingClasses::with(['subject', 'teacher'])->where('id',  $data['id'])->first();
+            return response()->json(['status' => 'success', 'records' => $records, 'subjects' => $subjects, 'teachers' => $teachers]);
         } catch (\Exception $ex) {
             DB::rollBack();
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
@@ -241,7 +314,7 @@ class ClassScheduleController extends Controller
         }
     }
 
-    public function Search (Request $request,$page)
+    public function Search(Request $request, $page)
     {
         dd("helo");
         $input = $request->all();
@@ -261,15 +334,15 @@ class ClassScheduleController extends Controller
                 }
                 $search_value = rtrim($search_value, " ");
                 // check page
-                if($page == 'student'){
-                    $menus = DB::table('student')->where('name','like', $search_value . "%")
-                                        ->orWhere('code', 'like', $search_value . "%")
-                                        ->orWhere('name_2', 'like', $search_value . "%")
-                                        ->where('class_code', '<>', null)->get();
+                if ($page == 'student') {
+                    $menus = DB::table('student')->where('name', 'like', $search_value . "%")
+                        ->orWhere('code', 'like', $search_value . "%")
+                        ->orWhere('name_2', 'like', $search_value . "%")
+                        ->where('class_code', '<>', null)->get();
                     $blade_file_record = 'student.student_list';
-                }else if($page == 'department'){
-                    $menus = DB::table('department')->where('department_name','like', $search_value . "%")
-                                        ->where('id', '<>', null)->get();
+                } else if ($page == 'department') {
+                    $menus = DB::table('department')->where('department_name', 'like', $search_value . "%")
+                        ->where('id', '<>', null)->get();
                     $blade_file_record = 'department.department_list';
                 }
 
@@ -281,37 +354,36 @@ class ClassScheduleController extends Controller
                         $menu->url = $menu->url . ($strings[0] == 'NEW' ? "type=cr" : "type=ed&code=" . $this->service->Encr_string($strings[count($strings) - 1]));
                     }
                 }
-            }else{
+            } else {
                 for ($i = 0; $i < count($strings); $i++) {
                     $search_value .= $strings[$i] . " ";
                 }
                 $search_value = rtrim($search_value, " ");
-                if($page == 'student'){
+                if ($page == 'student') {
                     $menus = DB::table('student')->where('name', 'like', $search_value . "%")
                         ->orWhere('code', 'like', $search_value . "%")
                         ->orWhere('name_2', 'like', $search_value . "%")
                         ->where('class_code', '<>', null)->paginate(1000);
                     $blade_file_record = 'student.student_list';
-                }else if($page == 'department'){
-                    $menus = DB::table('department')->where('department_name','like', $search_value . "%")
-                            ->where('id', '<>', null)->paginate(1000);
+                } else if ($page == 'department') {
+                    $menus = DB::table('department')->where('department_name', 'like', $search_value . "%")
+                        ->where('id', '<>', null)->paginate(1000);
                     $blade_file_record = 'department.department_list';
                 }
             }
-           
+
             if (count($menus) > 0) {
                 $records = $menus;
-            }else{
-                if($page == 'student'){
-                    $records = Student::where('department_code',$user->childs)->paginate(10);
-                }else if($page == 'department'){
+            } else {
+                if ($page == 'student') {
+                    $records = Student::where('department_code', $user->childs)->paginate(10);
+                } else if ($page == 'department') {
                     $records = Department::paginate(15);
                 }
             }
-            $view = view($blade_file_record,compact('records'))->render();
-            return response()->json(['status' =>'success','view' =>$view]);
+            $view = view($blade_file_record, compact('records'))->render();
+            return response()->json(['status' => 'success', 'view' => $view]);
         }
         return 'none';
     }
-    
 }

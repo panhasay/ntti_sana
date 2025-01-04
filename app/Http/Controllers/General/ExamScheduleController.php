@@ -232,7 +232,7 @@ class ExamScheduleController extends Controller
             $record = ExamSchedule::latest('id')->first();
             if (isset($record->id)) {
                 $encryptedCode = \App\Service\service::Encr_string($record->id);
-                $url = "/class-schedule/transaction?type=ed&code=" . $encryptedCode;
+                $url = "/exam-schedule/transaction?type=ed&code=" . $encryptedCode;
             }
             return response()->json(['store' => 'yes', 'url' => $url, 'msg' => 'Records Add Succesfully !!']);
         } catch (\Exception $ex) {

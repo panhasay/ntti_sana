@@ -44,7 +44,8 @@
       }
     }
 </style>
-@if($is_print ?? '' == 'Yes')
+<div id="classScheduleContainer">
+    @if($is_print ?? '' == 'Yes')
     <div class="row align-items-start">
         <div class="col-5 text-center KhmerOSMuolLight"><br>
             ក្រសួងការងារ និងបណ្តុះបណ្តាលវិជ្ជាជីវៈ<br>
@@ -81,9 +82,19 @@
                 <th class="text-center" colspan="2">សៅរ៏ </th>
               </tr>
               <tr class="general-print">
-                @foreach ($record_sub_lines->take(6) as $time)
-                    <th class="text-center">{{ $time->start_time ?? '' }}</th>
-                    <th class="text-center">{{ $time->end_time ?? '' }}</th>
+                @foreach ($days as $day)
+                    @php
+                        $dayTimes = $record_sub_lines->where('date_name', $day);
+                    @endphp
+                    @if ($dayTimes->isNotEmpty())
+                        @foreach ($dayTimes->take(1) as $time)
+                            <th class="text-center">{{ $time->start_time ?? '' }}</th>
+                            <th class="text-center">{{ $time->end_time ?? '' }}</th>
+                        @endforeach
+                    @else
+                        <th class="text-center">&nbsp;</th>
+                        <th class="text-center">&nbsp;</th>
+                    @endif
                 @endforeach
             </tr>
             </thead>
@@ -144,9 +155,19 @@
                         <th class="text-center" colspan="2">សៅរ៏</th>
                     </tr>
                     <tr class="general-data">
-                        @foreach ($record_sub_lines->take(6) as $time)
-                            <th class="text-center">{{ $time->start_time ?? '' }}</th>
-                            <th class="text-center">{{ $time->end_time ?? '' }}</th>
+                        @foreach ($days as $day)
+                            @php
+                                $dayTimes = $record_sub_lines->where('date_name', $day);
+                            @endphp
+                            @if ($dayTimes->isNotEmpty())
+                                @foreach ($dayTimes->take(1) as $time)
+                                    <th class="text-center">{{ $time->start_time ?? '' }}</th>
+                                    <th class="text-center">{{ $time->end_time ?? '' }}</th>
+                                @endforeach
+                            @else
+                                <th class="text-center">0.00</th>
+                                <th class="text-center">0.00</th>
+                            @endif
                         @endforeach
                     </tr>
                 </thead>
@@ -161,17 +182,16 @@
                                 <tr>
                                     <td class="text-center" rowspan="" width="10">
                                         <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2 BtnEditeacher" data-code="{{ $record->id ?? '' }}" href="javascript:;"><i class="mdi mdi-border-color"></i>Edit</a>
+                                        <a class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2 BtnDeleteLine" data-code="{{ $record->id ?? '' }}" href="javascript:;"><i class="mdi mdi-delete-forever"></i>Delete</a>
                                         {{ $index++ }}
                                     </td>
                                     <td class="text-left" rowspan="">{{ $record->teacher->name_2 ?? '' }}</td>
                                     @for ($i = 2; $i <= 12; $i += 2)
                                         @if ($i == $subjectCol)
-                                            {{-- Display the subject name in the correct column based on the day --}}
                                             <td class="text-center" colspan="2">{{ $record->subject->name ?? '' }}<br>
-                                            <div class="mt-1"> {{ $record->room ?? '' }}</div>
+                                                <div class="mt-1">បន្ទាប់:{{ $record->room ?? '' }}</div>
                                             </td>
                                         @else
-                                            {{-- Leave other columns empty --}}
                                             <td class="text-left" colspan="2"></td>
                                         @endif
                                     @endfor
@@ -185,3 +205,4 @@
     </div>
 @endif
 <br><br><br><br>
+</div>
