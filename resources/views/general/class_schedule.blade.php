@@ -92,7 +92,7 @@
       var code = $(this).attr('data-code');
       $.ajax({
         type: "POST",
-        url: `/classes-delete`,
+        url: `/class-schedule-delete`,
         data: {
           code: code
         },
@@ -101,6 +101,8 @@
             $("#divConfirmation").modal('hide');
             $("#row" + code).remove();
             notyf.success(response.msg);
+          }else if (response.status == "warning"){
+            notyf.error(response.msg);
           }
         }
       });

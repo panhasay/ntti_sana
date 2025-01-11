@@ -4,6 +4,7 @@ namespace App\Http\Controllers\General;
 
 use App\Http\Controllers\Controller;
 use App\Models\General\AssingClasses;
+use App\Models\General\AssingClassesStudentLine;
 use App\Models\General\Classes;
 use App\Models\General\ClassSchedule as GeneralClassSchedule;
 use App\Models\General\Skills;
@@ -92,11 +93,38 @@ class ClassScheduleController extends Controller
     {
         $code = $request->code;
         try {
-            $records = Skills::where('code', $code);
+            $records = GeneralClassSchedule::where('id', $code)->first();
+            $assing_class = AssingClasses::where('class_schedule_id', $records->id)->Get();
+            if(count($assing_class) > 0){
+                return response()->json(['status' => 'warning', 'msg' => 'ទិន្ន័យមិនអាច លុប​បានទេ មានទិន្ន័យគ្រូ ចំនួន'. count($assing_class). 'សូចចុច Open']);
+            }
             $records->delete();
             DB::commit();
             return response()->json(['status' => 'success', 'msg' => 'ទិន្ន័យត្រូវបាន លុប​!']);
         } catch (\Exception $ex) {
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+    public function DeleteLine(Request $request)
+    {
+        $code = $request->code;
+        try {
+            
+            DB::beginTransaction();
+            $records = AssingClasses::where('id', $code)->first();
+            $assing_class_line = AssingClassesStudentLine::where('assing_line_no', $records->assing_no)->Get();
+            if(count($assing_class_line) > 0){
+                return response()->json(['status' => 'warning', 'msg' => 'ទិន្ន័យមិនអាច លុប​បានទេ មានទិន្ន័យសិស្ស ចំនួន'. count($assing_class_line). 'នាក់']);
+            }
+            if (!$records->exists()) {
+                return response()->json(['status' => 'warning', 'msg' => 'Record not found!']);
+            }
+            $records->delete();
+            DB::commit();
+            return response()->json(['status' => 'success', 'msg' => 'ទិន្ន័យត្រូវបាន លុប​!']);
+        } catch (\Exception $ex) {
+            DB::rollback();
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
@@ -222,6 +250,12 @@ class ClassScheduleController extends Controller
         try {
             if (isset($data['dataId']) && $data['dataId']) {
                 $records = AssingClasses::where('class_schedule_id', $id)->where('id', $data['dataId'])->first();
+
+                $assing_class_line = AssingClassesStudentLine::where('assing_line_no', $records->assing_no)->Get();
+                if(count($assing_class_line) > 0){
+                    return response()->json(['status' => 'error', 'msg' => 'ទិន្ន័យមិនអាច ក្រែប្រែ​បានទេ មានទិន្ន័យសិស្ស ចំនួន'. count($assing_class_line). 'នាក់']);
+                }
+
                 $records->room = $request->room;
                 $records->teachers_code = $request->teachers_code;
                 $records->date_name = $request->date_name;
@@ -299,6 +333,7 @@ class ClassScheduleController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
+
     public function EditTeacherSchedule(Request $request)
     {
         $data = $request->all();
@@ -385,5 +420,69 @@ class ClassScheduleController extends Controller
             return response()->json(['status' => 'success', 'view' => $view]);
         }
         return 'none';
+    }
+
+    public function DownlaodexcelLine(Request $request)
+    {
+        try {
+            $filter = $request->all();
+
+            dd($filter);
+            $header = null;
+            $department = $filter['department_code'];
+            $department = Department::where('code', $department)->first();
+            if ($department){
+                $department = $department->name_2;
+            }
+            $skills = $filter['skills_code'];
+            $skills = Skills::where('code', $skills)->first();
+            if ($skills){
+                $skills = $skills->name_2;
+            }
+            $sections = $filter['sections_code'];
+            $sections = Sections::where('code', $sections)->first();
+            if ($sections){
+                $sections = $sections->name_2;
+            }
+            $qualification = $filter['qualification'];
+            $qualification = Qualifications::where('code', $qualification)->first();
+            if ($qualification) {
+                $qualification = $qualification->name_2;
+            }
+
+            $extract_query = $this->services->extractQuery($filter);
+           
+            // Use get() instead of paginate() for exporting
+            $records = Student::whereRaw($extract_query)
+            ->where('study_type', 'new student')
+            ->orderBy('class_code')
+            ->orderBy('department_code')
+            ->orderByRaw("name_2 COLLATE utf8mb4_general_ci")
+            ->get()
+            ->map(function ($record) {
+                $record->skills = DB::table('skills')->where('code', $record->skills_code)->value('name_2');
+                $record->classes = DB::table('classes')->where('code', $record->class_code)->value('name');
+                $record->section = DB::table('sections')->where('code', $record->sections_code)->value('name_2');
+                $record->gender = $record->gender;
+                $record->department = DB::table('department')->where('code', $record->department_code)->value('name_2');
+                $record->khmerDate = service::DateFormartKhmer($record->date_of_birth);
+                $record->year_student = service::calculateDateDifference($record->posting_date);
+                $record->picture = Picture::where('code', $record->code)
+                    ->where('type', 'student')
+                    ->value('picture_ori');
+                return $record;
+            });
+
+
+            $blade_download = "general.student_register_lists_excel";
+
+            // Create an instance of ExportData and pass the necessary parameters
+            return Excel::download(new ExportData($records, $blade_download, $department, $sections, $skills, $qualification, $header), 'registration.xlsx');
+
+            return response()->json(['status' =>'success','view' =>$view]);
+        } catch (\Exception $ex){
+            $this->services->telegram($ex->getMessage(),'list of student',$ex->getLine());
+            return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
+        }
     }
 }

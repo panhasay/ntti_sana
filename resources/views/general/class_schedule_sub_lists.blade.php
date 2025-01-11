@@ -46,132 +46,59 @@
 </style>
 <div id="classScheduleContainer">
     @if($is_print ?? '' == 'Yes')
-    <div class="row align-items-start">
-        <div class="col-5 text-center KhmerOSMuolLight"><br>
-            ក្រសួងការងារ និងបណ្តុះបណ្តាលវិជ្ជាជីវៈ<br>
-            វិទ្យាស្ថានជាតិបណ្តុះបណ្តាលបច្ចេកទេស
+        <div class="row align-items-start">
+            <div class="col-5 text-center KhmerOSMuolLight"><br>
+                ក្រសួងការងារ និងបណ្តុះបណ្តាលវិជ្ជាជីវៈ<br>
+                វិទ្យាស្ថានជាតិបណ្តុះបណ្តាលបច្ចេកទេស
+            </div>
+        <div class="col-2">
+            </div>
+            <div class="col-5 text-center KhmerOSMuolLight">
+            ព្រះរាជាណាចក្រកម្ពុជា<br>
+            ជាតិ សាសនា ព្រះមហាក្សត្រ
+            </div>
+        </div><br>
+        <div class="row align-items-start">
+            <div class="col-12 text-center KhmerOSMuolLight">
+            តារាងវិភាគសិក្សាបង្រៀន ឆមាសទី {{ $records->semester ?? '' }} ឆ្នាំទី {{ $records->years ?? '' }} ​​ឆ្នាំសិក្សា {{ $records->session_year_code ?? '' }} តារាងពិន្ទុ ក្រុម {{ $header->class_code ?? ''}}
+            </div>
         </div>
-    <div class="col-2">
+        <div class="row align-items-start">
+            <div class="col-12 text-center KhmerOSMuolLight">
+            ថ្នាក់ {{ $records->qualification ?? '' }} ជំនាញ {{ $records->skill->name_2 ?? '' }} ក្រុម {{ $records->class_code ?? '' }} វេន​ {{ $records->section->name_2 ?? ''}}
+            </div>
         </div>
-        <div class="col-5 text-center KhmerOSMuolLight">
-        ព្រះរាជាណាចក្រកម្ពុជា<br>
-        ជាតិ សាសនា ព្រះមហាក្សត្រ
-        </div>
-    </div><br>
-    <div class="row align-items-start">
-        <div class="col-12 text-center KhmerOSMuolLight">
-        តារាងវិភាគសិក្សាបង្រៀន ឆមាសទី {{ $records->semester ?? '' }} ឆ្នាំទី {{ $records->years ?? '' }} ​​ឆ្នាំសិក្សា {{ $records->session_year_code ?? '' }} តារាងពិន្ទុ ក្រុម {{ $header->class_code ?? ''}}
-        </div>
-    </div>
-    <div class="row align-items-start">
-        <div class="col-12 text-center KhmerOSMuolLight">
-        ថ្នាក់ {{ $records->qualification ?? '' }} ជំនាញ {{ $records->skill->name_2 ?? '' }} ក្រុម {{ $records->class_code ?? '' }} វេន​ {{ $records->section->name_2 ?? ''}}
-        </div>
-    </div>
-    <div class="row">
-        <table class="table-print">
-            <thead>
-              <tr class="general-print">
-                <th class="text-center" rowspan="2" width="10">ល.រ</th>
-                <th class="text-center" rowspan="2"  width="120">សាស្រ្តាចារ្យ</th>
-                <th class="text-center" colspan="2">ចន្ទ</th>
-                <th class="text-center" colspan="2">អង្គា</th>
-                <th class="text-center" colspan="2">ពុធ</th>
-                <th class="text-center" colspan="2">ព្រហស្បត៏</th>
-                <th class="text-center" colspan="2">សុក្រ</th>
-                <th class="text-center" colspan="2">សៅរ៏ </th>
-              </tr>
-              <tr class="general-print">
-                @foreach ($days as $day)
-                    @php
-                        $dayTimes = $record_sub_lines->where('date_name', $day);
-                    @endphp
-                    @if ($dayTimes->isNotEmpty())
-                        @foreach ($dayTimes->take(1) as $time)
-                            <th class="text-center">{{ $time->start_time ?? '' }}</th>
-                            <th class="text-center">{{ $time->end_time ?? '' }}</th>
-                        @endforeach
-                    @else
-                        <th class="text-center">&nbsp;</th>
-                        <th class="text-center">&nbsp;</th>
-                    @endif
-                @endforeach
-            </tr>
-            </thead>
-            <tbody id="recordsLineTableBody">
-                <?php 
-                    $index = 1; 
-                    $daysOfWeek = ['monday' => 2, 'tuesday' => 4, 'wednesday' => 6, 'thursday' => 8, 'friday' => 10, 'saturday' => 12];
-                ?>
-                @foreach ($record_sub_lines as $record)
-                    @foreach ($daysOfWeek as $day => $subjectCol)
-                        @if ($record->date_name == $day)
-                            <tr class="general-print">
-                                <td class="text-center" rowspan="" width="10">{{ $index++ }}</td>
-                                <td class="text-left" rowspan=""><div>{{ $record->teacher->name_2 ?? '' }}</div></td>
-                                @for ($i = 2; $i <= 12; $i += 2)
-                                    @if ($i == $subjectCol)
-                                        {{-- Display the subject name in the correct column based on the day --}}
-                                        <td class="text-center" colspan="2">
-                                            {{ $record->subject->name ?? '' }} 
-                                            &nbsp;<span style="font-size: 9px !important;"> {{ $record->room ?? '' }}</span>
-                                        </td>
-                                    @else
-                                        {{-- Leave other columns empty --}}
-                                        <td class="text-left" colspan="2"></td>
-                                    @endif
-                                @endfor
-                            </tr>
+        <div class="row">
+            <table class="table-print">
+                <thead>
+                <tr class="general-print">
+                    <th class="text-center" rowspan="2" width="10">ល.រ</th>
+                    <th class="text-center" rowspan="2"  width="120">សាស្រ្តាចារ្យ</th>
+                    <th class="text-center" colspan="2">ចន្ទ</th>
+                    <th class="text-center" colspan="2">អង្គា</th>
+                    <th class="text-center" colspan="2">ពុធ</th>
+                    <th class="text-center" colspan="2">ព្រហស្បត៏</th>
+                    <th class="text-center" colspan="2">សុក្រ</th>
+                    <th class="text-center" colspan="2">សៅរ៏ </th>
+                </tr>
+                <tr class="general-print">
+                    @foreach ($days as $day)
+                        @php
+                            $dayTimes = $record_sub_lines->where('date_name', $day);
+                        @endphp
+                        @if ($dayTimes->isNotEmpty())
+                            @foreach ($dayTimes->take(1) as $time)
+                                <th class="text-center">{{ $time->start_time ?? '' }}</th>
+                                <th class="text-center">{{ $time->end_time ?? '' }}</th>
+                            @endforeach
+                        @else
+                            <th class="text-center">&nbsp;</th>
+                            <th class="text-center">&nbsp;</th>
                         @endif
                     @endforeach
-                @endforeach
-            </tbody>
-        </table>
-        <div class="row align-items-start mt-1">
-            <div class="col-5 text-center KhmerOSMuolLight"><br><br><br>
-                បានឃើញនិងឯកភាព<br />
-                នារយករងសិក្សា
-            </div>
-        <div class="col-2"></div>
-            <div class="col-5 text-center khmer_os_b">
-                <div class="p-3" style="margin-left: 30px !important;"> {{ App\Service\service::updateDateTime() ?? ''}}</div>
-                <div class="KhmerOSMuolLight">នាយករងសិក្សា</div>
-            </div>
-        </div>
-    </div>
-@else
-    <div class="control-table table-responsive custom-data-table   -wrapper2">
-        <form id="frmDataSublist" role="form" class="form-sample" enctype="multipart/form-data">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th class="text-center" rowspan="2" width="10">ល.រ</th>
-                        <th class="text-center" rowspan="2">សាស្រ្តាចារ្យ</th>
-                        <th class="text-center" colspan="2">ចន្ទ</th>
-                        <th class="text-center" colspan="2">អង្គា</th>
-                        <th class="text-center" colspan="2">ពុធ</th>
-                        <th class="text-center" colspan="2">ព្រហស្បត៏</th>
-                        <th class="text-center" colspan="2">សុក្រ</th>
-                        <th class="text-center" colspan="2">សៅរ៏</th>
-                    </tr>
-                    <tr class="general-data">
-                        @foreach ($days as $day)
-                            @php
-                                $dayTimes = $record_sub_lines->where('date_name', $day);
-                            @endphp
-                            @if ($dayTimes->isNotEmpty())
-                                @foreach ($dayTimes->take(1) as $time)
-                                    <th class="text-center">{{ $time->start_time ?? '' }}</th>
-                                    <th class="text-center">{{ $time->end_time ?? '' }}</th>
-                                @endforeach
-                            @else
-                                <th class="text-center">0.00</th>
-                                <th class="text-center">0.00</th>
-                            @endif
-                        @endforeach
-                    </tr>
+                </tr>
                 </thead>
-                <tbody>
+                <tbody id="recordsLineTableBody">
                     <?php 
                         $index = 1; 
                         $daysOfWeek = ['monday' => 2, 'tuesday' => 4, 'wednesday' => 6, 'thursday' => 8, 'friday' => 10, 'saturday' => 12];
@@ -179,19 +106,18 @@
                     @foreach ($record_sub_lines as $record)
                         @foreach ($daysOfWeek as $day => $subjectCol)
                             @if ($record->date_name == $day)
-                                <tr>
-                                    <td class="text-center" rowspan="" width="10">
-                                        <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2 BtnEditeacher" data-code="{{ $record->id ?? '' }}" href="javascript:;"><i class="mdi mdi-border-color"></i>Edit</a>
-                                        <a class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2 BtnDeleteLine" data-code="{{ $record->id ?? '' }}" href="javascript:;"><i class="mdi mdi-delete-forever"></i>Delete</a>
-                                        {{ $index++ }}
-                                    </td>
-                                    <td class="text-left" rowspan="">{{ $record->teacher->name_2 ?? '' }}</td>
+                                <tr class="general-print">
+                                    <td class="text-center" rowspan="" width="10">{{ $index++ }}</td>
+                                    <td class="text-left" rowspan=""><div>{{ $record->teacher->name_2 ?? '' }}</div></td>
                                     @for ($i = 2; $i <= 12; $i += 2)
                                         @if ($i == $subjectCol)
-                                            <td class="text-center" colspan="2">{{ $record->subject->name ?? '' }}<br>
-                                                <div class="mt-1">បន្ទាប់:{{ $record->room ?? '' }}</div>
+                                            {{-- Display the subject name in the correct column based on the day --}}
+                                            <td class="text-center" colspan="2">
+                                                {{ $record->subject->name ?? '' }} 
+                                                &nbsp;<span style="font-size: 9px !important;"> <br>{{ $record->room ?? '' }}</span>
                                             </td>
                                         @else
+                                            {{-- Leave other columns empty --}}
                                             <td class="text-left" colspan="2"></td>
                                         @endif
                                     @endfor
@@ -201,8 +127,82 @@
                     @endforeach
                 </tbody>
             </table>
-        </form>
-    </div>
-@endif
-<br><br><br><br>
+            <div class="row align-items-start mt-1">
+                <div class="col-5 text-center KhmerOSMuolLight"><br><br><br>
+                    បានឃើញនិងឯកភាព<br />
+                    នារយករងសិក្សា
+                </div>
+            <div class="col-2"></div>
+                <div class="col-5 text-center khmer_os_b">
+                    <div class="p-3" style="margin-left: 30px !important;"> {{ App\Service\service::updateDateTime() ?? ''}}</div>
+                    <div class="KhmerOSMuolLight">នាយករងសិក្សា</div>
+                </div>
+            </div>
+        </div>
+    @else
+        <div class="control-table table-responsive custom-data-table   -wrapper2">
+            <form id="frmDataSublist" role="form" class="form-sample" enctype="multipart/form-data">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-center" rowspan="2" width="10">ល.រ</th>
+                            <th class="text-center" rowspan="2">សាស្រ្តាចារ្យ</th>
+                            <th class="text-center" colspan="2">ចន្ទ</th>
+                            <th class="text-center" colspan="2">អង្គា</th>
+                            <th class="text-center" colspan="2">ពុធ</th>
+                            <th class="text-center" colspan="2">ព្រហស្បត៏</th>
+                            <th class="text-center" colspan="2">សុក្រ</th>
+                            <th class="text-center" colspan="2">សៅរ៏</th>
+                        </tr>
+                        <tr class="general-data">
+                            @foreach ($days as $day)
+                                @php
+                                    $dayTimes = $record_sub_lines->where('date_name', $day);
+                                @endphp
+                                @if ($dayTimes->isNotEmpty())
+                                    @foreach ($dayTimes->take(1) as $time)
+                                        <th class="text-center">{{ $time->start_time ?? '' }}</th>
+                                        <th class="text-center">{{ $time->end_time ?? '' }}</th>
+                                    @endforeach
+                                @else
+                                    <th class="text-center">0.00</th>
+                                    <th class="text-center">0.00</th>
+                                @endif
+                            @endforeach
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php 
+                            $index = 1; 
+                            $daysOfWeek = ['monday' => 2, 'tuesday' => 4, 'wednesday' => 6, 'thursday' => 8, 'friday' => 10, 'saturday' => 12];
+                        ?>
+                        @foreach ($record_sub_lines as $record)
+                            @foreach ($daysOfWeek as $day => $subjectCol)
+                                @if ($record->date_name == $day)
+                                    <tr id="row{{$record->id ?? ''}}">
+                                        <td class="text-center" rowspan="" width="10">
+                                            <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2 BtnEditeacher" data-code="{{ $record->id ?? '' }}" href="javascript:;"><i class="mdi mdi-border-color"></i>Edit</a>
+                                            <a class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2 BtnDeleteLine" data-code="{{ $record->id ?? '' }}" href="javascript:;"><i class="mdi mdi-delete-forever"></i>Delete</a>
+                                            {{ $index++ }}
+                                        </td>
+                                        <td class="text-left" rowspan="">{{ $record->teacher->name_2 ?? '' }}</td>
+                                        @for ($i = 2; $i <= 12; $i += 2)
+                                            @if ($i == $subjectCol)
+                                                <td class="text-center" colspan="2">{{ $record->subject->name ?? '' }}<br>
+                                                    <div class="mt-1">បន្ទាប់:{{ $record->room ?? '' }}</div>
+                                                </td>
+                                            @else
+                                                <td class="text-left" colspan="2"></td>
+                                            @endif
+                                        @endfor
+                                    </tr>
+                                @endif
+                            @endforeach
+                        @endforeach
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    @endif
 </div>
+<br><br><br><br>

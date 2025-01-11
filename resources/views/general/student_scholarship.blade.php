@@ -22,16 +22,16 @@
 </div>
 <div class="page-header flex-wrap">
   <div class="header-left">
-    <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="BntCreate"
+    {{-- <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="BntCreate"
       href="{{url('/student/registration/transaction?type=cr')}}"><i class="mdi mdi-account-plus"></i> បន្ថែមថ្មី</i>
     </a>
       <button type="button" id="BtnDownlaodExcel"
           class="btn btn-outline-success btn-icon-text btn-sm mb-2 mb-md-0 me-2">Excel <i
           class="mdi mdi-printer btn-icon-append"></i> 
-      </button>
+      </button> --}}
   </div>
   <div class="d-grid d-md-flex justify-content-md-end p-3">
-    <input type="text" class="form-control mb-2 mb-md-0 me-2" id="search_data" data-page="student_registration" name="search_data"
+    <input type="text" class="form-control mb-2 mb-md-0 me-2" id="search_data" data-page="scholarship" name="search_data"
       placeholder="Serch...." aria-label="Recipient's username" aria-describedby="basic-addon2">
     <div>
       {{-- <button type="button" class="btn btn-outline-primary"> Seacrh </button> --}}
@@ -97,6 +97,20 @@
             </div>
 
             <div class="col-sm-3">
+              <span class="labels col-sm-3 col-form-label text-end">ក្រុម/ថ្នាក់<strong style="color:red; font-size:15px;"> *</strong></span>
+                <div class="col-sm-9">
+                    <select class="js-example-basic-single" id="class_code" name="class_code" style="width: 130%;">
+                        <option value="">&nbsp;</option>
+                        @foreach ($classs as $record)
+                            <option value="{{ $record->code }}" {{ isset($records->code) && $records->code == $record->code ? 'selected' : '' }}>
+                                {{ $record->code ?? ''}}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-sm-3">
               <span class="labels col-sm-3 col-form-label text-end">កម្រិត<strong style="color:red; font-size:15px;"> *</strong></span>
                 <div class="col-sm-9">
                     <select class="js-example-basic-single" id="qualification" name="qualification" style="width: 130%;">
@@ -110,19 +124,9 @@
                 </div>
             </div>
 
-            <div class="col-sm-3">
-              <span class="labels col-sm-3 col-form-label text-end">មានថ្នាក់/មិនមានថ្នាក់<strong style="color:red; font-size:15px;"> *</strong></span>
-                <div class="col-sm-9">
-                    <select class="js-example-basic-single" id="class_code" name="class_code" style="width: 130%;">
-                        <option value="">&nbsp;</option>
-                        {{-- <option value="true">មានថ្នាក់</option> --}}
-                        <option value="null">មិនមានថ្នាក់</option>
-                    </select>
-                </div>
-            </div>
-
+            
           </div>
-          <button type="button" class="btn btn-primary text-white" data-page="student_registration" id="btn-adSearch">Search</button>
+          <button type="button" class="btn btn-primary text-white" data-page="scholarship" id="btn-adSearch">Search</button>
         </div>
       </div>
     </form>

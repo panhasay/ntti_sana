@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\DB;
 class AssingClasses extends Model
 {
     use HasFactory;
+
     protected $table = 'assing_classes';
+    
     // protected $primaryKey = 'code';
     // protected $foreignKey = 'code'; // Corrected property name
 

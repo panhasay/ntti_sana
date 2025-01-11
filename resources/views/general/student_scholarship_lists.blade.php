@@ -3,6 +3,7 @@
   <table class="table table-striped">
       <thead>
         <tr class="general-data">
+          <th width="20">អត្តលេខ</th>
           <th width="20">គោត្តនាម-នាម</th>
           <th width="20">ជាអក្សឡាតាំង</th>
           <th width="10">ភេទ</th>

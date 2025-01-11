@@ -13,6 +13,11 @@ use App\Service\service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Exports\ExportData;
+use App\Models\General\Qualifications;
+use App\Models\General\Sections;
+use App\Models\General\Skills;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AssingClassesController extends Controller
 {
@@ -459,6 +464,86 @@ class AssingClassesController extends Controller
         } catch (\Exception $ex) {
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+    public function DownlaodexcelLine(Request $request)
+    {
+        try {
+            $data = $request->all();
+            $records = AssingClassesStudentLine::where('assing_line_no', $data['code'])->get();
+
+            $header = AssingClasses::where('assing_no', $data['code'])->first();
+
+            $department = $header->department_code;
+            $department = Department::where('code', $department)->first();
+            if ($department){
+                $department = $department->name_2;
+            }
+            $skills = $header->skills_code;
+            $skills = Skills::where('code', $skills)->first();
+            if ($skills){
+                $skills = $skills->name_2;
+            }
+            $sections = $header->sections_code;
+            $sections = Sections::where('code', $sections)->first();
+            if ($sections){
+                $sections = $sections->name_2;
+            }
+            $qualification = $header->qualification;
+            $qualification = Qualifications::where('code', $qualification)->first();
+            if ($qualification) {
+                $qualification = $qualification->name_2;
+            }
+
+            $blade_download = "general.assing_classes_sub_line_excel";
+
+            return Excel::download(new ExportData($records, $blade_download, $department, $sections, $skills, $qualification, $header), 'student_scoreboard.xlsx');
+
+            return response()->json(['status' =>'success','view' =>$view]);
+        } catch (\Exception $ex){
+            $this->services->telegram($ex->getMessage(),'list of student',$ex->getLine());
+            return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
+        }
+    }
+    public function ExcelExamResults(Request $request)
+    {
+        try {
+            $data = $request->all();
+
+            dd($data);
+            $records = AssingClassesStudentLine::where('assing_line_no', $data['code'])->get();
+
+            $header = AssingClasses::where('assing_no', $data['code'])->first();
+
+            $department = $header->department_code;
+            $department = Department::where('code', $department)->first();
+            if ($department){
+                $department = $department->name_2;
+            }
+            $skills = $header->skills_code;
+            $skills = Skills::where('code', $skills)->first();
+            if ($skills){
+                $skills = $skills->name_2;
+            }
+            $sections = $header->sections_code;
+            $sections = Sections::where('code', $sections)->first();
+            if ($sections){
+                $sections = $sections->name_2;
+            }
+            $qualification = $header->qualification;
+            $qualification = Qualifications::where('code', $qualification)->first();
+            if ($qualification) {
+                $qualification = $qualification->name_2;
+            }
+
+            $blade_download = "general.assing_classes_sub_line_excel";
+            
+            return Excel::download(new ExportData($records, $blade_download, $department, $sections, $skills, $qualification, $header), 'student_scoreboard.xlsx');
+
+            return response()->json(['status' =>'success','view' =>$view]);
+        } catch (\Exception $ex){
+            $this->services->telegram($ex->getMessage(),'list of student',$ex->getLine());
+            return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
         }
     }
 }

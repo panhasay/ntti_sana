@@ -167,7 +167,7 @@ Route::group(['perfix' => 'classes'], function (){
     Route::get('/classes/transaction', [ClassesController::class, 'transaction']);
     Route::post('/classes/update', [ClassesController::class, 'update']);
     Route::post('/classes/store', [ClassesController::class, 'store']);
-    Route::POST ('/classes-delete', [ClassesController::class, 'delete']);
+    Route::POST ('/class-schedule', [ClassesController::class, 'delete']);
 })->middleware('auth');
 
 Route::group(['perfix' => 'skills'], function (){
@@ -212,6 +212,8 @@ Route::group(['perfix' => 'teachers' ], function (){
     Route::get('/exam-results',[AssingClassesController::class,'ExamResults']);
     Route::get('/get-exam-results',[AssingClassesController::class,'GetExamResults']);
     Route::get('/get-exam-results-print-exam',[AssingClassesController::class,'PrintExamResults']);
+    Route::get('/get-exam-results-excel-exam',[AssingClassesController::class,'ExcelExamResults']);
+    Route::get('/assign-classes/downlaodexcel-line',[AssingClassesController::class,'DownlaodexcelLine']);
 })->middleware('auth');
 Route::group(['prefix' => 'attendance'], function () {
     Route::get('/dashboards-attendance', [AttendanceController::class, 'index']);
@@ -224,6 +226,7 @@ Route::group(['perfix' => '/class-schedule'], function (){
     Route::post('/class-schedule/store', [ClassScheduleController::class, 'store']);
     Route::POST ('/class-schedule-delete', [ClassScheduleController::class, 'delete']);
     Route::POST ('/class-schedule/save-schedule', [ClassScheduleController::class, 'SaveSchedule']);
+    Route::POST ('/class-schedule-delete-line', [ClassScheduleController::class, 'DeleteLine']);
     Route::get('/class-schedule-print',[ClassScheduleController::class,'printLine']);
     Route::get('/update/class-schedule/transaction',[ClassScheduleController::class,'EditTeacherSchedule']);
 })->middleware('auth');

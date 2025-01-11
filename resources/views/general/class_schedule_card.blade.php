@@ -195,7 +195,7 @@
                 <i class="mdi mdi-printer btn-icon-append"></i>
             </button>
         </div>
-        <div class="col-md-6 col-sm-6 col-6 khmer_os_b bold">
+        <div class="col-md-6 col-sm-7 col-7 khmer_os_b title-page">
             កាលវិភាគបង្រៀន
         </div>
     </div>
@@ -222,6 +222,23 @@
     </div>
   </div>
   <!---PRINT CONNECT--->
+  <div class="modal fade" id="divConfirmationDeleteLine" tabindex="-1" role="dialog" aria-labelledby="divConfirmationDeleteLine" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-m-header">
+          <h5 class="modal-title" id="divConfirmationDeleteLine">Confirmation</h5>
+        </div>
+        <div class="modal-body">
+          <h4 class="modal-confirmation-text text-center p-4"></h4>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="btnClose" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" id="btnYesDeleteLine" data-code="" data-id=""
+            class="btn btn-primary">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="print" style="display: none">
     <div class="print-content">
   
@@ -230,8 +247,13 @@
   <!-- Modal -->
 @include('general.class_schedule_sub_lists')
 <script>
-    var header = "{{ $records }}"
+    var header = "{{ $records->class_code ?? '' }}"
     $(document).ready(function() {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        })
         $('#BtnSave').on('click', function() {
             var formData = $('#frmDataCard').serialize();
             var type = $('#type').val();
@@ -326,6 +348,7 @@
                 }
             });
         })
+        
         $(document).on('click', '#prints', function() {
             $(".modal-confirmation-text").html('Do you want to Downlaod prints ?');
             $("#YesPrints").attr('data-code', $(this).attr('data-type'));
@@ -387,7 +410,31 @@
                 }
             });
         });
-
+       
+        $(document).on('click', '.BtnDeleteLine', function() {
+            $(".modal-confirmation-text").html('Do you want to delete?');
+            $("#btnYesDeleteLine").attr('data-code', $(this).attr('data-code'));
+            $("#divConfirmationDeleteLine").modal('show');
+        });
+        $(document).on('click', '#btnYesDeleteLine', function() {
+            var code = $(this).attr('data-code');
+            $.ajax({
+                type: "POST",
+                url: `/class-schedule-delete-line`,
+                data: {
+                code: code
+                },
+                success: function(response) {
+                if (response.status == 'success') {
+                    $("#divConfirmationDeleteLine").modal('hide');
+                    $("#row" + code).remove();
+                    notyf.success(response.msg);
+                }else if (response.status == 'warning') {
+                    notyf.error(response.msg);
+                }
+                }
+            });
+        });
     });
 
     function DownlaodExcel() {

@@ -357,34 +357,6 @@
             DownlaodExcel();
         });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         $("#SaveTeacherSchedule").on('click', function() {
             var frmDataSublist = $('#frmDataSublist').serialize();
             var code = "{{ isset($_GET['code']) ? addslashes($_GET['code']) : '' }}";

@@ -343,7 +343,6 @@
     } else {
         data = 'value=' + $('#search_data').val();
     }
-
     // Create a form to submit the data
     var form = $('<form>', {
         action: url,

@@ -565,11 +565,13 @@ class StudnetController extends Controller
         )->where('study_type', 'new student')
          ->where('department_code', $user->department_code)
          ->get();
+
+        $classs = Classes::orderBy('code', 'asc')->get();
        
         $records = Student::where('study_type', 'new student')
                             ->whereNotNull('scholarship')
-                            ->orderBy('code', 'desc')->paginate(20);
-        return view('general.student_scholarship', compact('records', 'total_records', 'qualifications', 'skills', 'department', 'sections', 'sections'));
+                            ->orderBy('class_code', 'desc')->paginate(20);
+        return view('general.student_scholarship', compact('records', 'total_records', 'qualifications', 'skills', 'department', 'sections', 'sections', 'classs'));
     }
     
     public function sendmessage()

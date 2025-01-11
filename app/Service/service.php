@@ -376,11 +376,11 @@ class service{
     public static function getKhmerDatePrefix($date)
     {
         $khmerDays = ["ថ្ងៃអាទិត្យ", "ថ្ងៃចន្ទ", "ថ្ងៃអង្គារ", "ថ្ងៃពុធ", "ថ្ងៃព្រហស្បតិ៍", "ថ្ងៃសុក្រ", "ថ្ងៃសៅរ៍"];
-        $khmerMonths = ["មិគសិរ", "មាឃ", "ផល្គុន", "ចេត្រ", "ពិសាខ", "ជេស្ឋ", "អាសាឍ", "ស្រាពណ៏", "ភទ្របទ", "អស្សុជ", "កត្កិក", "បុស្ស"];
+        $khmerMonths = ["បុស្ស", "មាឃ", "ផល្គុន", "ចេត្រ", "ពិសាខ", "ជេស្ឋ", "អាសាឍ", "ស្រាពណ៏", "ភទ្របទ", "អស្សុជ", "កត្កិក", "បុស្ស"];
         $nameYear = ["ឆ្នាំជូត", "ឆ្នាំឆ្លួរ", "ឆ្នាំខាល", "ឆ្នាំថោះ", "ឆ្នាំរោង", "ឆ្នាំម្សាញ់", "ឆ្នាំមមី", "ឆ្នាំមមែ", "ឆ្នាំវក", "ឆ្នាំរកា", "ឆ្នាំច", "ឆ្នាំកុរ"];
 
         // Convert Gregorian year to Buddhist year
-        $buddhistYear = self::convertToKhmerNumerals((int) $date->format('Y') + 544);
+        $buddhistYear = self::convertToKhmerNumerals((int) $date->format('Y') + 543);
 
         // Calculate lunar date based on a reference date
         $referenceDate = new DateTime('2024-01-07');
@@ -394,7 +394,7 @@ class service{
 
         $dayOfWeek = $khmerDays[$date->format('w')];
         $month = $khmerMonths[$date->format('n') - 1];
-        $year = $nameYear[(($date->format('Y') - 4) % 12)];
+        $year = $nameYear[(($date->format('Y') - 5) % 12)];
 
         return "{$dayOfWeek} {$khmerDayInLunarPhase} {$lunarPhase} ខែ{$month} {$year} ឆស័ក ពុទ្ធសករាជ {$buddhistYear} ត្រូវនឹង ថ្ងៃ";
     }

@@ -55,7 +55,7 @@
             <span class="labels col-sm-3 col-form-label text-end">ថា្នក់/ក្រុម<strong
                 style="color:red; font-size:15px;"> *</strong></span>
             <div class="col-sm-9">
-
+              
               <select class="js-example-basic-single FieldRequired form_data readonly-select" id="class_code"
                 name="class_code" style="width: 100%;" {{ (count($recordsLine) > 0) ? 'disabled' : '' }}>
                 <option value="">&nbsp;</option>
@@ -205,17 +205,18 @@
       <div class="col-md-6 col-sm-6  col-6">
         <div class="page-title page-title-custom">
           <div class="title-page">
+
             <a href="http://127.0.0.1:8000/classes"><i class="mdi mdi-format-list-bulleted"></i></a>
-            និស្សិត
+              និស្សិត
             <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="AssingStudentToClasses"
               href="javascript:;">
               <i class="mdi mdi-account-plus"></i> Add New
             </a>
 
-            {{-- <button type="button" id="BtnDownlaodExcelLine"
-              class="btn btn-outline-success btn-icon-text btn-sm mb-2 mb-md-0 me-2 BtnDownlaodExcelLine">Excel <i
+            <button type="button" id="BtnDownlaodExcelLine"
+                class="btn btn-outline-success btn-icon-text btn-sm mb-2 mb-md-0 me-2 BtnDownlaodExcelLine">Excel <i
                 class="mdi mdi-printer btn-icon-append"></i>
-            </button> --}}
+            </button>
 
             <button type="button" id="prints" class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2">Print
               <i class="mdi mdi-printer btn-icon-append"></i>
@@ -526,7 +527,7 @@
       $("#ModelDownlaodExcelLine").modal('show');
     });
     $(document).on('click', '#btnYesDownlaodExcelLine', function() {
-      DownlaodExcel();
+      DownlaodExcelLine();
     });
     $(document).on('click', '#prints', function() {
       $(".modal-confirmation-text").html('Do you want to Downlaod prints ?');
@@ -580,40 +581,41 @@
     });
   });
 
-  function DownlaodExcel() {
-    var url = '/student/downlaodexcel/';
+  function DownlaodExcelLine() {
+    var assing_no = "{{ isset($_GET['assing_no']) ? addslashes($_GET['assing_no']) : '' }}";
+    var url = '/assign-classes/downlaodexcel-line?assing_no=' + assing_no + '&type=is_excel';
+    var data = assing_no;
+    let code = "{{ isset($_GET['assing_no']) ? addslashes($_GET['assing_no']) : '' }}";
+
     if ($('#search_data').val() == '') {
-      data = $("#advance_search").serialize();
+        data = $("#advance_search").serialize();
     } else {
-      data = 'value=' + $('#search_data').val();
+        data = 'code=' + code;
     }
-    data = $("#advance_search").serialize();
-    $.ajax({
-      type: "post",
-      url: url,
-      data: data,
-      headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-      },
-      beforeSend: function() {
-        // $.LoadingOverlay("show", {
-        //   custom: loadingOverlayCustomElement
-        // });
-        // loadingOverlayCustomElement.text('Request Processing...');
-      },
-      success: function(response) {
-        $.LoadingOverlay("hide", true);
-        if (response.status == 'success') {
-          $('#divPassword').modal('hide');
-          location.href = response.path;
-          // myfn.showNotify(response['status'], 'lime', 'top', 'right', response['message']);
-        } else {
-          $('.secure_msg').html(response.message);
-          $('.secure_msg').show();
-        }
-      },
-      error: function(xhr, ajaxOptions, thrownError) {}
+    
+    // Create a form to submit the data
+    var form = $('<form>', {
+        action: url,
+        method: 'GET'
     });
+
+    // Append the serialized data to the form
+    $.each(data.split('&'), function(i, field) {
+        var parts = field.split('=');
+        form.append($('<input>', {
+            type: 'hidden',
+            name: decodeURIComponent(parts[0]),
+            value: decodeURIComponent(parts[1])
+        }));
+    });
+
+    // Append the form to the body and submit it
+    $('body').append(form);
+    form.submit();
+
+    // Optionally, you can show a loader here
+    $('.loader').hide();
+    $("#divConfirmationExcel").modal('hide');
   }
 
   function FieldRequired() {

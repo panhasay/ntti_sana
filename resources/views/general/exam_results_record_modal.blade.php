@@ -249,7 +249,7 @@
         <div class="col-1">
             </div>
                 <div class="col-6 text-center khmer_os_b">
-                    {{ App\Service\service::updateDateTime() ?? ''}}
+                    {{ App\Service\service::updateDateTime() ?? ''}} 
                     <div class="KhmerOSMuolLight">ប្រធានដេប៉ាដេម៉ង</div>
                 </div>
         </div><br>

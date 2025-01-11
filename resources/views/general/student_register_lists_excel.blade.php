@@ -34,6 +34,8 @@
         <th style="font-weight: 700" width="20">ឈ្មោះម្ដាយ</th>
         <th style="font-weight: 700" width="20">ឈ្មោះឪពុក</th>
         <th style="font-weight: 700" width="20">ឆ្នាំសិក្សា</th>
+        <th style="font-weight: 700" width="20">ប្រភពអាហារូបករណ៏</th>
+        <th style="font-weight: 700" width="20">ស្គាល់NTTIតាមរយ:</th>
       </tr>
     </thead>
 
@@ -54,6 +56,10 @@
           <td>{{ $record->mother_name }}</td>
           <td>{{ $record->father_name }}</td>
           <td>{{ $record->session_year_code ?? '' }}</td>
+
+          <td>{{ $record->scholarship_type ?? ''}}</td>
+          <td>{{ $record->submit_your_application ?? '' }}</td>
+          
       </tr>
       @endforeach
     </tbody>

@@ -7,7 +7,7 @@
       <div class="page-title page-title-custom">
         <div class="title-page">
           <i class="mdi mdi-format-list-bulleted"></i>
-          លទ្ធិផលប្រឡងឆមាសទី {{ $_GET['semester'] ?? '' }} ឆ្នាំទី {{ $_GET['years'] ?? '' }} / {{ $_GET['type'] ?? ""}}  
+            លទ្ធិផលប្រឡងឆមាសទី {{ $_GET['semester'] ?? '' }} ឆ្នាំទី {{ $_GET['years'] ?? '' }} / {{ $_GET['type'] ?? ""}}  
         </div>
       </div>
     </div>
@@ -76,7 +76,10 @@
       <div class="modal-header bg-m-header">
         <h4 class="modal-title text-white modal-title-exam-results khmer_os_b"></h4>
         <div class="pull-right" style="float: right;margin-left: 10px;">
-          <button type="button" data-type="skill" id="prints" class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2 pull-right" style="float: right !important;"> Print
+          <button type="button" data-type="skill" id="prints" class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2 pull-right text-white" style="float: right !important;"> Print
+            <i class="mdi mdi-printer btn-icon-append"></i>
+          </button>
+          <button type="button" class="btn btn-outline-success btn-icon-text btn-sm mb-2 mb-md-0 me-2 text-white BtnDownlaodExcel">Excel 
             <i class="mdi mdi-printer btn-icon-append"></i>
           </button>
         </div>
@@ -105,6 +108,23 @@
       <div class="modal-footer">
         <button type="button" id="btnClose" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button type="button" id="YesPrints" data-code="{{ $_GET['assing_no'] ?? '' }}" data-id=""
+          class="btn btn-primary">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="ModelExcel" tabindex="-1" role="dialog" aria-labelledby="ModelExcel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-m-header">
+        <h5 class="modal-title" id="divConfirmation">Confirmation</h5>
+      </div>
+      <div class="modal-body">
+        <h4 class="modal-confirmation-text text-center p-4"></h4>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="btnClose" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" id="YesExcel" data-code="{{ $_GET['assing_no'] ?? '' }}" data-id=""
           class="btn btn-primary">Yes</button>
       </div>
     </div>
@@ -151,6 +171,45 @@
       $(".modal-confirmation-text").html('Do you want to Downlaod prints ?');
       $("#YesPrints").attr('data-code', $(this).attr('data-type'));
       $("#ModelPrints").modal('show');
+    });
+    $(document).on('click', '.BtnDownlaodExcel', function() {
+      $(".modal-confirmation-text").html('Do you want to Downlaod excel ?');
+      $("#YesExcel").attr('data-code', $(this).attr('data-type'));
+      $("#ModelExcel").modal('show');
+    });
+    $(document).on('click', '#YesExcel', function() {
+      let class_code = $('#class_code').val();
+      var years = "{{ isset($_GET['years']) ? addslashes($_GET['years']) : '' }}";
+      var type = "{{ isset($_GET['type']) ? addslashes($_GET['type']) : '' }}";
+      var semester = "{{ isset($_GET['semester']) ? addslashes($_GET['semester']) : '' }}";
+      var url = 'get-exam-results-excel-exam?class_code=' + class_code + '&years=' + years + '&type=' + type + '&semester=' + semester;
+      var data;
+      
+      data = 'class_code=' + class_code+ '&years=' + years + '&type=' + type + '&semester=' + semester;
+
+      var form = $('<form>', {
+          action: url,
+          method: 'GET'
+      });
+
+        // Append the serialized data to the form
+        $.each(data.split('&'), function(i, field) {
+            var parts = field.split('=');
+            form.append($('<input>', {
+                type: 'hidden',
+                name: decodeURIComponent(parts[0]),
+                value: decodeURIComponent(parts[1])
+            }));
+        });
+
+        // Append the form to the body and submit it
+        $('body').append(form);
+        form.submit();
+
+        // Optionally, you can show a loader here
+        $('.loader').hide();
+        $("#divConfirmationExcel").modal('hide');
+
     });
     $(document).on('click', '#YesPrints', function() {
       let class_code = $('#class_code').val();

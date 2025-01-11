@@ -137,9 +137,7 @@
         <tbody id="recordsLineTableBody">
           <?php $total_score = 0; ?>
           @foreach ($recordsLine as $line)
-          <?php 
-            $total_score = (float) $line->attendance + (float) $line->assessment + (float) $line->final + (float) $line->midterm;
-          ?>
+          <?php  $total_score = (float) $line->attendance + (float) $line->assessment + (float) $line->final + (float) $line->midterm; ?>
           <tr id="rowLine{{$line->id ?? ''}}" data-id="{{ $line->id ?? ''}}">
             <form id="frmDataLine" role="form" class="form-sample" enctype="multipart/form-data">
               <td>
@@ -178,5 +176,6 @@
           @endforeach
         </tbody>
     </table>
-  </div><br><br><br>
+  </div>
 @endif
+<br><br><br>
