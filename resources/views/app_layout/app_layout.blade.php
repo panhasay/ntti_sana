@@ -39,6 +39,10 @@
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    window.authUserID = @json(auth()->check() ? auth()->id() : null);
+    const checkAuthRoute = @json(Route::currentRouteName(), JSON_THROW_ON_ERROR);
+</script>
 
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -98,7 +102,7 @@
                     name="search_menu_function" placeholder="{{ trans('greetings.Search').'...' }}"> --}}
                   {{-- <input type="text" class="form-control" id="search_menu_function" name="search_menu_function"
                     placeholder="Search" aria-label="search" aria-describedby="search" /> --}}
-                  @include('system.menu_search_list')
+                  {{-- @include('system.menu_search_list') --}}
                 </div>
               </li>
             </ul>
@@ -110,15 +114,15 @@
                     <?php
                         $user = Auth::user();
 
-                        $records = App\Models\User::where('id', $user->id)->first();
-                        if($records->role == "student"){
-                          $records_by_user = DB::table('student')->where('code', $records->user_code)->first();
-                        }else if($records->role == "teachers"){
-                            $records_by_user = App\Models\General\Teachers::where('code', $records->user_code)->first();
-                        }else if($records->role == "admin"){
-                          $records_by_user = DB::table('student')->where('code', $records->user_code)->first();
+                        $records = App\Models\User::where('id', $user->id ?? '')->first();
+                        if($records->role ?? '' == "student"){
+                          $records_by_user = DB::table('student')->where('code', $records->user_code ?? '')->first();
+                        }else if($records->role ?? '' == "teachers"){
+                            $records_by_user = App\Models\General\Teachers::where('code', $records->user_code ?? '')->first();
+                        }else if($records->role ?? '' == "admin"){
+                          $records_by_user = DB::table('student')->where('code', $records->user_code ?? '')->first();
                         }else{
-                          $records_by_user = DB::table('student')->where('code', $records->user_code)->first();
+                          $records_by_user = DB::table('student')->where('code', $records->user_code ?? '')->first();
                         }
                         
 
@@ -145,6 +149,9 @@
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="{{ route('logout') }}">
                     <i class="mdi mdi-logout me-2 text-primary"></i> Signout </a>
+                    <a class="dropdown-item" href="{{ url('admin-panel') }}">
+                      <i class="mdi mdi-account-convert me-2 text-primary"></i> Admin Panel</a>
+                      
                 </div>
               </li>
             </ul>

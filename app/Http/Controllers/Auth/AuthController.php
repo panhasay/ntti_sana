@@ -93,26 +93,28 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
 
             $this->services->telegramSendUserLog($email,$role, $department, $ip, $userAgent, $city, $type, $user_name);
+            // if($permission->role == "student"){
+            //     return redirect()->intended('dahhboard-student-account')
+            //     ->withSuccess('You have Successfully loggedin');
+            // }else{
+            //     return redirect()->intended('department-menu')
+            //     ->withSuccess('You have Successfully loggedin');    
+            // }
+
             if($permission->role == "student"){
                 return redirect()->intended('dahhboard-student-account')
                 ->withSuccess('You have Successfully loggedin');
+            }elseif($permission->role == "attendant"){
+                return redirect()->intended('attendance/dashboards-attendance');
+            }elseif($permission->role == "teachers"){
+                return redirect()->intended('teacher-dashboard');
             }else{
                 return redirect()->intended('department-menu')
                 ->withSuccess('You have Successfully loggedin');    
             }
         }
 
-        // if($permission->role == "student"){
-        //     return redirect()->intended('dahhboard-student-account')
-        //     ->withSuccess('You have Successfully loggedin');
-        // }elseif($permission->role == "attendant"){
-        //     return redirect()->intended('attendance/dashboards-attendance');
-        // }elseif($permission->role == "teachers"){
-        //     return redirect()->intended('teacher-dashboard');
-        // }else{
-        //     return redirect()->intended('department-menu')
-        //     ->withSuccess('You have Successfully loggedin');    
-        // }
+        
 
 
         // for testb

@@ -4,13 +4,16 @@ namespace App\Http\Controllers\SystemSetup;
 
 use App\Http\Controllers\Controller;
 use App\Models\General\AssingClasses;
+use App\Models\General\Classes;
 use Illuminate\Http\Request;
 use App\Service\service;
-use App\Models\Student\Student; 
+use App\Models\Student\Student;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\General\Teachers;
 use App\Models\General\ClassSchedule;
+use App\Models\General\Sections;
+use App\Models\General\Skills;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -24,82 +27,96 @@ class DashboardController extends Controller
     }
     public function index()
     {
-        $user = Auth::user();
-        if(isset($user->role) && $user->role == 'student'){
-            return redirect("user-dont-have-permission")->withSuccess('Opps! You do not have access');
-        }
-            $type = null;
         try {
-            $records_student_by_skills = DB::table('students as student')
-                            ->join('categories as category', 'category.id', '=', 'student.category_id')
-                            ->selectRaw("category.category
-                            ,COUNT(student.firstname) as qty_studen
-                            ,COUNT(CASE WHEN student.gender = 'ស្រី' THEN student.firstname END) as qty_studen_female
-                            ,COUNT(CASE WHEN student.gender = 'ប្រុស' THEN student.firstname END) as qty_studen_male
-                            ")
-                            ->groupBy('category.category')
-                            ->get();
-            $records_student_by_year = DB::table('students as sd')
-                            ->join('student_session as sds', 'sds.student_id', '=', 'sd.id')
-                            ->join('classes as cl', 'cl.id', '=', 'sds.class_id')
-                            ->join('sessions as ss', 'ss.id', '=','sds.session_id')
-                            ->selectRaw("ss.session
-                            ,COUNT(sd.firstname) as qty_studen
-                            ,COUNT(CASE WHEN sd.gender = 'ស្រី' THEN sd.firstname END) as qty_studen_female
-                            ,COUNT(CASE WHEN sd.gender = 'ប្រុស' THEN sd.firstname END) as qty_studen_male
-                            ")
-                            ->groupBy('ss.session')
-                            ->get();
-            $records_student_by_department = DB::table('students as sd')
-                            ->join('student_session as sds', 'sds.student_id', '=', 'sd.id')
-                            ->join('classes as cl', 'cl.id', '=', 'sds.class_id')
-                            ->join('sessions as ss', 'ss.id', '=','sds.session_id')
-                            ->join('department as dp', 'dp.id', '=','cl.depart_id')
-                            ->selectRaw("dp.department_name
-                            ,COUNT(sd.firstname) as qty_studen
-                            ,COUNT(CASE WHEN sd.gender = 'ស្រី' THEN sd.firstname END) as qty_studen_female
-                            ,COUNT(CASE WHEN sd.gender = 'ប្រុស' THEN sd.firstname END) as qty_studen_male
-                            ")
-                            ->groupBy('dp.department_name')
-                            ->get();
-            $records_student_Department_Class_and_Ssections= DB::table('classes')
-                            ->join('class_sections', 'classes.id', '=', 'class_sections.class_id')
-                            ->join('sections', 'sections.id', '=', 'class_sections.section_id')
-                            ->join('student_session', 'student_session.class_id', '=', 'classes.id')
-                            ->join('students', 'student_session.student_id', '=', 'students.id')
-                            ->join('department', 'department.id', '=', 'classes.depart_id')
-                            ->join('sessions', 'sessions.id', '=', 'student_session.session_id')
-                            ->join('categories', 'categories.id', '=', 'students.category_id')
-                            ->selectRaw("classes.class, sections.section, department.department_name, sessions.session, categories.category
-                                ,COUNT(students.firstname) as qty_studen
-                                ,COUNT(CASE WHEN students.gender = 'ស្រី' THEN students.firstname END) as qty_studen_female
-                                ,COUNT(CASE WHEN students.gender = 'ប្រុស' THEN students.firstname END) as qty_studen_male
-                            ")
-                            ->groupBy('sections.section', 'classes.class', 'department.department_name', 'sessions.session', 'categories.category')
-                            ->orderBy('classes.class', 'asc')
-                            ->get();
-            // dd($results);
-            
-            $records_total_student = DB::table('students')->select(DB::raw('COUNT(firstname) as total'))->get();
-            $total_students = $records_total_student[0]->total;
-            $records_total_class = DB::table('classes')->select(DB::raw('COUNT(class) as total'))->get();
-            $total_class = $records_total_class[0]->total;
-            $records_total_skill = DB::table('categories')->select(DB::raw('COUNT(category) as total'))->get();
-            $total_skill = $records_total_skill[0]->total;
-            $sections = DB::table('sections')->get();
-            
-            $department = DB::table('department')->get();
-            $sessions = DB::table('sessions')->get();
-            if(Auth::check()){
-                return view('dashboard.dashboard', compact( 'records_student_by_skills',
-                'records_student_by_year','records_student_by_department','department','type',
-                'sessions','total_students','total_class','total_skill','sections','records_student_Department_Class_and_Ssections'));	
-            }else{
-                return redirect("login")->withSuccess('Opps! You do not have access');
-            }   
+            // Get total count of skills and classes
+            $total_skill = Skills::count(); // Using count() directly instead of get()->count()
+            $total_class = Classes::count(); // Similarly for classes
+            $total_students = Student::count();
+            $sections = Sections::get();
+
+
+            // Que ry for aggregated skill data, including gender-based counts
+            $results = Skills::selectRaw(
+                'skills.name_2, 
+                COUNT(student.gender) AS total_students, 
+                SUM(CASE WHEN student.gender = "ស្រី" THEN 1 ELSE 0 END) AS total_f, 
+                SUM(CASE WHEN student.gender = "ប្រុស" THEN 1 ELSE 0 END) AS total_m'
+            )
+                ->leftJoin('student', 'student.skills_code', '=', 'skills.code',)
+                ->groupBy('skills.name_2', 'skills.code')
+                ->get();
+
+            $total_students_year = DB::table('session_year as sy')
+                ->select(
+                    'sy.code as year_code',
+                    'sy.name as year_name',
+                    DB::raw('COUNT(st.name) as total_students'),
+                    DB::raw("COUNT(CASE WHEN st.gender = 'ប្រុស' THEN 1 END) as total_male_students"),
+                    DB::raw("COUNT(CASE WHEN st.gender = 'ស្រី' THEN 1 END) as total_female_students")
+                )
+                ->join('student as st', 'st.session_year_code', '=', DB::raw("sy.code COLLATE utf8mb4_unicode_ci"))
+                ->groupBy('sy.code', 'sy.name')
+                ->orderBy('sy.code')
+                ->orderBy('sy.name')
+                ->get();
+            //ss
+            $total_departments = DB::table('department as dm')
+                ->selectRaw(
+                    'dm.name_2 AS department_name, 
+                    COUNT(st.gender) AS total_students, 
+                    SUM(CASE WHEN st.gender = "ស្រី" THEN 1 ELSE 0 END) AS total_female_students, 
+                    SUM(CASE WHEN st.gender = "ប្រុស" THEN 1 ELSE 0 END) AS total_male_students'
+                )
+                ->leftJoin('student as st', 'st.department_code', '=', 'dm.code')
+                ->groupBy('dm.name_2')
+                ->get();
+
+
+
+            $total_results = DB::table('department as dt')
+                ->select(
+                    'dt.name_2',
+                    DB::raw('COUNT(st.name_2) as total_studentss'),
+                    DB::raw('SUM(CASE WHEN st.sections_code = "A" THEN 1 ELSE 0 END) as aa_1'),
+                    DB::raw('SUM(CASE WHEN st.sections_code = "M" THEN 1 ELSE 0 END) as mm_1'),
+                    DB::raw('SUM(CASE WHEN st.sections_code = "N" THEN 1 ELSE 0 END) as nn_1')
+                )
+                ->leftJoin('student as st', 'st.department_code', '=', 'dt.code')
+                ->groupBy('dt.name_2', 'dt.code')
+                ->get();
+
+
+
+            $total_provinces = DB::table('student')
+                ->select(
+                    DB::raw("SUBSTRING(student_address, LOCATE('ខេត្ត', student_address)) AS province"),
+                    DB::raw("COUNT(*) AS total_provinces"),
+                    DB::raw("COUNT(*) AS total_students")
+                )
+                ->groupBy(DB::raw("SUBSTRING(student_address, LOCATE('ខេត្ត', student_address))"))
+                ->orderByDesc(DB::raw("COUNT(*)"))
+                ->get();
+
+
+            // Prepare labels for chart data
+            $data = $total_students_year->map(function ($item) {
+                $item->label = "ឆ្នាំសិក្សា {$item->year_code} សិស្សសរុប {$item->total_students} នាក់ ស្រី {$item->total_female_students} ប្រុស {$item->total_male_students}";
+                return $item;
+            });
+
+
+            // Prepare additional data for the view (like records and types)
+            $records = $results;  // You can assign your results to 'records'
+            $type = 'skills';  // Example value, you can set your own type
+
+            // Return the view with data
+            return view('dashboard.dashboard', compact('total_skill', 'results', 'sections', 'total_students_year', 'total_departments', 'total_skill', 'total_class', 'total_students', 'data', 'total_results', 'total_provinces'));
         } catch (\Exception $ex) {
+            // If any exception occurs, roll back the transaction (if started) and log the error
             DB::rollBack();
-            $this->services->telegram($ex->getMessage(), 'report list Of student', $ex->getLine());
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+
+            // Return a response with the error message
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
@@ -108,7 +125,7 @@ class DashboardController extends Controller
         try {
             $data = $request->all();
             $type = $data['type'];
-            if($type == 'skill'){
+            if ($type == 'skill') {
                 $records = DB::table('students as student')
                     ->join('categories as category', 'category.id', '=', 'student.category_id')
                     ->selectRaw("category.category
@@ -118,11 +135,11 @@ class DashboardController extends Controller
                     ")
                     ->groupBy('category.category')
                     ->get();
-            }else if($type == 'year'){
+            } else if ($type == 'year') {
                 $records = DB::table('students as sd')
                     ->join('student_session as sds', 'sds.student_id', '=', 'sd.id')
                     ->join('classes as cl', 'cl.id', '=', 'sds.class_id')
-                    ->join('sessions as ss', 'ss.id', '=','sds.session_id')
+                    ->join('sessions as ss', 'ss.id', '=', 'sds.session_id')
                     ->selectRaw("ss.session
                     ,COUNT(sd.firstname) as qty_studen
                     ,COUNT(CASE WHEN sd.gender = 'ស្រី' THEN sd.firstname END) as qty_studen_female
@@ -130,12 +147,12 @@ class DashboardController extends Controller
                     ")
                     ->groupBy('ss.session')
                     ->get();
-            }else if($type == 'department'){
+            } else if ($type == 'department') {
                 $records = DB::table('students as sd')
                     ->join('student_session as sds', 'sds.student_id', '=', 'sd.id')
                     ->join('classes as cl', 'cl.id', '=', 'sds.class_id')
-                    ->join('sessions as ss', 'ss.id', '=','sds.session_id')
-                    ->join('department as dp', 'dp.id', '=','cl.depart_id')
+                    ->join('sessions as ss', 'ss.id', '=', 'sds.session_id')
+                    ->join('department as dp', 'dp.id', '=', 'cl.depart_id')
                     ->selectRaw("dp.department_name
                     ,COUNT(sd.firstname) as qty_studen
                     ,COUNT(CASE WHEN sd.gender = 'ស្រី' THEN sd.firstname END) as qty_studen_female
@@ -144,7 +161,7 @@ class DashboardController extends Controller
                     ->groupBy('dp.department_name')
                     ->get();
             }
-            return view('dashboard.dashboard_print', compact('records','type'));
+            return view('dashboard.dashboard_print', compact('records', 'type'));
         } catch (\Exception $ex) {
             DB::rollBack();
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
@@ -152,12 +169,17 @@ class DashboardController extends Controller
         }
     }
 
-    public function StudentUserAccount(Request $request){
+    public function StudentUserAccount(Request $request)
+    {
         try {
             $data = $request->all();
-            $records = Student::where('code',Auth::user()->user_code ?? $request->code)->first();
-    
-            $skills = DB::table('skills')->where('code',$records->skills_code ?? '')->first();
+
+     
+            $records = Student::where('code', $request->code)->first();
+
+            // dd($records);
+
+            $skills = DB::table('skills')->where('code', $records->skills_code ?? '')->first();
             return view('dashboard.dashboard_student', compact('records', 'skills'));
         } catch (\Exception $ex) {
             DB::rollBack();
@@ -168,38 +190,37 @@ class DashboardController extends Controller
     // public function teacherDashboard(Request $request) {
     //     $code = $request->input('code'); // or Route Parameter
     //     $teacher = Teachers::where('code', $code)->first();
-        
+
     //     return view('teacher.dashboard', compact('teacher'));
     // }
     public function teacherDashboard()
     {
-        $record = Teachers::where('code', Auth::user()->user_code)->first(); 
+        $record = Teachers::where('code', Auth::user()->user_code)->first();
         if (!$record) {
             $record = (object) ['name' => 'No Teacher Available'];
         }
         $total_class = AssingClasses::where('teachers_code', $record->code)->count();
         $total_subject = AssingClasses::where('teachers_code', $record->code)
-                                        ->Groupby('subjects_code')->count();
+            ->Groupby('subjects_code')->count();
 
-        
-            $schedules = ClassSchedule::with(['section', 'subject'])
-                    ->whereDate('start_date', '<=', Carbon::now())
-                    ->orderBy('start_date', 'asc')
-                    ->get();
 
-            // Extract class_schedule IDs as an array
-            $class_schedule_ids = $schedules->pluck('id')->toArray();
-            $date_name  = $schedules->pluck('date_name')->toArray(); 
+        $schedules = ClassSchedule::with(['section', 'subject'])
+            ->whereDate('start_date', '<=', Carbon::now())
+            ->orderBy('start_date', 'asc')
+            ->get();
 
-            $today = strtolower(Carbon::now()->format('l'));
-            // Fetch assigned classes with matching class_schedule_ids and teacher's code
-            $assignedClasses = AssingClasses::whereIn('class_schedule_id', $class_schedule_ids)
-                ->where('teachers_code', $record->code)
-                ->where('date_name', $today)
-                ->get();
-            $Classes_history = AssingClasses::where('teachers_code', $record->code)
-                ->get();
+        // Extract class_schedule IDs as an array
+        $class_schedule_ids = $schedules->pluck('id')->toArray();
+        $date_name  = $schedules->pluck('date_name')->toArray();
+
+        $today = strtolower(Carbon::now()->format('l'));
+        // Fetch assigned classes with matching class_schedule_ids and teacher's code
+        $assignedClasses = AssingClasses::whereIn('class_schedule_id', $class_schedule_ids)
+            ->where('teachers_code', $record->code)
+            ->where('date_name', $today)
+            ->get();
+        $Classes_history = AssingClasses::where('teachers_code', $record->code)
+            ->get();
         return view('dashboard.dashboard_teacher', compact('record', 'total_class', 'total_subject', 'assignedClasses', 'Classes_history'));
-    }    
-    
+    }
 }

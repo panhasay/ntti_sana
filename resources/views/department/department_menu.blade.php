@@ -34,11 +34,11 @@
     <div class="column">
         <div class="effect-9">
             <div class="effect-img">
-                <a href="{{ url('/class-schedule') }}">
-                    <img src="https://img.freepik.com/free-vector/secondary-school-isometric-concept-poster_1284-5675.jpg?t=st=1713584493~exp=1713588093~hmac=939546580d44ee53383348f3fd5a4fe12a3e64b162f7883b1c04a47ac0cbe99b&w=740" alt="Team Image">
+                <a href="{{ route('cert.dept_menu') }}">
+                    <img src="https://img.freepik.com/free-photo/group-grads-cap-gown-with-graduation-certificate_53876-75182.jpg?t=st=1732638232~exp=1732641832~hmac=c353e6852e48656e544f36e333cacd24b9689d1b926d88dca320328b814d79ef&w=740" alt="Team Image">
                 </a>
             </div>
-            <div class="title-department">ប្រព័ន្ធគ្រប់គ្រងសាលា</div>
+            <div class="title-department">ប្រព័ន្ឋគ្រប់គ្រងលិខិតបញ្ជាក់</div>
         </div>
     </div>
     <div class="column">

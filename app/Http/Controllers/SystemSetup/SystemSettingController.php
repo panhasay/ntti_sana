@@ -74,6 +74,7 @@ class SystemSettingController extends Controller
             if ($page == 'users') $page = 'users';
             if ($page == 'location') $page = 'location';
             $extract_query = $this->service->extractQuery($data);
+
             $link_record = null;
             $total_records = null;
             $total_student_have_class = null;

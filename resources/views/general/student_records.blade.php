@@ -25,7 +25,7 @@
       @endif
     </td>
     <td class="text-center">
-        <a href="{{ url('dahhboard-student-account') }}?code={{ $record->code ?? '' }}">
+        <a href="{{ url('dashboard-student-account') }}?code={{ $record->code ?? '' }}">
             {{ $record->code ?? '' }}
         </a>
     </td>

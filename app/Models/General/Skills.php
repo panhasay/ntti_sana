@@ -11,7 +11,7 @@ class Skills extends Model
     use HasFactory;
     protected $table = 'skills';
     protected $primaryKey = 'code';
-    protected $keyType = 'string'; // Specify the key type if necessary
+    protected $keyType = 'string'; 
   
     protected $fillable = [
         '*',
@@ -21,6 +21,8 @@ class Skills extends Model
     {
         return $this->belongsTo(Department::class, 'department_code', 'code');
     }
-
-
+    public function classes()
+    {
+        return $this->hasMany(Classes::class, 'skills_code', 'code');
+    }
 }

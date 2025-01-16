@@ -1,0 +1,118 @@
+<?php
+
+namespace App\Models;
+
+use App\Models\General\Skills;
+use App\Models\General\Classes;
+use Illuminate\Support\Facades\DB;
+use App\Models\SystemSetup\Department;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class StudentModel extends Model
+{
+    use HasFactory;
+
+    protected $table = 'student';
+
+    /**
+     * department
+     *
+     * @return void
+     */
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_code', 'code');
+    }
+
+    /**
+     * class
+     *
+     * @return void
+     */
+    public function class()
+    {
+        return $this->belongsTo(Classes::class, 'class_code', 'code');
+    }
+
+
+    public static function getFilteredStudents11($dept_code, $class_code, $search, $rows_per_page)
+    {
+        $query = self::with(['department:name_2,code', 'class:name,code,level,skills_code'])
+            ->where('department_code', $dept_code)
+            ->whereNotNull('class_code');
+
+        if (!empty($class_code)) {
+            $query->where('class_code', $class_code);
+        }
+
+        if (!empty($search)) {
+            $query->where(function ($query) use ($search) {
+                $query->where('student.code', 'LIKE', "%{$search}%")
+                    ->orWhere('student.name', 'LIKE', "%{$search}%")
+                    ->orWhere('student.name_2', 'LIKE', "%{$search}%");
+            });
+        }
+
+        return $query->paginate($rows_per_page);
+    }
+    public static function getFilteredStudents($dept_code, $class_code, $search, $rows_per_page)
+    {
+        $students = self::query()
+            ->select([
+                'student.*',
+                'dept.name_2 as dept',
+                'cls.name as class',
+                'cls.level as level',
+                'sk.name_2 as skill',
+                DB::raw('(SELECT stu.status FROM cert_student_print_card AS stu WHERE stu.stu_code = student.code AND stu.class_code = student.class_code LIMIT 1) as status_print'),
+                DB::raw('(SELECT pic.picture_ori FROM picture AS pic WHERE pic.code = student.code ORDER BY pic.id DESC LIMIT 1) as stu_photo')
+            ])
+            ->join('department as dept', 'dept.code', '=', 'student.department_code')
+            ->join('classes as cls', 'cls.code', '=', 'student.class_code')
+            ->join('skills as sk', 'sk.code', '=', 'cls.skills_code')
+            ->where('student.department_code', $dept_code)
+            ->whereNotNull('student.class_code')
+            ->when($class_code, function ($query, $class_code) {
+                $query->where('student.class_code', $class_code);
+            })
+            ->when($search, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('student.code', 'LIKE', "%{$search}%")
+                        ->orWhere('student.name', 'LIKE', "%{$search}%")
+                        ->orWhere('student.name_2', 'LIKE', "%{$search}%");
+                });
+            })
+            ->paginate($rows_per_page);
+
+        return $students;
+    }
+
+
+    public static function getFilteredStudentsOnly($dept_code, $class_code = null, $stu_code = null)
+    {
+        return self::query()
+            ->select([
+                'student.*',
+                DB::raw('dept.name_2 as dept'),
+                DB::raw('cls.name as class'),
+                DB::raw('cls.level as level'),
+                DB::raw('sk.name_2 as skill'),
+                DB::raw('(SELECT stu.name_2 FROM sections AS stu WHERE stu.code = cls.sections_code LIMIT 1) as section_type'),
+                DB::raw('(SELECT pic.picture_ori FROM picture AS pic WHERE pic.code = student.code ORDER BY pic.id DESC LIMIT 1) as stu_photo'),
+                DB::raw('(SELECT card.print_khmer_lunar FROM cert_student_print_card AS card WHERE card.stu_code = student.code AND card.class_code=student.class_code LIMIT 1) as print_khmer_lunar'),
+                DB::raw('(SELECT card.print_date FROM cert_student_print_card AS card WHERE card.stu_code = student.code AND card.class_code=student.class_code LIMIT 1) as print_khmer_date'),
+            ])
+            ->join('department as dept', 'dept.code', '=', 'student.department_code')
+            ->join('classes as cls', 'cls.code', '=', 'student.class_code')
+            ->join('skills as sk', 'sk.code', '=', 'cls.skills_code')
+            ->where('student.department_code', $dept_code)
+            ->when($class_code, function ($query, $class_code) {
+                $query->where('student.class_code', $class_code);
+            })
+            ->when($stu_code, function ($query, $stu_code) {
+                $query->where('student.code', $stu_code);
+            })
+            ->first();
+    }
+}

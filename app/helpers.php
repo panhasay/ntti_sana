@@ -1,21 +1,239 @@
 <?php 
 
-   function encryptHelper($string){
-        $encrypted_string = openssl_encrypt($string,'AES-128-ECB',"per_hast_Cehck");
-        return $encrypted_string;
+use Carbon\Carbon;
+
+use Illuminate\Foundation\Application;
+use Illuminate\Contracts\Routing\UrlGenerator;
+use Illuminate\Contracts\Encryption\DecryptException;
+
+if (!function_exists('encryptPagination')) {
+    function encryptPagination($data): string
+    {
+        $secretKey = env('SECRET_KEY');
+
+        return md5($data);
+    }
+}
+if (!function_exists('decryptPagination')) {
+    function decryptPagination($data): int|string
+    {
+        $secretKey = env('SECRET_KEY');
+        $encryptedData = $data;
+
+        try {
+            return Crypt::decryptString($encryptedData, $secretKey);
+        } catch (DecryptException $e) {
+            return 404;
+        }
+    }
+}
+if (!function_exists('removeQueryParams')) {
+    function removeQueryParams($url): string
+    {
+        $parsedUrl = parse_url($url);
+
+        return isset($parsedUrl['path']) ? ltrim($parsedUrl['path'], '/') : '';
    }
+}
 
-   function decryptHelper($string){ // Decrypt 
-        $table_id_2 = str_replace(' ','+',$string);
-        $decrypted_string = openssl_decrypt($table_id_2,'AES-128-ECB',"per_hast_Cehck");
-        return $decrypted_string;
+if (!function_exists('route_js')) {
+    function route_js($name, $parameters = []): Application|string|UrlGenerator|\Illuminate\Contracts\Foundation\Application
+    {
+        return url(route($name, $parameters));
+    }
+}
+if (!function_exists('formatDateToKhmer')) {
+    function formatDateToKhmer($date = null, $language = 'kh'): string
+    {
+        $date = $date ?? now();
+
+        $carbonDate = Carbon::parse($date);
+
+        $khmerMonths = [
+            'មករា',
+            'កុម្ភៈ',
+            'មិនា',
+            'មេសា',
+            'ឧសភា',
+            'មិថុនា',
+            'កក្កដា',
+            'សីហា',
+            'កញ្ញា',
+            'តុលា',
+            'វិច្ឆិកា',
+            'ធ្នូ'
+        ];
+
+        $khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+
+        $englishMonths = [
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December'
+        ];
+
+        if ($language === 'kh') {
+            $day = str_replace(range(0, 9), $khmerNumbers, $carbonDate->day);
+            $month = $khmerMonths[$carbonDate->month - 1];
+            $year = str_replace(range(0, 9), $khmerNumbers, $carbonDate->year);
+
+            return "ថ្ងៃទី {$day} ខែ {$month} ឆ្នាំ {$year}";
+        } elseif ($language === 'en') {
+            $day = $carbonDate->day;
+            $month = $englishMonths[$carbonDate->month - 1];
+            $year = $carbonDate->year;
+
+            return "Day {$day}, Month {$month}, Year {$year}";
+        } else {
+            throw new InvalidArgumentException("Unsupported language: {$language}");
+        }
+    }
+}
+
+
+if (!function_exists('KhmerLunarCalendar')) {
+    function KhmerLunarCalendar()
+    {
+        Carbon::setLocale('km');
+        $currentDate = Carbon::now();
+        $formattedDate = $currentDate->translatedFormat('l d F Y');
+        return $formattedDate;
    }
+}
 
-   function createHeaderTitle($string){ // This function use for replace specail charactor to space 
-          $clear_spc = str_replace('_',' ' ,$string) ;
-          $new_string = ucfirst($clear_spc);
-          return $new_string ;
 
-   }
+if (!function_exists('showDay')) {
+    function showDay(): string
+    {
+        $daysInKhmer = [
+            'Sunday' => 'ថ្ងៃអាទិត្យ',
+            'Monday' => 'ថ្ងៃចន្ទ',
+            'Tuesday' => 'ថ្ងៃអង្គារ',
+            'Wednesday' => 'ថ្ងៃពុធ',
+            'Thursday' => 'ថ្ងៃព្រហស្បតិ៍',
+            'Friday' => 'ថ្ងៃសុក្រ',
+            'Saturday' => 'ថ្ងៃសៅរ៍',
+        ];
+        $currentDay = now()->format('l');
 
+        return $daysInKhmer[$currentDay] ?? 'Unknown Day';
+    }
+}
+if (!function_exists('convertToKhmerNumber')) {
+    function convertToKhmerNumber($number): string
+    {
+        $khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+        $numberString = (string)$number;
+        $khmerNumber = '';
+
+        foreach (str_split($numberString) as $digit) {
+            $khmerNumber .= $khmerNumbers[$digit];
+        }
+
+        return $khmerNumber;
+    }
+}
+
+if (!function_exists('showLunarDay')) {
+    function showLunarDay(): string
+    {
+        // Get the current day of the lunar cycle (1-30)
+        $currentLunarDay = (now()->day % 30) ?: 30; // Simulate a lunar day cycle
+
+        // Determine if it is កើត or រោច
+        $phase = $currentLunarDay <= 15 ? 'កើត' : 'រោច';
+
+        // Calculate the day number in the phase
+        $dayInPhase = $currentLunarDay <= 15 ? $currentLunarDay : $currentLunarDay - 15;
+
+        // Construct the result (e.g., "៧ កើត" or "៧ រោច")
+        return convertToKhmerNumber($dayInPhase) . " $phase";
+    }
+}
+
+if (!function_exists('showLunarInfo')) {
+    function showLunarInfo()
+    {
+        $currentYear = now()->year;
+        $khmerMonths = [
+            'មិគសិរ',
+            'បុស្ស',
+            'មាឃ',
+            'ផល្គុន',
+            'ចេត្រ',
+            'វិសាខ',
+            'ជេស្ឋ',
+            'អាសាឍ',
+            'ស្រាពណ៍',
+            'ភទ្របទ',
+            'អស្សុជ',
+            'កក្ដិក'
+        ];
+
+        $currentMonthIndex = (now()->month + 1) % 12;
+        $khmerMonth = $khmerMonths[$currentMonthIndex - 1];
+
+        $khmerYears = [
+            'ជូត',
+            'ឆ្លូវ',
+            'ខាល',
+            'ថោះ',
+            'រោង',
+            'ម្សាញ់',
+            'មមី',
+            'មមែ',
+            'វក',
+            'រកា',
+            'ច',
+            'កុរ'
+        ];
+        $baseYear = 2023;
+        $yearDifference = $currentYear - $baseYear;
+        $khmerYear = $khmerYears[($yearDifference % 12 + 12) % 12];
+        $buddhistEra = $currentYear + 543;
+
+        $cyclicYears = ['សំរាត', 'ចន្ទស័ក', 'អាចារ្យ', 'ឆស័ក', 'ត្រីស័ក', 'ចត្វាស័ក', 'បញ្ចស័ក', 'ឆេស័ក', 'នវស័ក', 'ទសស័ក'];
+        $cyclicYear = $cyclicYears[$yearDifference % 10];
+
+        return "ខែ$khmerMonth ឆ្នាំ$yearDifference";
+    }
+}
+if (!function_exists('secured_encrypt')) {
+    function secured_encrypt($data, $key = null)
+    {
+        try {
+            $key ?? env('SECURE_KEY');
+            $cipher = 'AES-256-CBC';
+            $iv = random_bytes(openssl_cipher_iv_length($cipher));
+            $encrypted = openssl_encrypt($data, $cipher, $key, 0, $iv);
+            return base64_encode($iv . '::' . $encrypted);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+}
+
+if (!function_exists('secured_decrypt')) {
+    function secured_decrypt($encryptedData, $key = null)
+    {
+        try {
+            $key ?? env('SECURE_KEY');
+            $cipher = 'AES-256-CBC';
+            $data = base64_decode($encryptedData);
+            list($iv, $encrypted) = explode('::', $data, 2);
+            return openssl_decrypt($encrypted, $cipher, $key, 0, $iv);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+}
  

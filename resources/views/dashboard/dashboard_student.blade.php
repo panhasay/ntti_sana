@@ -84,12 +84,24 @@
                               <h3 class="font-weight-semibold mb-1 text-black"> ឈ្មោះ : {{ $records->name_2 ?? '' }} </h3>
                             </div>
                             <div class="col-1">
-                              <?php $picture =  App\Models\General\Picture::where('code', $records->code)->where('type','student')->value('picture_ori'); ?>
-                              @if($picture != null)
-                                <img style="float: right;border-radius: 10px;border: 1px solid #d2d2d2;position: absolute;right: 11px;" src="{{ $picture ?? '' }}" alt="" width="90" height="100">
-                              @else
-                                <img style="float: right;border-radius: 10px;border: 1px solid #d2d2d2;position: absolute;right: 11px;" src="asset/NTTI/images/faces/default_User.jpg" alt="" width="90" height="90">
-                              @endif
+                                <?php
+                                  $picture = App\Models\General\Picture::where('code', $records->code ?? '')->value('picture_ori');
+                                ?>
+                                @if($picture)
+                                    <img 
+                                        style="float: right; border-radius: 10px; border: 1px solid #d2d2d2; position: absolute; right: 11px;" 
+                                        src="{{ url('/uploads/student/' . $picture) }}" 
+                                        alt="Student Picture" 
+                                        width="90" 
+                                        height="100">
+                                @else
+                                    <img 
+                                        style="float: right; border-radius: 10px; border: 1px solid #d2d2d2; position: absolute; right: 11px;" 
+                                        src="{{ $records->photo_status ? url('/uploads/student/' . $records->stu_photo) : asset('asset/NTTI/images/faces/default_User.jpg') }}" 
+                                        alt="Default Picture" 
+                                        width="90" 
+                                        height="90">
+                                @endif
                             </div>
                           </div>
                           <p class="text-muted">Name : {{ $records->name ?? '' }}</p>

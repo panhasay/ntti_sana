@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\adminController;
 use App\Http\Controllers\General\ClassesController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,8 @@ use Illuminate\support\Facades\App;
 
 use App\Models\General\ExamSchedule;
 use App\Http\Controllers\Certificates\CertificateController;
+use Illuminate\Support\Facades\DB;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -133,9 +136,11 @@ Route::group(['perfix' => 'dashboard'], function (){
     Route::get('dashboard', [DashboardController::class, 'index'])->name('index');
     // Route::get('reports-list-of-student-priview', [DashboardController::class, 'Priview'])->name('Priview');
     Route::get('dahhboard-student-print', [DashboardController::class, 'Print'])->name('Print');
-    Route::get('dahhboard-student-account', [DashboardController::class, 'StudentUserAccount'])->name('StudentUserAccount');
+    // Route::get('dashboard-student-account', [DashboardController::class, 'StudentUserAccount'])->name('StudentUserAccount');
     Route::get('teacher-dashboard', [DashboardController::class, 'TeacherDashboard'])->name('TeacherDashboard');
-})->middleware('auth');
+    // Route::get('dashboard', [DashboardController::class, 'index'])->name('index');
+});
+Route::get('dsa', [DashboardController::class, 'StudentUserAccount'])->name('StudentUserAccount');
 Route::group(['perfix' => 'department' ,  'middleware' => 'permission'], function (){
     Route::get('department-setup', [DepartmentController::class, 'index'])->name('index');
     Route::post('department-delete', [DepartmentController::class, 'delete'])->name('delete');
@@ -276,6 +281,47 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
         Route::post('/level_shift_skill', 'showLevelShiftSkill');
     });
 });
+
+Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static function () {
+    Route::controller(CertificateController::class)->group(function () {
+        Route::get('/dept-menu', 'index')->name('cert.dept_menu');
+        Route::get('/dept-menu/{dept_code}', 'showMenuModule')->where('dept_code', '[A-Z_]+')->name('cert.dept.list');
+
+        $subModules = DB::table('cert_sub_module')->where('active', 1)->whereNotNull('route')->get();
+        foreach ($subModules as $item) {
+            Route::get('/{dept_code}' . '/' . $item->route . '/{module_code}', $item->controller)->name('certificate.' . $item->route);
+        }
+
+        Route::prefix('student')->group(function () {
+            Route::post('/bar', 'getStudentPieBarChartData');
+        });
+
+        Route::post('/level_shift_skill', 'showLevelShiftSkill');
+        Route::post('/card_view', 'showCardView');
+        Route::post('/card_view_list', 'showCardView');
+        Route::post('/print_card', 'printCardStudent');
+        Route::post('/card_view_info', 'showViewCardInformation');
+        Route::post('/upload_student_info', 'updateCardInformation');
+        Route::post('/disable_student_info', 'disableCardInformation');
+        Route::post('/show_change_date_print_card', 'showChangeDatePrintCard');
+        Route::post('/upload_zip_photo', 'uploadZip');
+        Route::post('/upload_multiple_photo', 'uploadMultiplePhoto');
+        Route::get('/print_card', static function () {
+            return view('certificate/certificate_card_print_get');
+        });
+        Route::get('/print_card_pdf', 'printCardStudentPdf');
+    });
+});
+
+Route::group(['prefix' => 'admin-panel', 'middleware' => 'auth'], static function () {
+    Route::controller(adminController::class)->group(function () {
+        Route::get('/', 'index')->name('admin.ap');
+        Route::post('/excute', 'show')->name('admin.ap.excute');
+        Route::post('/excute-npm', 'showNPM')->name('admin.ap.excute-npm');
+    });
+});
+
+
 
 
 
