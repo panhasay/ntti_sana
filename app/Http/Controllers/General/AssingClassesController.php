@@ -62,8 +62,9 @@ class AssingClassesController extends Controller
                 '3' => '៣',
                 '4' => '៤'
             ];
+            $users = Auth::user();
             $years = $school_year_map[$school_year] ?? '';
-             return view('general.assing_classes',compact('years', 'type', 'records'));
+             return view('general.assing_classes',compact('years', 'type', 'records', 'users'));
         }catch (\Exception $ex) {
             return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
         }

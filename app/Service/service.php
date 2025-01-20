@@ -381,7 +381,7 @@ class service{
 
         // Convert Gregorian year to Buddhist year
         $buddhistYear = self::convertToKhmerNumerals((int) $date->format('Y') + 543);
-
+        
         // Calculate lunar date based on a reference date
         $referenceDate = new DateTime('2024-01-07');
         $interval = $date->diff($referenceDate);

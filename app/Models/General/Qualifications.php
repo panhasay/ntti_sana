@@ -10,3 +10,4 @@ class Qualifications extends Model
     use HasFactory;
     protected $table = 'qualification';   
 }
+

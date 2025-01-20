@@ -1,5 +1,14 @@
-@extends('app_layout.app_layout')
 
+<style>
+    .menu-list ul li a{
+     color: #2194ce;
+    }
+    .titl-main-name{
+        font-size: 15px;
+        font-family: 'Khmer M1';
+    }
+</style>
+@extends('app_layout.app_layout')
 @section('content')
 <div class="container-fluid py-4">
     <!-- Header Section -->
@@ -11,7 +20,12 @@
             </h5>
             <hr class="welcome-divider" style="border-color: #3498db; opacity: 0.5; margin: 1rem 0;">
             <h4 class="greeting" style="font-size: 1.2rem; color: #34495e;">
-                <span class="text-success" style="font-weight: bold;">សួរស្ដី,</span> 
+                <span class="text-success" style="font-weight: bold;">ជំរាបសួរស្ដី 
+                    @if($record->gender == "ប្រុស")
+                        លោកគ្រូ
+                    @else
+                        អ្នកគ្រូ
+                    @endif ,</span> 
                 <span style="color: #2980b9; font-weight: 500;">{{ $record ->name_2 ?? $record->name }}</span>
                 <span class="wave-emoji" style="font-size: 1.8rem; animation: wave 2s infinite;">👋</span>
             </h4>
@@ -39,7 +53,7 @@
         </div>
         <div class="col-md-3">
             <div class="card text-white" style="border-radius: 15px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-                <div class="card-body position-relative" style="background: linear-gradient(45deg, #ebcc8d, #f0af52); padding: 1.5rem;">
+                <div class="card-body position-relative" style="background: linear-gradient(45deg, #ebcc8d, #f0af52); padding: 35px">
                     <div class="position-absolute" style="top: 0; right: 0; padding: 1rem;">
                         <i class="mdi mdi-book-open-variant" style="font-size: 2.5rem; opacity: 0.3;"></i>
                     </div>
@@ -89,8 +103,62 @@
             </div>
         </div>
     </div>
+
+
+    <div class="row">
+        <div class="col-md-3 col-sm-4 col-6">
+            <div class="titl-main-name">
+            <i class="mdi mdi-format-list-bulleted"></i>
+                ការគ្រប់គ្រងការបង្រៀន
+            </div>
+            <div class="container menu-list">
+                <ul>
+                    <li><a href="{{ url('manage-academic-work') }}">ប្រព័ន្ធគ្រប់គ្រង កាសិក្សា</a></li>
+                    <li><a href="{{ url('attendance/dashboards-attendance') }}">Attendance-អវត្តមាន</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-4 col-6">
+            <div class="titl-main-name">
+            <i class="mdi mdi-format-list-bulleted"></i>
+                ព័ត៌មាននិស្សិត
+            </div>
+            <div class="container menu-list">
+                <ul>
+                    <li><a href="{{ url('student/registration') }}">បញ្ជីរាយនាមនិស្សិតដែរចុះឈ្មោះឆ្នាំទី១</a></li>
+                    <li><a href="{{ url('student/scholarship') }}">បញ្ជីរាយនាមនិស្សិតអាហារូបករណ៏</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-4 col-6">
+            <div class="">
+            <i class="mdi mdi-format-list-bulleted"></i>
+                គ្រប់គ្រងការសិក្សា
+            </div>
+            <div class="container menu-list">
+                <ul>
+                    <li><a href="{{ url('class-new') }}">បែងចែកថ្នាក់ថ្មី</a></li>
+                    <li><a href="{{ url('attendance/dashboards-attendance') }}">វត្តមានថ្ងៃប្រចាំថ្ងៃ</a></li>
+                    <li><a href="{{ url('exam-schedule') }}">កាលវិភាគ កាប្រឡង</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-4 col-6">
+            <div class="bold">
+            <i class="mdi mdi-format-list-bulleted"></i>
+                Reports
+            </div>
+            <div class="container menu-list">
+                <ul>
+                    <li><a href="{{ url('report-first-year-student-registration') }}">ស្ថិតិសិស្សដាក់ពាក្យចុះឈ្មោះចូលរៀនឆ្នាំទី១</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
     <!-- Class Filter -->
-    <div class="mb-4">
+    {{-- <div class="mb-4">
         <div>
             <form class="row align-items-center">
                 <div class="col-md-4">
@@ -113,9 +181,9 @@
                 </div>
             </form>
         </div>
-    </div>
+    </div> --}}
     <!-- Semester and Year Info Card -->
-    <div class="row mb-4">
+    {{-- <div class="row mb-4">
         <div class="col-md-6">
             <div class="card text-white" style="border-radius: 15px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                         <div class="card-body position-relative" style="background: linear-gradient(45deg, #FF512F, #DD2476); padding: 1.5rem;">
@@ -138,11 +206,10 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <!-- Main Content Area -->
-    <div class="row" style="height: calc(100vh - 200px); overflow-y: auto;">
-        <!-- Top Students -->
+    {{-- <div class="row" style="height: calc(100vh - 200px); overflow-y: auto;">
         <div class="col-md-6 mb-4">
             <div class="card h-100" style="border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                 <div class="card-header bg-success text-white d-flex justify-content-between align-items-center" style="border-radius: 15px 15px 0 0;">
@@ -394,7 +461,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 </div>
 
 <script>

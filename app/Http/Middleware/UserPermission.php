@@ -16,8 +16,11 @@ class UserPermission
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::user()->role == "attendant") {
+        $user = Auth::user();
+        if ($user->role == "attendant") {
             return redirect('/user-dont-have-permission');
+        }else if ($user->role ==  'teachers'){
+            return redirect('/teacher-dashboard');
         }
         return $next($request);
     }

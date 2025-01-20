@@ -53,7 +53,7 @@ class CertificateController extends Controller
      */
     public function showMenuModule($dept_code)
     {
-        $record_certificate = CertificateSubModule::where('active', 1)->get();
+        $record_certificate = CertificateSubModule::where('active', 1)->take('3')->get();
         $record_dept = Department::where('code', $dept_code)->get();
 
         return view('certificate/certificate_module_menu', compact('record_certificate', 'dept_code', 'record_dept'));
@@ -308,8 +308,15 @@ class CertificateController extends Controller
             $filePath = 'uploads/student/' . $fileName;
 
             $photo->move(public_path('uploads/student'), $fileName);
-
             $existingPhoto = Picture::where('code', $stu_code)->first();
+            
+            if ($existingPhoto && $existingPhoto->picture_ori != $fileName) {
+                $oldPhotoPath = public_path('uploads/student/' . $existingPhoto->picture_ori);
+                if (file_exists($oldPhotoPath)) {
+                    unlink($oldPhotoPath); // Deletes the old file
+                }
+            }
+
             if ($existingPhoto) {
                 $existingPhoto->update([
                     'picture_ori' => $fileName,

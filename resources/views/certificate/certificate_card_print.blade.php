@@ -1,5 +1,5 @@
 <?php
-use Illuminate\Support\Str;
+    use Illuminate\Support\Str;
 ?>
 <style>
     body {
@@ -209,14 +209,12 @@ use Illuminate\Support\Str;
     .card-body .card-personal {
         font-family: 'Khmer OS Muol Light', sans-serif;
     }
-
     @media print {
         @page {
             /* size: 5.5cm 8.6cm; */
             size: 5.5cm 8.6cm;
             margin: 0;
         }
-
         .page-break {
             page-break-before: always;
             break-before: page;
@@ -229,6 +227,7 @@ use Illuminate\Support\Str;
         width="120">
     <div class="details" style="margin-top: -10px;">
         <div class="id-card-center">
+            
             អត្តលេខ {{ $records->code }}
         </div>
         <div class="id-card-left">

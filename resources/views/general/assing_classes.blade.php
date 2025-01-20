@@ -22,7 +22,9 @@
 </div>
 <div class="page-header flex-wrap">
   <div class="header-left">
-    <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="BntCreateAssign" href="#"></i> Add New</i></a> 
+    @if(isset($users->role) && $users->role == 'admin')
+      <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="BntCreateAssign" href="#"></i> Add New</i></a> 
+    @endif
         <button class="btn btn-success btn-icon-text btn-sm mb-2 mb-md-0 me-2 khmer_os_b" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           លទ្ធិផលប្រឡង
         </button>

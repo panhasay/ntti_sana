@@ -27,6 +27,7 @@ use Illuminate\support\Facades\App;
 
 use App\Models\General\ExamSchedule;
 use App\Http\Controllers\Certificates\CertificateController;
+use App\Http\Controllers\General\TransferController;
 use Illuminate\Support\Facades\DB;
 
 /*
@@ -320,6 +321,15 @@ Route::group(['prefix' => 'admin-panel', 'middleware' => 'auth'], static functio
         Route::post('/excute-npm', 'showNPM')->name('admin.ap.excute-npm');
     });
 });
+
+
+Route::group(['prefix' => 'transfer'], function (){
+    Route::get('/',[TransferController::class,'index']);
+    Route::get('/transaction', [TransferController::class, 'transaction']);
+    Route::post('/update', [TransferController::class, 'update']);
+    Route::post('/store', [TransferController::class, 'store']);
+    Route::POST ('/transfer-delete', [TransferController::class, 'delete']);
+})->middleware('auth');
 
 
 

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\General\Teachers;
 use App\Models\General\ClassSchedule;
+use App\Models\General\Picture;
 use App\Models\General\Sections;
 use App\Models\General\Skills;
 use Carbon\Carbon;
@@ -177,22 +178,17 @@ class DashboardController extends Controller
      
             $records = Student::where('code', $request->code)->first();
 
-            // dd($records);
-
             $skills = DB::table('skills')->where('code', $records->skills_code ?? '')->first();
-            return view('dashboard.dashboard_student', compact('records', 'skills'));
+            $qualification = DB::table('qualification')->where('code', $records->qualification ?? '')->first();
+            $imgs = Picture::where('code', $records->code ?? '')->first();
+            return view('dashboard.dashboard_student', compact('records', 'skills', 'qualification', 'imgs'));
         } catch (\Exception $ex) {
             DB::rollBack();
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-    // public function teacherDashboard(Request $request) {
-    //     $code = $request->input('code'); // or Route Parameter
-    //     $teacher = Teachers::where('code', $code)->first();
-
-    //     return view('teacher.dashboard', compact('teacher'));
-    // }
+   
     public function teacherDashboard()
     {
         $record = Teachers::where('code', Auth::user()->user_code)->first();

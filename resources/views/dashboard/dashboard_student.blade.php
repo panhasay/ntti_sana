@@ -1,240 +1,266 @@
+<style>
+  body {
+    font-family: "Khmer OS Battambang", Tahoma, sans-serif !important;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-    <style>
-      *{
-        font-family: "Khmer OS Battambang" !important;
-      }
-        .horizontal-menu .bottom-navbar .page-navigation > .nav-item:not(.mega-menu) {
-            position: relative;
-            display: none;
-        }
-        .horizontal-menu .bottom-navbar .page-navigation > .nav-item > .nav-link .menu-icon {
-            margin-right: 10px;
-            font-size: 14px;
-            color: #ffffff;
-            font-weight: 400;
-            display: none;
-        }
-        .horizontal-menu .bottom-navbar .page-navigation > .nav-item > .nav-link .menu-title {
-            font-size: 0.875rem;
-            font-weight: 400;
-            display: none;
-        }
-        .horizontal-menu .top-navbar .navbar-menu-wrapper .navbar-nav .nav-item.nav-search .input-group {
-            display: none;
-        }
-        .bg-header{
-            background: #2194ce;
-        }
-        .card-titles{
-            position: relative;
-            top: 30;
-            left: 20;
-            z-index: 1000;
-            font-weight: 700;
-        }
-        .card {
-          border: 0;
-          background: #ffff !important;
-          border: 1px solid #e4e9f0;
-          border-left: 2px solid #2194ce;
-      }
-    </style>
+  .id-card {
+    width: 23.2cm;
+    height: 35.4cm;
+    padding: 0 0 0 15px;
+    text-align: center;
+    position: relative;
+    border: 1px solid #333;
+    border-radius: 10px;
+    font-size: 9.1px;
+  }
+  .card_background {
+    background: url("https://ntti.nttiportal.com/asset/NTTI/images/modules/ntti_background_03.png") no-repeat center center;
+    background-size: cover;
+  }
+  .id-card .flag {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+  .id-card>.profile {
+      position: absolute;
+      width: 8cm;
+      height: 9.55cm;
+      border-radius: 0px;
+      margin-top: 10px;
+      margin-bottom: 19px;
+      position: relative;
+      text-align: center;
+      margin-left: -15px;
+  }
+  .id-card-left {
+    text-align: left;
+    font-weight: bold;
+    color: rgb(78, 27, 145);
+    font-size: 40px;
+  }
+  .id-card-date-khmer {
+    color: rgb(78, 27, 145);
+    text-align: center;
+    margin-left: -15px !important;
+    margin-top: 10.5px;
+    font-size: 9px
+  }
+  .id-card-date-khmer-pp {
+    color: rgb(78, 27, 145);
+    font-size: 9px
+  }
+  .id-card-center {
+    text-align: center;
+    font-weight: bold;
+    margin-left: -15px;
+    font-size: 40px;
+  }
+  .id-signature>.stamp {
+    height: 75px;
+    margin-right: -35px;
+  }
+  .id-signature>.id-qr-code {
+    /* height: 70px;
+        width: 70px; */
+    margin-top: 15px;
+  }
+  .student-card-view>.card-body .id,
+  .card-body .phone,
+  .card-body .info {
+    font-size: 14px;
+    margin-bottom: 0px;
+  }
+  .ps-1 {
+    padding-left: 0.28rem !important;
+  }
+  .ps-3 {
+    padding-left: 0.80rem !important;
+  }
+  .ps-4 {
+    padding-left: 1.49rem !important;
+  }
+  .ps-5 {
+    padding-left: 2.50rem !important;
+  }
+  .id-card-left>.pull-right {
+      float: right;
+      padding-right: 8.9rem !important;
+      font-weight: bold !important;
+  }
+  .id-signature>.pull-left {
+    float: left;
+  }
+  .id-signature>.signature_leader {
+    float: right !important;
+    font-family: 'Khmer OS Muol Light', sans-serif;
+    padding-right: 2.90rem !important;
+  }
+  .card-students {
+    border-radius: 12px;
+    text-align: center;
+    padding: 0px 20px 0px;
+    position: relative;
+    border: 1px solid #333;
+    height: 355px;
+  }
+  .stu-card-header {
+    color: rgb(78, 27, 145);
+    font-size: 11px;
+    font-family: 'Khmer OS Muol Light', sans-serif;
+    text-align: center;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+  .stu-card-header span {
+    display: block;
+  }
+  .stu-card-header-sub {
+    color: rgb(78, 27, 145);
+    font-size: 9px;
+    font-family: 'Khmer OS Muol Light', sans-serif;
+    text-align: center;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+  .stu-card-header-sub span {
+    display: block;
+  }
+  .card-students .logo {
+    position: absolute;
+    top: 0px;
+    right: 10px;
+  }
+  .card-students .footer {
+    position: absolute;
+    bottom: 1px;
+    left: 0;
+    right: 0;
+    background: #ffdd00;
+    font-size: 8px;
+    color: #000;
+    text-align: left;
+    display: block;
+    padding-left: 20px;
+    border-radius: 9px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-top: 2px solid #f61616;
+  }
+  .card-students .footer a {
+    color: #0a0a0a;
+    text-decoration: none;
+    display: block;
+  }
+  .card-students .footer a:hover {
+    text-decoration: underline;
+  }
+  .card-body {
+    text-align: center;
+    /*margin-bottom: 20px;*/
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 113px;
+    line-height: 30px;
+  }
+  .card-body span {
+    font-size: 12px;
+    color: #d9534f;
+    margin: 0;
+  }
+  .card-body .card-personal {
+    font-family: 'Khmer OS Muol Light', sans-serif;
+  }
+  .flex-container {
+    display: flex;
+    margin-left: -24px;
+  }
 
-  @extends('app_layout.app_layout')
-  <style>
-    .card .card-body {
-        padding: 9px 28px;
+  .flex-container > div {
+    padding: 20px;
+    font-size: 30px;
+    /* width: 50%; */
+  }
+  .flex-container > div.student-info{
+    /* border-right: 2px solid #333; */
+  }
+  @media print {
+    @page {
+      /* size: 5.5cm 8.6cm; */
+      size: 5.5cm 8.6cm;
+      margin: 0;
     }
-  </style>
-  @section('content')
-  <div class="page-head page-head-custom">
-    <div class="row">
-        <nav class="navbar navbar-expand-lg navbar-light bg-header ">
-            <div class="container-fluid">
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ">
-                        <li class="nav-item">
-                            <a class="nav-link active text-white" aria-current="page" href="{{ url('/dahhboard-student-account') }}"><i class="mdi mdi-compass-outline menu-icon"></i> Dahhboard</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <!----End nav--->
-        <div class="col-sm-12 stretch-card grid-margin">
-            <div class="card">
-              <div class="row">
-                <div class="col-md-4">
-                  <div class="card border-0">
-                    <div class="card-titles">អវត្តមាន</div>
-                    <div id="piechart" style="width: 440px; height: 350px;"></div>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="card border-0">
-                   
-                  </div>
-                </div>
-                <div class="col-xl-4 grid-margin mt-3">
-                    <div class="card stretch-card mb-3">
-                      <div class="card-body d-flex flex-wrap justify-content-between ">
-                        <div class="info-student">
-                          <div class="row">
-                            <div class="col-10">
-                              <h3 class="font-weight-semibold mb-1 text-black"> ឈ្មោះ : {{ $records->name_2 ?? '' }} </h3>
-                            </div>
-                            <div class="col-1">
-                                <?php
-                                  $picture = App\Models\General\Picture::where('code', $records->code ?? '')->value('picture_ori');
-                                ?>
-                                @if($picture)
-                                    <img 
-                                        style="float: right; border-radius: 10px; border: 1px solid #d2d2d2; position: absolute; right: 11px;" 
-                                        src="{{ url('/uploads/student/' . $picture) }}" 
-                                        alt="Student Picture" 
-                                        width="90" 
-                                        height="100">
-                                @else
-                                    <img 
-                                        style="float: right; border-radius: 10px; border: 1px solid #d2d2d2; position: absolute; right: 11px;" 
-                                        src="{{ $records->photo_status ? url('/uploads/student/' . $records->stu_photo) : asset('asset/NTTI/images/faces/default_User.jpg') }}" 
-                                        alt="Default Picture" 
-                                        width="90" 
-                                        height="90">
-                                @endif
-                            </div>
-                          </div>
-                          <p class="text-muted">Name : {{ $records->name ?? '' }}</p>
-                          <p class="text-muted">ក្រុម / Class : {{ $records->class_code ?? '' }} ថ្នាក់៖ បរិញ្ញាប័ត្រ</p>
-                          <p class="text-muted">ជំនាញ / Skills : {{ $skills->name ?? '' }} ({{ $skills->name_2 ?? '' }})</p>
-                          <p class="text-muted">Address / អាសយដ្ឋាន : {{ $records->student_address ?? '' }}</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="card stretch-card mb-3">
-                      <div class="card-body d-flex flex-wrap justify-content-between">
-                        <div>
-                          <h4 class="font-weight-semibold mb-1 text-black">ពត័មានការសិក្សា ឆ្នាំទី ១</h4>
-                          <h6 class="text-muted">ឆមាសទី 1 : ពីន្ទុសរុប​​៖​ 80, មធ្យមភាគ៖​ 80,5 លេខ៖ 3</h6>
-                          <h6 class="text-muted">ឆមាសទី 2 : ពីន្ទុសរុប​​៖​ 60, មធ្យមភាគ៖​ 50,5 លេខ៖ 20</h6>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    .page-break {
+      page-break-before: always;
+      break-before: page;
+    }
+    .detail-info{
+      display: flex;
+    }
+  }
+</style>
+<div class="id-card card_background">
+  <img alt="Portrait of a person in an orange robe" class="profile"
+    src="{{ asset($records->photo_status == true ? '/uploads/student/' . $records->stu_photo : '/asset/NTTI/images/faces/default_User.jpg') }}"
+    width="120">
+  <div class="details" style="margin-top: -10px;">
+    <div class="id-card-center">
+      អត្តលេខ : {{ $records->code ?? '' }}
+    </div>
+    <div class="id-card-left">
+      គោត្តនាម-នាម : <span class="ps-1">  {{ $records->name_2 ?? '' }} </span> <span class="pull-right">ភេទ {{ $records->gender ?? '' }} 
 
+    </div>
+    <div class="id-card-left">
+      អក្សរឡាតាំង : <span class="ps-3"> {{ $records->name ?? '' }} </span>
+    </div>
+    <div class="id-card-left">
+      ថ្ងៃខែឆ្នាំកំណើត : <span class="ps-1"> {{ $records->date_of_birth ?? '' }} </span>
+    </div>
+    <div class="id-card-left">
+      ជំនាញ : <span class="ps-3"></span> {{ $skills->name_2 ?? '' }} <span class="ps-4"> </span>
+    </div>
+    <div class="id-card-left">
+      កម្រិត : <span class="ps-5"> {{ $qualification->code ?? '' }} </span>
+    </div>
+    <div class="id-card-date-khmer">
 
-    <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> 
+    </div>
   </div>
-  <div class="page-header flex-wrap">
+  <div class="id-signature">
+    <div class="id-qr-code pull-left">
+</div>
+<div class="page-break">
+
+</div>
+
+<div class="flex-container">
+  <div class="student-info">
+    <div class="id-card-left">
+      លេខទូរស័ព្ទ : <span class="ps-3"> {{ $records->phone_student ?? '' }}</span>
+    </div>
+    <div class="id-card-left">
+      ទីកន្លែងកំណើត : <span class="ps-3"> {{ $records->student_address ?? '' }}</span>
+    </div>
+    <div class="id-card-left">
+      ឈ្មោះឪពុក : <span class="ps-3"> {{ $records->father_name ?? '' }}</span>
+    </div>
+    <div class="id-card-left">
+      ឈ្មោះម្ដាយ : <span class="ps-3"> {{ $records->mother_name ?? '' }}</span>
+    </div>
+    <div class="id-card-left">
+      ឈ្មោះអាណាព្យាបាល : <span class="ps-3"> {{ $records->guardian_name ?? '' }}</span>
+    </div>
+    
   </div>
-  @include('system.modal_comfrim_delet')
-  {{-- @include('student.student_list') --}}
-  @include('system.model_upload_excel')
-  @endsection
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-  <script type="text/javascript">
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(drawChart);
-
-    function drawChart() {
-
-      var data = google.visualization.arrayToDataTable([
-        ['Task', 'Hours per Day'],
-        ['Work',     11],
-        ['Eat',      2],
-        ['Commute',  2],
-        ['Watch TV', 2],
-        ['Sleep',    7]
-      ]);
-
-      var options = {
-        title: ''
-      };
-
-      var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-
-      chart.draw(data, options);
-    }
-  </script>
-  <script>
-    $(document).ready(function() {
-      $.ajaxSetup({
-        headers: {
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-      })
-      $(document).on('click', '#btnDelete', function() {
-        $(".modal-confirmation-text").html('Do you want to delete?');
-        $("#btnYes").attr('data-code', $(this).attr('data-code'));
-        $("#divConfirmation").modal('show');
-      });
-      $(document).on('click', '#btnYes', function() {
-        var code = $(this).attr('data-code');
-        $.ajax({
-          type: "POST",
-          url: `/student/delete`,
-          data: {
-            code: code
-          },
-          success: function(response) {
-            if (response.status == 'success') {
-              $("#divConfirmation").modal('hide');
-              $("#row" + code).remove();
-              notyf.success(response.msg);
-            }
-          }
-        });
-      });
-    });
-    function prints(ctrl) {
-      var url = '/student/print';
-      var data = '';
-      data = $("#advance_search").serialize();
-      $.ajax({
-        type: 'get',
-        url: url,
-        data: data,
-        headers: {
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        beforeSend: function() {
-          $('.loader').show();
-        },
-        success: function(response) {
-          $('.loader').hide();
-          $('.print-content').html(response);
-          $('.print-content').printThis({});
-        },
-        error: function(xhr, ajaxOptions, thrownError) {}
-      });
-    }
-    function DownlaodExcel() {
-      var url = '/student/downlaodexcel/';
-      if ($('#search_data').val() == '') {
-        data = $("#advance_search").serialize();
-      } else {
-        data = 'value=' + $('#search_data').val();
-      }
-      data = $("#advance_search").serialize();
-      $.ajax({
-        type: "post",
-        url: url,
-        data: data,
-        headers: {
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        beforeSend: function() {},
-        success: function(response) {
-          notyf.error(response.msg);
-        },
-        error: function(xhr, ajaxOptions, thrownError) {}
-      });
-    }
-    function importExcel(){
-      $("#divUplocadExcel").modal('show');
-    }
-  </script>
+    
+  {{-- <div>2</div>  --}}
+</div>

@@ -2,6 +2,7 @@
 
 namespace App\Models\Student;
 
+use App\Models\General\Qualifications;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\SystemSetup\Department;
@@ -55,5 +56,9 @@ class Student extends Model
     public function session_year()
     {
         return $this->belongsTo(SessionYear::class, 'session_year_code', 'session_year_code');
+    }
+    public function qualification()
+    {
+        return $this->belongsTo(Qualifications::class, 'qualification', 'code');
     }
 }

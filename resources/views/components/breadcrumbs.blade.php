@@ -26,10 +26,10 @@
     <div class="row">
         <div class="col-md-3 col-sm-5 col-8">
             <div class="page-title page-title-custom">
-                <div class="title-page header-right">
+                <div class="title-page header-right title-page">
                     <i class="mdi mdi-format-list-bulleted"></i>
                     <a href="{{ url($firstItem['route']) }}"
-                        style="color:black;text-decoration:none;">{{ $firstItem['title'] }}</a>
+                        style="color:black;text-decoration:none;font-family: 'Moul' !important;">{{ $firstItem['title'] }}</a>
                 </div>
             </div>
         </div>

@@ -5,23 +5,17 @@ namespace App\Models\General;
 use App\Models\SystemSetup\Department;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
-class AssingClasses extends Model
+class TransferHeader extends Model
 {
     use HasFactory;
-
-    protected $table = 'assing_classes';
-    
-    // protected $primaryKey = 'code';
-    // protected $foreignKey = 'code'; // Corrected property name
-
-    protected $primaryKey = 'id';
-    protected $keyType = 'string'; 
-  
+    protected $table = 'transfer_header';
+    protected $primaryKey = 'no';
+    protected $keyType = 'string';
     protected $fillable = [
         '*',
     ];
+
 
     public function department()
     {

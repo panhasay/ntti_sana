@@ -95,7 +95,7 @@ class StudnetController extends Controller
         $qualifications = Qualifications::get();
        
 
-        if($user->role == "teachers"){
+        if($user->role == "teacherss"){
             $total_student_have_class = Student::select(
                 DB::raw('COUNT(name) AS total_count'),  
             )->where('study_type', 'new student')
