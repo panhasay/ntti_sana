@@ -277,11 +277,11 @@ Route::group(['perfix' => 'exam-schedule'], function (){
     Route::get('/exam-schedule-print',[ExamScheduleController::class,'printLine']);
 })->middleware('auth');
 
-Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static function () {
-    Route::controller(CertificateController::class)->group(function () {
-        Route::post('/level_shift_skill', 'showLevelShiftSkill');
-    });
-});
+// Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static function () {
+//     Route::controller(CertificateController::class)->group(function () {
+//         Route::post('/level_shift_skill', 'showLevelShiftSkill');
+//     });
+// });
 
 Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static function () {
     Route::controller(CertificateController::class)->group(function () {
@@ -311,6 +311,9 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
             return view('certificate/certificate_card_print_get');
         });
         Route::get('/print_card_pdf', 'printCardStudentPdf');
+        Route::get('/D_IT/student_card/certificate/card-student-print', 'printListClassification');
+        Route::get('/D_EL/student_card/certificate/card-student-print', 'printListClassification');
+        Route::get('/D_CL/student_card/certificate/card-student-print', 'printListClassification');
     });
 });
 

@@ -9,7 +9,7 @@
 
   .id-card {
     width: 23.2cm;
-    height: 35.4cm;
+    height: auto;
     padding: 0 0 0 15px;
     text-align: center;
     position: relative;
@@ -30,7 +30,7 @@
   .id-card>.profile {
       position: absolute;
       width: 8cm;
-      height: 9.55cm;
+      height: 9.99cm;
       border-radius: 0px;
       margin-top: 10px;
       margin-bottom: 19px;
@@ -209,7 +209,7 @@
 </style>
 <div class="id-card card_background">
   <img alt="Portrait of a person in an orange robe" class="profile"
-    src="{{ asset($records->photo_status == true ? '/uploads/student/' . $records->stu_photo : '/asset/NTTI/images/faces/default_User.jpg') }}"
+    src="{{ asset($imgs->picture_ori == true ? '/uploads/student/' . $imgs->picture_ori : '/asset/NTTI/images/faces/default_User.jpg') }}"
     width="120">
   <div class="details" style="margin-top: -10px;">
     <div class="id-card-center">
@@ -223,7 +223,7 @@
       អក្សរឡាតាំង : <span class="ps-3"> {{ $records->name ?? '' }} </span>
     </div>
     <div class="id-card-left">
-      ថ្ងៃខែឆ្នាំកំណើត : <span class="ps-1"> {{ $records->date_of_birth ?? '' }} </span>
+      ថ្ងៃខែឆ្នាំកំណើត : <span class="ps-1"> {{ App\Service\service::DateYearKH($records->date_of_birth) ?? '' }}  </span>
     </div>
     <div class="id-card-left">
       ជំនាញ : <span class="ps-3"></span> {{ $skills->name_2 ?? '' }} <span class="ps-4"> </span>

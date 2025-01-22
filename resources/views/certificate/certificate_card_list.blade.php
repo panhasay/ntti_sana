@@ -115,13 +115,6 @@
 </style>
 @extends('app_layout.app_layout')
 @section('content')
-
-<!---PRINT CONNECT--->
-    <div class="print" style="display: none">
-        <div class="print-content">
-    
-        </div>
-    </div>
     <x-breadcrumbs :array="[
         ['route' => request()->path(), 'title' => $arr_module[0]->name_kh],
         ['route' => 'certificate/dept-menu/' . $arr_dept[0]->code, 'title' => 'ត្រួតពិនិត្យលិខិតបញ្ជាក់'],
@@ -132,14 +125,12 @@
     <div class="row">
         <div class="page-header flex-wrap" style="border-bottom: 0px solid #dfdcdc;">
             <div class="header-left p-3">
-                {{-- <button type="button" class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2" name="btn_print"
-                    id="btn_print">
-                    Print
+                <button type="button" id="prints" class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2">Print
                     <i class="mdi mdi-printer btn-icon-append"></i>
                 </button>
                 <button type="button" class="btn btn-outline-success btn-icon-text btn-sm mb-2 mb-md-0 me-2" name="btn_exel"
                     id="btn_exel">Excel <i class="mdi mdi-printer btn-icon-append"></i>
-                </button> --}}
+                </button>
             </div>
             <div class="d-grid d-md-flex justify-content-md-end p-3">
                 <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" data-toggle="collapse"
@@ -170,7 +161,7 @@
                                 <div class="col-sm-3">
                                     <span class="form-label">ក្រុម</span>
                                     <div class="input-group">
-                                        <select class="select2-search" id="sch_class_spec" name="sch_class_spec"
+                                        <select class="select2-search class_code" id="sch_class_spec" name="sch_class_spec"
                                             style="width: 100%" placeholder="សូមជ្រើសរើសក្រុម">
                                             <option value="">សូមជ្រើសរើសក្រុម</option>
                                             @foreach ($record_class as $item)
@@ -242,13 +233,15 @@
                     <a class="nav-link active" id="custom-tabs-four-home-tab" data-toggle="pill"
                         href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home"
                         aria-selected="false" style="font-family: 'Khmer OS Battambang', serif;"><i
-                            class="mdi mdi-account-card-details"></i> Card View</a>
+                        class="mdi mdi-account-card-details"></i> Card View
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="custom-tabs-card-list-tab" data-toggle="pill" href="#custom-tabs-card-list"
                         role="tab" aria-controls="custom-tabs-card-list" aria-selected="false"
                         style="font-family: 'Khmer OS Battambang', serif;"><i class="mdi mdi-format-list-bulleted"></i>
-                        Card List</a>
+                        Card List
+                    </a>
                 </li>
             </ul>
         </div>
@@ -296,6 +289,7 @@
                 </div>
             </div>
         </div>
+        <br><br>
         <!-- /.card -->
     </div>
 
@@ -467,6 +461,32 @@
             <x-button class="btn-primary" label="OK" btn="btn_upload_zip_photo" />
         </x-slot>
     </x-modal-first>
+
+    <!---PRINT--->
+    <div class="modal fade" id="ModelPrints" tabindex="-1" role="dialog" aria-labelledby="ModelPrints" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-m-header">
+                <h5 class="modal-title" id="divConfirmation">Confirmation</h5>
+            </div>
+            <div class="modal-body">
+                <h4 class="modal-confirmation-text text-center p-4"></h4>
+            </div>
+            <div class="modal-footer">
+            <button type="button" id="btnClose" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" id="YesPrints" data-class="" data-code="{{ $_GET['assing_no'] ?? '' }}" data-id=""
+                class="btn btn-primary">Yes</button>
+            </div>
+        </div>
+        </div>
+    </div>
+    <!---PRINT CONNECT--->
+    <div class="print" style="display: none">
+        <div class="print-content">
+    
+        </div>
+    </div>
+    <!-- Modal -->
     <script>
         const dept_code = @json(request()->route('dept_code'), JSON_THROW_ON_ERROR);
         // var dept_code = {{ $arr_dept[0]->code }};
@@ -523,5 +543,54 @@
                 }
             });
         }
+
+        // $(document).on('change.select2', '#sch_class_spec', function() {
+        //     alert('Hello');
+        // });
+
+        $(document).ready(function() {
+            $('.class_code').on('change', function() {
+                let selectedValue = $(this).val();
+                $("#YesPrints").attr('data-class', selectedValue);
+            });
+            $(document).on('click', '#prints', function() {
+                $(".modal-confirmation-text").html('Do you want to Downlaod prints ?');
+                $("#YesPrints").attr('data-code', $(this).attr('data-type'));
+                $("#ModelPrints").modal('show');
+            });
+            $(document).on('click', '#YesPrints', function() {
+                var DataClass = $(this).attr('data-class'); 
+
+                if (DataClass == '') {
+                    return notyf.error("សូមជ្រើសរើស ថ្នាក់/ក្រុម");
+                }
+                var url = 'certificate/card-student-print?class_code=' + DataClass + '&type=is_print';
+                data = $("#advance_search").serialize();
+                $.ajax({
+                    type: 'get',
+                    url: url,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    beforeSend: function() {
+                        $('.loader').show();
+                    },
+                    success: function(response) {
+                    if (response.status != 'success') {
+                        $('.loader').hide();
+                        $('.print-content').printThis({});
+                        $('.print-content').html(response);
+                        $('#ModelPrints').modal('hide');
+                    } else {
+                        $('.loader').hide();
+                        notyf.error("Error: " + response.msg);
+                    }
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {}
+                });
+            });
+        });
+       
+       
     </script>
 @endsection

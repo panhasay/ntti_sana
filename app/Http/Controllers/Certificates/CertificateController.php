@@ -22,17 +22,20 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\CertificateStudentPrintCard;
 use App\Http\Controllers\certificates\CertificatePdfController;
 use App\Http\Controllers\certificates\CertificateStudentPrintCardController;
-
+use App\Models\Student\Student;
+use App\Service\service;
 
 class CertificateController extends Controller
 {
     protected $pdf;
     protected $operationPrint;
+    public $services;
 
     public function __construct(CertificatePdfController $pdf, CertificateStudentPrintCardController $operationPrint)
     {
         $this->pdf = $pdf;
         $this->operationPrint = $operationPrint;
+        $this->services = new service();
     }
     /**
      * index
@@ -133,7 +136,6 @@ class CertificateController extends Controller
             $filePath = public_path('uploads/student/' . $student->stu_photo);
 
             $student->photo_status = $student->stu_photo && file_exists($filePath) ? true : false;
-
             return $student;
         });
         return response()->json([
@@ -441,6 +443,21 @@ class CertificateController extends Controller
         }
 
         foreach ($images as $imageData) {
+        }
+    }
+
+    public function printListClassification(Request $request)
+    {
+        $data = $request->all();
+        $class_code = $data['class_code'];
+        try {
+            $records = Student::where('class_code', $data['class_code'])->orderByRaw("name_2 COLLATE utf8mb4_general_ci")->get();
+            $header = Classes::where('code', $class_code)->first();
+            return view('certificate.student_lists_card', compact('records', 'header'));
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            $this->services->telegram($ex->getMessage(), 'Print List Student', $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
 }

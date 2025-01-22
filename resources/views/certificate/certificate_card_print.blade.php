@@ -238,7 +238,7 @@
             អក្សរឡាតាំង <span class="ps-3">{{ $records->name }}</span>
         </div>
         <div class="id-card-left">
-            ថ្ងៃខែឆ្នាំកំណើត <span class="ps-1">{{ $records->date_of_birth }}</span>
+            ថ្ងៃខែឆ្នាំកំណើត <span class="ps-1">{{ App\Service\service::DateYearKH($records->date_of_birth) ?? '' }}</span>
         </div>
         <div class="id-card-left">
             ជំនាញ<span class="ps-3"></span> <span class="ps-4">{{ $records->skill }}</span>
