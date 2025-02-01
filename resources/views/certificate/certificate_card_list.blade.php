@@ -128,8 +128,9 @@
                 <button type="button" id="prints" class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2">Print
                     <i class="mdi mdi-printer btn-icon-append"></i>
                 </button>
-                <button type="button" class="btn btn-outline-success btn-icon-text btn-sm mb-2 mb-md-0 me-2" name="btn_exel"
-                    id="btn_exel">Excel <i class="mdi mdi-printer btn-icon-append"></i>
+                <button type="button" id="BtnDownlaodExcel"
+                    class="btn btn-outline-success btn-icon-text btn-sm mb-2 mb-md-0 me-2">Excel <i
+                    class="mdi mdi-printer btn-icon-append"></i> 
                 </button>
             </div>
             <div class="d-grid d-md-flex justify-content-md-end p-3">
@@ -487,6 +488,8 @@
         </div>
     </div>
     <!-- Modal -->
+
+    @include('system.modal_comfrim_donwload')
     <script>
         const dept_code = @json(request()->route('dept_code'), JSON_THROW_ON_ERROR);
         // var dept_code = {{ $arr_dept[0]->code }};
@@ -552,6 +555,7 @@
             $('.class_code').on('change', function() {
                 let selectedValue = $(this).val();
                 $("#YesPrints").attr('data-class', selectedValue);
+                $("#btnYesExcel").attr('data-code', selectedValue);
             });
             $(document).on('click', '#prints', function() {
                 $(".modal-confirmation-text").html('Do you want to Downlaod prints ?');
@@ -589,7 +593,55 @@
                     error: function(xhr, ajaxOptions, thrownError) {}
                 });
             });
+            $(document).on('click', '#BtnDownlaodExcel', function() {
+                $(".modal-confirmation-text").html('Do you want to Downlaod Excel ?');
+                $("#btnYesExcel").attr('data-code', $(this).attr('data-type'));
+                $("#divConfirmationExcel").modal('show');
+            });
+            $(document).on('click', '#btnYesExcel', function() {
+                var DataClass = $(this).attr('data-code'); 
+
+                if (DataClass == '') {
+                    return notyf.error("សូមជ្រើសរើស ថ្នាក់/ក្រុម");
+                }
+                DownlaodExcel(DataClass);
+            });
         });
+
+        function DownlaodExcel(DataClass) {
+            var url = 'certificate/card-student-excel';
+            var data;
+            let class_code = DataClass;
+            
+            if ($('#search_data').val() == '') {
+                data = $("#advance_search").serialize();
+            } else {
+                data = 'class_code=' + class_code;
+            }
+            // Create a form to submit the data
+            var form = $('<form>', {
+                action: url,
+                method: 'GET'
+            });
+
+            // Append the serialized data to the form
+            $.each(data.split('&'), function(i, field) {
+                var parts = field.split('=');
+                form.append($('<input>', {
+                    type: 'hidden',
+                    name: decodeURIComponent(parts[0]),
+                    value: decodeURIComponent(parts[1])
+                }));
+            });
+
+            // Append the form to the body and submit it
+            $('body').append(form);
+            form.submit();
+
+            // Optionally, you can show a loader here
+            $('.loader').hide();
+            $("#divConfirmationExcel").modal('hide');
+        }
        
        
     </script>

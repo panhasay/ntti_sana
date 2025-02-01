@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\DB;
 use App\Exports\ExportData;
 use Maatwebsite\Excel\Facades\Excel;
 
+use function App\Models\Student\qualification;
 
 class DividedNewClassesController extends Controller
 {
@@ -164,6 +165,7 @@ class DividedNewClassesController extends Controller
         $skills = Skills::get();
         $school_years = DB::table('session_year')->orderBy('code', 'desc')->get();
         $study_years = StudyYears::get();
+        $qualification = Qualifications::get();
 
         try {
             $records = Student::where('code', $this->services->Decr_string($_GET['code']))->first();
@@ -171,7 +173,7 @@ class DividedNewClassesController extends Controller
                 return response()->json(['status' => 'error', 'msg' => 'Class not found'], 404);
             }
 
-            return view('general.divided_new_classes_student_card', compact('records', 'class_record', 'skills_records', 'study_years', 'school_years', 'skills', 'sections', 'classes'));
+            return view('general.divided_new_classes_student_card', compact('records', 'class_record', 'skills_records', 'study_years', 'school_years', 'skills', 'sections', 'classes', 'qualification'));
         } catch (\Exception $ex) {
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);

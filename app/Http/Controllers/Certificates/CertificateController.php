@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Certificates;
 
+use App\Exports\ExportData;
 use DateTime;
 use ZipArchive;
 use Carbon\Carbon;
@@ -20,22 +21,30 @@ use App\Models\SystemSetup\Department;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Models\CertificateStudentPrintCard;
-use App\Http\Controllers\certificates\CertificatePdfController;
-use App\Http\Controllers\certificates\CertificateStudentPrintCardController;
+// use App\Http\Controllers\certificates\CertificatePdfController;
+// use App\Http\Controllers\certificates\CertificateStudentPrintCardController;
+use App\Models\General\Qualifications;
 use App\Models\Student\Student;
 use App\Service\service;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CertificateController extends Controller
 {
-    protected $pdf;
-    protected $operationPrint;
     public $services;
+    public $page_id;
+    public $page;
+    public $prefix;
+    public $table_id;
+    public $arrayJoin = [];
 
-    public function __construct(CertificatePdfController $pdf, CertificateStudentPrintCardController $operationPrint)
+    function __construct()
     {
-        $this->pdf = $pdf;
-        $this->operationPrint = $operationPrint;
         $this->services = new service();
+        $this->page_id = "10001";
+        $this->page = "certificate";
+        $this->prefix = "certificate";
+        $this->arrayJoin = ['10001', '10007', '10008'];
+        $this->table_id = "10005";
     }
     /**
      * index
@@ -259,7 +268,7 @@ class CertificateController extends Controller
         $month = $LunarNewYear[$date->format('n') - 0];
         $year = $nameYear[(($date->format('Y') - 5) % 12)];
 
-        return "{$dayOfWeek} {$khmerDayInLunarPhase} {$lunarPhase} ខែ{$month} {$year} {$khmerYearCycle} ព.ស {$buddhistYear}";
+        return "{$dayOfWeek}{$khmerDayInLunarPhase}{$lunarPhase}ខែ{$month} {$year} {$khmerYearCycle} ព.ស.{$buddhistYear}";
     }
 
     public function showViewCardInformation(Request $request)
@@ -457,6 +466,48 @@ class CertificateController extends Controller
         } catch (\Exception $ex) {
             DB::rollBack();
             $this->services->telegram($ex->getMessage(), 'Print List Student', $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+    public function ExcelListClassification (Request $request)
+    {
+        try {
+            $filter = $request->all();
+
+
+            $extract_query = $this->services->extractQuery($filter);
+            $header = Classes::where('code', $filter['class_code'])->first();
+            $code_class = $filter['class_code'];
+
+            $excel_name = $code_class . '_class.xlsx';
+            // Fetch student records with relationships to avoid N+1 queries
+            $records = Student::where('class_code', $filter['class_code'])
+                ->where('study_type', 'new student')->orderByRaw("name_2 COLLATE utf8mb4_general_ci")
+                ->get()
+                ->map(function ($record) {
+                    $record->skills = DB::table('skills')->where('code', $record->skills_code)->value('name_2');
+                    $record->classes = DB::table('classes')->where('code', $record->class_code)->value('name');
+                    $record->section = DB::table('sections')->where('code', $record->sections_code)->value('name_2');
+                    $record->gender = $record->gender;
+                    $record->department = DB::table('department')->where('code', $record->department_code)->value('name_2');
+                    $record->khmerDate = $this->services->DateFormartKhmer($record->date_of_birth);
+                    $record->year_student = $this->services->calculateDateDifference($record->posting_date);
+                    $record->picture = Picture::where('code', $record->code)
+                        ->where('type', 'student')
+                        ->value('picture_ori');
+                    return $record;
+                });
+
+            // Optimize header-related queries
+            $department = optional(Department::where('code', $header->department_code)->first())->name_2;
+            $skills = optional(Skills::where('code', $header->skills_code)->first())->name_2;
+            $sections = optional(Sections::where('code', $header->sections_code)->first())->name_2;
+            $qualification = optional(Qualifications::where('code', $header->level)->first())->name_2;
+            $blade_download = "certificate.student_lists_card_excel";
+            // Export data to Excel
+            return Excel::download(new ExportData($records, $blade_download, $department, $sections, $skills, $qualification, $header), $excel_name);
+        } catch (\Exception $ex) {
+            $this->services->telegram($ex->getMessage(), 'list of student', $ex->getLine());
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }

@@ -13,7 +13,7 @@
     @foreach ($record as $item)
         <div class="col-3 row_{{$item->id}}">
             <div class="drag-image ">
-            <img src="{{$item->picture_ori}}" alt=""> 
+            <img src="/uploads/student/{{$item->picture_ori}}" alt=""> 
             <div class="btn delete_image" data-id ='{{$item->id}}'>Remove</div>
             </div>
         </div>

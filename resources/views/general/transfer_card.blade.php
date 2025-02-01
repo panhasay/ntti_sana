@@ -226,6 +226,7 @@
         </div>
     </form>
 </div>
+@include('general.transfer_sub_lists')
 <script>
     $(document).ready(function() {
     $('#BtnSave').on('click', function() {

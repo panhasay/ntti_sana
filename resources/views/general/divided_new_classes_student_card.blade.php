@@ -315,22 +315,13 @@
             <span class="labels col-sm-3 col-form-label ">កម្រិត<strong style="color:red; font-size:15px;">
                 *</strong></span>
             <div class="col-sm-9">
-              <select class="js-example-basic-single" id="qualification" name="qualification" style="width: 100%;" disabled >
-                <?php 
-                  $options = [
-                          'បរិញ្ញាបត្រ' => 'បរិញ្ញាបត្រ',
-                          'បរិញ្ញាបត្ររង' => 'បរិញ្ញាបត្ររង',
-                          'អនុបណ្ឌិត' => 'អនុបណ្ឌិត',
-                          'សញ្ញាបត្រ C1' => 'សញ្ញាបត្រ C1',
-                          'សញ្ញាបត្រ C2' => 'សញ្ញាបត្រ C2',
-                          'សញ្ញាបត្រ C3' => 'សញ្ញាបត្រ C3',
-                      ];
-                  ?>
-                @foreach ($options as $value => $label)
-                <option value="{{ $value }}" {{ isset($records->qualification) && $records->qualification == $value ?
-                  'selected' : '' }}>
-                  {{ $label }}
-                </option>
+              <select class="js-example-basic-single" id="qualification" name="qualification" style="width: 100%;">
+                @foreach ($qualification as $value => $record)
+                  <option value="{{ $record->code }}" {{ isset($records->qualification) && $records->qualification ==
+                    $record->code ?
+                    'selected' : '' }}>
+                    {{ $record->code }}
+                  </option>
                 @endforeach
               </select>
             </div>
@@ -623,17 +614,17 @@
 
                 <select class="js-example-basic-single" id="submit_your_application" name="submit_your_application" style="width: 100%;">
                   <?php 
-                  $options = [
-                          'មិត្តភ័ក ឬ​​ គ្រួសារ' => 'មិត្តភ័ក ឬ​​ គ្រួសារ',
-                          'លោកគ្រូ​ អ្នកគ្រូ' => 'លោកគ្រូ អ្នកគ្រូ',
-                          'ទស្សនកិច្ចនៅវវិទ្យាស្ថាន' => 'ទស្សនកិច្ចនៅវវិទ្យាស្ថាន',
-                          'ផ្សព្វផ្សាយ តាមវិទ្យាល័យសិក្សា' => 'ផ្សព្វផ្សាយ តាមវិទ្យាល័យសិក្សា',
-                          'ទស្សនកិច្ចនៅ តាមបណ្ដាលក្រុមហ៊ុន' => 'ទស្សនកិច្ចនៅ តាមបណ្ដាលក្រុមហ៊ុន',
-                          'ប្រព័ន្ធផ្សព្វផ្សាយរបស់ វិទ្យាស្ថានតាម (Social Meadia)' => 'ប្រព័ន្ធផ្សព្វផ្សាយរបស់ វិទ្យាស្ថានតាម (Social Meadia)',
-                          'ប្រព័ន្ធផ្សព្វផ្សាយរបស់​ កម្មវិធីបណ្តុះបណ្តាលជំនាញ TVET' => 'ប្រព័ន្ធផ្សព្វផ្សាយរបស់​ កម្មវិធីបណ្តុះបណ្តាលជំនាញ TVET',
-                          'ប្រព័ន្ធផ្សព្វផ្សាយរបស់​ ក្រសួងការងារ និងបណ្តុះបណ្តាលវិជ្ជាជីវៈ' => 'ប្រព័ន្ធផ្សព្វផ្សាយរបស់​ ក្រសួងការងារ និងបណ្តុះបណ្តាលវិជ្ជាជីវៈ',
-                          'ផ្សេងៗ' => 'ផ្សេងៗ',
-                      ];
+                    $options = [
+                            'មិត្តភ័ក្តិ ឬ​​ គ្រួសារ' => 'មិត្តភ័ក្តិ ឬ​​ គ្រួសារ',
+                            'លោកគ្រូ​ អ្នកគ្រូ' => 'លោកគ្រូ អ្នកគ្រូ',
+                            'ទស្សនកិច្ចនៅវវិទ្យាស្ថាន' => 'ទស្សនកិច្ចនៅវវិទ្យាស្ថាន',
+                            'តម្រង់ទិសតាមវិទ្យាល័យ' => 'តម្រង់ទិសតាមវិទ្យាល័យ',
+                            'កម្មវិធីទស្សនកិច្ចសិក្សា' => 'កម្មវិធីទស្សនកិច្ចសិក្សា',
+                            'បណ្តាញសង្គម(Facebook,Youtube,.Tiktok....)' => 'បណ្តាញសង្គម(Facebook,Youtube,.Tiktok....)',
+                            'ប្រព័ន្ធផ្សព្វផ្សាយរបស់​ កម្មវិធីបណ្តុះបណ្តាលជំនាញ TVET' => 'ប្រព័ន្ធផ្សព្វផ្សាយរបស់​ កម្មវិធីបណ្តុះបណ្តាលជំនាញ TVET',
+                            'កម្មវិធីតាំងពិពណ៌' => 'កម្មវិធីតាំងពិពណ៌',
+                            'ផ្សេងៗ' => 'ផ្សេងៗ',
+                        ];
                   ?>
                   <option value="">&nbsp;</option>
                   @foreach ($options as $value => $label)

@@ -1,9 +1,15 @@
 <tr id="row_line{{ $record->code }}">
+    <?php $picture =  App\Models\General\Picture::where('code', $record->code)->value('picture_ori'); ?>
     <td>
         <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" href="{{ 'class-new/transaction/update-student?type=ed&code='.\App\Service\service::Encr_string($record->code) }}"><i class="mdi mdi-border-color"></i> Edit</a>
         <button class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="btnDeleteLine" data-code="{{ $record->code ?? '' }}">
             <i class="mdi mdi-delete-forever"></i> Delete
         </button>
+        @if($picture != null)
+            <img class="btn-Image" id="btn-Image" data-code ='{{$record->code ?? ''}}' src="{{ $picture ?? '' }}" width="1000" height="1000">
+        @else
+            <img class="btn-Image" id="btn-Image" data-code ='{{$record->code ?? ''}}' src="asset/NTTI/images/faces/default_User.jpg" width="1000" height="1000">
+        @endif
     </td>
     <td class="text-center"> {{ $record->code ?? '' }}</td>
     <td>{{ $record->name_2 ?? '' }}</td>

@@ -103,6 +103,7 @@
                 <li><a href="{{ url('class-new') }}">បែងចែកថ្នាក់ថ្មី</a></li>
                 <li><a href="{{ url('attendance/dashboards-attendance') }}">វត្តមានថ្ងៃប្រចាំថ្ងៃ</a></li>
                 <li><a href="{{ url('exam-schedule') }}">កាលវិភាគ កាប្រឡង</a></li>
+                <li><a href="{{ url('transfer') }}">ផ្លាស់ប្ដូរថ្នាក់/ក្រុម</a></li>
             </ul>
         </div>
     </div>

@@ -247,6 +247,7 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
     Route::get('/student/registration-downlaodexcel', [StudnetController::class, 'StudentDownlaodRegistrationDownlaodexcel']);
     Route::get('/student/scholarship', [StudnetController::class, 'IndexStudentScholarshipc']);
     Route::get('/student/registration-remaining', [StudnetController::class, 'StudentRemaining']);
+    Route::get('/student/registration/loop-skill', [StudnetController::class, 'StudentLoopSkill']);
 });
 
 Route::group(['perfix' => 'class-new'], function (){
@@ -314,6 +315,10 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
         Route::get('/D_IT/student_card/certificate/card-student-print', 'printListClassification');
         Route::get('/D_EL/student_card/certificate/card-student-print', 'printListClassification');
         Route::get('/D_CL/student_card/certificate/card-student-print', 'printListClassification');
+
+        Route::get('/D_IT/student_card/certificate/card-student-excel', 'ExcelListClassification');
+        Route::get('/D_EL/student_card/certificate/card-student-excel', 'ExcelListClassification');
+        Route::get('/D_CL/student_card/certificate/card-student-excel', 'ExcelListClassification');
     });
 });
 
@@ -324,7 +329,6 @@ Route::group(['prefix' => 'admin-panel', 'middleware' => 'auth'], static functio
         Route::post('/excute-npm', 'showNPM')->name('admin.ap.excute-npm');
     });
 });
-
 
 Route::group(['prefix' => 'transfer'], function (){
     Route::get('/',[TransferController::class,'index']);

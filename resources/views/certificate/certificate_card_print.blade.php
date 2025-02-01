@@ -250,7 +250,7 @@
             {{ $record_date_khmer }}
         </div>
         <div class="id-card-date-khmer-pp">
-            រាជធានីភ្នំពេញុ, {{ formatDateToKhmer($record_print['print_date'] ?? now(), 'kh') }}
+            រាជធានីភ្នំពេញ {{ formatDateToKhmer($record_print['print_date'] ?? now(), 'kh') }}
         </div>
     </div>
     <div class="id-signature">

@@ -37,6 +37,10 @@
           <i class="mdi mdi-printer btn-icon-append"></i>
         </button>
         @endif
+        <button id="btn-Image" data-code ='{{$records->code ?? ''}}' type="button" id="BtnUploadImg" class="btn btn-outline-secondary btn-sm mb-2 mb-md-0 me-2">
+          ​រូបថត
+          <i class="mdi mdi-account"></i>
+        </button>
         ពាក្យសុំចូលរៀន
       </div>
     </div>
@@ -84,11 +88,9 @@
                 style="color:red; font-size:15px;">
                 *</strong></span>
             <div class="col-sm-9">
-              <input type="text" class="form-control form-control-sm"
-                id="date_of_birth" name="date_of_birth"
+              <input type="text" class="form-control form-control-sm" id="date_of_birth" name="date_of_birth"
                 value="{{ isset($records->date_of_birth) ? \Carbon\Carbon::parse($records->date_of_birth)->format('d-m-Y') : '' }}"
-                min="1970-01-01" max="2010-12-31"
-                placeholder="ថ្ងៃ-ខែ-ឆ្នាំកំណើត" aria-label="ថ្ងៃ-ខែ-ឆ្នាំកំណើត">
+                min="1970-01-01" max="2010-12-31" placeholder="ថ្ងៃ-ខែ-ឆ្នាំកំណើត" aria-label="ថ្ងៃ-ខែ-ឆ្នាំកំណើត">
             </div>
           </div>
         </div>
@@ -229,21 +231,39 @@
           </div>
         </div>
 
-        <div class="col-md-6">
-          <div class="form-group row">
-            <span class="labels col-sm-3 col-form-label">ជំនាញ<strong style="color:red; font-size:15px;">
-                *</strong></span>
-            <div class="col-sm-9">
-              <select class="js-example-basic-single FieldRequired" id="skills_code" name="skills_code"
-                style="width: 100%;">
-                <option value="">&nbsp;</option>
-                @foreach ($skills as $record)
-                <option value="{{ $record->code ?? '' }}" {{ isset($records->skills_code) && $records->skills_code ==
-                  $record->code ? 'selected' : '' }}>
-                  {{ isset($record->name_2) ? $record->name_2 : '' }}
-                </option>
-                @endforeach
-              </select>
+        <div class="col-md-6 col-sm-12">
+          <div class="row">
+            <div class="col-md-6 col-sm-12">
+              <div class="form-group row">
+                <span class="labels col-sm-6 col-form-label">ជំនាញ<strong style="color:red; font-size:15px;">
+                    *</strong></span>
+                <div class="col-sm-6">
+                  <select class="js-example-basic-single FieldRequired" id="skills_code" name="skills_code"
+                    style="width: 100%;">
+                    <option value="">&nbsp;</option>
+                    @foreach ($skills as $record)
+                    <option value="{{ $record->code ?? '' }}" {{ isset($records->skills_code) && $records->skills_code ==
+                      $record->code ? 'selected' : '' }}>
+                      {{ isset($record->name_2) ? $record->name_2 : '' }}
+                    </option>
+                    @endforeach
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-12">
+              <div class="form-group row">
+                <span class="labels col-sm-3 col-form-label">ថ្នាក់/ក្រុម</span>
+                <div class="col-sm-9">
+                  <select class="js-example-basic-single" id="class_code" name="class_code" style="width: 100%;">
+                    @foreach ($class_record as $record)
+                    <option value="{{ $record->code ?? '' }}" {{ isset($records->class_code) && $records->class_code
+                      == $record->code ? 'selected' : '' }}>{{ isset($record->code) ? $record->code : '' }}
+                    </option>
+                    @endforeach
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -292,27 +312,17 @@
                 *</strong></span>
             <div class="col-sm-9">
               <select class="js-example-basic-single" id="qualification" name="qualification" style="width: 100%;">
-                <?php 
-                  $options = [
-                          'បរិញ្ញាបត្រ' => 'បរិញ្ញាបត្រ',
-                          'បរិញ្ញាបត្ររង' => 'បរិញ្ញាបត្ររង',
-                          'អនុបណ្ឌិត' => 'អនុបណ្ឌិត',
-                          'សញ្ញាបត្រ C1' => 'សញ្ញាបត្រ C1',
-                          'សញ្ញាបត្រ C2' => 'សញ្ញាបត្រ C2',
-                          'សញ្ញាបត្រ C3' => 'សញ្ញាបត្រ C3',
-                      ];
-                  ?>
-                @foreach ($options as $value => $label)
-                <option value="{{ $value }}" {{ isset($records->qualification) && $records->qualification == $value ?
-                  'selected' : '' }}>
-                  {{ $label }}
-                </option>
+                @foreach ($qualification as $value => $record)
+                  <option value="{{ $record->code }}" {{ isset($records->qualification) && $records->qualification ==
+                    $record->code ?
+                    'selected' : '' }}>
+                    {{ $record->code }}
+                  </option>
                 @endforeach
               </select>
             </div>
           </div>
         </div>
-
 
         <div class="col-md-6">
           <div class="form-group row">
@@ -332,7 +342,6 @@
             </div>
           </div>
         </div>
-
 
         <div class="col-md-6">
           <div class="form-group row">
@@ -576,29 +585,32 @@
 
       <div class="row">
         <div class="col-md-6">
-          
+
         </div>
         <div class="col-md-6" style="margin-top: -20px;">
           <div class="form-group row">
             <span class="labels col-sm-3 col-form-label ">ប្រភព អាហារូបករណ៍</span>
             <div class="col-sm-9">
               <input type="text" class="form-control form-control-sm " id="scholarship_type" name="scholarship_type"
-              value="{{ $records->scholarship_type ?? ''}}" placeholder="ប្រភព អាហារូបករណ៍" aria-label="ប្រភព អាហារូបករណ៍">
+                value="{{ $records->scholarship_type ?? ''}}" placeholder="ប្រភព អាហារូបករណ៍"
+                aria-label="ប្រភព អាហារូបករណ៍">
             </div>
           </div>
         </div>
       </div>
 
       <div class="row">
-          <div class="col-md-6" >
-            <div class="form-group row">
-              <span class="labels col-sm-3 col-form-label ">ស្គាល់សាលា តាមរយះ</span>
-              <div class="col-sm-9">
-                {{-- <input type="text" class="form-control form-control-sm " id="submit_your_application" name="submit_your_application"
-                value="{{ $records->submit_your_application ?? ''}}" placeholder="ដាក់ពាក្សសិក្សា តាមរយះ" aria-label="ដាក់ពាក្សសិក្សា តាមរយះ"> --}}
+        <div class="col-md-6">
+          <div class="form-group row">
+            <span class="labels col-sm-3 col-form-label ">ស្គាល់សាលា តាមរយះ</span>
+            <div class="col-sm-9">
+              {{-- <input type="text" class="form-control form-control-sm " id="submit_your_application"
+                name="submit_your_application" value="{{ $records->submit_your_application ?? ''}}"
+                placeholder="ដាក់ពាក្សសិក្សា តាមរយះ" aria-label="ដាក់ពាក្សសិក្សា តាមរយះ"> --}}
 
-                <select class="js-example-basic-single" id="submit_your_application" name="submit_your_application" style="width: 100%;">
-                  <?php 
+              <select class="js-example-basic-single" id="submit_your_application" name="submit_your_application"
+                style="width: 100%;">
+                <?php 
                   $options = [
                           'មិត្តភ័ក្តិ ឬ​​ គ្រួសារ' => 'មិត្តភ័ក្តិ ឬ​​ គ្រួសារ',
                           'លោកគ្រូ​ អ្នកគ្រូ' => 'លោកគ្រូ អ្នកគ្រូ',
@@ -611,31 +623,30 @@
                           'ផ្សេងៗ' => 'ផ្សេងៗ',
                       ];
                   ?>
-                  <option value="">&nbsp;</option>
-                  @foreach ($options as $value => $label)
-                  <option value="{{ $value }}" {{ isset($records->submit_your_application) && $records->submit_your_application == $value ?
-                    'selected' : '' }}>
-                    {{ $label }}
-                  </option>
-                  @endforeach
-                </select>
-              </div>
+                <option value="">&nbsp;</option>
+                @foreach ($options as $value => $label)
+                <option value="{{ $value }}" {{ isset($records->submit_your_application) &&
+                  $records->submit_your_application == $value ?
+                  'selected' : '' }}>
+                  {{ $label }}
+                </option>
+                @endforeach
+              </select>
             </div>
           </div>
+        </div>
         <div class="col-md-6">
           <div class="form-group row">
             <span class="labels col-sm-3 col-form-label ">មកពី វិទ្យាល័យ</span>
             <div class="col-sm-9">
-              <input type="text" class="form-control form-control-sm " id="educational_institutions" name="educational_institutions"
-              value="{{ $records->educational_institutions ?? ''}}" placeholder="គ្រឹះស្ថាន សិក្សា ឫ វិទ្យាល័យសិក្សា" aria-label="គ្រឹះស្ថាន សិក្សា ឫ វិទ្យាល័យសិក្សា">
+              <input type="text" class="form-control form-control-sm " id="educational_institutions"
+                name="educational_institutions" value="{{ $records->educational_institutions ?? ''}}"
+                placeholder="គ្រឹះស្ថាន សិក្សា ឫ វិទ្យាល័យសិក្សា" aria-label="គ្រឹះស្ថាន សិក្សា ឫ វិទ្យាល័យសិក្សា">
             </div>
           </div>
         </div>
       </div>
 
-
-      
-      
     </div>
     <div class="row border-bottom">
       <div class="col-md-12 col-sm-12 col-12">
@@ -649,6 +660,22 @@
   </form>
 </div>
 
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModals" aria-hidden="true">
+  <div class="modal-dialog modal-xl"> 
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-dark" id="imageModals">Upload Image</h5>
+        
+      </div>
+      <div class="modal-body PreImage" >
+          
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+  </div>
+</div>
 @include('system.modal_create_user_student')
 <!---PRINT--->
 <div class="modal fade" id="ModelPrints" tabindex="-1" role="dialog" aria-labelledby="ModelPrints" aria-hidden="true">
@@ -688,39 +715,27 @@
           notyf.error("សូមវាយលេខ (0-9) និងសញ្ញា (-, ., /)!");
           return;
       }
-
       // Process input only if the raw numeric length is exactly 8 (ddmmyyyy)
       const numericValue = rawValue.replace(/[^0-9]/g, ''); // Remove symbols to check numeric length
       if (numericValue.length === 8) {
-          const day = numericValue.substring(0, 2);
-          const month = numericValue.substring(2, 4);
-          const year = numericValue.substring(4, 8);
+        const day = numericValue.substring(0, 2);
+        const month = numericValue.substring(2, 4);
+        const year = numericValue.substring(4, 8);
 
-          // Validate date components
-          const isValidDate = validateDate(day, month, year);
+        // Validate date components
+        const isValidDate = validateDate(day, month, year);
 
-          if (isValidDate) {
-              const formattedDate = `${day}-${month}-${year}`;
-              $(this).val(formattedDate); // Update input with formatted date
-              $('#error_message').text(''); // Clear error message
-          } else {
-              notyf.error("សូម ពិនិត្យមើល ថ្ងៃខែឆ្នាំម្ដងទៀត​!");
-          }
-      }
-  });
-
-
-      // Date validation function
-      function validateDate(day, month, year) {
-          const date = new Date(`${year}-${month}-${day}`);
-          return (
-              date &&
-              date.getFullYear() == year &&
-              date.getMonth() + 1 == month &&
-              date.getDate() == day
-          );
+        if (isValidDate) {
+            const formattedDate = `${day}-${month}-${year}`;
+            $(this).val(formattedDate); // Update input with formatted date
+            $('#error_message').text(''); // Clear error message
+        } else {
+            notyf.error("សូម ពិនិត្យមើល ថ្ងៃខែឆ្នាំម្ដងទៀត​!");
+        }
       }
 
+
+    });
 
     $('#BtnSave').on('click', function() {
         var formData = $('#frmDataCard').serialize();
@@ -877,7 +892,132 @@
       });
     });
 
+    $(document).on('change', '#skills_code', function() {
+      var value = $(this).val();
+      var url = '/student/registration/loop-skill?value=' + encodeURIComponent(value);
+      $.ajax({
+          type: 'get',
+          url: url,
+          headers: {
+              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          },
+          beforeSend: function() {
+              $('.loader').show();
+          },
+          success: function(response) {
+              $('.loader').hide();
+              if (response.status === 'success') {
+                  $('#class_code').empty();
+                  $('#class_code').append('<option value="">ជ្រើសរើសក្រុម</option>');
+                  $.each(response.records, function(index, record) {
+                      $('#class_code').append('<option value="' + record.code + '">' + record.code + '</option>');
+                  });
+              } else {
+                  notyf.error("Error: " + response.msg);
+              }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+              $('.loader').hide();
+              console.error('AJAX Error:', thrownError);
+              notyf.error("An error occurred while fetching data.");
+          }
+      });
+    });
+
+    $(document).on('click', '#btn-Image', function() {
+      let code = $(this).attr('data-code');
+      $.ajax({
+        type: "GET",
+        url: `/student/getImage`,
+        data: {
+          code: code
+        },
+        // beforeSend: function() {
+        //     // $('.global_laoder').show();
+        // },
+        success: function(response) {
+          if (response.status == 'success') {
+            $('#imageModal').modal('show');
+            $('.PreImage').html();
+            $('.PreImage').html(response.view);
+          }
+        }
+      });
+    });
+
+    $(document).on('click', '.btn-browse', function() {
+      $('.upload-item').trigger('click');
+    });
+
+    $(document).on('change', '#file', function() {
+      let file = $('#file').val();
+      let data = new FormData(formimg);
+      $.ajax({
+        type: "POST",
+        url: `/student/uploadimage`,
+        data: data,
+        processData: false,
+        contentType: false,
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(response) {
+          if(response.status == 'success'){
+            notyf.success(response.msg);
+            $('.append_file').append(`
+              <div class="col-3">
+                <div class="drag-image">
+                <img src="/uploads/student/${response.path}" alt="">
+                <div class="btn delete_image" data-id ='${response.id}'>Remove</div>
+                </div>
+              </div>
+            `);
+           
+          }else{
+            notyf.error(response.msg);
+          }
+        }
+      });
+    });
+    $(document).on('click', '.delete_image', function(param) {
+      let id = $(this).attr('data-id');
+      $.ajax({
+        type: "POST",
+        url: `/student/delete-image`,
+        beforeSend: function() {
+          $('.global_laoder').show();
+        },
+        data: {
+          id: id
+        },
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(response) {
+          if (response.status == 'success') {
+            $(`.row_${id}`).remove();
+            $('#imageModal').modal('hide');
+            $('.global_laoder').hide();
+            notyf.success(response.msg);
+          } else {
+            notyf.error(response.msg);
+          }
+        }
+      });
+    });
+
   });
+
+  // Date validation function
+  function validateDate(day, month, year) {
+      const date = new Date(`${year}-${month}-${day}`);
+      return (
+          date &&
+          date.getFullYear() == year &&
+          date.getMonth() + 1 == month &&
+          date.getDate() == day
+      );
+  }
 
   function DownlaodExcel() {
     var url = '/student/registration/downlaodexcel/';

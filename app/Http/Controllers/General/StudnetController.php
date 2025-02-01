@@ -171,14 +171,15 @@ class StudnetController extends Controller
         $skills_records = DB::table('skills')->get();
         $sections = DB::table('sections')->get();
         $department = DB::table('department')->get();
-        $currentDate = Carbon::now()->toDateString(); // Get the current date in the format 'YYYY-MM-DD'
+        $currentDate = Carbon::now()->toDateString(); 
         $records = null;
         $user_student = '';
         $skills = Skills::get();
         $school_years = DB::table('session_year')->orderBy('code', 'desc')->get();
         $study_years = StudyYears::get();
+        $qualification = Qualifications::get();
         try {
-            $params = ['records', 'class_record', 'type', 'skills_records', 'sections', 'department', 'user_student', 'currentDate', 'skills', 'school_years', 'study_years'];
+            $params = ['records', 'class_record', 'type', 'skills_records', 'sections', 'department', 'user_student', 'currentDate', 'skills', 'school_years', 'study_years', 'qualification'];
             if ($type == 'cr')
                 return view('general.student_register_card', compact($params));
 
@@ -757,10 +758,12 @@ class StudnetController extends Controller
             return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
         }
     }
-    public function UploadImage(Request $request){
+    public function UploadImages(Request $request){
         DB::beginTransaction();
         try {
             $data = $request->all();
+
+            // dd($data);
             $code = $data['code'];
             $exstain_img = Picture::where('code',$code)->first();
             if($exstain_img){
@@ -795,6 +798,63 @@ class StudnetController extends Controller
             return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
         }
     }
+    public function UploadImage(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            // Ensure a file is uploaded
+            if (!$request->hasFile('file')) {
+                return response()->json(['status' => 'error', 'msg' => 'No file uploaded']);
+            }
+    
+            $photo = $request->file('file'); // Get the file
+            $code = $request->input('code'); // Get student code
+            $date = now()->format('Ymd');
+    
+            // // Validate file type before processing
+            // $request->validate([
+            //     'photo' => 'required|image|mimes:jpg,png,jpeg|max:5048', // Allow jpg, png, jpeg max 2MB
+            // ]);
+    
+            // Check if the image already exists for the student
+            $existingPhoto = Picture::where('code', $code)->first();
+            if ($existingPhoto) {
+                return response()->json([
+                    'status' => 'field',
+                    'msg' => 'រូបភាពសិស្សមានមួយហើយមិនអាចមាន ពីបានទេ !' // Student image already exists
+                ]);
+            }
+    
+            // Generate unique file name
+            $fileName = 'ntti_' . $code . '_' . $date . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+            $filePath = public_path('uploads/student');
+    
+            // Move uploaded file
+            $photo->move($filePath, $fileName);
+    
+            // Save the image details in the database
+            Picture::create([
+                'code' => $code,
+                'picture_ori' => $fileName,
+            ]);
+
+            $parth = Picture::where('code', $code)->first();
+    
+            $file_path = $parth->picture_ori;
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'msg' => 'Your changes have been successfully saved!',
+                'path' => $file_path,
+                'id' => $parth->id,
+            ]);
+    
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return response()->json(['status' => 'error', 'msg' => $ex->getMessage()]);
+        }
+    }
+
     public function DeleteImage(Request $request){
         DB::beginTransaction();
         try{
@@ -802,7 +862,7 @@ class StudnetController extends Controller
             $record = Picture::where('id',$data['id'])->first();
             $http = $request->getSchemeAndHttpHost();
             $path_folder = str_replace($http,'',$record->picture_ori);
-            $sd = public_path($path_folder);
+            $sd = public_path('/uploads/student/'.$record->picture_ori);
             if (file_exists($sd)) {
                 unlink($sd);
             }
@@ -853,6 +913,18 @@ class StudnetController extends Controller
             ->paginate(20);
 
             return view('general.student_register_remaining', compact('records', 'class_record', 'department', 'skills', 'sections', 'qualifications'));
+        } catch (\Exception $ex) {
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+
+    public function StudentLoopSkill(Request $request)
+    {
+        $data = $request->all();
+        try {
+            $records = Classes::where('skills_code',  $data['value'])->get();
+            return response()->json(['status' => 'success', 'records' => $records]);
         } catch (\Exception $ex) {
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
