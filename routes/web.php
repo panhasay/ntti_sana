@@ -28,6 +28,7 @@ use Illuminate\support\Facades\App;
 use App\Models\General\ExamSchedule;
 use App\Http\Controllers\Certificates\CertificateController;
 use App\Http\Controllers\General\TransferController;
+use App\Http\Controllers\Report\ReportListOfStudentClassAndSectionController;
 use Illuminate\Support\Facades\DB;
 
 /*
@@ -336,6 +337,13 @@ Route::group(['prefix' => 'transfer'], function (){
     Route::post('/update', [TransferController::class, 'update']);
     Route::post('/store', [TransferController::class, 'store']);
     Route::POST ('/transfer-delete', [TransferController::class, 'delete']);
+})->middleware('auth');
+
+Route::group(['perfix' => 'report_list_of_student_class_and_section'], function (){
+    Route::get('report_list_of_student_class_and_section', [ReportListOfStudentClassAndSectionController::class, 'index'])->name('index');
+    Route::get('reports-list-of-student-priview', [ReportListOfStudentClassAndSectionController::class, 'Priview'])->name('Priview');
+    Route::get('reports-list-of-student-print', [ReportListOfStudentClassAndSectionController::class, 'Print'])->name('Print');
+    Route::get('reports-list-of-student-print/export/', [ReportListOfStudentClassAndSectionController::class, 'export']);
 })->middleware('auth');
 
 
