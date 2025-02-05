@@ -10,6 +10,7 @@ use App\Models\General\StudyYears;
 use App\Models\General\Subjects;
 use App\Models\General\Teachers;
 use App\Models\General\TransferHeader;
+use App\Models\General\TransferLine;
 use App\Models\SystemSetup\Department;
 use App\Service\service;
 use Illuminate\Http\Request;
@@ -63,13 +64,12 @@ class TransferController extends Controller
         $date_name = DB::table('date_name')->orderBy('index', 'asc')->get();
         $days = $date_name->pluck('name')->toArray();
         $qualifications = Qualifications::get();
-        
         try {
-
             $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'classs', 'study_years', 'teachers', 'subjects', 'record_sub_lines', 'date_name', 'days', 'qualifications'];
             if ($type == 'cr') return view('general.transfer_card', compact($params));
             if (isset($_GET['code'])) {
                 $records = TransferHeader::where('no', $this->services->Decr_string($_GET['code']))->first();
+                $record_sub_lines = TransferLine::where('document_no', $records->no)->get();
             }
             return view('general.transfer_card', compact($params));
         } catch (\Exception $ex) {

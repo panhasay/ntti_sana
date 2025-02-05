@@ -229,35 +229,35 @@
 @include('general.transfer_sub_lists')
 <script>
     $(document).ready(function() {
-    $('#BtnSave').on('click', function() {
-      var formData = $('#frmDataCard').serialize();
-      var type = $('#type').val();
-      var url;
-      if (!type) {
-          url = `/transfer/store`;
-      } else {
-          url = `/transfer/update`;
-      }
-      $.ajax({
-          type: "POST",
-          url: url,
-          data: formData,
-          headers: {
-              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-          },
-          success: function(response) {
-              if (response.status == 'success') {
-                notyf.success(response.msg);
-              }else if(response.store == 'yes'){
-                $('#frmDataCard')[0].reset();
-                notyf.success(response.msg);
-              }else {
-                  notyf.error(response.msg);
-              }
-          }
-      });
-  });
-  });
+        $('#BtnSave').on('click', function() {
+            var formData = $('#frmDataCard').serialize();
+            var type = $('#type').val();
+            var url;
+            if (!type) {
+                url = `/transfer/store`;
+            } else {
+                url = `/transfer/update`;
+            }
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.status == 'success') {
+                        notyf.success(response.msg);
+                    }else if(response.store == 'yes'){
+                        $('#frmDataCard')[0].reset();
+                        notyf.success(response.msg);
+                    }else {
+                        notyf.error(response.msg);
+                    }
+                }
+            });
+        });
+    });
   function DownlaodExcel() {
     var url = '/student/downlaodexcel/';
     if ($('#search_data').val() == '') {

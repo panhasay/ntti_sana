@@ -114,8 +114,14 @@
         </div>
         <div class="container menu-list">
             <ul>
-                <li><a href="{{ url('report-first-year-student-registration') }}">ស្ថិតិសិស្សដាក់ពាក្យចុះឈ្មោះចូលរៀនឆ្នាំទី១</a></li>
-            </ul>
+                <li><a href="{{ url('/report-first-year-student-registration') }}">ស្ថិតិសិស្សដាក់ពាក្យចុះឈ្មោះចូលរៀនឆ្នាំទី១</a></li>
+              </ul>
+              <ul>
+                <li><a href="{{ url('/report_list_of_student_class_and_section') }}">របាយការណ៍និស្សិត ក្រុម និងវេនសិក្សា</a></li>
+              </ul>
+              <ul>
+                <li><a href="{{ url('/report_list_of_student_class_and_section') }}">របាយការណ៍និស្សិត ក្រុម និងវេនសិក្សា</a></li>
+              </ul>
         </div>
     </div>
 </div>

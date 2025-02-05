@@ -7,35 +7,35 @@
               <div class="option bold"> Option</div>
               <div class="col-sm-3 p-3">
                 <span class="labels">ដេប៉ាតឺម៉ង់</span>
-                <select class="js-example-basic-single" id="department_id" name="department_id" style="width: 100%;">
+                <select class="js-example-basic-single" id="department_code" name="department_code" style="width: 100%;">
                   <option value="">&nbsp;</option>
                     @foreach ($department as $dp)
-                      <option value="{{ $dp->id ?? ''}}">{{ $dp->department_name ??'' }}</option>
+                      <option value="{{ $dp->code ?? ''}}">{{ $dp->name_2 ??'' }}</option>
                     @endforeach
                 </select>
               </div>
-              
-              <div class="col-sm-3 p-3">
+
+              {{-- <div class="col-sm-3 p-3">
                 <span class="labels">ជំនាញ</span>
                 <select class="js-example-basic-single" id="category_id" name="category_id" style="width: 100%;">
                   <option value="">&nbsp;</option>
-                  {{-- @foreach ($categories as $categories)
+                  @foreach ($categories as $categories)
                   <option value="{{ $categories->id ?? ''}}">{{ $categories->category ??'' }}</option>
-                  @endforeach --}}
+                  @endforeach
                 </select>
-              </div>
-              <div class="col-sm-3 p-3">
+              </div> --}}
+              {{-- <div class="col-sm-3 p-3">
                 <span class="labels">ថ្នាក់</span>
                 <select class="js-example-basic-single" id="class_id" name="class_id" style="width: 100%;">
                   <option value="">&nbsp;</option>
-                  {{-- @foreach ($classes as $class)
+                  @foreach ($classes as $class)
                   <option value="{{ $class->id ?? ''}}">{{ $class->class ??'' }}</option>
-                  @endforeach --}}
+                  @endforeach
                 </select>
-              </div>
+              </div> --}}
             </div>
           </div>
-          <div class="col-md-12">
+          {{-- <div class="col-md-12">
             <div class="option bold"> Option Group BY</div>
             <div class="form-group row">
                 <div class="col-sm-3">
@@ -46,8 +46,7 @@
                   </select>
                 </div>
               </div>
-            <!-- <button type="button" class="btn btn-primary text-white" data-page="student" id="btn-adSearch">Search</button> -->
-          </div>
+          </div> --}}
         </div>
       </form>
     </div>

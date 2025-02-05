@@ -341,8 +341,8 @@ Route::group(['prefix' => 'transfer'], function (){
 
 Route::group(['perfix' => 'report_list_of_student_class_and_section'], function (){
     Route::get('report_list_of_student_class_and_section', [ReportListOfStudentClassAndSectionController::class, 'index'])->name('index');
-    Route::get('reports-list-of-student-priview', [ReportListOfStudentClassAndSectionController::class, 'Priview'])->name('Priview');
-    Route::get('reports-list-of-student-print', [ReportListOfStudentClassAndSectionController::class, 'Print'])->name('Print');
+    Route::get('report_list_of_student_class_and_section-priview', [ReportListOfStudentClassAndSectionController::class, 'Priview'])->name('Priview');
+    Route::get('report_list_of_student_class_and_section-print', [ReportListOfStudentClassAndSectionController::class, 'Print'])->name('Print');
     Route::get('reports-list-of-student-print/export/', [ReportListOfStudentClassAndSectionController::class, 'export']);
 })->middleware('auth');
 

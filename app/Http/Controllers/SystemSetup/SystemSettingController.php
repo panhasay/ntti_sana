@@ -104,38 +104,28 @@ class SystemSettingController extends Controller
                     break;
                 case 'student_registration':
                     $records = StudentRegistration::with(['session_year'])->whereRaw($extract_query)->paginate(1000);
-
-
                     $total_records = StudentRegistration::selectRaw(
                         DB::raw('COUNT(name) AS total_count'),
                     )->where('study_type', 'new student')
                         ->whereRaw($extract_query)
                         ->get();
-
-
                     $total_student_have_class = Student::select(
                         DB::raw('COUNT(name) AS total_count'),
                     )->where('study_type', 'new student')
                         ->whereRaw($extract_query)
                         ->whereNotNull('class_code')
                         ->get();
-
-
-
                     $blade_file_record = 'general.student_register_lists';
                     break;
                 case 'class-new':
                     $records = Classes::whereRaw($extract_query)->paginate(1000);
-
                     $updated_query = $extract_query;
                     if (!empty($data['code'])) {
                         $updated_query = preg_replace("/code=('.*?')/", "class_code=$1", $extract_query);
                     }
-
                     if (!empty($data['level'])) {
                         $updated_query = preg_replace("/level=('.*?')/", "qualification=$1", $extract_query);
                     }
-
                     $total_records = Student::selectRaw('COUNT(DISTINCT code) AS total_count')
                         ->where('study_type', 'new student')
 
