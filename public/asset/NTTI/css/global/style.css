@@ -12998,6 +12998,7 @@ dl {
 .select2-container--default .select2-selection--multiple .select2-selection__choice {
   color: color(white);
   border: 0;
+  border: 4px solid #aaa !important;
   border-radius: 3px;
   padding: 6px;
   font-size: .625rem;
@@ -13006,15 +13007,21 @@ dl {
   .select2-container--default .select2-selection--multiple .select2-selection__choice .select2-selection__choice__remove {
     color: color(white); }
   .select2-container--default .select2-selection--multiple .select2-selection__choice:nth-child(5n+1) {
-    background: #0033c4; }
+    background: #0033c4;
+    font-size: 14px !important;
+  }
   .select2-container--default .select2-selection--multiple .select2-selection__choice:nth-child(5n+2) {
-    background: #00d284; }
+    background: #00d284; 
+    font-size: 14px !important;}
   .select2-container--default .select2-selection--multiple .select2-selection__choice:nth-child(5n+3) {
-    background: #00cff4; }
+    background: #00cff4; 
+    font-size: 14px !important;}
   .select2-container--default .select2-selection--multiple .select2-selection__choice:nth-child(5n+4) {
-    background: #ff0854; }
+    background: #ff0854; 
+    font-size: 14px !important;}
   .select2-container--default .select2-selection--multiple .select2-selection__choice:nth-child(5n+5) {
-    background: #ff5730; }
+    background: #ff5730; 
+    font-size: 14px !important;}
 
 /* Typeahead */
 .tt-menu,

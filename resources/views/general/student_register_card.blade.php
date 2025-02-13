@@ -238,7 +238,7 @@
                 <span class="labels col-sm-6 col-form-label">ជំនាញ<strong style="color:red; font-size:15px;">
                     *</strong></span>
                 <div class="col-sm-6">
-                  <select class="js-example-basic-single FieldRequired" id="skills_code" name="skills_code"
+                  <select class="js-example-basic-single FieldRequired" id="skills_codes" name="skills_code"
                     style="width: 100%;">
                     <option value="">&nbsp;</option>
                     @foreach ($skills as $record)
@@ -255,7 +255,8 @@
               <div class="form-group row">
                 <span class="labels col-sm-3 col-form-label">ថ្នាក់/ក្រុម</span>
                 <div class="col-sm-9">
-                  <select class="js-example-basic-single" id="class_code" name="class_code" style="width: 100%;">
+                  <select class="js-example-basic-single class_code" id="class_code" name="class_code" style="width: 100%;">
+                    <option value="">&nbsp;</option>
                     @foreach ($class_record as $record)
                     <option value="{{ $record->code ?? '' }}" {{ isset($records->class_code) && $records->class_code
                       == $record->code ? 'selected' : '' }}>{{ isset($record->code) ? $record->code : '' }}
@@ -892,7 +893,7 @@
       });
     });
 
-    $(document).on('change', '#skills_code', function() {
+    $(document).on('change', '#skills_codes', function() {
       var value = $(this).val();
       var url = '/student/registration/loop-skill?value=' + encodeURIComponent(value);
       $.ajax({
@@ -907,11 +908,41 @@
           success: function(response) {
               $('.loader').hide();
               if (response.status === 'success') {
-                  $('#class_code').empty();
-                  $('#class_code').append('<option value="">ជ្រើសរើសក្រុម</option>');
+                  $('.class_code').empty();
+                  $('.class_code').append('<option value="">ជ្រើសរើសក្រុម</option>');
                   $.each(response.records, function(index, record) {
-                      $('#class_code').append('<option value="' + record.code + '">' + record.code + '</option>');
+                      $('.class_code').append('<option value="' + record.code + '">' + record.code + '</option>');
                   });
+              } else {
+                  notyf.error("Error: " + response.msg);
+              }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+              $('.loader').hide();
+              console.error('AJAX Error:', thrownError);
+              notyf.error("An error occurred while fetching data.");
+          }
+      });
+    });
+    $(document).on('change', '#class_code', function() {
+      var value = $(this).val();
+      var url = '/student/registration/loop-class?value=' + encodeURIComponent(value);
+      $.ajax({
+          type: 'get',
+          url: url,
+          headers: {
+              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          },
+          beforeSend: function() {
+              $('.loader').show();
+          },
+          success: function(response) {
+              $('.loader').hide();
+              if (response.status === 'success') {
+                  $('#skills_codes').empty();
+                  $('#skills_codes').append(`<option value="${response.records.skills_code}">${response.name_2}</option>`);
+                  $('#sections_code').empty();
+                  $('#sections_code').append(`<option value="${response.sections_code}">${response.sections_name}</option>`);
               } else {
                   notyf.error("Error: " + response.msg);
               }

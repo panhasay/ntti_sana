@@ -15,7 +15,6 @@ class QrCodeController extends Controller
 
         return response()->json(['base_url' => $baseUrl]);
     }
-
     public function generate(Request $request)
     {
         $baseUrl = $this->getBaseUrl()->getData()->base_url;
@@ -32,7 +31,7 @@ class QrCodeController extends Controller
         $qrCode = QrCode::size(60)
             ->margin(2)
             ->errorCorrection('H')
-            ->generate($baseUrl . '/dsa?code=' . urlencode($stu_code));
+            ->generate('https://myid.ntti.edu.kh/?code=' . urlencode($stu_code));
 
         return $qrCode;
     }

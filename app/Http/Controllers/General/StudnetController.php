@@ -185,6 +185,7 @@ class StudnetController extends Controller
 
             if (isset($_GET['code'])) {
                 $records = StudentRegistration::where('code', $this->services->Decr_string($_GET['code']))->first();
+                $class_record = DB::table('classes')->where('skills_code', $records->skills_code)->get();
                 $string = $records->name;
                 $data_string = str_replace(' ', '_', $string);
                 $user_student = $data_string;
@@ -270,9 +271,9 @@ class StudnetController extends Controller
         $code =  $lastRecord->code;
         $record = StudentRegistration::where('name_2',$request->name_2)->first();
 
-        if (isset($record->name_2) && $record->name_2 == $request->name_2){
-            return response()->json(['status' => 'error', 'msg' => "ឈ្មោះ\"{$request->name_2}\"មានរួចហើយ​!"]);
-        }
+        // if (isset($record->name_2) && $record->name_2 == $request->name_2){
+        //     return response()->json(['status' => 'error', 'msg' => "ឈ្មោះ\"{$request->name_2}\"មានរួចហើយ​!"]);
+        // }
         $department_code = Skills::where('code',  $input['skills_code'])->first();
         if($department_code) {
             $department_code = $department_code->department_code;
@@ -282,6 +283,7 @@ class StudnetController extends Controller
         $guardian_phone = $this->services->convertKhmerToEnglishNumber($request->guardian_phone);
 
         $date_of_birth = \Carbon\Carbon::parse($request->date_of_birth)->format('Y-m-d'); 
+        
         try {
             $records = new StudentRegistration();
             $records->code = $lastRecord ? $lastRecord->code + 1 : 1;
@@ -310,9 +312,7 @@ class StudnetController extends Controller
             $records->session_year_code = $request->session_year_code;
             $records->semester = $request->semester;
             $records->department_code = $department_code;
-
             $records->user_id = Auth::user()->id;
-
             $records->bakdop_results = $request->bakdop_results;
             $records->year_final = $request->year_final;
             $records->bakdop_index = $request->bakdop_index;
@@ -322,7 +322,51 @@ class StudnetController extends Controller
             $records->scholarship_type = $request->scholarship_type;
             $records->submit_your_application = $request->submit_your_application;
             $records->educational_institutions = $request->educational_institutions;
+            $records->class_code = $request->class_code;
             $records->save(); 
+
+            if($request->class_code){
+                $records = new Student();
+                $records->code = $lastRecord ? $lastRecord->code + 1 : 1;
+                $records->name_2 = $request->name_2;
+                $records->name = $request->name; 
+                $records->date_of_birth = $date_of_birth; 
+                $records->student_address = $request->student_address;
+                $records->current_address = $request->current_address;
+                $records->occupation = $request->occupation; 
+                $records->phone_student = $phone_student; 
+                $records->guardian_name = $request->guardian_name; 
+                $records->guardian_phone = $guardian_phone; 
+                $records->father_name = $request->father_name; 
+                $records->father_occupation = $request->father_occupation; 
+                $records->mother_name = $request->mother_name; 
+                $records->mother_occupation = $request->mother_occupation; 
+                $records->education_Level = $request->education_Level; 
+                $records->skills_code = $request->skills_code; 
+                $records->sections_code = $request->sections_code; 
+                $records->apply_year = $request->apply_year; 
+                $records->qualification = $request->qualification; 
+                $records->status = $request->status; 
+                $records->register_date = Carbon::now();
+                $records->study_type = "new student";
+                $records->gender = $request->gender;
+                $records->session_year_code = $request->session_year_code;
+                $records->semester = $request->semester;
+                $records->department_code = $department_code;
+                $records->user_id = Auth::user()->id;
+                $records->bakdop_results = $request->bakdop_results;
+                $records->year_final = $request->year_final;
+                $records->bakdop_index = $request->bakdop_index;
+                $records->bakdop_province = $request->bakdop_province;
+                $records->bakdop_type = $request->bakdop_type;
+                $records->scholarship = $request->scholarship;
+                $records->scholarship_type = $request->scholarship_type;
+                $records->submit_your_application = $request->submit_your_application;
+                $records->educational_institutions = $request->educational_institutions;
+
+                $records->class_code = $request->class_code;
+                $records->save(); 
+            }
 
             $code_last = StudentRegistration::latest('code')->first();
 
@@ -401,7 +445,61 @@ class StudnetController extends Controller
                 $records->scholarship_type = $request->scholarship_type;
                 $records->submit_your_application = $request->submit_your_application;
                 $records->educational_institutions = $request->educational_institutions;
+                $records->class_code = $request->class_code;
                 $records->update(); 
+
+                if ($request->class_code) {
+                    // Find student by code
+                    $records = Student::where('code', $code)->first();
+                
+                    if (!$records) {
+                        // If no student found, create a new one
+                        $records = new Student();
+                        $records->code = $code; // Ensure 'code' is set for new records
+                        $records->study_type = "new student"; // Default study type
+                    }
+                
+                    // Update or set student details
+                    $records->name_2 = $request->name_2;
+                    $records->name = $request->name;
+                    $records->date_of_birth = $date_of_birth;
+                    $records->student_address = $request->student_address;
+                    $records->current_address = $request->current_address;
+                    $records->occupation = $request->occupation;
+                    $records->phone_student = $phone_student;
+                    $records->guardian_name = $request->guardian_name;
+                    $records->guardian_phone = $guardian_phone;
+                    $records->father_name = $request->father_name;
+                    $records->father_occupation = $request->father_occupation;
+                    $records->mother_name = $request->mother_name;
+                    $records->mother_occupation = $request->mother_occupation;
+                    $records->education_Level = $request->education_Level;
+                    $records->skills_code = $request->skills_code;
+                    $records->sections_code = $request->sections_code;
+                    $records->apply_year = $request->apply_year;
+                    $records->qualification = $request->qualification;
+                    $records->status = $request->status;
+                    $records->register_date = Carbon::now();
+                    $records->gender = $request->gender;
+                    $records->session_year_code = $request->session_year_code;
+                    $records->semester = $request->semester;
+                    $records->department_code = $department_code;
+                
+                    $records->bakdop_results = $request->bakdop_results;
+                    $records->year_final = $request->year_final;
+                    $records->bakdop_index = $request->bakdop_index;
+                    $records->bakdop_province = $request->bakdop_province;
+                    $records->bakdop_type = $request->bakdop_type;
+                    $records->scholarship = $request->scholarship;
+                    $records->scholarship_type = $request->scholarship_type;
+                    $records->submit_your_application = $request->submit_your_application;
+                    $records->educational_institutions = $request->educational_institutions;
+                    $records->class_code = $request->class_code;
+                
+                    // Use save() to handle both insert and update
+                    $records->save();
+                }
+                
             return response()->json(['status' => 'success', 'msg' => 'Data Update Success !', '$records' => $records]);
         } catch (\Exception $ex) {
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
@@ -930,4 +1028,21 @@ class StudnetController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
+    public function StudentLoopClass(Request $request)
+    {
+        $data = $request->all();
+        try {
+            $records = Classes::where('code',  $data['value'])->first();
+            $name_2 = $records->skill->name_2;
+            $sections_code = $records->sections_code;
+            $sections_name = $records->section->name_2;
+            return response()->json(['status' => 'success', 'records' => $records, 'name_2' => $name_2, 'sections_code' => $sections_code, 'sections_name' => $sections_name]);
+        } catch (\Exception $ex) {
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+
+    
 }
+

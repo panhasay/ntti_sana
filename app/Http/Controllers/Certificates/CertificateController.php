@@ -260,15 +260,24 @@ class CertificateController extends Controller
         $lunarDay = ($daysDiff % 30) + 3;
 
         $lunarPhase = $lunarDay <= 15 ? 'កើត' : 'រោច';
+        // $dayInLunarPhase = $lunarDay <= 15 ? $lunarDay : $lunarDay - 15;
+        // // $khmerDayInLunarPhase = self::convertToKhmerNumerals($dayInLunarPhase);
+        // $khmerDayInLunarPhase = str_pad(self::convertToKhmerNumerals($dayInLunarPhase), 2, '0', STR_PAD_LEFT);
+
         $dayInLunarPhase = $lunarDay <= 15 ? $lunarDay : $lunarDay - 15;
-        $khmerDayInLunarPhase = self::convertToKhmerNumerals($dayInLunarPhase);
+
+        // Pad the number first (ensures "06" instead of "6")
+        $paddedDay = str_pad($dayInLunarPhase, 2, '0', STR_PAD_LEFT);
+
+        // Convert to Khmer numerals
+        $khmerDayInLunarPhase = self::convertToKhmerNumerals($paddedDay);
 
         $dayOfWeek = $khmerDays[$date->format('w')];
 
         $month = $LunarNewYear[$date->format('n') - 0];
         $year = $nameYear[(($date->format('Y') - 5) % 12)];
 
-        return "{$dayOfWeek}{$khmerDayInLunarPhase}{$lunarPhase}ខែ{$month} {$year} {$khmerYearCycle} ព.ស.{$buddhistYear}";
+        return "{$dayOfWeek} {$khmerDayInLunarPhase}{$lunarPhase} ខែ{$month} {$year} {$khmerYearCycle} ព.ស.{$buddhistYear}";
     }
 
     public function showViewCardInformation(Request $request)

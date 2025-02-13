@@ -1,9 +1,9 @@
 <?php
-    use Illuminate\Support\Str;
+use Illuminate\Support\Str;
 ?>
 <style>
     body {
-        font-family: "Khmer OS Battambang", Tahoma, sans-serif !important;
+        font-family: "Khmer OS Battambang" !important;
         margin: 0;
         display: flex;
         justify-content: center;
@@ -20,10 +20,9 @@
     }
 
     .card_background {
-        background: url("{{ asset('asset/NTTI/images/modules/ntti_background_03.png') }}") no-repeat center center;
+        background: url('asset/NTTI/images/modules/ntti_background_03.png') no-repeat center center;
         background-size: cover;
     }
-
 
     .id-card .flag {
         position: absolute;
@@ -47,21 +46,23 @@
     .id-card-left {
         text-align: left;
         font-weight: bold;
-        color: rgb(78, 27, 145);
+        color: rgb(0, 18, 128);
         font-size: 10px;
     }
 
     .id-card-date-khmer {
-        color: rgb(78, 27, 145);
+        color: rgb(0, 18, 128);
         text-align: center;
         margin-left: -15px !important;
         margin-top: 10.5px;
-        font-size: 9px
+        font-size: 9px;
     }
 
     .id-card-date-khmer-pp {
-        color: rgb(78, 27, 145);
-        font-size: 9px
+        float: right;
+        color: rgb(0, 18, 128);
+        font-size: 9px;
+        padding-right: 32px !important;
     }
 
     .id-card-center {
@@ -73,7 +74,7 @@
 
     .id-signature>.stamp {
         height: 75px;
-        margin-right: -35px;
+        margin-right: 0px;
     }
 
     .id-signature>.id-qr-code {
@@ -107,7 +108,7 @@
 
     .id-card-left>.pull-right {
         float: right;
-        padding-right: 1.90rem !important;
+        padding-right: 1.2rem !important;
         font-weight: bold !important;
     }
 
@@ -131,7 +132,7 @@
     }
 
     .stu-card-header {
-        color: rgb(78, 27, 145);
+        color: rgb(0, 18, 128);
         font-size: 11px;
         font-family: 'Khmer OS Muol Light', sans-serif;
         text-align: center;
@@ -145,7 +146,7 @@
     }
 
     .stu-card-header-sub {
-        color: rgb(78, 27, 145);
+        color: rgb(0, 18, 128);
         font-size: 9px;
         font-family: 'Khmer OS Muol Light', sans-serif;
         text-align: center;
@@ -209,12 +210,14 @@
     .card-body .card-personal {
         font-family: 'Khmer OS Muol Light', sans-serif;
     }
+
     @media print {
         @page {
             /* size: 5.5cm 8.6cm; */
             size: 5.5cm 8.6cm;
             margin: 0;
         }
+
         .page-break {
             page-break-before: always;
             break-before: page;
@@ -223,11 +226,10 @@
 </style>
 <div class="id-card card_background">
     <img alt="Portrait of a person in an orange robe" class="profile"
-        src="{{ asset($records->photo_status == true ? '/uploads/student/' . $records->stu_photo : '/asset/NTTI/images/faces/default_User.jpg') }}"
+        src="{{ $records->photo_status == true ? '/uploads/student/' . $records->stu_photo : '/asset/NTTI/images/faces/default_User.jpg' }}"
         width="120">
     <div class="details" style="margin-top: -10px;">
         <div class="id-card-center">
-            
             អត្តលេខ {{ $records->code }}
         </div>
         <div class="id-card-left">
@@ -238,7 +240,8 @@
             អក្សរឡាតាំង <span class="ps-3">{{ $records->name }}</span>
         </div>
         <div class="id-card-left">
-            ថ្ងៃខែឆ្នាំកំណើត <span class="ps-1">{{ App\Service\service::DateYearKH($records->date_of_birth) ?? '' }}</span>
+            ថ្ងៃខែឆ្នាំកំណើត<span
+                class="ps-1">{{ App\Service\service::DateYearKH($records->date_of_birth) ?? '' }}</span>
         </div>
         <div class="id-card-left">
             ជំនាញ<span class="ps-3"></span> <span class="ps-4">{{ $records->skill }}</span>
@@ -250,20 +253,21 @@
             {{ $record_date_khmer }}
         </div>
         <div class="id-card-date-khmer-pp">
-            រាជធានីភ្នំពេញ {{ formatDateToKhmer($record_print['print_date'] ?? now(), 'kh') }}
+            រាជធានីភ្នំពេញ, {{ formatDateToKhmer($record_print['print_date'] ?? now(), 'kh') }}
         </div>
     </div>
     <div class="id-signature">
         <div class="id-qr-code pull-left">
             {{ App\Http\Controllers\QrCodeController::generateCardStudent($records->code) }}
         </div>
-        <img class="stamp" alt="QR code" src="{{ asset('asset/NTTI/images/modules/បណ្ឌិត យ៉ោក សុទ្ធី (1).png') }}">
+        <img class="stamp" alt="QR code"
+            src="{{ asset('asset/NTTI/images/modules/Simple Email Signature with Picture.svg') }}">
     </div>
 </div>
 <div class="page-break"></div>
 <div class="card-students">
     <div class="logo">
-        <img src="{{ asset('/asset/NTTI/images/modules/ntti_flage_05.png') }}" height="80" width="100" alt="Logo">
+        <img src="/asset/NTTI/images/modules/ntti_flage_05.png" height="80" width="100" alt="Logo">
     </div>
     <div class="stu-card-header">
         <span>ព្រះរាជាណាចក្រកម្ពុជា</span>

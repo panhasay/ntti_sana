@@ -154,7 +154,7 @@
             </div>
             <div class="title-department">គ្រប់គ្រង សាណា​​(៥)បញ្ចាប់​ឆ្នាំ</div>
         </div>
-        <a href="{{ url('/assign-classes?years=5&type=បរិញ្ញាប័ត្រ') }}" style="text-decoration: none;">
+        <a href="{{ url('/student-sana') }}" style="text-decoration: none;">
             <div class="title-orerlay text-center">
                 សាណា​​ <br> បញ្ចាប់​ឆ្នាំ
             </div>

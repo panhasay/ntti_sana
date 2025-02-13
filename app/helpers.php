@@ -82,11 +82,17 @@ if (!function_exists('formatDateToKhmer')) {
         ];
 
         if ($language === 'kh') {
-            $day = str_replace(range(0, 9), $khmerNumbers, $carbonDate->day);
-            $month = $khmerMonths[$carbonDate->month - 1];
-            $year = str_replace(range(0, 9), $khmerNumbers, $carbonDate->year);
+            // Ensure day is two digits before converting to Khmer numerals
+            $day = str_pad($carbonDate->day, 2, '0', STR_PAD_LEFT);
+            $dayKhmer = str_replace(range(0, 9), $khmerNumbers, $day);
 
-            return "ថ្ងៃទី {$day} ខែ {$month} ឆ្នាំ {$year}";
+            // Convert year to Khmer numerals
+            $yearKhmer = str_replace(range(0, 9), $khmerNumbers, $carbonDate->year);
+
+            // Get Khmer month name
+            $monthKhmer = $khmerMonths[$carbonDate->month - 1];
+
+            return "ថ្ងៃទី{$dayKhmer} ខែ{$monthKhmer} ឆ្នាំ{$yearKhmer}";
         } elseif ($language === 'en') {
             $day = $carbonDate->day;
             $month = $englishMonths[$carbonDate->month - 1];

@@ -369,7 +369,7 @@ class service{
         $seconds = self::convertToKhmerNumerals(str_pad($now->format('s'), 2, '0', STR_PAD_LEFT));
         $formattedTime = "{$hours}:{$minutes}:{$seconds}";
         $prefix = self::getKhmerDatePrefix($now);
-
+        
         return "{$prefix} {$dayOfMonth} ខែ{$month} ឆ្នាំ{$year}";
     }
 

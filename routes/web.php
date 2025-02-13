@@ -27,6 +27,7 @@ use Illuminate\support\Facades\App;
 
 use App\Models\General\ExamSchedule;
 use App\Http\Controllers\Certificates\CertificateController;
+use App\Http\Controllers\General\StudentSanaController;
 use App\Http\Controllers\General\TransferController;
 use App\Http\Controllers\Report\ReportListOfStudentClassAndSectionController;
 use Illuminate\Support\Facades\DB;
@@ -249,6 +250,7 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
     Route::get('/student/scholarship', [StudnetController::class, 'IndexStudentScholarshipc']);
     Route::get('/student/registration-remaining', [StudnetController::class, 'StudentRemaining']);
     Route::get('/student/registration/loop-skill', [StudnetController::class, 'StudentLoopSkill']);
+    Route::get('/student/registration/loop-class', [StudnetController::class, 'StudentLoopClass']);
 });
 
 Route::group(['perfix' => 'class-new'], function (){
@@ -279,11 +281,11 @@ Route::group(['perfix' => 'exam-schedule'], function (){
     Route::get('/exam-schedule-print',[ExamScheduleController::class,'printLine']);
 })->middleware('auth');
 
-// Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static function () {
-//     Route::controller(CertificateController::class)->group(function () {
-//         Route::post('/level_shift_skill', 'showLevelShiftSkill');
-//     });
-// });
+Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static function () {
+    Route::controller(CertificateController::class)->group(function () {
+        Route::post('/level_shift_skill', 'showLevelShiftSkill');
+    });
+});
 
 Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static function () {
     Route::controller(CertificateController::class)->group(function () {
@@ -346,6 +348,13 @@ Route::group(['perfix' => 'report_list_of_student_class_and_section'], function 
     Route::get('reports-list-of-student-print/export/', [ReportListOfStudentClassAndSectionController::class, 'export']);
 })->middleware('auth');
 
+Route::group(['prefix' => 'student-sana'], function (){
+    Route::get('/',[StudentSanaController::class,'index']);
+    Route::get('/transaction', [StudentSanaController::class, 'transaction']);
+    Route::post('/update', [StudentSanaController::class, 'update']);
+    Route::post('/store', [StudentSanaController::class, 'store']);
+    Route::POST ('/transfer-delete', [StudentSanaController::class, 'delete']);
+})->middleware('auth');
 
 
 
