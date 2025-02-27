@@ -3,6 +3,32 @@
         font-family: "Khmer OS Battambang", Tahoma, sans-serif !important;
     }
 
+    * {
+        font-family: "Khmer OS Battambang", Tahoma, sans-serif !important;
+    }
+
+    /* start scroll bar */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 5px grey;
+        border-radius: 2px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #718093;
+        border-radius: 2px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #718093;
+    }
+
+    /* end scroll bar */
+
     table>thead>tr>th {
         font-family: "Khmer OS Battambang", Tahoma, sans-serif !important;
     }
@@ -35,6 +61,13 @@
 
     .nav-item .nav-link.active {
         background-color: #79c8f1 !important;
+        color: #fff !important;
+        font-weight: bold;
+        border: 1px solid #0056b3;
+    }
+
+    .nav-item .nav-link-stu.active {
+        background-color: #088ccf !important;
         color: #fff !important;
         font-weight: bold;
         border: 1px solid #0056b3;
@@ -112,7 +145,60 @@
         height: auto;
         margin-top: 15px;
     }
+
+
+
+    .card-custom {
+        display: flex;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .card-custom:hover {
+        transform: scale(1.05);
+    }
+
+    .icon-box {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 24px;
+        margin-right: 15px;
+    }
+
+    .bg-blue {
+        background-color: #17a2b8;
+    }
+
+    .bg-green {
+        background-color: #28a745;
+    }
+
+    .card-title {
+        font-size: 16px;
+        margin-bottom: 2px;
+        font-weight: 600;
+    }
+
+    .card-value {
+        font-size: 22px;
+        font-weight: bold;
+    }
+
+    /* customize css modal */
+    .modal-content {
+        border: 0px solid #e4e9f0 !important;
+    }
+
+    /* customize css modal */
 </style>
+
 @extends('app_layout.app_layout')
 @section('content')
     <x-breadcrumbs :array="[
@@ -122,9 +208,23 @@
         ['route' => 'department-menu', 'title' => 'ប្រព័ន្ឋគ្រប់គ្រងលិខិតបញ្ជាក់'],
     ]" />
 
+    <input type="hidden" name="session_code" id="session_code" value="{{ $sessionYear->code }}">
+
     <div class="row">
         <div class="page-header flex-wrap" style="border-bottom: 0px solid #dfdcdc;">
             <div class="header-left p-3">
+                <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" data-toggle="modal"
+                    data-target="#modal_card_due_date">
+                    <i class="mdi mdi-av-timer"></i> Open Print Date</a>
+
+                <button type="button" class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2" data-toggle="modal"
+                    data-target="#modal_card_create_expire_date">
+                    <i class="mdi mdi-calendar-clock"></i> Open Expire Date
+                </button>
+                <button type="button" class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" data-toggle="modal"
+                    data-target="#modal_card_upload_zip_photo"><i class="mdi mdi-cloud-upload"></i> Upload Photo
+                </button>
+                
                 <button type="button" id="prints" class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2">Print
                     <i class="mdi mdi-printer btn-icon-append"></i>
                 </button>
@@ -141,7 +241,7 @@
                 </a>
             </div>
         </div>
-        <div class="collapse show" id="collapse_search">
+        <div class="collapse " id="collapse_search">
             <div class="card card-body">
                 <form id="fm_search_student" role="form" class="form-horizontal" enctype="multipart/form-data">
                     <div class="row">
@@ -160,11 +260,15 @@
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
-                                    <span class="form-label">ក្រុម</span>
+                                    <span class="form-label">ក្រុម
+                                        <?php
+                                             $record_class =  DB::table('classes')->get();
+                                        ?>
+                                    </span>
                                     <div class="input-group">
-                                        <select class="select2-search class_code" id="sch_class_spec" name="sch_class_spec"
-                                            style="width: 100%" placeholder="សូមជ្រើសរើសក្រុម">
-                                            <option value="">សូមជ្រើសរើសក្រុម</option>
+                                        <select class="select2-search" id="sch_class_spec" name="sch_class_spec"
+                                            style="width: 100%" placeholder="ជ្រើសរើសក្រុមទាំងអស់">
+                                            <option value="">ជ្រើសរើសក្រុមទាំងអស់</option>
                                             @foreach ($record_class as $item)
                                                 <option value="{{ $item->code }}">{{ $item->name }}</option>
                                             @endforeach
@@ -215,14 +319,53 @@
                                 <div class="col-md-3 pull-left">
                                     <button type="button" class="btn btn-primary text-white" id="btn_search">ស្វែងរក
                                     </button>
-                                    <button type="button" class="btn btn-primary text-white" data-toggle="modal"
-                                        data-target="#modal_card_upload_zip_photo">Upload
-                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row g-3">
+                <div class="col-md-2">
+                    <div class="info-box bg-b-green-yellow">
+                        <span class="info-box-icon"><span class="mdi mdi-account-multiple"></span></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Total Students</span>
+                            <span class="info-box-number" id="tt_students">0</span>
+                        </div>
+                        <div class="progress" style="margin-top: -10px">
+                            <div class="progress-bar" style="width: 100%"></div>
+                        </div>
+                        <small class="d-flex justify-content-between w-100">
+                            <span class="text-start">Female: <strong id="tt_students_f">0</strong></span>
+                            <span class="text-center">|</span>
+                            <span class="text-end">Male: <strong id="tt_students_m">0</strong></span>
+                        </small>
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <div class="info-box bg-b-green-yellow">
+                        <span class="info-box-icon"><span class="mdi mdi-printer"></span></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Total Print</span>
+                            <span class="info-box-number" id="total_status_1">0</span>
+                        </div>
+                        <div class="progress" style="margin-top: -10px">
+                            <div class="progress-bar" style="width: 100%"></div>
+                        </div>
+                        <small class="d-flex justify-content-between w-100">
+                            <span class="text-start">Female: <strong id="total_female_status_1">0</strong></span>
+                            <span class="text-center">|</span>
+                            <span class="text-end">Male: <strong id="total_male_status_1">0</strong></span>
+                        </small>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -234,22 +377,20 @@
                     <a class="nav-link active" id="custom-tabs-four-home-tab" data-toggle="pill"
                         href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home"
                         aria-selected="false" style="font-family: 'Khmer OS Battambang', serif;"><i
-                        class="mdi mdi-account-card-details"></i> Card View
-                    </a>
+                            class="mdi mdi-account-card-details"></i> Card View</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="custom-tabs-card-list-tab" data-toggle="pill" href="#custom-tabs-card-list"
                         role="tab" aria-controls="custom-tabs-card-list" aria-selected="false"
                         style="font-family: 'Khmer OS Battambang', serif;"><i class="mdi mdi-format-list-bulleted"></i>
-                        Card List
-                    </a>
+                        Card List</a>
                 </li>
             </ul>
         </div>
-        <div class="tab-content" id="custom-tabs-four-tabContent">
+        <div class="tab-content pb-5" id="custom-tabs-four-tabContent">
             <div class="tab-pane fade active show" id="custom-tabs-four-home" role="tabpanel"
                 aria-labelledby="custom-tabs-four-home-tab">
-                <div class="col-md-12">
+                <div class="col-md-12 ps-3 pe-3">
                     <div class="row" id="tbl_stu_card_view">
                     </div>
                     <div id="pagination" class="mt-3"></div>
@@ -276,6 +417,7 @@
                                             <th>ជំនាញ</th>
                                             <th>កម្រិត</th>
                                             <th>រូបភាព</th>
+                                            <th>Revision</th>
                                             <th>Status</th>
                                             <th>Option</th>
                                         </tr>
@@ -290,11 +432,11 @@
                 </div>
             </div>
         </div>
-        <br><br>
         <!-- /.card -->
     </div>
 
     <x-modal-first id="modal_card_print_card" title="Confirmation">
+        <input type="hidden" id="hidden_print_card_id" name="print_card_id">
         <input type="hidden" id="hidden_stu_code" name="stu_code">
         <input type="hidden" id="hidden_dept_code" name="dept_code">
         <input type="hidden" id="hidden_class_code" name="class_code">
@@ -302,6 +444,17 @@
         <x-slot name="footer">
             <x-close-modal />
             <x-close-modal class="btn btn-primary" label="OK" btn="btn_print_card" />
+        </x-slot>
+    </x-modal-first>
+    <x-modal-first id="modal_card_print_revisino" title="Confirmation">
+        <input type="hidden" id="hidden_revision_print_card_id" name="print_card_id">
+        <input type="hidden" id="hidden_revision_stu_code" name="stu_code">
+        <input type="hidden" id="hidden_revision_dept_code" name="dept_code">
+        <input type="hidden" id="hidden_revision_class_code" name="class_code">
+        <h4 class="text-center p-4">Do you want to add status prints ?</h4>
+        <x-slot name="footer">
+            <x-close-modal />
+            <x-close-modal class="btn btn-primary" label="OK" btn="btn_print_set_revision" />
         </x-slot>
     </x-modal-first>
     <x-modal-first id="modal_card_disable_active" title="Disable Active Print Card">
@@ -314,13 +467,12 @@
             <x-close-modal class="btn btn-primary" label="OK" btn="btn_card_disable_active" />
         </x-slot>
     </x-modal-first>
-    <x-modal-first id="modal_card_update" title="កែប្រែកាលបរិច្ឆេទ" size="lg" centered="true" scrollable="true"
-        fullscreen="true">
+    <x-modal-first id="modal_card_update" title="Update Photo" size="100px" centered="true">
         <input type="hidden" id="hidden_update_stu_code" name="stu_code">
         <input type="hidden" id="hidden_update_dept_code" name="dept_code">
         <input type="hidden" id="hidden_update_class_code" name="class_code">
         <div class="row g-2">
-            <div class="col-md-3 stretch-card">
+            <div class="col-md-12 stretch-card">
                 <div class="card profile-card text-center">
                     <div class="card-body position-relative">
                         <div class="profile-image position-relative d-inline-block" style="width: 172px;">
@@ -328,14 +480,6 @@
                                 height="120" width="120" alt="Profile Picture">
                             <input type="file" id="fileUploadProfileStu"
                                 class="btn position-absolute top-0 start-0 opacity-0 w-100 h-100">
-                            {{-- <button
-                                class="btn btn-primary position-absolute top-0 end-0 translate-middle p-1 rounded-circle"
-                                style="width: 40px; height: 40px;" id="uploadIcon" title="Upload Image">
-                                <i class="bi bi-upload"></i>
-                                <input type="file" id="fileUploadProfileStu"
-                                    class="btn position-absolute top-0 start-0 opacity-0 w-100 h-100">
-                            </button> --}}
-
                         </div>
                         <h5 class="card-title mt-3" id="txt_up_view_name"></h5>
                         <hr>
@@ -365,44 +509,58 @@
                             </div>
                             <div class="col-6 text-right" id="txt_up_view_shift"></div>
                         </div>
+                        <div class="row">
+                            <div class="col-6 text-left" style="text-align: left">
+                                <strong>កាលបរិច្ចេទសុពលភាព:</strong>
+                            </div>
+                            <div class="col-6 text-right" id="txt_up_view_expire_card"></div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-9 stretch-card">
+        </div>
+        <x-slot name="footer">
+            <x-close-modal />
+            <x-close-modal class="btn btn-primary" label="OK" btn="btn_update_info" />
+        </x-slot>
+    </x-modal-first>
+    <x-modal-first id="modal_card_due_date" title="Date Print Card" size="xl">
+        <div class="row g-2">
+            <div class="col-md-12 stretch-card">
                 <div class="card">
                     <div class="card-body">
-                        <form id="fm_card_update_info" role="form" class="form-horizontal"
-                            enctype="multipart/form-data" method="POST">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group row">
-                                        <div class="col-sm-3">
-                                            <span class="form-label">កាលបរិច្ចេទ</span>
-                                            <div class="input-group">
-                                                <input type="date" class="form-control form-control-sm"
-                                                    id="txt_up_date_card" name="txt_up_date_card"
-                                                    value="{{ now()->format('Y-m-d') }}" placeholder="ថ្ងៃខែឆ្នាំកំណើត"
-                                                    aria-label="ថ្ងៃខែឆ្នាំកំណើត">
-                                            </div>
+                        <form id="fm_card_due_date" role="form" class="form-horizontal" enctype="multipart/form-data"
+                            method="POST">
+                            <i class="mdi mdi-star text-danger"></i>
+                            <label class="title-page">{{ $sessionYear->name }}</label>
+                            <br>
+                            <br>
+                            <div class="col-md-12">
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <span class="form-label">កាលបរិច្ចេទ</span>
+                                        <div class="input-group">
+                                            <input type="date" class="form-control form-control-sm" id="txt_due_date"
+                                                name="txt_due_date" value="{{ now()->format('Y-m-d') }}"
+                                                placeholder="ថ្ងៃខែឆ្នាំកំណើត" aria-label="ថ្ងៃខែឆ្នាំកំណើត">
                                         </div>
                                     </div>
-                                    <hr>
-                                    <div class="form-group row">
-                                        <div class="col-md-6">
-                                            <span class="form-label">កាលបរិច្ឆេទតាមច័ន្ទគតិខ្មែរ</span>
-                                            <div class="input-group">
-                                                <input type="text" class="form-control form-control-sm"
-                                                    id="txt_up_khmer_lunar" name="txt_up_khmer_lunar"
-                                                    placeholder="កាលបរិច្ឆេទតាមច័ន្ទគតិខ្មែរ">
-                                            </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-4">
+                                        <span class="form-label">កាលបរិច្ឆេទតាមច័ន្ទគតិខ្មែរ</span>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control form-control-sm"
+                                                id="txt_due_khmer_lunar" name="txt_due_khmer_lunar"
+                                                placeholder="កាលបរិច្ឆេទតាមច័ន្ទគតិខ្មែរ">
                                         </div>
-                                        <div class="col-md-6">
-                                            <span class="form-label">កាលបរិច្ឆេទតាមសុរិយគតិខ្មែរ</span>
-                                            <div class="input-group">
-                                                <input type="text" class="form-control form-control-sm"
-                                                    id="txt_up_date_create" name="txt_up_date_create"
-                                                    placeholder="កាលបរិច្ឆេទតាមសុរិយគតិខ្មែរ" readonly>
-                                            </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <span class="form-label">កាលបរិច្ឆេទតាមសុរិយគតិខ្មែរ</span>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control form-control-sm"
+                                                id="txt_due_date_create" name="txt_due_date_create"
+                                                placeholder="កាលបរិច្ឆេទតាមសុរិយគតិខ្មែរ">
                                         </div>
                                     </div>
                                 </div>
@@ -414,11 +572,74 @@
         </div>
         <x-slot name="footer">
             <x-close-modal />
-            <x-close-modal class="btn btn-primary" label="OK" btn="btn_update_info" />
+            <x-button class="btn-primary" label="Save" btn="btn_due_date_this_session" />
+            <x-button class="btn-primary" label="Update" btn="btn_update_date_this_session" />
+        </x-slot>
+    </x-modal-first>
+    <x-modal-first id="modal_card_create_expire_date" title="Expire Date" size="lg">
+        <div class="row g-2">
+            <div class="col-md-12 stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <form id="fm_card_expire_date" role="form" class="form-horizontal"
+                            enctype="multipart/form-data" method="POST">
+                            <i class="mdi mdi-star text-danger"></i>
+                            <label class="title-page">{{ $sessionYear->name }}</label>
+                            <div class="col-md-12 mt-3">
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <span class="form-label">កម្រិត</span>
+                                        <div class="input-group">
+                                            <select class="select2-sch-modal" id="txt_due_level" name="txt_due_level"
+                                                style="width: 100%" placeholder="សូមជ្រើសរើសកម្រិត">
+                                                <option value="">សូមជ្រើសរើសកម្រិត</option>
+                                                @foreach ($record_level as $item)
+                                                    <option value="{{ $item->level }}">{{ $item->level }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <span class="form-label">ក្រុម</span>
+                                        <div class="input-group">
+                                            <select class="select2-sch-modal" id="txt_due_class" name="txt_due_class"
+                                                style="width: 100%" placeholder="សូមជ្រើសរើសក្រុម">
+                                                <option value="">សូមជ្រើសរើសក្រុម</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <span class="form-label">កាលបរិច្ចេទសុពលភាព</span>
+                                        <div class="input-group">
+                                            <input type="date" class="form-control form-control-sm"
+                                                id="sl_due_expire_date" name="sl_due_expire_date"
+                                                value="{{ now()->format('Y-m-d') }}" placeholder="កាលបរិច្ចេទសុពលភាព"
+                                                aria-label="កាលបរិច្ចេទសុពលភាព">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <span class="form-label">កាលបរិច្ឆេទសុពលភាព</span>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control form-control-sm"
+                                                id="txt_due_expire_date" name="txt_due_expire_date"
+                                                placeholder="កាលបរិច្ឆេទសុពលភាព">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <x-slot name="footer">
+            <x-close-modal />
+            <x-button class="btn-primary" label="Save" btn="btn_due_expire_card" />
+            <x-button class="btn-primary" label="Update" btn="btn_due_update_expire_card" />
         </x-slot>
     </x-modal-first>
     <x-modal-first class="modal-select2" id="modal_card_upload_zip_photo" title="Upload Photo Multiple Option"
-        size="lg" centered="true" scrollable="true" fullscreen="true">
+        size="lg" centered="true">
         <div class="card-body">
             <form id="fm_up_card_base_option" role="form" class="form-horizontal" enctype="multipart/form-data"
                 method="POST">
@@ -426,11 +647,11 @@
                     <div class="col-md-12">
                         <div class="form-group row">
                             <div class="col-sm-3">
-                                <span class="form-label">ជ្រើសរើសប្រភេទឯកសារ</span>
+                                <span class="form-label">ជ្រើសរើសប្រភេទ Upload</span>
                                 <div class="input-group">
                                     <select class="select2-sch-modal" id="up_type_option" name="up_type_option"
-                                        style="width: 100%" placeholder="សូមជ្រើសរើសប្រភេទឯកសារ">
-                                        <option value="">សូមជ្រើសរើសប្រភេទឯកសារ</option>
+                                        style="width: 100%" placeholder="សូមជ្រើសរើសប្រភេទ Upload">
+                                        <option value="">សូមជ្រើសរើសប្រភេទ Upload</option>
                                         <option value="zip" selected>File Zip</option>
                                         <option value="multiple">Multiple Photo</option>
                                     </select>
@@ -462,34 +683,301 @@
             <x-button class="btn-primary" label="OK" btn="btn_upload_zip_photo" />
         </x-slot>
     </x-modal-first>
+    <x-modal-first id="modal_card_view_detail" title="Student Details" size="xl">
+        <div class="row g-2">
+            <div class="col-md-4 stretch-card">
+                <div class="card profile-card text-center">
+                    <div class="card-body position-relative">
+                        <div class="profile-image position-relative d-inline-block" style="width: 172px;">
+                            <img id="txt_view_photo" src="{{ asset('asset/NTTI/images/faces/default_User.jpg') }}"
+                                height="120" width="120" alt="Profile Picture">
+                        </div>
+                        <h5 class="card-title mt-3" id="txt_view_name"></h5>
+                        <hr>
+                        <div class="row">
+                            <div class="col-6 text-left" style="text-align: left"><strong>អត្តលេខ:</strong>
+                            </div>
+                            <div class="col-6 text-right" id="txt_view_id"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 text-left" style="text-align: left"><strong>ក្រុម:</strong>
+                            </div>
+                            <div class="col-6 text-right" id="txt_view_class"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 text-left" style="text-align: left"><strong>ជំនាញ:</strong>
+                            </div>
+                            <div class="col-6 text-right" id="txt_view_skill"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 text-left" style="text-align: left"><strong>កម្រិត:</strong>
+                            </div>
+                            <div class="col-6 text-right" id="txt_view_level"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 text-left" style="text-align: left">
+                                <strong>វេនសិក្សា:</strong>
+                            </div>
+                            <div class="col-6 text-right" id="txt_view_shift"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8 stretch-card">
+                <div class="row g-2">
+                    <ul class="nav nav-pills nav-pills-custom" role="tablist" id="pills-tab">
+                        <li class="nav-item active" role="presentation">
+                            <a class="nav-link active" id="pills-one-tab" data-bs-toggle="pill"
+                                href="#pills-info-stu-tab" role="tab" aria-controls="pills-one"
+                                aria-selected="true"> ព័ត៌មានសិស្ស </a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="pills-two-tab" data-bs-toggle="pill" href="#pills-guardian-tab"
+                                role="tab" aria-controls="pills-two" aria-selected="false" tabindex="-1">
+                                ព័ត៌មានអាណាព្យាបាល </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content tab-content-custom-pill" id="pills-tabContent"
+                        style="border: 0 solid #e4e9f0;">
+                        <div class="tab-pane fade active show" id="pills-info-stu-tab" role="tabpanel"
+                            aria-labelledby="pills-one-tab">
+                            <div class="profile-personal-info" style="padding-left: 10px;">
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500">គោត្តនាម និងនាម <span class="pull-right">:</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_view_fullname_kh"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500">ឈ្មោះជាឡាតាំង <span class="pull-right">:</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_view_fullname_eng"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500">ថ្ងៃខែឆ្នាំកំណើត <span class="pull-right">:</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_view_dob"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500">ថ្នាក់ / ក្រុម <span class="pull-right">:</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_view_class_1"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500">លេខទូរស័ព្ទ <span class="pull-right">:</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_view_phone"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500">ជំនាញ<span class="pull-right">:</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_view_skill_1"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500">អ៊ីមែល<span class="pull-right">:</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_view_email"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500">ភេទ<span class="pull-right">:</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_view_gender"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500">អាស័យ​ដ្ឋាន​បច្ចុប្បន្ន<span class="pull-right">:</span></h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_view_addr"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500">ដេប៉ាដេម៉ង់<span class="pull-right">:</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_view_dept"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500">កាលបរិច្ចេទសុពលភាព<span class="pull-right">:</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_view_expire_card"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-    <!---PRINT--->
-    <div class="modal fade" id="ModelPrints" tabindex="-1" role="dialog" aria-labelledby="ModelPrints" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-m-header">
-                <h5 class="modal-title" id="divConfirmation">Confirmation</h5>
-            </div>
-            <div class="modal-body">
-                <h4 class="modal-confirmation-text text-center p-4"></h4>
-            </div>
-            <div class="modal-footer">
-            <button type="button" id="btnClose" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" id="YesPrints" data-class="" data-code="{{ $_GET['assing_no'] ?? '' }}" data-id=""
-                class="btn btn-primary">Yes</button>
+                        <div class="tab-pane fade" id="pills-guardian-tab" role="tabpanel">
+                            <div class="profile-personal-info" style="padding-left: 10px;">
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500">ឈ្មោះ ឪពុក<span class="pull-right">:</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_view_father"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500">ទូរស័ព្ទ ឪពុក<span class="pull-right">:</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_view_father_phone"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500">មុខរបរឪពុក<span class="pull-right">:</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_view_father_job"></span>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row mb-1">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500">ឈ្មោះ ម្ដាយ<span class="pull-right">:</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_view_mother"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500">ទូរស័ព្ទ ម្ដាយ<span class="pull-right">:</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_view_mother_phone"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500">មុខរបរម្ដាយ<span class="pull-right">:</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_view_mother_job"></span>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row mb-1">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500">ឈ្មោះ អាណាព្យាបាល<span class="pull-right">:</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_guardian_name"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500">ទូរស័ព្ទ អាណាព្យាបាល<span class="pull-right">:</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_guardian_phone"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500">មុខរបរ អាណាព្យាបាល<span class="pull-right">:</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_guardian_occupation"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-lg-6 col-md-4 col-sm-6 col-6">
+                                        <h5 class="f-w-500 text-wrap">អាសយដ្ឋាន អាណាព្យាបាល<span
+                                                class="pull-right">:</span>
+                                        </h5>
+                                    </div>
+                                    <div class="col-lg-6 col-md-8 col-sm-6 col-6">
+                                        <span id="txt_guardian_address"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
+        <x-slot name="footer">
+            <x-close-modal />
+        </x-slot>
+    </x-modal-first>
+
+        <!---PRINT--->
+        <div class="modal fade" id="ModelPrints" tabindex="-1" role="dialog" aria-labelledby="ModelPrints" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-m-header">
+                    <h5 class="modal-title" id="divConfirmation">Confirmation</h5>
+                </div>
+                <div class="modal-body">
+                    <h4 class="modal-confirmation-text text-center p-4"></h4>
+                </div>
+                <div class="modal-footer">
+                <button type="button" id="btnClose" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="YesPrints" data-class="" data-code="{{ $_GET['assing_no'] ?? '' }}" data-id=""
+                    class="btn btn-primary">Yes</button>
+                </div>
+            </div>
+            </div>
         </div>
-    </div>
-    <!---PRINT CONNECT--->
-    <div class="print" style="display: none">
-        <div class="print-content">
+        <!---PRINT CONNECT--->
+        <div class="print" style="display: none">
+            <div class="print-content">
+        
+            </div>
+        </div>
+        <!-- Modal -->
     
-        </div>
-    </div>
-    <!-- Modal -->
+        @include('system.modal_comfrim_donwload')
 
-    @include('system.modal_comfrim_donwload')
     <script>
         const dept_code = @json(request()->route('dept_code'), JSON_THROW_ON_ERROR);
         // var dept_code = {{ $arr_dept[0]->code }};
@@ -529,6 +1017,24 @@
         });
 
         // Display image previews
+        // function handleFiles(files) {
+        //     files.forEach((file) => {
+        //         if (file.type.startsWith('image/')) {
+        //             const reader = new FileReader();
+        //             reader.onload = (e) => {
+        //                 const img = document.createElement('img');
+        //                 img.src = e.target.result;
+        //                 img.style.width = "150px";
+        //                 img.style.height = "200px";
+        //                 img.style.objectFit = "cover";
+        //                 img.style.borderRadius = "5px";
+        //                 previewContainer.appendChild(img);
+        //             };
+        //             reader.readAsDataURL(file);
+        //         }
+        //     });
+        // }
+
         function handleFiles(files) {
             files.forEach((file) => {
                 if (file.type.startsWith('image/')) {
@@ -540,6 +1046,13 @@
                         img.style.height = "200px";
                         img.style.objectFit = "cover";
                         img.style.borderRadius = "5px";
+
+                        // Extract default name (without extension)
+                        const fileNameWithoutExt = file.name.split('.').slice(0, -1).join('.');
+
+                        // Set data-name attribute
+                        img.setAttribute('data-name', fileNameWithoutExt);
+
                         previewContainer.appendChild(img);
                     };
                     reader.readAsDataURL(file);
@@ -547,12 +1060,8 @@
             });
         }
 
-        // $(document).on('change.select2', '#sch_class_spec', function() {
-        //     alert('Hello');
-        // });
-
         $(document).ready(function() {
-            $('.class_code').on('change', function() {
+            $('#sch_class_spec').on('change', function() {
                 let selectedValue = $(this).val();
                 $("#YesPrints").attr('data-class', selectedValue);
                 $("#btnYesExcel").attr('data-code', selectedValue);
@@ -564,6 +1073,7 @@
             });
             $(document).on('click', '#YesPrints', function() {
                 var DataClass = $(this).attr('data-class'); 
+
 
                 if (DataClass == '') {
                     return notyf.error("សូមជ្រើសរើស ថ្នាក់/ក្រុម");
@@ -642,7 +1152,5 @@
             $('.loader').hide();
             $("#divConfirmationExcel").modal('hide');
         }
-       
-       
     </script>
 @endsection

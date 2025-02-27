@@ -13007,20 +13007,20 @@ dl {
   .select2-container--default .select2-selection--multiple .select2-selection__choice .select2-selection__choice__remove {
     color: color(white); }
   .select2-container--default .select2-selection--multiple .select2-selection__choice:nth-child(5n+1) {
-    background: #0033c4;
+    background: #aaa;
     font-size: 14px !important;
   }
   .select2-container--default .select2-selection--multiple .select2-selection__choice:nth-child(5n+2) {
-    background: #00d284; 
+    background: #aaa; 
     font-size: 14px !important;}
   .select2-container--default .select2-selection--multiple .select2-selection__choice:nth-child(5n+3) {
-    background: #00cff4; 
+    background: #aaa; 
     font-size: 14px !important;}
   .select2-container--default .select2-selection--multiple .select2-selection__choice:nth-child(5n+4) {
-    background: #ff0854; 
+    background: #aaa; 
     font-size: 14px !important;}
   .select2-container--default .select2-selection--multiple .select2-selection__choice:nth-child(5n+5) {
-    background: #ff5730; 
+    background: #aaa; 
     font-size: 14px !important;}
 
 /* Typeahead */

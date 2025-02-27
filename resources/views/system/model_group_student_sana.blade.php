@@ -13,14 +13,14 @@
                 <div class="form-group row">
                     <span class="labels col-sm-3 col-form-label text-end">លេខកូដក្រុម</span>
                     <div class="col-sm-9">
-                        <input class="formSublist form-control form-control-sm" type="text" date-name="sub_class_code" id="code" name="sub_class_code" placeholder="លេខកូដក្រុម" value="" style="width: 100%;">
+                        <input class="formSublist sub_class_code form-control form-control-sm" type="text" date-name="sub_class_code" id="code" name="sub_class_code" placeholder="លេខកូដក្រុម" value="" style="width: 100%;">
                     </div>
                 </div> 
 
                 <div class="form-group row">
                     <span class="labels col-sm-3 col-form-label text-end">សាស្រ្ដចារ្យដឹកនាំ ​</span>
                     <div class="col-sm-9">
-                        <select class="js-example-basic-single FieldRequired formSublist" id="teacher_leader_code" name="teacher_leader_code" style="width: 100% !important;">
+                        <select class="js-example-basic-single FieldRequired formSublist teacher_leader_code" id="teacher_leader_code" name="teacher_leader_code" style="width: 100% !important;">
                             <option value="">&nbsp;</option>
                             @foreach ($teachers as $record) 
                                 <option value="{{ $record->code ?? '' }}">
@@ -34,7 +34,7 @@
                 <div class="form-group row">
                     <span class="labels col-sm-3 col-form-label text-end">សាស្រ្ដចារ្យពិគ្រោះ​</span>
                     <div class="col-sm-9">
-                        <select class="js-example-basic-single FieldRequired formSublist"  multiple="multiple" id="teacher_consult_code" name="teacher_consult_code" style="width: 100% !important;">
+                        <select  multiple="multiple" class="js-example-basic-single FieldRequired"  id="teacher_consult_code" name="teacher_consult_code" style="width: 100% !important;">
                             <option value="">&nbsp;</option>
                             @foreach ($teachers as $record) 
                                 <option value="{{ $record->code ?? '' }}">

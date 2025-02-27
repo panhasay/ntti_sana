@@ -222,11 +222,13 @@ class SystemSettingController extends Controller
                         ->where('code', '<>', null)->get();
                     $blade_file_record = 'general.teachers_lists';
                 } else if ($page == 'student_registration') {
-                    $menus = StudentRegistration::where('name', 'like', $search_value . "%")
-                        ->orWhere('code', 'like', $search_value . "%")
-                        ->orWhere('name_2', 'like', $search_value . "%")
-                        ->where('department_code', Auth::user()->department_code)
-                        ->where('code', '<>', null)->get();
+                        $menus = DB::table('student')
+                            ->where(function ($query) use ($search_value) {
+                                $query->where('name_2', 'like', $search_value . "%")
+                                    ->orWhere('name', 'like', $search_value . "%");
+                            })
+                            ->whereNotNull('class_code') // Ensures class_code is not null
+                            ->get();
                     $blade_file_record = 'general.student_register_lists';
                 } else if ($page == 'class-new') {
                     $menus = Classes::where('name', 'like', $search_value . "%")
@@ -298,11 +300,14 @@ class SystemSettingController extends Controller
                         ->where('code', '<>', null)->paginate(1000);
                     $blade_file_record = 'general.teachers_lists';
                 } else if ($page == 'student_registration') {
-                    $menus = DB::table('student_registration')->where('name', 'like', $search_value . "%")
-                        ->orWhere('code', 'like', $search_value . "%")
-                        ->orWhere('name_2', 'like', $search_value . "%")
-                        ->where('department_code', Auth::user()->department_code)
-                        ->where('code', '<>', null)->paginate(1000);
+                    $menus = DB::table('student')
+                        ->where(function ($query) use ($search_value) {
+                            $query->where('name', 'like', $search_value . "%")
+                                ->orWhere('code', 'like', $search_value . "%")
+                                ->orWhere('name_2', 'like', $search_value . "%");
+                        })
+                        ->whereNotNull('code')
+                        ->paginate(1000);
                     $blade_file_record = 'general.student_register_lists';
                 } else if ($page == 'class-new') {
                     $menus = DB::table('classes')->where('name', 'like', $search_value . "%")
@@ -341,7 +346,7 @@ class SystemSettingController extends Controller
                 } else if ($page == 'teachers') {
                     $records = Teachers::where('code', null)->paginate(1000);
                 } else if ($page == 'student_registration') {
-                    $records = StudentRegistration::where('department_code', Auth::user()->department_code)->paginate(1000);
+                    $records = StudentRegistration::paginate(1000);
                 } else if ($page == 'class-new') {
                     $records = Classes::where('department_code', Auth::user()->department_code)->paginate(1000);
                 } else if ($page == 'scholarship') {

@@ -31,6 +31,7 @@ use App\Http\Controllers\General\StudentSanaController;
 use App\Http\Controllers\General\TransferController;
 use App\Http\Controllers\Report\ReportListOfStudentClassAndSectionController;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +43,14 @@ use Illuminate\Support\Facades\DB;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::get('/clear-all', function() {
+    Artisan::call('cache:clear');    // Clear application cache
+    Artisan::call('config:clear');   // Clear configuration cache
+    Artisan::call('route:clear');    // Clear route cache
+    Artisan::call('view:clear');     // Clear compiled views
+    return 'All specific caches cleared!';
+});
 
 Route::get('/greeting/{locale}', function (string $locale) {
     if (! in_array($locale, ['en', 'kh'])) {
@@ -287,15 +296,56 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
     });
 });
 
+// Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static function () {
+//     Route::controller(CertificateController::class)->group(function () {
+//         Route::get('/dept-menu', 'index')->name('cert.dept_menu');
+//         Route::get('/dept-menu/{dept_code}', 'showMenuModule')->where('dept_code', '[A-Z_]+')->name('cert.dept.list');
+
+//         $subModules = DB::table('cert_sub_module')->where('active', 1)->whereNotNull('route')->get();
+//         foreach ($subModules as $item) {
+//             Route::get('/{dept_code}' . '/' . $item->route . '/{module_code}', $item->controller)->name('certificate.' . $item->route);
+//         }
+
+//         Route::prefix('student')->group(function () {
+//             Route::post('/bar', 'getStudentPieBarChartData');
+//         });
+
+//         Route::post('/level_shift_skill', 'showLevelShiftSkill');
+//         Route::post('/card_view', 'showCardView');
+//         Route::post('/card_view_list', 'showCardView');
+//         Route::post('/print_card', 'printCardStudent');
+//         Route::post('/card_view_info', 'showViewCardInformation');
+//         Route::post('/upload_student_info', 'updateCardInformation');
+//         Route::post('/disable_student_info', 'disableCardInformation');
+//         Route::post('/show_change_date_print_card', 'showChangeDatePrintCard');
+//         Route::post('/upload_zip_photo', 'uploadZip');
+//         Route::post('/upload_multiple_photo', 'uploadMultiplePhoto');
+//         Route::get('/print_card', static function () {
+//             return view('certificate/certificate_card_print_get');
+//         });
+//         Route::get('/print_card_pdf', 'printCardStudentPdf');
+//         Route::get('/D_IT/student_card/certificate/card-student-print', 'printListClassification');
+//         Route::get('/D_EL/student_card/certificate/card-student-print', 'printListClassification');
+//         Route::get('/D_CL/student_card/certificate/card-student-print', 'printListClassification');
+
+//         Route::get('/D_IT/student_card/certificate/card-student-excel', 'ExcelListClassification');
+//         Route::get('/D_EL/student_card/certificate/card-student-excel', 'ExcelListClassification');
+//         Route::get('/D_CL/student_card/certificate/card-student-excel', 'ExcelListClassification');
+//     });
+// });
+
 Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static function () {
     Route::controller(CertificateController::class)->group(function () {
         Route::get('/dept-menu', 'index')->name('cert.dept_menu');
         Route::get('/dept-menu/{dept_code}', 'showMenuModule')->where('dept_code', '[A-Z_]+')->name('cert.dept.list');
 
         $subModules = DB::table('cert_sub_module')->where('active', 1)->whereNotNull('route')->get();
-        foreach ($subModules as $item) {
-            Route::get('/{dept_code}' . '/' . $item->route . '/{module_code}', $item->controller)->name('certificate.' . $item->route);
-        }
+        Route::prefix('{dept_code}')->group(function () use ($subModules) {
+            foreach ($subModules as $item) {
+                Route::get($item->route . '/{module_code}', $item->controller)
+                    ->name('certificate.' . $item->route);
+            }
+        });
 
         Route::prefix('student')->group(function () {
             Route::post('/bar', 'getStudentPieBarChartData');
@@ -305,16 +355,26 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
         Route::post('/card_view', 'showCardView');
         Route::post('/card_view_list', 'showCardView');
         Route::post('/print_card', 'printCardStudent');
+        Route::post('/print_card_revision', 'storePrintCardRevision');
         Route::post('/card_view_info', 'showViewCardInformation');
         Route::post('/upload_student_info', 'updateCardInformation');
         Route::post('/disable_student_info', 'disableCardInformation');
         Route::post('/show_change_date_print_card', 'showChangeDatePrintCard');
         Route::post('/upload_zip_photo', 'uploadZip');
         Route::post('/upload_multiple_photo', 'uploadMultiplePhoto');
-        Route::get('/print_card', static function () {
-            return view('certificate/certificate_card_print_get');
-        });
+        Route::post('/card_due_date', 'StoreDueDateSession');
+        Route::post('/card_due_date_update', 'UpdateDueDateSession');
+        Route::post('/card_total_student', 'showCardTotalStudent');
+        // Route::get('/print_card', static function () {
+        //     return view('certificate/certificate_card_print_get');
+        // });
         Route::get('/print_card_pdf', 'printCardStudentPdf');
+        Route::post('/card_due_expire', 'StoreDueDateExpireSession');
+        Route::put('/card_due_expire_update', 'updateDueDateExpireSession');
+        Route::post('/card_expire_show_level', 'showCardExpireLevel');
+
+        Route::get('/student_card/transaction', 'printCardStudentPdf');
+
         Route::get('/D_IT/student_card/certificate/card-student-print', 'printListClassification');
         Route::get('/D_EL/student_card/certificate/card-student-print', 'printListClassification');
         Route::get('/D_CL/student_card/certificate/card-student-print', 'printListClassification');
@@ -324,6 +384,7 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
         Route::get('/D_CL/student_card/certificate/card-student-excel', 'ExcelListClassification');
     });
 });
+
 
 Route::group(['prefix' => 'admin-panel', 'middleware' => 'auth'], static function () {
     Route::controller(adminController::class)->group(function () {
@@ -354,6 +415,8 @@ Route::group(['prefix' => 'student-sana'], function (){
     Route::post('/update', [StudentSanaController::class, 'update']);
     Route::post('/store', [StudentSanaController::class, 'store']);
     Route::POST ('/transfer-delete', [StudentSanaController::class, 'delete']);
+    Route::get ('/update/student-sana/transaction', [StudentSanaController::class, 'EcitStudentTransactionSana']);
+    Route::get ('/edit/student-sana/transaction', [StudentSanaController::class, 'EcitStudentSana']);
 })->middleware('auth');
 
 

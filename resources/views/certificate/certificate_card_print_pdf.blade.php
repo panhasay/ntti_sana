@@ -13,76 +13,81 @@ use Illuminate\Support\Str;
     .id-card {
         width: 6.2cm;
         height: 9.4cm;
-        padding: 0 0 0 15px;
+        padding-left: 18.5px;
+        padding-right: 0px;
+        padding-top: 0px;
+        padding-bottom: 0px;
         text-align: center;
         position: relative;
         font-size: 9.1px;
-        margin-left: 10px !important;
     }
 
     .card_background {
         background: url('asset/NTTI/images/modules/ntti_background_03.png') no-repeat center center;
         background-size: cover;
     }
+
     .id-card .flag {
         position: absolute;
         width: 100%;
         height: 100%;
         z-index: 1;
     }
+
     .id-card>.profile {
         position: absolute;
         width: 2cm;
         height: 2.55cm;
-        top: 10px !important;
+        border-radius: 0px;
         margin-top: 10px;
-        margin-bottom: 5px;
         position: relative;
         text-align: center;
         margin-left: -15px;
-        border-radius: 2px !important
     }
 
     .id-card-left {
         text-align: left;
         font-weight: bold;
         color: rgb(0, 18, 128);
-        font-size: 10px;
+        font-size: 10.8px;
+        font-family: "Khmer OS Battambang" !important;
     }
 
     .id-card-date-khmer {
         color: rgb(0, 18, 128);
         text-align: center;
         margin-left: -15px !important;
-        margin-top: 10.5px;
-        font-size: 9px;
-        font-weight: 900 !important;
+        margin-top: 10px;
+        font-size: 9.2px;
+        font-family: "Khmer OS Battambang" !important;
+        font-weight: 900;
     }
 
     .id-card-date-khmer-pp {
         float: right;
         color: rgb(0, 18, 128);
-        font-size: 9px;
-        padding-right: 32px !important;
-        font-weight: 900 !important;    
+        font-size: 9.2px;
+        padding-right: 34px !important;
+        font-family: "Khmer OS Battambang" !important;
+        font-weight: 900;
     }
 
     .id-card-center {
         text-align: center;
         font-weight: bold;
         margin-left: -15px;
-        font-size: 10px;
+        font-size: 10.8px;
+        margin-bottom: 5px;
     }
 
     .id-signature>.stamp {
-        height: 75px;
+        height: 70px;
         margin-right: 0px;
     }
 
     .id-signature>.id-qr-code {
-        /* height: 70px;
-        width: 70px; */
-        margin-top: 15px;
+        margin-top: 10px;
+        float: left;
     }
 
     .student-card-view>.card-body .id,
@@ -108,7 +113,7 @@ use Illuminate\Support\Str;
         padding-left: 2.50rem !important;
     }
 
-    .id-card-left>.pull-right {
+    .pull-right {
         float: right;
         padding-right: 1.2rem !important;
         font-weight: bold !important;
@@ -126,7 +131,6 @@ use Illuminate\Support\Str;
 
 
     .card-students {
-
         border-radius: 15px;
         text-align: center;
         padding: 25px 20px 0px;
@@ -135,7 +139,7 @@ use Illuminate\Support\Str;
 
     .stu-card-header {
         color: rgb(0, 18, 128);
-        font-size: 11px;
+        font-size: 10.5px;
         font-family: 'Khmer OS Muol Light', sans-serif;
         text-align: center;
         word-wrap: break-word;
@@ -169,7 +173,7 @@ use Illuminate\Support\Str;
 
     .card-students .footer {
         position: absolute;
-        bottom: -127px;
+        bottom: -117px;
         left: 0;
         right: 0;
         background: #ffdd00;
@@ -195,7 +199,6 @@ use Illuminate\Support\Str;
 
     .card-body {
         text-align: center;
-        /*margin-bottom: 20px;*/
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -224,17 +227,13 @@ use Illuminate\Support\Str;
             page-break-before: always;
             break-before: page;
         }
-        .khmer-text img {
-            position: absolute !important;
-            top: 65px;
-            left: 40%;
-        }
     }
 </style>
+{{-- {{ $records->name_2 }} --}}
 <div class="id-card card_background">
-    <img alt="Portrait of a person in an orange robe" class="profile" 
+    <img alt="Portrait of a person in an orange robe" class="profile text-center"
         src="{{ $records->photo_status == true ? '/uploads/student/' . $records->stu_photo : '/asset/NTTI/images/faces/default_User.jpg' }}"
-        width="120">
+        height="100">
     <div class="details">
         <div class="id-card-center">
             អត្តលេខ {{ $records->code }}
@@ -247,8 +246,8 @@ use Illuminate\Support\Str;
             អក្សរឡាតាំង <span class="ps-3">{{ $records->name }}</span>
         </div>
         <div class="id-card-left">
-            ថ្ងៃខែឆ្នាំកំណើត<span
-                class="ps-1">{{ App\Service\service::DateYearKH($records->date_of_birth) ?? '' }}</span>
+            ថ្ងៃខែឆ្នាំកំណើត<span class="ps-1"></span>
+            {{ App\Service\service::DateYearKH($records->date_of_birth ?? '0000-00-00') }}
         </div>
         <div class="id-card-left">
             ជំនាញ<span class="ps-3"></span> <span class="ps-4">{{ $records->skill }}</span>
@@ -262,40 +261,5 @@ use Illuminate\Support\Str;
         <div class="id-card-date-khmer-pp">
             {{ $records->print_date_due ?? 'រាជធានីភ្នំពេញ, ' . formatDateToKhmer(now(), 'kh') }}
         </div>
-    </div>
-    <div class="id-signature">
-        <div class="id-qr-code pull-left">
-            {{ App\Http\Controllers\QrCodeController::generateCardStudent($records->code) }}
-        </div>
-        <img class="stamp" alt="QR code"
-            src="{{ asset('asset/NTTI/images/modules/Simple Email Signature with Picture.svg') }}">
-    </div>
-</div>
-<div class="page-break"></div>
-<div class="card-students">
-    <div class="logo">
-        <img src="/asset/NTTI/images/modules/ntti_flage_05.png" height="80" width="100" alt="Logo">
-    </div>
-    <div class="stu-card-header">
-        <span>ព្រះរាជាណាចក្រកម្ពុជា</span>
-        <span>ជាតិ សាសនា ព្រះមហាក្សត្រ</span>
-    </div>
-    <br>
-    <div class="khmer-text" style="background-image: none;">
-        <img src="{{ asset('asset/NTTI/images/modules/tactieng_khmer.png') }}" alt="A scenic view" width="50"
-            title="Style Khmer">
-    </div>
-    <div class="stu-card-header-sub">
-        <span>ក្រសួងការងារ និងបណ្តុះបណ្តាលវិជ្ជាជីវៈ</span>
-        <span>វិទ្យាស្ថានជាតិបណ្តុះបណ្តាលបច្ចេកទេស</span>
-    </div>
-    <div class="card-body">
-        <span class="card-personal">បណ្ណសម្គាល់ខ្លួននិស្សិត</span>
-        <span style="font-weight: bold !important;padding-top:10px !important">STUDENT IDENTIFICATION CARD</span>
-    </div>
-    <div class="footer">
-        <span>មហាវិថីសហព័ន្ធរុស្សី សង្កាត់ទឹកថ្លា ខណ្ឌសែនសុខ រាជធានីភ្នំពេញ</span>
-        <a href="mailto:info@ntti.edu.kh">info@ntti.edu.kh</a>
-        <a href="https://www.ntti.edu.kh" target="_blank">www.ntti.edu.kh</a>
     </div>
 </div>

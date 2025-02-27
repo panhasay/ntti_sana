@@ -17,30 +17,30 @@ use Illuminate\Support\Str;
         text-align: center;
         position: relative;
         font-size: 9.1px;
-        margin-left: 10px !important;
     }
 
     .card_background {
         background: url('asset/NTTI/images/modules/ntti_background_03.png') no-repeat center center;
         background-size: cover;
     }
+
     .id-card .flag {
         position: absolute;
         width: 100%;
         height: 100%;
         z-index: 1;
     }
+
     .id-card>.profile {
         position: absolute;
         width: 2cm;
         height: 2.55cm;
-        top: 10px !important;
+        border-radius: 0px;
         margin-top: 10px;
         margin-bottom: 5px;
         position: relative;
         text-align: center;
         margin-left: -15px;
-        border-radius: 2px !important
     }
 
     .id-card-left {
@@ -56,7 +56,6 @@ use Illuminate\Support\Str;
         margin-left: -15px !important;
         margin-top: 10.5px;
         font-size: 9px;
-        font-weight: 900 !important;
     }
 
     .id-card-date-khmer-pp {
@@ -64,7 +63,6 @@ use Illuminate\Support\Str;
         color: rgb(0, 18, 128);
         font-size: 9px;
         padding-right: 32px !important;
-        font-weight: 900 !important;    
     }
 
     .id-card-center {
@@ -169,7 +167,7 @@ use Illuminate\Support\Str;
 
     .card-students .footer {
         position: absolute;
-        bottom: -127px;
+        bottom: -117px;
         left: 0;
         right: 0;
         background: #ffdd00;
@@ -224,18 +222,13 @@ use Illuminate\Support\Str;
             page-break-before: always;
             break-before: page;
         }
-        .khmer-text img {
-            position: absolute !important;
-            top: 65px;
-            left: 40%;
-        }
     }
 </style>
 <div class="id-card card_background">
-    <img alt="Portrait of a person in an orange robe" class="profile" 
+    <img alt="Portrait of a person in an orange robe" class="profile"
         src="{{ $records->photo_status == true ? '/uploads/student/' . $records->stu_photo : '/asset/NTTI/images/faces/default_User.jpg' }}"
         width="120">
-    <div class="details">
+    <div class="details" style="margin-top: -10px;">
         <div class="id-card-center">
             អត្តលេខ {{ $records->code }}
         </div>
@@ -257,10 +250,10 @@ use Illuminate\Support\Str;
             កម្រិត <span class="ps-5">{{ $records->level }}</span>
         </div>
         <div class="id-card-date-khmer">
-            {{ $records->print_khmer_lunar ?? $record_date_khmer }}
+            {{ $record_date_khmer }}
         </div>
         <div class="id-card-date-khmer-pp">
-            {{ $records->print_date_due ?? 'រាជធានីភ្នំពេញ, ' . formatDateToKhmer(now(), 'kh') }}
+            រាជធានីភ្នំពេញ, {{ formatDateToKhmer($record_print['print_date'] ?? now(), 'kh') }}
         </div>
     </div>
     <div class="id-signature">
@@ -280,8 +273,7 @@ use Illuminate\Support\Str;
         <span>ព្រះរាជាណាចក្រកម្ពុជា</span>
         <span>ជាតិ សាសនា ព្រះមហាក្សត្រ</span>
     </div>
-    <br>
-    <div class="khmer-text" style="background-image: none;">
+    <div class="khmer-text" style="background-image: none; ">
         <img src="{{ asset('asset/NTTI/images/modules/tactieng_khmer.png') }}" alt="A scenic view" width="50"
             title="Style Khmer">
     </div>
@@ -290,7 +282,7 @@ use Illuminate\Support\Str;
         <span>វិទ្យាស្ថានជាតិបណ្តុះបណ្តាលបច្ចេកទេស</span>
     </div>
     <div class="card-body">
-        <span class="card-personal">បណ្ណសម្គាល់ខ្លួននិស្សិត</span>
+        <span class="card-personal">បណ្ណសម្គាល់ខ្លូននិស្សិត</span>
         <span style="font-weight: bold !important;padding-top:10px !important">STUDENT IDENTIFICATION CARD</span>
     </div>
     <div class="footer">

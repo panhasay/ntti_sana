@@ -1,8 +1,3 @@
-<style>
-    .effect-9 {
-        width: 274px !important;
-    }
-</style>
 @extends('app_layout.app_layout')
 @section('content')
     <x-breadcrumbs :array="[

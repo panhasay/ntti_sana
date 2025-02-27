@@ -109,6 +109,7 @@
   </div>
 </div>
 @include('system.model_group_student_sana')
+@include('system.model_student_sana')
 @include('general.student_sana_sub_lists')
 
 <script>
@@ -143,6 +144,13 @@
     });
 
     $(document).on('click', '#AddgroupSana', function() {
+      $('#teacher_leader_code').select2({
+          dropdownParent: $('#ModalCreateStudentSana') 
+      });
+      $('#teacher_consult_code').trigger('change');
+      $("#ModalCreateStudentSana #frmDataSublist")[0].reset();
+      $('#ModalCreateStudentSana #teacher_leader_code').val(null).trigger('change'); 
+      $('#ModalCreateStudentSana #teacher_consult_code').val(null).trigger('change'); 
       $("#ModalCreateStudentSana").modal('show');
       let data_years = $(this).attr('data-years');
       let data_type = $(this).attr('data-type');
@@ -162,6 +170,106 @@
       });
     });
 
+    $(document).on('click', '.BtnEditsubGroup', function () {
+      var code = $(this).attr('data-code');
+      let url = 'student-sana/update/student-sana/transaction?id=' + code;
+      $('#frmDataSublist')[0].reset();
+      $.ajax({
+          type: 'get',
+          url: url,
+          beforeSend: function () {
+              $('.loader').show();
+          },
+          success: function (response) {
+              $('.loader').hide();
+              if (response.status === "success") {
+                  if (response.records) {
+                      const records = response.records;
+                      $('.sub_class_code').val(records.sub_class_code);
+                      $('#topic').val(records.topic);
+
+                   // Example data stored in the database
+                    var storedData = response.storedData;
+                    var storedDataName =  response.storedDataNameString;
+
+                    // Convert string to an array and remove duplicates
+                    var teacherCodes = storedData.split(",");
+                    var teacherNames = storedDataName.split(",");
+
+                    // Create an array of objects mapping codes to names
+                    var teachers = [];
+                    $.each(teacherCodes, function (index, code) {
+                        if (!teachers.some(t => t.code === code)) { // Prevent duplicates
+                            teachers.push({ code: code, name: teacherNames[index] });
+                        }
+                    });
+
+                    // Append new options dynamically
+                    $.each(teachers, function (index, teacher) {
+                        $('#teacher_consult_code').append(
+                            $('<option>', {
+                                value: teacher.code,
+                                text: teacher.name
+                            }).prop('selected', true) // Select the appended options
+                        );
+                    });
+
+                    // Refresh the Select2 dropdown if using Select2
+                    $('#teacher_consult_code').trigger('change');
+
+
+                      let $select = $('#teacher_leader_code');
+                      $select.empty(); 
+                      // Append default empty option
+                      $('#teacher_leader_code').append(`<option value="${response.teachers_code}">${response.teachers_name}</option>`);
+                      
+                      // Loop through teachers and append options
+                      if (Array.isArray(response.teachers)) {
+                          $.each(response.teachers, function (index, teacher) {
+                              $select.append(
+                                  `<option value="${teacher.code}">${teacher.name_2 || ''}</option>`
+                              );
+                          });
+                      }
+                      // Select the teacher from records if available
+                      if (records.teachers && records.teachers.code) {
+                          $select.val(records.teachers.code).trigger('change');
+                      }
+                      $("#ModalCreateStudentSana").modal("show");
+                  } else {
+                      alert("No records found!");
+                  }
+              }
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+              $('.loader').hide();
+              console.error(thrownError);
+          }
+      });
+    });
+
+    $(document).on('click', '.btnEditStudentSana', function() {
+      let dataId = $(this).attr('data-id'); 
+      $.ajax({
+          type: 'GET',
+          url: 'student-sana/edit/student-sana/transaction?id=' + dataId, 
+          beforeSend: function () {
+              $('.loader').show(); 
+          },
+          success: function (response) {
+              $('.loader').hide(); 
+              if(response.status == 'success') {
+                $('#ModalStudentSana').modal('show');
+              }
+              console.log(response);
+          },
+          error: function (xhr, ajaxOptions, thrownError) {
+              $('.loader').hide(); 
+              console.error('AJAX Error:', thrownError);
+          }
+      });
+    });
+    
   });
   function DownlaodExcel() {
     var url = '/student/downlaodexcel/';

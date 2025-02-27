@@ -943,6 +943,9 @@
                   $('#skills_codes').append(`<option value="${response.records.skills_code}">${response.name_2}</option>`);
                   $('#sections_code').empty();
                   $('#sections_code').append(`<option value="${response.sections_code}">${response.sections_name}</option>`);
+
+                  $('#qualification').empty();
+                  $('#qualification').append(`<option value="${response.qualification}">${response.qualification}</option>`);
               } else {
                   notyf.error("Error: " + response.msg);
               }

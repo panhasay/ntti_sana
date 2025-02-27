@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\General;
 
 use App\Http\Controllers\Controller;
+use App\Models\General\AssingClasses;
 use App\Models\General\Classes;
 use App\Models\General\SanaHeader;
 use App\Models\General\SanaLine;
 use App\Models\General\Skills;
+use App\Models\General\Subjects;
+use App\Models\General\Teachers;
 use App\Models\SystemSetup\Department;
 use App\Service\service;
 use Illuminate\Http\Request;
@@ -52,8 +55,10 @@ class StudentSanaController extends Controller
         $departments = Department::get();
         $classs = Classes::get();
         $teachers = DB::table('teachers')->get();
+        $students  = DB::table('student')->where('çlass_code',  $this->services->Decr_string($_GET['code']))->get();
+        
         try {
-            $params = ['records', 'type', 'page', 'skills', 'departments', 'classs', 'record_sub_lines', 'teachers'];
+            $params = ['records', 'type', 'page', 'skills', 'departments', 'classs', 'record_sub_lines', 'teachers', 'students'];
             if ($type == 'cr') return view('general.student_sana_card', compact($params));
             if (isset($_GET['code'])) {
                 $records = SanaHeader::where('no', $this->services->Decr_string($_GET['code']))->first();
@@ -211,6 +216,45 @@ class StudentSanaController extends Controller
             return response()->json(['status' =>'success','view' =>$view]);
         }
         return 'none';
+    }
+
+    public function EcitStudentTransactionSana(Request $request)
+    {
+        $data = $request->all();
+        try {
+
+            $records = SanaLine::where('sub_class_code',  $data['id'])->where('group', 'Yes')->first();
+            $teachers = Teachers::get();
+            $teachers_name = Teachers::where('code', $records->teacher_leader_code)->value('name_2');
+            $teachers_code = Teachers::where('code', $records->teacher_leader_code)->value('code');
+
+            $storedData = $records->teacher_consult_code;
+            
+            $storedDataArray = explode(",", $storedData); // Convert to array
+            $storedDataName = Teachers::whereIn('code', $storedDataArray)->pluck('name_2')->toArray();
+
+            $storedDataNameString = implode(", ", $storedDataName);
+        
+            return response()->json(['status' => 'success', 'records' => $records, 'teachers' => $teachers, 'teachers_name' => $teachers_name, 'teachers_code' => $teachers_code, 'storedData'=> $storedData , 'storedDataNameString'=> $storedDataNameString ]);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+
+    public function EcitStudentSana(Request $request)
+    {
+        $data = $request->all();
+
+        try {
+            $records = SanaLine::where('id',  $data['id'])->where('group', 'No')->first();
+            return response()->json(['status' => 'success', 'records' => $records]);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
     }
     
 }

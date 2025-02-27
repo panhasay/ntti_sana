@@ -13,8 +13,8 @@ use App\Models\General\Teachers;
 class StudentRegistration extends Model
 {
    // protected $table = 'students';
-  
-   protected $table = 'student_registration';
+
+   protected $table = 'student';
    protected $primaryKey = 'id';
    use HasFactory;
    protected $fillable = [

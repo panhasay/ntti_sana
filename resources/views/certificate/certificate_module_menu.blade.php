@@ -1,10 +1,3 @@
-<style>
-    .title-department {
-        text-align: center !important;
-        padding: 3px 6px 16px !important;
-        font-size: 16px !important;
-    }
-</style>
 @extends('app_layout.app_layout')
 @section('content')
     <x-breadcrumbs :array="[

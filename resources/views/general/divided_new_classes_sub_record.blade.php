@@ -1,10 +1,10 @@
 <tr id="row_line{{ $record->code }}">
     <?php $picture =  App\Models\General\Picture::where('code', $record->code)->value('picture_ori'); ?>
     <td>
-        <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" href="{{ 'class-new/transaction/update-student?type=ed&code='.\App\Service\service::Encr_string($record->code) }}"><i class="mdi mdi-border-color"></i> Edit</a>
-        <button class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="btnDeleteLine" data-code="{{ $record->code ?? '' }}">
+        <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" href="{{ 'student/registration/transaction?type=ed&code='.\App\Service\service::Encr_string($record->code) }}"><i class="mdi mdi-border-color"></i> Edit</a>
+        {{-- <button class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="btnDeleteLine" data-code="{{ $record->code ?? '' }}">
             <i class="mdi mdi-delete-forever"></i> Delete
-        </button>
+        </button> --}}
         @if($picture != null)
             <img class="btn-Image" id="btn-Image" data-code ='{{$record->code ?? ''}}' src="{{ $picture ?? '' }}" width="1000" height="1000">
         @else

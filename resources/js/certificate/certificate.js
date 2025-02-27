@@ -1,3 +1,4 @@
+import { select2AdvancedModal } from "../utils/helpers";
 const $sch_class_spec = $("#sch_class_spec");
 const $sch_level = $("#sch_level");
 const $sch_shift = $("#sch_shift");
@@ -14,6 +15,9 @@ var $txt_up_date_card = $("#txt_up_date_card");
 
 let currentPage = 1;
 let currentPageList = 1;
+
+select2AdvancedModal("#txt_due_class", "#modal_card_due_date");
+select2AdvancedModal("#txt_due_level", "#modal_card_create_expire_date");
 
 function levelShiftSkill() {
     const class_code = $sch_class_spec.val();
@@ -33,10 +37,6 @@ function levelShiftSkill() {
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(requestData),
-        headers: {
-            "X-CSRF-TOKEN": csrfToken,
-            "X-Requested-With": "XMLHttpRequest",
-        },
         success: function (response) {
             if (response.record_level && response.record_level.length > 0) {
                 const recordLevel = response.record_level[0].level;
@@ -85,10 +85,6 @@ function showClassStudent() {
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(requestData),
-        headers: {
-            "X-CSRF-TOKEN": csrfToken,
-            "X-Requested-With": "XMLHttpRequest",
-        },
         success: function (response) {
             if (response.record_level && response.record_level.length > 0) {
                 const group = response.record_level[0].name;
@@ -132,14 +128,359 @@ function showCardView() {
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(requestData),
-        headers: {
-            "X-CSRF-TOKEN": csrfToken,
-            "X-Requested-With": "XMLHttpRequest",
-        },
+        cache: true,
         success: function (response) {
             const $tbl = $("#tbl_stu_card_view");
-            $tbl.html(generateStudentCardHTML(response));
+            $tbl.empty();
+            let currentPage = response.current_page;
+            let rowsPerPage = response.page;
+            let json = response.data;
+
+            const fragment = document.createDocumentFragment();
+
+            if (json && json.length > 0) {
+                json.map((item, index) => {
+                    let colors = item.status_print == 1 ? "#2f99d1" : "#ddd";
+                    let photo =
+                        item.photo_status == false
+                            ? "/asset/NTTI/images/faces/default_User.jpg"
+                            : `/uploads/student/${item.stu_photo}`;
+                    const $row = $("<div>")
+                        .addClass("col-md-4 g-2 mt-2")
+                        .append(
+                            $("<div>")
+                                .addClass("student-card-view")
+                                .css("border", `2px solid ${colors}`)
+                                .append(
+                                    $("<img>")
+                                        .attr("src", photo)
+                                        .attr("alt", "Profile Picture")
+                                        .attr("width", "150")
+                                        .attr("height", "200")
+                                        .attr(
+                                            "name",
+                                            "btn_update_view_info_print"
+                                        )
+                                        .attr(
+                                            "id",
+                                            "btn_update_view_info_print"
+                                        )
+                                        .attr("data-stu_code", item.code)
+                                        .attr(
+                                            "data-dept_code",
+                                            item.department_code
+                                        )
+                                        .attr(
+                                            "data-class_code",
+                                            item.class_code
+                                        )
+                                        .attr("data-toggle", "modal")
+                                        .attr(
+                                            "data-target",
+                                            "#modal_card_update"
+                                        )
+                                )
+                                .append(
+                                    $("<div>")
+                                        .addClass(
+                                            "card-body student-information"
+                                        )
+                                        .append(
+                                            $("<div>")
+                                                .addClass("name")
+                                                .text(
+                                                    `${item.name_2} ${item.name}`
+                                                )
+                                        )
+                                        .append(
+                                            $("<div>")
+                                                .addClass("id")
+                                                .text(item.code)
+                                        )
+                                        .append(
+                                            $("<div>")
+                                                .addClass("phone")
+                                                .text(item.phone_student)
+                                        )
+                                        .append(
+                                            $("<div>")
+                                                .addClass("info")
+                                                .text(item.dept)
+                                        )
+                                        .append(
+                                            $("<div>").addClass("info").html(`${
+                                                item.class == null
+                                                    ? "No Class"
+                                                    : item.class
+                                            }
+                                                    <label class="${
+                                                        item.class_remaining
+                                                    } fw-bold" title="Expire Card">${
+                                                item.remaining
+                                            }</label>`)
+                                        )
+                                        .append($("<hr>"))
+                                        .append(
+                                            $("<button>")
+                                                .addClass(
+                                                    "btn btn-outline-info btn-sm"
+                                                )
+                                                .attr("type", "button")
+                                                .attr(
+                                                    "name",
+                                                    "btn_print_card_view"
+                                                )
+                                                .attr(
+                                                    "id",
+                                                    "btn_print_card_view"
+                                                )
+                                                .attr(
+                                                    "data-print_card_id",
+                                                    item.id
+                                                )
+                                                .attr(
+                                                    "data-stu_code",
+                                                    item.code
+                                                )
+                                                .attr(
+                                                    "data-dept_code",
+                                                    item.department_code
+                                                )
+                                                .attr(
+                                                    "data-class_code",
+                                                    item.class_code
+                                                )
+                                                .attr("title", "Print")
+                                                .attr("data-toggle", "modal")
+                                                .attr(
+                                                    "data-target",
+                                                    "#modal_card_print_card"
+                                                )
+                                                .css({
+                                                    "margin-right": "5px",
+                                                })
+                                                .html(
+                                                    '<i class="mdi mdi-printer btn-icon-append"></i>'
+                                                )
+                                        )
+                                        .append(
+                                            $("<button>")
+                                                .attr("type", "button")
+                                                .addClass(
+                                                    "btn btn-outline-danger btn-sm"
+                                                )
+                                                .attr("title", "Print")
+                                                .attr(
+                                                    "name",
+                                                    "btn_print_card_set_revision_view"
+                                                )
+                                                .attr(
+                                                    "id",
+                                                    "btn_print_card_set_revision_view"
+                                                )
+                                                .attr(
+                                                    "data-print_card_id",
+                                                    item.id
+                                                )
+                                                .attr(
+                                                    "data-stu_code",
+                                                    item.code
+                                                )
+                                                .attr(
+                                                    "data-dept_code",
+                                                    item.department_code
+                                                )
+                                                .attr(
+                                                    "data-class_code",
+                                                    item.class_code
+                                                )
+                                                .attr("data-toggle", "modal")
+                                                .attr(
+                                                    "data-target",
+                                                    "#modal_card_print_revisino"
+                                                )
+                                                .append(
+                                                    $("<i>").addClass(
+                                                        "mdi mdi-plus btn-icon-append"
+                                                    )
+                                                )
+                                                .css(
+                                                    "margin-right",
+                                                    "5px",
+                                                    "display",
+                                                    item.status_print == 0 ||
+                                                        item.status_print ==
+                                                            null
+                                                        ? "none"
+                                                        : "inline-block"
+                                                )
+                                        )
+                                        .append(
+                                            $("<button>")
+                                                .attr("type", "button")
+                                                .addClass(
+                                                    "btn btn-outline-success btn-sm"
+                                                )
+                                                .attr("id", "btn_card_view")
+                                                .attr("title", "View Detail")
+                                                .attr("data-toggle", "modal")
+                                                .attr(
+                                                    "data-target",
+                                                    "#modal_card_view_detail"
+                                                )
+                                                .attr(
+                                                    "data-stu_code",
+                                                    item.code
+                                                )
+                                                .attr(
+                                                    "data-dept_code",
+                                                    item.department_code
+                                                )
+                                                .css({
+                                                    "margin-right": "5px",
+                                                })
+                                                .attr(
+                                                    "data-class_code",
+                                                    item.class_code
+                                                )
+                                                .append(
+                                                    $("<i>").addClass(
+                                                        "mdi mdi-account-search"
+                                                    )
+                                                )
+                                        )
+                                        .append(
+                                            $("<button>")
+                                                .attr("type", "button")
+                                                .addClass(
+                                                    "btn btn-outline-primary btn-sm"
+                                                )
+                                                .attr("title", "Update")
+                                                .attr(
+                                                    "name",
+                                                    "btn_update_view_info_print"
+                                                )
+                                                .attr(
+                                                    "id",
+                                                    "btn_update_view_info_print"
+                                                )
+                                                .attr(
+                                                    "data-stu_code",
+                                                    item.code
+                                                )
+                                                .attr(
+                                                    "data-dept_code",
+                                                    item.department_code
+                                                )
+                                                .attr(
+                                                    "data-class_code",
+                                                    item.class_code
+                                                )
+                                                .attr("data-toggle", "modal")
+                                                .attr(
+                                                    "data-target",
+                                                    "#modal_card_update"
+                                                )
+                                                .css({
+                                                    "margin-right": "5px",
+                                                })
+                                                .append(
+                                                    $("<i>").addClass(
+                                                        "mdi mdi-border-color"
+                                                    )
+                                                )
+                                        )
+                                        .append(
+                                            $("<button>")
+                                                .attr("type", "button")
+                                                .addClass(
+                                                    "btn btn-outline-danger btn-sm"
+                                                )
+                                                .attr(
+                                                    "title",
+                                                    "Disable Active Print"
+                                                )
+                                                .attr(
+                                                    "name",
+                                                    "btn_diable_view_info_print"
+                                                )
+                                                .attr(
+                                                    "id",
+                                                    "btn_diable_view_info_print"
+                                                )
+                                                .attr(
+                                                    "data-stu_code",
+                                                    item.code
+                                                )
+                                                .attr(
+                                                    "data-dept_code",
+                                                    item.department_code
+                                                )
+                                                .attr(
+                                                    "data-class_code",
+                                                    item.class_code
+                                                )
+                                                .attr("data-toggle", "modal")
+                                                .attr(
+                                                    "data-target",
+                                                    "#modal_card_disable_active"
+                                                )
+                                                .css({
+                                                    "margin-right": "5px",
+                                                })
+                                                .append(
+                                                    $("<i>").addClass(
+                                                        "mdi mdi-shuffle-disabled"
+                                                    )
+                                                )
+                                                .prop(
+                                                    "hidden",
+                                                    item.status_print !== 1
+                                                )
+                                        )
+                                        .append(
+                                            $("<button>")
+                                                .attr("type", "button")
+                                                .addClass(
+                                                    "btn btn-outline-secondary btn-rounded btn-icon pull-right"
+                                                )
+                                                .css({
+                                                    width: "30px",
+                                                    height: "30px",
+                                                    "margin-right": "5px",
+                                                })
+                                                .append(
+                                                    $("<label>")
+                                                        .addClass(
+                                                            "text-primary"
+                                                        )
+                                                        .text(
+                                                            index +
+                                                                1 +
+                                                                (currentPage -
+                                                                    1) *
+                                                                    rowsPerPage
+                                                        )
+                                                )
+                                        )
+                                )
+                        );
+
+                    fragment.appendChild($row[0]);
+                });
+            } else {
+                const $row = $("<div>")
+                    .addClass("text-center")
+                    .append(
+                        $("<label>")
+                            .addClass("text-center")
+                            .text("រកមិនឃើញទិន្ន័យនៅក្នុងប្រព័ន្ធ!")
+                    );
+                fragment.appendChild($row[0]);
+            }
+            $tbl.append(fragment);
             $("#pagination").html(response.links);
+
             setTimeout(function () {
                 $loader.fadeOut();
             }, 100);
@@ -180,14 +521,294 @@ function showCardViewList() {
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(requestData),
-        headers: {
-            "X-CSRF-TOKEN": csrfToken,
-            "X-Requested-With": "XMLHttpRequest",
-        },
         success: function (response) {
-            const $tbl_card_stu_list = $("#tbl_card_stu_list");
-            $tbl_card_stu_list.html(generateStudentTableHTML(response));
+            const $tbl = $("#tbl_card_stu_list");
+            $tbl.empty();
+            let currentPage = response.current_page;
+            let rowsPerPage = response.page;
+            let json = response.data;
+            const fragment = document.createDocumentFragment();
+            if (json && json.length > 0) {
+                $.each(json, function (index, item) {
+                    const $row = $("<tr>");
+
+                    $row.append(
+                        $("<td>")
+                            .attr("height", "40")
+                            .text(index + 1 + (currentPage - 1) * rowsPerPage)
+                    );
+                    $row.append($("<td>").text(item.code));
+                    $row.append($("<td>").text(item.name_2));
+                    $row.append($("<td>").text(item.name));
+                    $row.append($("<td>").text(item.gender));
+                    $row.append($("<td>").text(item.date_of_birth ?? "No DOB"));
+                    $row.append($("<td>").text(item.phone_student));
+                    $row.append(
+                        $("<td>").text(
+                            item.class == null ? "No Class" : item.class
+                        )
+                    );
+                    $row.append($("<td>").text(item.skill));
+                    $row.append($("<td>").text(item.level));
+
+                    // Photo column
+                    const $photoDiv = $("<div>")
+                        .addClass("hover-photo")
+                        .append(
+                            $("<img>")
+                                .attr(
+                                    "src",
+                                    item.photo_status == false
+                                        ? "/asset/NTTI/images/faces/default_User.jpg"
+                                        : `/uploads/student/${item.stu_photo}`
+                                )
+                                .attr("alt", "John's Photo")
+                        );
+                    $row.append($("<td>").append($photoDiv));
+
+                    $row.append(
+                        $("<td>")
+                            .addClass("text-center")
+                            .text(item.count_revision)
+                    );
+
+                    // Status badge column
+                    const $statusBadge = $("<div>")
+                        .addClass("badge badge-pill")
+                        .addClass(
+                            item.status_print == 1
+                                ? "badge-success"
+                                : "badge-danger"
+                        )
+                        .text(item.status_print == 1 ? "Already" : "No");
+                    $row.append($("<td>").append($statusBadge));
+
+                    // Dropdown menu
+                    const $dropdown = $("<div>")
+                        .addClass("dropdown")
+                        .append(
+                            $("<button>")
+                                .attr({
+                                    type: "button",
+                                    id: "dropdownMenuButton",
+                                    "data-bs-toggle": "dropdown",
+                                    "aria-expanded": "false",
+                                    title: "More Options",
+                                })
+                                .addClass(
+                                    "btn btn-outline-secondary btn-rounded btn-icon"
+                                )
+                                .css({
+                                    width: "35px",
+                                    height: "35px",
+                                    "margin-right": "5px",
+                                })
+                                .append(
+                                    $("<i>").addClass(
+                                        "bi bi-three-dots-vertical"
+                                    )
+                                )
+                        )
+                        .append(
+                            $("<ul>")
+                                .addClass("dropdown-menu")
+                                .attr("aria-labelledby", "dropdownMenuButton")
+                                .append(
+                                    $("<li>").append(
+                                        $("<a>")
+                                            .addClass("dropdown-item")
+                                            .attr({
+                                                href: "javascript:void(0)",
+                                                name: "btn_print_card_view",
+                                                id: "btn_print_card_view",
+                                                "data-print_card_id": item.id,
+                                                "data-stu_code": item.code,
+                                                "data-dept_code":
+                                                    item.department_code,
+                                                "data-class_code":
+                                                    item.class_code,
+                                                "data-toggle": "modal",
+                                                "data-target":
+                                                    "#modal_card_print_card",
+                                            })
+                                            .append(
+                                                $("<i>").addClass(
+                                                    "mdi mdi-printer btn-icon-append"
+                                                ),
+                                                " Print"
+                                            )
+                                    )
+                                )
+                                .append(
+                                    item.status_print == 0 ||
+                                        item.status_print == null
+                                        ? ""
+                                        : $("<li>").append(
+                                              $("<a>")
+                                                  .addClass("dropdown-item")
+                                                  .attr({
+                                                      href: "javascript:void(0)",
+                                                      name: "btn_print_card_set_revision_view",
+                                                      id: "btn_print_card_set_revision_view",
+                                                      "data-print_card_id":
+                                                          item.id,
+                                                      "data-stu_code":
+                                                          item.code,
+                                                      "data-dept_code":
+                                                          item.department_code,
+                                                      "data-class_code":
+                                                          item.class_code,
+                                                      "data-toggle": "modal",
+                                                      "data-target":
+                                                          "#modal_card_print_revisino",
+                                                  })
+                                                  .append(
+                                                      $("<i>").addClass(
+                                                          "mdi mdi-plus btn-icon-append"
+                                                      ),
+                                                      " Print"
+                                                  )
+                                          )
+                                )
+                                .append(
+                                    $("<li>").append(
+                                        $("<a>")
+                                            .addClass("dropdown-item")
+                                            .attr({
+                                                href: "javascript:void(0)",
+                                                title: "View Detail",
+                                                id: "btn_card_view",
+                                                "data-toggle": "modal",
+                                                "data-target":
+                                                    "#modal_card_view_detail",
+                                                "data-stu_code": item.code,
+                                                "data-dept_code":
+                                                    item.department_code,
+                                                "data-class_code":
+                                                    item.class_code,
+                                            })
+                                            .append(
+                                                $("<i>").addClass(
+                                                    "mdi mdi-account-search"
+                                                ),
+                                                " View"
+                                            )
+                                    )
+                                )
+                                .append(
+                                    $("<li>").append(
+                                        $("<a>")
+                                            .addClass("dropdown-item")
+                                            .attr({
+                                                href: "javascript:void(0)",
+                                                title: "Update",
+                                                name: "btn_update_view_info_print",
+                                                id: "btn_update_view_info_print",
+                                                "data-stu_code": item.code,
+                                                "data-dept_code":
+                                                    item.department_code,
+                                                "data-class_code":
+                                                    item.class_code,
+                                                "data-toggle": "modal",
+                                                "data-target":
+                                                    "#modal_card_update",
+                                            })
+                                            .append(
+                                                $("<i>").addClass(
+                                                    "mdi mdi-border-color"
+                                                ),
+                                                " Update"
+                                            )
+                                    )
+                                )
+                                .append(
+                                    $("<li>").append(
+                                        $("<a>")
+                                            .addClass("dropdown-item")
+                                            .attr({
+                                                href: "javascript:void(0)",
+                                                title: "Disable Active Print",
+                                                name: "btn_diable_view_info_print",
+                                                id: "btn_diable_view_info_print",
+                                                "data-stu_code": item.code,
+                                                "data-dept_code":
+                                                    item.department_code,
+                                                "data-class_code":
+                                                    item.class_code,
+                                                "data-toggle": "modal",
+                                                "data-target":
+                                                    "#modal_card_disable_active",
+                                            })
+                                            .append(
+                                                $("<i>").addClass(
+                                                    "mdi mdi-shuffle-disabled"
+                                                ),
+                                                " Disable"
+                                            )
+                                    )
+                                )
+                        );
+
+                    $row.append($("<td>").append($dropdown));
+                    fragment.appendChild($row[0]);
+                });
+            } else {
+                const $row = $("<div>")
+                    .addClass("text-center")
+                    .append(
+                        $("<label>")
+                            .addClass("text-center")
+                            .attr("colspan", 4)
+                            .attr("height", 40)
+                            .text("រកមិនឃើញទិន្ន័យនៅក្នុងប្រព័ន្ធ!")
+                    );
+                fragment.appendChild($row[0]);
+            }
+            $tbl.append(fragment);
             $("#pagination_list").html(response.links);
+            setTimeout(function () {
+                $loader.fadeOut();
+            }, 100);
+        },
+        error: function (xhr, status, error) {
+            notyf.error(
+                `Error submitting class code: ${
+                    xhr.statusText || "Unknown error"
+                }`
+            );
+        },
+    });
+}
+
+function showCardTotalStudent() {
+    $loader
+        .css({
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            "z-index": "1000",
+        })
+        .fadeIn("slow");
+
+    const class_code = $sch_class_spec.val();
+    const requestData = {
+        dept_code: dept_code,
+        class_code: class_code,
+    };
+    $.ajax({
+        url: "/certificate/card_total_student",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(requestData),
+        success: function (data) {
+            $("#tt_students").html(Number(data.total_students));
+            $("#tt_students_f").html(data.total_female);
+            $("#tt_students_m").html(data.total_male);
+
+            $("#total_status_1").html(data.total_status_1);
+            $("#total_female_status_1").html(data.total_female_status_1);
+            $("#total_male_status_1").html(data.total_male_status_1);
 
             setTimeout(function () {
                 $loader.fadeOut();
@@ -203,160 +824,9 @@ function showCardViewList() {
     });
 }
 
-function generateStudentCardHTML(data) {
-    let currentPage = data.current_page;
-    let rowsPerPage = data.page;
-    let response = data.data;
-    let $html = "";
-    if (response && response.length > 0) {
-        $.each(response, function (index, item) {
-            const studentCard = `
-                <div class="col-md-4 g-2 mt-2">
-                    <div class="student-card-view" style="border: 2px solid ${
-                        item.status_print == 1 ? "#2f99d1" : "#ddd"
-                    };">
-                        <img src="${
-                            item.photo_status == false
-                                ? "/asset/NTTI/images/faces/default_User.jpg"
-                                : `/uploads/student/${item.stu_photo}`
-                        }" alt="Profile Picture" width="150" height="200" name="btn_update_view_info_print" id="btn_update_view_info_print" data-stu_code="${
-                item.code
-            }" data-dept_code="${item.department_code}" data-class_code="${
-                item.class_code
-            }" data-toggle="modal" data-target="#modal_card_update">
-                        <div class="card-body student-information">
-                            <div class="name">${item.name_2} ${item.name}</div>
-                            <div class="id">${item.code}</div>
-                            <div class="phone">${item.phone_student}</div>
-                            <div class="info">${item.dept}</div>
-                            <div class="info">${
-                                item.class == null ? "No Class" : item.class
-                            }</div>
-                            <hr/>
-                            <button type="button" class="btn btn-outline-info btn-sm" title="Print" name="btn_print_card_view" id="btn_print_card_view" data-stu_code="${
-                                item.code
-                            }" data-dept_code="${
-                item.department_code
-            }" data-class_code="${
-                item.class_code
-            }" data-toggle="modal" data-target="#modal_card_print_card">
-                                <i class="mdi mdi-printer btn-icon-append"></i>
-                            </button>
-                            <button type="button" class="btn btn-outline-success btn-sm" title="View Detail">
-                                <i class="mdi mdi-account-search"></i>
-                            </button>
-                            <button type="button" class="btn btn-outline-primary btn-sm" title="Update" name="btn_update_view_info_print" id="btn_update_view_info_print" data-stu_code="${
-                                item.code
-                            }" data-dept_code="${
-                item.department_code
-            }" data-class_code="${
-                item.class_code
-            }" data-toggle="modal" data-target="#modal_card_update">
-                                <i class="mdi mdi-border-color"></i>
-                            </button>
-                            <button type="button" class="btn btn-outline-danger btn-sm" ${
-                                item.status_print == 1 ? "" : "hidden"
-                            } title="Disable Active Print" name="btn_diable_view_info_print" id="btn_diable_view_info_print" data-stu_code="${
-                item.code
-            }" data-dept_code="${item.department_code}" data-class_code="${
-                item.class_code
-            }" data-toggle="modal" data-target="#modal_card_disable_active">
-                                <i class="mdi mdi-shuffle-disabled"></i>
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary btn-rounded btn-icon pull-right" style="width: 30px;
-    height: 30px;margin-right:5px">
-                            <label class="text-primary">${
-                                index + 1 + (currentPage - 1) * rowsPerPage
-                            }</label>
-                          </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            $html += studentCard;
-        });
-    } else {
-        notyf.error("រកមិនឃើញទិន្ន័យនៅក្នុងប្រព័ន្ធ!");
-        $html = `<label class="text-center">រកមិនឃើញទិន្ន័យនៅក្នុងប្រព័ន្ធ!</label>`;
-    }
-
-    return $html;
-}
-
-function generateStudentTableHTML(data) {
-    let $html = "";
-    let currentPage = data.current_page;
-    let rowsPerPage = data.page;
-    let response = data.data;
-    if (response && response.length > 0) {
-        $.each(response, function (index, item) {
-            $html += `<tr>`;
-            $html += `<td height="40">${
-                index + 1 + (currentPage - 1) * rowsPerPage
-            }</td>`;
-            $html += `<td>${item.code}</td>`;
-            $html += `<td>${item.name_2}</td>`;
-            $html += `<td>${item.name}</td>`;
-            $html += `<td>${item.gender}</td>`;
-            $html += `<td>${item.date_of_birth ?? "No DOB"}</td>`;
-            $html += `<td>${item.phone_student}</td>`;
-            $html += `<td>${item.class == null ? "No Class" : item.class}</td>`;
-            $html += `<td>${item.skill}</td>`;
-            $html += `<td>${item.level}</td>`;
-            $html += `<td>`;
-            $html += `<div class="hover-photo">
-                    <img src="${
-                        item.photo_status == false
-                            ? "/asset/NTTI/images/faces/default_User.jpg"
-                            : `/uploads/student/${item.stu_photo}`
-                    }"  alt="John's Photo">
-                </div>`;
-            $html += `</td>`;
-            $html += `<td>${
-                item.status_print == 1
-                    ? '<div class="badge badge-success badge-pill">Already</div>'
-                    : '<div class="badge badge-danger badge-pill">No</div>'
-            }</td>`;
-            $html += `<td><div class="dropdown">
-            <button class="btn btn-primary dropdown-toggle d-flex align-items-center" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-list me-2"></i> <!-- Add your icon class here -->
-                Menu
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <li><a class="dropdown-item" href="javascript:void(0)" name="btn_print_card_view" id="btn_print_card_view" data-stu_code="${
-                    item.code
-                }" data-dept_code="${item.department_code}" data-class_code="${
-                item.class_code
-            }" data-toggle="modal" data-target="#modal_card_print_card"><i class="mdi mdi-printer btn-icon-append"></i> Print</a></li>
-                <li><a class="dropdown-item" href="javascript:void(0)" title="View Detail"><i class="mdi mdi-account-search"></i> View</a></li>
-                <li><a class="dropdown-item" href="javascript:void(0)" title="Update" name="btn_update_view_info_print" id="btn_update_view_info_print" data-stu_code="${
-                    item.code
-                }" data-dept_code="${item.department_code}" data-class_code="${
-                item.class_code
-            }" data-toggle="modal" data-target="#modal_card_update"><i class="mdi mdi-border-color"></i> Update</a></li>
-                <li ${
-                    item.status_print == 1 ? "" : "hidden"
-                }><a class="dropdown-item" href="javascript:void(0)" title="Disable Active Print" name="btn_diable_view_info_print" id="btn_diable_view_info_print" data-stu_code="${
-                item.code
-            }" data-dept_code="${item.department_code}" data-class_code="${
-                item.class_code
-            }" data-toggle="modal" data-target="#modal_card_disable_active"><i class="mdi mdi-shuffle-disabled"></i> Disable</a></li>
-            </ul>
-            </div></td>`;
-            $html += `</tr>`;
-        });
-    } else {
-        notyf.error("រកមិនឃើញទិន្ន័យនៅក្នុងប្រព័ន្ធ!");
-        $html += `<tr>`;
-        $html += `<td class="text-center" colspan="14" height="40"><label class="text-center">រកមិនឃើញទិន្ន័យនៅក្នុងប្រព័ន្ធ!</label></td>`;
-        $html += `</tr>`;
-    }
-
-    return $html;
-}
-
 $sch_class_spec.on("change", function () {
     levelShiftSkill();
+    showCardTotalStudent();
     currentPage = 1;
     showCardView();
 
@@ -416,10 +886,12 @@ $pagination_list.on("click", ".page-link[data-page]", function (e) {
     showCardViewList();
 });
 $("body").on("click", "#btn_print_card_view", function (e) {
+    const print_card_id = $(this).data("print_card_id");
     const stu_code = $(this).data("stu_code");
     const dept_code = $(this).data("dept_code");
     const class_code = $(this).data("class_code");
 
+    $("#hidden_print_card_id").val(print_card_id);
     $("#hidden_stu_code").val(stu_code);
     $("#hidden_dept_code").val(dept_code);
     $("#hidden_class_code").val(class_code);
@@ -427,6 +899,7 @@ $("body").on("click", "#btn_print_card_view", function (e) {
 
 $("body").on("click", "#btn_print_card", function (e) {
     const requestData = {
+        print_card_id: $("#hidden_print_card_id").val(),
         stu_code: $("#hidden_stu_code").val(),
         dept_code: $("#hidden_dept_code").val(),
         class_code: $("#hidden_class_code").val(),
@@ -436,28 +909,27 @@ $("body").on("click", "#btn_print_card", function (e) {
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(requestData),
-        async: false,
-        headers: {
-            "X-CSRF-TOKEN": csrfToken,
-            "X-Requested-With": "XMLHttpRequest",
-        },
-        beforesend: function () {
-            
-        },
+        async: true,
         success: function (response) {
             jQuery(function ($) {
-                const printContainer = $("<div>").html(response.view);
+                const printContainer = $("<div>").html(response);
                 $("body").append(printContainer);
                 printContainer.printThis({
                     importCSS: false,
                     importStyle: false,
-                    removeInline: false,
-                    printDelay: 333,
+                    removeInline: true,
                     base: false,
-                    formValues: false,
+                    formValues: true,
+                    iframe: true,
+                    debug: false,
                 });
                 printContainer.remove();
             });
+        },
+        complete: function () {
+            //showCardTotalStudent();
+            // showCardView();
+            // showCardViewList();
         },
         error: function (xhr, status, error) {
             notyf.error(
@@ -468,6 +940,48 @@ $("body").on("click", "#btn_print_card", function (e) {
         },
     });
 });
+
+$("body").on("click", "#btn_print_card_set_revision_view", function (e) {
+    const print_card_id = $(this).data("print_card_id");
+    const stu_code = $(this).data("stu_code");
+    const dept_code = $(this).data("dept_code");
+    const class_code = $(this).data("class_code");
+
+    $("#hidden_revision_print_card_id").val(print_card_id);
+    $("#hidden_revision_stu_code").val(stu_code);
+    $("#hidden_revision_dept_code").val(dept_code);
+    $("#hidden_revision_class_code").val(class_code);
+});
+
+$("body").on("click", "#btn_print_set_revision", function (e) {
+    const requestData = {
+        print_card_id: $("#hidden_revision_print_card_id").val(),
+        stu_code: $("#hidden_revision_stu_code").val(),
+        dept_code: $("#hidden_revision_dept_code").val(),
+        class_code: $("#hidden_revision_class_code").val(),
+    };
+    $.ajax({
+        url: "/certificate/print_card_revision",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(requestData),
+        async: true,
+        success: function (response) {},
+        complete: function () {
+            showCardTotalStudent();
+            showCardView();
+            showCardViewList();
+        },
+        error: function (xhr, status, error) {
+            notyf.error(
+                `Error submitting class code: ${
+                    xhr.statusText || "Unknown error"
+                }`
+            );
+        },
+    });
+});
+
 $("body").on("click", "#btn_update_view_info_print", function (e) {
     const stu_code = $(this).data("stu_code");
     const dept_code = $(this).data("dept_code");
@@ -487,10 +1001,6 @@ $("body").on("click", "#btn_update_view_info_print", function (e) {
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(requestData),
-        headers: {
-            "X-CSRF-TOKEN": csrfToken,
-            "X-Requested-With": "XMLHttpRequest",
-        },
         success: function (data) {
             $("#txt_up_view_name").html(data.name);
             $("#txt_up_view_id").html(data.code);
@@ -498,16 +1008,80 @@ $("body").on("click", "#btn_update_view_info_print", function (e) {
             $("#txt_up_view_skill").html(data.skill);
             $("#txt_up_view_level").html(data.level);
             $("#txt_up_view_shift").html(data.section_type);
-            $("#txt_up_khmer_lunar").val(data.print_khmer_lunar ?? "");
-            $("#txt_up_date_create").val(
-                `រាជធានីភ្នំពេញុ, ` + data.print_khmer_date_format ?? ""
-            );
+            $("#txt_up_view_expire_card").html(data.print_expire_date);
 
             var img =
                 data.photo_status == false
                     ? "/asset/NTTI/images/faces/default_User.jpg"
                     : `/uploads/student/${data.stu_photo}`;
             $("#txt_photo_student").attr("src", img);
+        },
+        error: function (xhr, status, error) {
+            notyf.error(
+                `Error submitting class code: ${
+                    xhr.statusText || "Unknown error"
+                }`
+            );
+        },
+    });
+});
+$("body").on("click", "#btn_card_view", function (e) {
+    const stu_code = $(this).data("stu_code");
+    const dept_code = $(this).data("dept_code");
+    const class_code = $(this).data("class_code");
+
+    $("#hidden_update_stu_code").val(stu_code);
+    $("#hidden_update_dept_code").val(dept_code);
+    $("#hidden_update_class_code").val(class_code);
+
+    const requestData = {
+        stu_code: stu_code,
+        dept_code: dept_code,
+        class_code: class_code,
+    };
+    $.ajax({
+        url: "/certificate/card_view_info",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(requestData),
+        success: function (data) {
+            $("#txt_view_name").html(data.name);
+            $("#txt_view_id").html(data.code);
+            $("#txt_view_class").html(data.class);
+            $("#txt_view_skill").html(data.skill);
+            $("#txt_view_level").html(data.level);
+            $("#txt_view_shift").html(data.section_type);
+            $("#txt_view_expire_card").html(data.print_expire_date);
+
+            $("#txt_view_fullname_kh").html(data.name_2);
+            $("#txt_view_fullname_eng").html(data.name);
+            $("#txt_view_dob").html(data.date_of_birth);
+            $("#txt_view_class_1").html(data.class);
+            $("#txt_view_phone").html(data.phone_student);
+            $("#txt_view_skill_1").html(data.skill);
+            $("#txt_view_email").html(data.email);
+            $("#txt_view_gender").html(data.gender);
+            $("#txt_view_addr").html(data.student_address);
+            $("#txt_view_dept").html(data.dept);
+
+            $("#txt_view_father").html(data.father_name);
+            $("#txt_view_father_phone").html(data.father_phone);
+            $("#txt_view_father_job").html(data.father_occupation);
+
+            $("#txt_view_mother").html(data.mother_name);
+            $("#txt_view_mother_phone").html(data.mother_phone);
+            $("#txt_view_mother_job").html(data.mother_occupation);
+
+            $("#txt_guardian_name").html(data.guardian_name);
+            $("#txt_guardian_phone").html(data.guardian_phone);
+            $("#txt_guardian_occupation").html(data.guardian_occupation);
+            $("#txt_guardian_address").html(data.guardian_address);
+
+            var img =
+                data.photo_status == false
+                    ? "/asset/NTTI/images/faces/default_User.jpg"
+                    : `/uploads/student/${data.stu_photo}`;
+            $("#txt_view_photo").attr("src", img);
         },
         error: function (xhr, status, error) {
             notyf.error(
@@ -525,8 +1099,6 @@ $("body").on("click", "#btn_update_info", function (e) {
     formData.append("class_code", $("#hidden_update_class_code").val());
 
     var fileInput = $("#fileUploadProfileStu")[0].files[0];
-    formData.append("date", $("#txt_up_date_card").val());
-    formData.append("khmer_lunar", $("#txt_up_khmer_lunar").val());
     if (fileInput) {
         formData.append("photo", fileInput);
     } else {
@@ -538,19 +1110,12 @@ $("body").on("click", "#btn_update_info", function (e) {
         type: "POST",
         processData: false,
         contentType: false,
-        cache: false,
-        async: false,
+        cache: true,
+        async: true,
         data: formData,
-        headers: {
-            "X-CSRF-TOKEN": csrfToken,
-            "X-Requested-With": "XMLHttpRequest",
-        },
         success: function (data) {
             if (data.success == true) {
-                jQuery(function ($) {
-                    $("#fm_card_update_info")[0].reset();
-                    $("#txt_photo_student").attr("src", "");
-                });
+                $("#fileUploadProfileStu").val("");
                 showCardView();
                 showCardViewList();
                 notyf.success(data.message);
@@ -596,12 +1161,9 @@ $("body").on("click", "#btn_card_disable_active", function (e) {
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(requestData),
-        headers: {
-            "X-CSRF-TOKEN": csrfToken,
-            "X-Requested-With": "XMLHttpRequest",
-        },
         success: function (data) {
             if (data.success == true) {
+                showCardTotalStudent();
                 showCardView();
                 showCardViewList();
                 notyf.success(data.message);
@@ -627,13 +1189,30 @@ $txt_up_date_card.on("change", function () {
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(requestData),
-        headers: {
-            "X-CSRF-TOKEN": csrfToken,
-            "X-Requested-With": "XMLHttpRequest",
-        },
         success: function (data) {
             $("#txt_up_khmer_lunar").val(data.date_lunar);
-            $("#txt_up_date_create").val(`រាជធានីភ្នំពេញុ, ${data.date_khmer}`);
+            $("#txt_up_date_create").val(`រាជធានីភ្នំពេញ, ${data.date_khmer}`);
+        },
+        error: function (xhr, status, error) {
+            notyf.error(
+                `Error submitting class code: ${
+                    xhr.statusText || "Unknown error"
+                }`
+            );
+        },
+    });
+});
+$("#sl_due_expire_date").on("change", function () {
+    const requestData = {
+        date: $(this).val(),
+    };
+    $.ajax({
+        url: "/certificate/show_change_date_print_card",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(requestData),
+        success: function (data) {
+            $("#txt_due_expire_date").val(data.date_lunar);
         },
         error: function (xhr, status, error) {
             notyf.error(
@@ -646,14 +1225,25 @@ $txt_up_date_card.on("change", function () {
 });
 
 $("body").on("click", "#btn_upload_zip_photo", function (e) {
+    let up_type_option = $("#up_type_option").val();
     let formData = new FormData();
     var fileInput = $("#zipFile")[0].files[0];
-    if (!fileInput) {
-        notyf.error("សូមជ្រើសរើស File Upload ប្រភេទ Zip");
-        return false;
-    }
+
+    formData.append("type", up_type_option);
     formData.append("zipFile", fileInput);
     formData.append("dept_code", dept_code);
+
+    $("#previewContainer img").each(function () {
+        let base64Data = $(this).attr("src");
+        let fileName = $(this).attr("data-name");
+
+        formData.append("imageSources[]", base64Data);
+        formData.append("fileNames[]", fileName);
+    });
+    if (!up_type_option) {
+        notyf.error("សូមជ្រើសរើសប្រភេទ File Upload");
+        return false;
+    }
     $.ajax({
         url: "/certificate/upload_zip_photo",
         type: "POST",
@@ -662,14 +1252,10 @@ $("body").on("click", "#btn_upload_zip_photo", function (e) {
         cache: false,
         async: false,
         data: formData,
-        headers: {
-            "X-CSRF-TOKEN": csrfToken,
-            "X-Requested-With": "XMLHttpRequest",
-        },
         success: function (data) {
             if (data.status == 200) {
                 $("#fm_up_card_base_option")[0].reset();
-                $(".modal-select2").modal("hide");
+                $("#modal_card_upload_zip_photo .btn-close").trigger("click");
 
                 notyf.success(data.message);
                 showCardView();
@@ -705,10 +1291,6 @@ $("body").on("click", "#btn_card_upload_multiple", function (e) {
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(requestData),
-        headers: {
-            "X-CSRF-TOKEN": csrfToken,
-            "X-Requested-With": "XMLHttpRequest",
-        },
         success: function (data) {},
         error: function (xhr, status, error) {
             notyf.error(
@@ -730,6 +1312,397 @@ $("body").on("change", "#up_type_option", function (e) {
     }
 });
 
+// $("body").on("click", "#btn_print_card_pdf", function (e) {
+//     e.preventDefault();
+
+//     const stu_code = $(this).data("stu_code");
+//     const dept_code = $(this).data("dept_code");
+//     const class_code = $(this).data("class_code");
+
+//     const requestData = {
+//         stu_code: stu_code,
+//         dept_code: dept_code,
+//         class_code: class_code,
+//     };
+
+//     const newTab = window.open("", "_blank");
+
+//     $.ajax({
+//         url: "/certificate/print_card_pdf",
+//         type: "GET",
+//         contentType: "application/json",
+//         data: JSON.stringify(requestData),
+//         success: function (response) {
+
+//             newTab.location.href = "/certificate/generateTranscript"
+//             // if (response.pdf_url) {
+//             //     newTab.location.href = "/certificate/generateTranscript"
+//             // } else {
+//             //     newTab.close();
+//             //     alert("Error generating PDF.");
+//             // }
+//         },
+//         complete: function () {
+//             showCardView();
+//             showCardViewList();
+//         },
+//         error: function (xhr, status, error) {
+//             notyf.error(
+//                 `Error submitting class code: ${
+//                     xhr.statusText || "Unknown error"
+//                 }`
+//             );
+//         },
+//     });
+// });
+$("body").on("click", "#btn_print_card_pdf", function (e) {
+    e.preventDefault();
+
+    const stu_code = $(this).data("stu_code");
+    const dept_code = $(this).data("dept_code");
+    const class_code = $(this).data("class_code");
+
+    const url = `/certificate/print_card_pdf?stu_code=${stu_code}&dept_code=${dept_code}&class_code=${class_code}`;
+
+    window.open(url, "_blank");
+});
+
+$("#txt_due_date").on("change", function () {
+    const requestData = {
+        date: $(this).val(),
+    };
+    $.ajax({
+        url: "/certificate/show_change_date_print_card",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(requestData),
+        success: function (data) {
+            $("#txt_due_khmer_lunar").val(data.date_lunar);
+            $("#txt_due_date_create").val(`រាជធានីភ្នំពេញ, ${data.date_khmer}`);
+        },
+        error: function (xhr, status, error) {
+            notyf.error(
+                `Error submitting class code: ${
+                    xhr.statusText || "Unknown error"
+                }`
+            );
+        },
+    });
+});
+
+$("#modal_card_due_date").on(
+    "click",
+    "#btn_due_date_this_session",
+    function (e) {
+        let print_khmer_lunar = $("#txt_due_khmer_lunar").val();
+        let txt_due_date_create = $("#txt_due_date_create").val();
+        let txt_due_expire_date = $("#txt_due_expire_date").val();
+        const requestData = {
+            session_code: $("#session_code").val(),
+            print_date: $("#txt_due_date").val(),
+            print_khmer_lunar: print_khmer_lunar,
+            print_date_due: txt_due_date_create,
+            print_expire_date: txt_due_expire_date,
+        };
+        let isValid = true;
+
+        let fields = ["#txt_due_khmer_lunar", "#txt_due_date_create"];
+
+        fields.forEach(function (selector) {
+            let field = $(selector);
+            if ($.trim(field.val()) === "") {
+                field.css("border", "2px solid red");
+                isValid = false;
+            } else {
+                field.css("border", "");
+            }
+        });
+        if (!isValid) {
+            return false;
+        }
+        $.ajax({
+            url: "/certificate/card_due_date",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(requestData),
+            success: function (data) {
+                if (data.status == 200) {
+                    notyf.success(data.message);
+                    $("#fm_card_due_date")[0].reset();
+                    $("#modal_card_due_date .btn-close").trigger("click");
+                } else {
+                    notyf.error(data.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                notyf.error(
+                    `Error submitting class code: ${
+                        xhr.statusText || "Unknown error"
+                    }`
+                );
+            },
+        });
+    }
+);
+$("#modal_card_due_date").on(
+    "click",
+    "#btn_update_date_this_session",
+    function (e) {
+        let print_khmer_lunar = $("#txt_due_khmer_lunar").val();
+        let txt_due_date_create = $("#txt_due_date_create").val();
+        let txt_due_expire_date = $("#txt_due_expire_date").val();
+        const requestData = {
+            session_code: $("#session_code").val(),
+            print_date: $("#txt_due_date").val(),
+            print_khmer_lunar: print_khmer_lunar,
+            print_date_due: txt_due_date_create,
+            print_expire_date: txt_due_expire_date,
+        };
+        let isValid = true;
+
+        let fields = ["#txt_due_khmer_lunar", "#txt_due_date_create"];
+
+        fields.forEach(function (selector) {
+            let field = $(selector);
+            if ($.trim(field.val()) === "") {
+                field.css("border", "2px solid red");
+                isValid = false;
+            } else {
+                field.css("border", "");
+            }
+        });
+        if (!isValid) {
+            return false;
+        }
+        $.ajax({
+            url: "/certificate/card_due_date_update",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(requestData),
+            success: function (data) {
+                if (data.status == 200) {
+                    notyf.success(data.message);
+                    $("#fm_card_due_date")[0].reset();
+                    $("#modal_card_due_date .btn-close").trigger("click");
+                } else {
+                    notyf.error(data.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                notyf.error(
+                    `Error submitting class code: ${
+                        xhr.statusText || "Unknown error"
+                    }`
+                );
+            },
+        });
+    }
+);
+$("#modal_card_create_expire_date").on(
+    "click",
+    "#btn_due_expire_card",
+    function (e) {
+        let txt_due_level = $("#txt_due_level").val();
+        let sl_due_expire_date = $("#sl_due_expire_date").val();
+        let txt_due_expire_date = $("#txt_due_expire_date").val();
+        const requestData = {
+            session_code: $("#session_code").val(),
+            level: txt_due_level,
+            expire_date: sl_due_expire_date,
+            print_expire_date: txt_due_expire_date,
+        };
+
+        let isValid = true;
+
+        let fields = [
+            "#txt_due_level",
+            "#txt_due_class",
+            "#sl_due_expire_date",
+            "#txt_due_expire_date",
+        ];
+
+        fields.forEach(function (selector) {
+            let field = $(selector);
+            if ($.trim(field.val()) === "") {
+                field.css("border", "2px solid red");
+                isValid = false;
+            } else {
+                field.css("border", "");
+            }
+        });
+
+        let selectFields = ["#txt_due_level", "#txt_due_class"];
+        selectFields.forEach(function (selector) {
+            let field = $(selector);
+            let select2Container = field.next(".select2-container");
+
+            if ($.trim(field.val()) === "") {
+                select2Container
+                    .find(".select2-selection")
+                    .css("border", "2px solid red");
+                isValid = false;
+            } else {
+                select2Container.find(".select2-selection").css("border", "");
+            }
+        });
+        if (!isValid) {
+            return false;
+        }
+        $.ajax({
+            url: "/certificate/card_due_expire",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(requestData),
+            success: function (data) {
+                if (data.status == 200) {
+                    notyf.success(data.message);
+                    $("#fm_card_expire_date")[0].reset();
+                    $("#modal_card_create_expire_date .btn-close").trigger(
+                        "click"
+                    );
+                    showCardView();
+                    showCardViewList();
+                } else {
+                    notyf.error(data.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                notyf.error(
+                    `Error submitting class code: ${
+                        xhr.statusText || "Unknown error"
+                    }`
+                );
+            },
+        });
+    }
+);
+$("#modal_card_create_expire_date").on(
+    "click",
+    "#btn_due_update_expire_card",
+    function (e) {
+        let txt_due_level = $("#txt_due_level").val();
+        let sl_due_expire_date = $("#sl_due_expire_date").val();
+        let txt_due_expire_date = $("#txt_due_expire_date").val();
+        const requestData = {
+            session_code: $("#session_code").val(),
+            level: txt_due_level,
+            expire_date: sl_due_expire_date,
+            print_expire_date: txt_due_expire_date,
+        };
+
+        let isValid = true;
+
+        let fields = [
+            "#txt_due_level",
+            "#txt_due_class",
+            "#sl_due_expire_date",
+            "#txt_due_expire_date",
+        ];
+
+        fields.forEach(function (selector) {
+            let field = $(selector);
+            if ($.trim(field.val()) === "") {
+                field.css("border", "2px solid red");
+                isValid = false;
+            } else {
+                field.css("border", "");
+            }
+        });
+
+        let selectFields = ["#txt_due_level", "#txt_due_class"];
+        selectFields.forEach(function (selector) {
+            let field = $(selector);
+            let select2Container = field.next(".select2-container");
+
+            if ($.trim(field.val()) === "") {
+                select2Container
+                    .find(".select2-selection")
+                    .css("border", "2px solid red");
+                isValid = false;
+            } else {
+                select2Container.find(".select2-selection").css("border", "");
+            }
+        });
+        if (!isValid) {
+            return false;
+        }
+        $.ajax({
+            url: "/certificate/card_due_expire_update",
+            type: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify(requestData),
+            success: function (data) {
+                if (data.status == 200) {
+                    notyf.success(data.message);
+                    $("#fm_card_expire_date")[0].reset();
+                    $("#modal_card_create_expire_date .btn-close").trigger(
+                        "click"
+                    );
+                    showCardView();
+                    showCardViewList();
+                } else {
+                    notyf.error(data.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                notyf.error(
+                    `Error submitting class code: ${
+                        xhr.statusText || "Unknown error"
+                    }`
+                );
+            },
+        });
+    }
+);
+
+$("#modal_card_create_expire_date").on(
+    "change",
+    "#txt_due_level",
+    function (e) {
+        let level = $(this).val();
+        const requestData = {
+            level: level,
+        };
+        $.ajax({
+            url: "/certificate/card_expire_show_level",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(requestData),
+            beforeSend: function () {
+                $("#txt_due_class").empty();
+            },
+            success: function (data) {
+                let card = data.record_level;
+                let formattedDate = new Date(data.record_date)
+                    .toISOString()
+                    .split("T")[0];
+                $("#sl_due_expire_date").val(formattedDate);
+                $("#txt_due_expire_date").val(data.record_exp_year);
+
+                $.map(data.record_level, function (item) {
+                    $("#txt_due_class").append(
+                        new Option(item.name, item.code, true, true)
+                    );
+                });
+
+                $("#txt_due_class").select2();
+                select2AdvancedModal(
+                    "#txt_due_class",
+                    "#modal_card_create_expire_date"
+                );
+            },
+            error: function (xhr, status, error) {
+                notyf.error(
+                    `Error submitting class code: ${
+                        xhr.statusText || "Unknown error"
+                    }`
+                );
+            },
+        });
+    }
+);
+
+showCardTotalStudent();
 showCardView();
 showCardViewList();
 

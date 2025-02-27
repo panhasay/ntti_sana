@@ -20,6 +20,7 @@
   <table>
     <thead>
       <tr class="general-data">
+        <th style="font-weight: 700" width="10">គោត្តនាម-នាម</th>
         <th style="font-weight: 700" width="20">គោត្តនាម-នាម</th>
         <th style="font-weight: 700" width="20">ជាអក្សឡាតាំង</th>
         <th style="font-weight: 700" width="10">ភេទ</th>
@@ -39,6 +40,7 @@
     <tbody>
       @foreach ($records as $record)
       <tr>
+          <td>{{ $record->code ?? ''   }}</td>
           <td>{{ $record->name_2  }}</td>
           <td>{{ ucwords(strtolower($record->name ?? '')) }}</td>
           <td>{{ $record->gender ?? ''}}</td>

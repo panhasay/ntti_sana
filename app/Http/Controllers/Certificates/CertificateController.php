@@ -13,16 +13,24 @@ use App\Models\General\Classes;
 use App\Models\General\Picture;
 use App\Models\General\Sections;
 use Illuminate\Support\Facades\DB;
+use App\Models\general\SessionYear as GeneralSessionYear;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\CertificateSubModule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\View;
 use App\Models\SystemSetup\Department;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Models\CertificateStudentPrintCard;
-// use App\Http\Controllers\certificates\CertificatePdfController;
-// use App\Http\Controllers\certificates\CertificateStudentPrintCardController;
+use App\Models\Certificates\CertStudentPrintCardSession;
+use App\Models\Certificates\CertStudentPrintCardRevision;
+use App\Models\Certificates\CertStudentPrintCardExpireClass;
+use App\Http\Controllers\certificates\CertificateDegreeController;
+use App\Http\Controllers\Certificates\CertificateOfficialTranscriptController;
+
+
 use App\Models\General\Qualifications;
 use App\Models\Student\Student;
 use App\Service\service;
@@ -39,7 +47,7 @@ class CertificateController extends Controller
 
     function __construct()
     {
-        $this->services = new service();
+        $this->services = new Service();
         $this->page_id = "10001";
         $this->page = "certificate";
         $this->prefix = "certificate";
@@ -95,7 +103,44 @@ class CertificateController extends Controller
             $query->where('department_code', $dept_code);
         })->distinct()->get();
 
-        return view('certificate/certificate_card_list', compact('record_class', 'record_dept', 'record_shift', 'dept_code', 'module_code', 'arr_dept', 'arr_module', 'record_level', 'record_skill'));
+        $sessionYear =  DB::table('session_year')->where('is_active', 'yes')
+            ->orderBy('code', 'desc')
+            ->first();
+
+
+
+        return view('certificate/certificate_card_list', compact(
+            'record_class',
+            'record_dept',
+            'record_shift',
+            'dept_code',
+            'module_code',
+            'arr_dept',
+            'arr_module',
+            'record_level',
+            'record_skill',
+            'sessionYear'
+        ));
+    }
+    public function DegreeManagement(Request $request)
+    {
+        //return $this->degreeController->index($request);
+    }
+    public function OfficialTranscript(Request $request)
+    {
+        //return $this->tranController->index($request);
+    }
+
+    function getEducationLevelValue($level)
+    {
+        $levels = [
+            'បរិញ្ញាបត្រ' => 5,
+            'បរិញ្ញាបត្ររង' => 3,
+            'បរិញ្ញាបត្របន្ត' => 3,
+            'មធ្យមសិក្សាទីមួយ' => 1
+        ];
+
+        return $levels[$level] ?? 0;
     }
 
     public function showLevelShiftSkill(Request $request)
@@ -145,6 +190,30 @@ class CertificateController extends Controller
             $filePath = public_path('uploads/student/' . $student->stu_photo);
 
             $student->photo_status = $student->stu_photo && file_exists($filePath) ? true : false;
+
+            $record_card_expire = CertStudentPrintCardExpireClass::where('class_code', $student->class_code)
+                ->where('status', 1)
+                ->orderBy('session_code', 'desc')
+                ->first();
+
+            $now = Carbon::now()->subYear();
+            $expireDate = Carbon::parse($record_card_expire['expire_date'] ?? $now);
+
+            $diff = $expireDate->diff($now);
+
+            $student->expire_date = $record_card_expire['expire_date'] ?? 0;
+            $student->print_expire_date = $record_card_expire['print_expire_date'] ?? 0;
+            $student->remaining = "{$diff->y} years, {$diff->m} months, and {$diff->d} days";
+            if ($expireDate <= $now) {
+                $student->class_remaining = 'text-danger';
+            } else {
+                $student->class_remaining = 'text-success';
+            }
+
+            $count_revision = CertStudentPrintCardRevision::where('print_card_id', $student->id)
+                ->where('status', 1)
+                ->count();
+            $student->count_revision = $count_revision;
             return $student;
         });
         return response()->json([
@@ -158,6 +227,7 @@ class CertificateController extends Controller
     public function printCardStudent(Request $request)
     {
         try {
+            $print_card_id = $request->input('print_card_id');
             $dept_code = $request->input('dept_code');
             $class_code = $request->input('class_code');
             $stu_code = $request->input('stu_code');
@@ -170,46 +240,139 @@ class CertificateController extends Controller
             $validated['print_by'] = Auth::id();
             $validated['print_by_date'] = now();
 
+            $sessionYear = CertStudentPrintCardSession::where('status', 1)
+                ->orderBy('session_code', 'desc')
+                ->first();
+            $validated['print_code'] = $sessionYear['id'] ?? 0;
+
             $records = StudentModel::getFilteredStudentsOnly($dept_code, $class_code, $stu_code);
             if ($records) {
+                
                 $records->print_khmer_date_format = formatDateToKhmer($records->print_khmer_date ?? now(), 'kh');
                 $filePath = public_path('uploads/student/' . $records->stu_photo);
                 $records->photo_status = $records->stu_photo && file_exists($filePath) ? true : false;
+                $records->print_khmer_lunar = $sessionYear['print_khmer_lunar'] ?? null;
+                $records->print_date_due = $sessionYear['print_date_due'] ?? null;
             }
+
 
             $existingRecord = CertificateStudentPrintCard::where('stu_code', $stu_code)->first();
             if ($existingRecord) {
                 $existingRecord->update($validated);
                 $record_print = $existingRecord;
             } else {
-                $validated['print_khmer_lunar'] = self::getKhmerDateCardStudent(now());
-                $validated['print_date'] = now();
                 $record_print = CertificateStudentPrintCard::create($validated);
             }
-            $record_date_khmer = $record_print['print_khmer_lunar'] ?? self::getKhmerDateCardStudent(now());
+            $record_date_khmer = self::getKhmerDateCardStudent(now());
 
+            $column['print_card_id'] = $print_card_id;
+            $column['status'] = 1;
+            $column['revision'] = 1;
+            $check_revision = CertStudentPrintCardRevision::where('print_card_id', $print_card_id)->first();
+            if ($check_revision) {
+            } else {
+                $record_print = CertStudentPrintCardRevision::create($column);
+                $status = 200;
+                $message = "Add successfully!";
+            }
 
-            // return view('certificate.certificate_card_print', reder('records', 'record_date_khmer', 'record_print'));
-
-            // response( )
-
-            $view = view('certificate.certificate_card_print', [
-                'records' => $records,
-                'record_date_khmer' => $record_date_khmer,
-                'record_print' => $record_date_khmer,
-            ])->render();
-        
-            // Return the view string as a JSON response
-            return response()->json(['view' => $view]);
-
+            return view('certificate.certificate_card_print', compact('records', 'record_date_khmer', 'record_print'));
         } catch (\Exception $e) {
             Log::error('Card print error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Unable to generate student card');
         }
     }
+    public function storePrintCardRevision(Request $request)
+    {
+        try {
+            $print_card_id = $request->input('print_card_id');
+            $dept_code = $request->input('dept_code');
+            $class_code = $request->input('class_code');
+            $stu_code = $request->input('stu_code');
+
+            $validated['print_card_id'] = $print_card_id;
+            $validated['status'] = 1;
+            $validated['revision'] = 1;
+
+            $existingRecord = CertStudentPrintCardRevision::where('print_card_id', $print_card_id)->first();
+
+
+            $check_print = CertificateStudentPrintCard::where('stu_code', $stu_code)->where('status', 1)->first();
+            if ($check_print) {
+            } else {
+            }
+
+            if ($existingRecord) {
+                $record_print = CertStudentPrintCardRevision::create($validated);
+                $status = 200;
+                $message = "Add successfully!";
+            } else {
+                $record_print = CertStudentPrintCardRevision::create($validated);
+                $status = 200;
+                $message = "Add successfully!";
+            }
+
+            return response()->json(['status' => $status, 'data' => $record_print, 'message' => $message]);
+        } catch (\Exception $e) {
+            Log::error('Card print error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Unable to generate student card');
+        }
+    }
+    public function printCardStudentPdf111(Request $request)
+    {
+        $dept_code = $request->query('dept_code');
+        $class_code = $request->query('class_code');
+        $stu_code = $request->query('stu_code');
+
+        $baseUrl = \App\Http\Controllers\QrCodeController::getBaseUrl()->getData()->base_url;
+        $originalUrl = $baseUrl . '/dsa?code=' . urlencode(secured_encrypt($stu_code));
+
+        $validated = $request->validate([
+            'stu_code' => 'required|max:50',
+            'class_code' => 'required|string|max:50',
+        ]);
+        $validated['status'] = 1;
+        $validated['print_by'] = Auth::id();
+        $validated['print_by_date'] = now();
+
+        $records = StudentModel::getFilteredStudentsOnly($dept_code, $class_code, $stu_code);
+        if ($records) {
+            $records->print_khmer_date_format = formatDateToKhmer($records->print_khmer_date ?? now(), 'kh');
+            $filePath = public_path('uploads/student/' . $records->stu_photo);
+            $records->photo_status = $records->stu_photo && file_exists($filePath) ? true : false;
+        }
+
+        $existingRecord = CertificateStudentPrintCard::where('stu_code', $stu_code)->first();
+        if ($existingRecord) {
+            $existingRecord->update($validated);
+            $record_print = $existingRecord;
+        } else {
+            $validated['print_khmer_lunar'] = self::getKhmerDateCardStudent(now());
+            $validated['print_date'] = now();
+            $validated['original_url'] = $originalUrl;
+            $validated['short_code'] = substr(md5($originalUrl . now()), 0, 10);
+            $record_print = CertificateStudentPrintCard::create($validated);
+        }
+        $record_date_khmer = $record_print['print_khmer_lunar'] ?? self::getKhmerDateCardStudent(now());
+
+        $data = [
+            'records' => $records,
+            'record_date_khmer' => $record_date_khmer,
+            'record_print' => $record_print,
+        ];
+
+        // $pdf = Pdf::loadView('certificate.certificate_card_print_pdf', $data)
+        //     ->setPaper([0, 0, 155, 244])
+        //     ->setOption([
+        //         'fontDir' => public_path('/fonts'),
+        //         'fontCache' => public_path('/fonts'),
+        //         'defaultFont' => 'KhmerOSbattambang'
+        //     ]);
+        // return $pdf->stream('student_card.pdf');
+    }
     public function printCardStudentPdf(Request $request)
     {
-        return $this->pdf->generatePdf();
+        //return $this->pdf->generatePdf();
     }
 
     private static function getKhmerYearCycle($buddhistYear)
@@ -277,7 +440,7 @@ class CertificateController extends Controller
         $month = $LunarNewYear[$date->format('n') - 0];
         $year = $nameYear[(($date->format('Y') - 5) % 12)];
 
-        return "{$dayOfWeek} {$khmerDayInLunarPhase}{$lunarPhase} ខែ{$month} {$year} {$khmerYearCycle} ព.ស.{$buddhistYear}";
+        return "{$dayOfWeek} {$khmerDayInLunarPhase}{$lunarPhase} ខែ{$month} {$year} {$khmerYearCycle} ព.ស. {$buddhistYear}";
     }
 
     public function showViewCardInformation(Request $request)
@@ -291,6 +454,25 @@ class CertificateController extends Controller
             $students->print_khmer_date_format = formatDateToKhmer($students->print_khmer_date ?? now(), 'kh');
             $filePath = public_path('uploads/student/' . $students->stu_photo);
             $students->photo_status = $students->stu_photo && file_exists($filePath) ? true : false;
+
+            $record_card_expire = CertStudentPrintCardExpireClass::where('class_code', $students->class_code)
+                ->where('status', 1)
+                ->orderBy('session_code', 'desc')
+                ->first();
+
+            $now = Carbon::now()->subYear();
+            $expireDate = Carbon::parse($record_card_expire['expire_date'] ?? $now);
+
+            $diff = $expireDate->diff($now);
+
+            $students->expire_date = $record_card_expire['expire_date'] ?? 0;
+            $students->print_expire_date = $record_card_expire['print_expire_date'] ?? 0;
+            $students->remaining = "{$diff->y} years, {$diff->m} months, and {$diff->d} days";
+            if ($expireDate <= $now) {
+                $students->class_remaining = 'text-danger';
+            } else {
+                $students->class_remaining = 'text-success';
+            }
         }
 
         return response()->json($students);
@@ -304,8 +486,8 @@ class CertificateController extends Controller
         $validated['status'] = 1;
         $validated['update_by'] = Auth::id();
         $validated['update_by_date'] = now();
-        $validated['print_khmer_lunar'] =  $request->input('khmer_lunar');
-        $validated['print_date'] =  $request->input('date');
+        // $validated['print_khmer_lunar'] =  $request->input('khmer_lunar');
+        // $validated['print_date'] =  $request->input('date');
 
         $dept_code = $request->input('dept_code');
         $class_code = $request->input('class_code');
@@ -404,7 +586,11 @@ class CertificateController extends Controller
 
     public function uploadZip(Request $request)
     {
+        $type = $request->input('type');
         $dept_code = $request->input('dept_code');
+        $imageSources = $request->input('imageSources');
+
+        if ($type == 'zip') {
         $request->validate([
             'zipFile' => 'required|file|mimes:zip|max:20480',
         ]);
@@ -430,14 +616,27 @@ class CertificateController extends Controller
 
                 $student = Picture::where('code', $stu_code)->first();
 
+                    $check_stu_code = StudentModel::where('code', $stu_code)->first();
+                    if ($check_stu_code) {
                 if ($student) {
+                            $uploadPath = public_path('uploads/student/');
                     $filePath = public_path('uploads/student/' . $newFileName);
+
+                            // Remove old image if exists before saving new one
+                            if (!empty($student->picture_ori)) {
+                                $oldFilePath = $uploadPath . $student->picture_ori;
+                                if (File::exists($oldFilePath)) {
+                                    File::delete($oldFilePath);
+                                }
+                            }
+
                     file_put_contents($filePath, $fileContent);
 
                     $student->picture_ori = $newFileName;
                     $student->save();
 
                     $updatedStudents[] = $newFileName;
+                        }
                 }
             }
 
@@ -450,6 +649,66 @@ class CertificateController extends Controller
             ]);
         } else {
             return response()->json(['message' => 'Failed to open ZIP file.'], 200);
+            }
+        } else {
+            if ($request->has('imageSources')) {
+                $imageSourcesArr = $request->input('imageSources');
+                $fileNameArr = $request->input('fileNames');
+
+                $updatedStudents = [];
+
+                foreach ($imageSourcesArr as $key => $imageData) {
+                    $defaultFileName = pathinfo($fileNameArr[$key], PATHINFO_FILENAME);
+
+                    $check_stu_code = StudentModel::where('code', $defaultFileName)->first();
+                    if ($check_stu_code) {
+                        $imageParts = explode(";base64,", $imageData);
+                        $imageTypeAux = explode("image/", $imageParts[0]);
+                        $imageType = $imageTypeAux[1];
+                        $imageBase64 = base64_decode($imageParts[1]);
+
+                        $date = now()->format('Ymd');
+                        $newFileName = 'ntti_' . $defaultFileName . '_' . $date . '_' . uniqid() . '.' . $imageType;
+
+                        $student = Picture::where('code', $defaultFileName)->first();
+
+                        if ($student) {
+                            $uploadPath = public_path('uploads/student/');
+
+                            if (!File::exists($uploadPath)) {
+                                File::makeDirectory($uploadPath, 0755, true);
+                            }
+
+                            // Remove old image if exists before saving new one
+                            if (!empty($student->picture_ori)) {
+                                $oldFilePath = $uploadPath . $student->picture_ori;
+                                if (File::exists($oldFilePath)) {
+                                    File::delete($oldFilePath);
+                                }
+                            }
+
+                            $filePath = $uploadPath . $newFileName;
+                            file_put_contents($filePath, $imageBase64);
+
+                            $student->picture_ori = $newFileName;
+                            $student->save();
+
+                            $updatedStudents[] = $newFileName;
+                        }
+                    }
+                }
+
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Images saved successfully.',
+                    'updatedStudents' => $updatedStudents,
+                ]);
+            }
+
+            return response()->json([
+                'status' => 400,
+                'message' => 'No images found.',
+            ]);
         }
     }
 
@@ -519,5 +778,177 @@ class CertificateController extends Controller
             $this->services->telegram($ex->getMessage(), 'list of student', $ex->getLine());
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
+    }
+
+    public function StoreDueDateSession(Request $request)
+    {
+        $validated = $request->validate([
+            'session_code' => 'required|max:50'
+        ]);
+        $validated['print_date'] =  $request->input('print_date');
+        $validated['status'] = 1;
+        $validated['create_by'] = Auth::id();
+        $validated['create_by_date'] = now();
+        $validated['print_khmer_lunar'] =  $request->input('print_khmer_lunar');
+        $validated['print_date_due'] =  $request->input('print_date_due');
+        $validated['print_expire_date'] =  $request->input('print_expire_date');
+
+        $existingRecord = CertStudentPrintCardSession::where('session_code', $request->input('session_code'))
+            ->where('status', 1)
+            ->first();
+        if ($existingRecord) {
+            $record_print = $existingRecord;
+            $status = 404;
+            $message = 'Data already exists';
+        } else {
+            $record_print = CertStudentPrintCardSession::create($validated);
+            $status = 200;
+            $message = 'Add New successfully!';
+        }
+
+        return response()->json(['status' => $status, 'data' => $record_print, 'message' => $message]);
+    }
+    public function UpdateDueDateSession(Request $request)
+    {
+        $validated = $request->validate([
+            'session_code' => 'required|max:50'
+        ]);
+        $validated['print_date'] =  $request->input('print_date');
+        $validated['status'] = 1;
+        $validated['create_by'] = Auth::id();
+        $validated['create_by_date'] = now();
+        $validated['print_khmer_lunar'] =  $request->input('print_khmer_lunar');
+        $validated['print_date_due'] =  $request->input('print_date_due');
+        $validated['print_expire_date'] =  $request->input('print_expire_date');
+
+        $existingRecord = CertStudentPrintCardSession::where('session_code', $request->input('session_code'))
+            ->where('status', 1)
+            ->first();
+        if ($existingRecord) {
+            $existingRecord->update($validated);
+            $record_print = $existingRecord;
+            $status = 200;
+            $message = 'Updated successfully!';
+        } else {
+            $status = 404;
+            $message = 'Record Not found!';
+        }
+
+        return response()->json(['status' => $status, 'data' => $record_print, 'message' => $message]);
+    }
+    public function showCardTotalStudent(Request $request)
+    {
+        $class_code = $request->input('class_code');
+
+        $students = StudentModel::getShowCardTotalStudent($class_code);
+        return response()->json($students);
+    }
+    public function StoreDueDateExpireSession(Request $request)
+    {
+        $validated = $request->validate([
+            'session_code' => 'required|max:50'
+        ]);
+
+        $session_code = $request->input('session_code');
+        $level = $request->input('level');
+        $expire_date = $request->input('expire_date');
+        $print_expire_date = $request->input('print_expire_date');
+
+        $query = Classes::whereNotNull('department_code');
+        if (!empty($level)) {
+            $query->where('level', $level);
+        }
+        $record_level = $query->get();
+
+        foreach ($record_level as $class) {
+            $validated = [
+                'session_code' => $session_code,
+                'class_code' => $class->code,
+                'expire_date' => $expire_date,
+                'print_expire_date' => $print_expire_date,
+                'status' => 1,
+            ];
+
+            $existingRecord = CertStudentPrintCardExpireClass::where('session_code', $session_code)
+                ->where('class_code', $class->code)
+                ->where('status', 1)
+                ->first();
+
+            if ($existingRecord) {
+                //$existingRecord->update($validated);
+                $status = 404;
+                $message = "Data Already {$level}!";
+            } else {
+                CertStudentPrintCardExpireClass::create($validated);
+                $status = 200;
+                $message = "Added successfully for level {$level}!";
+            }
+        }
+
+        return response()->json(['status' => $status, 'data' => $message, 'message' => $message]);
+    }
+    public function updateDueDateExpireSession(Request $request)
+    {
+        $validated = $request->validate([
+            'session_code' => 'required|max:50'
+        ]);
+
+        $session_code = $request->input('session_code');
+        $level = $request->input('level');
+        $expire_date = $request->input('expire_date');
+        $print_expire_date = $request->input('print_expire_date');
+
+        $query = Classes::whereNotNull('department_code');
+        if (!empty($level)) {
+            $query->where('level', $level);
+        }
+        $record_level = $query->get();
+
+        foreach ($record_level as $class) {
+            $validated = [
+                'session_code' => $session_code,
+                'class_code' => $class->code,
+                'expire_date' => $expire_date,
+                'print_expire_date' => $print_expire_date,
+                'status' => 1,
+            ];
+
+            $existingRecord = CertStudentPrintCardExpireClass::where('session_code', $session_code)
+                ->where('class_code', $class->code)
+                ->where('status', 1)
+                ->first();
+
+            if ($existingRecord) {
+                $existingRecord->update($validated);
+                $status = 200;
+                $message = "Update success of level {$level}!";
+            } else {
+                //CertStudentPrintCardExpireClass::create($validated);
+                $status = 404;
+                $message = "Not fund for level {$level}!";
+            }
+        }
+
+        return response()->json(['status' => $status, 'data' => $message, 'message' => $message]);
+    }
+
+    public function showCardExpireLevel(Request $request)
+    {
+        $level = $request->input('level');
+
+        $query = Classes::whereNotNull('department_code');
+
+        $query->where('level', $level ?? '');
+
+        $record_level = $query->select('*')
+            ->get();
+
+        $exp_yaer = $this->getEducationLevelValue($level);
+        $newDate = Carbon::now()->addYears($exp_yaer)->format('Y-m-d');
+        return response()->json(array(
+            'record_level' => $record_level,
+            'record_date' => $newDate,
+            'record_exp_year' => self::getKhmerDateCardStudent(new DateTime($newDate)),
+        ));
     }
 }

@@ -66,12 +66,13 @@ class StudentModel extends Model
                 'cls.level as level',
                 'sk.name_2 as skill',
                 DB::raw('(SELECT stu.status FROM cert_student_print_card AS stu WHERE stu.stu_code = student.code AND stu.class_code = student.class_code LIMIT 1) as status_print'),
-                DB::raw('(SELECT pic.picture_ori FROM picture AS pic WHERE pic.code = student.code ORDER BY pic.id DESC LIMIT 1) as stu_photo')
+                DB::raw('(SELECT pic.picture_ori FROM picture AS pic WHERE pic.code = student.code ORDER BY pic.id DESC LIMIT 1) as stu_photo'),
+                DB::raw('(SELECT stu.print_code FROM cert_student_print_card AS stu WHERE stu.stu_code = student.code AND stu.class_code = student.class_code LIMIT 1) as print_code')
             ])
             ->join('department as dept', 'dept.code', '=', 'student.department_code')
             ->join('classes as cls', 'cls.code', '=', 'student.class_code')
             ->join('skills as sk', 'sk.code', '=', 'cls.skills_code')
-            ->where('student.department_code', $dept_code)
+            ->whereNotNull('student.department_code')
             ->whereNotNull('student.class_code')
             ->when($class_code, function ($query, $class_code) {
                 $query->where('student.class_code', $class_code);
@@ -99,9 +100,7 @@ class StudentModel extends Model
                 DB::raw('cls.level as level'),
                 DB::raw('sk.name_2 as skill'),
                 DB::raw('(SELECT stu.name_2 FROM sections AS stu WHERE stu.code = cls.sections_code LIMIT 1) as section_type'),
-                DB::raw('(SELECT pic.picture_ori FROM picture AS pic WHERE pic.code = student.code ORDER BY pic.id DESC LIMIT 1) as stu_photo'),
-                DB::raw('(SELECT card.print_khmer_lunar FROM cert_student_print_card AS card WHERE card.stu_code = student.code AND card.class_code=student.class_code LIMIT 1) as print_khmer_lunar'),
-                DB::raw('(SELECT card.print_date FROM cert_student_print_card AS card WHERE card.stu_code = student.code AND card.class_code=student.class_code LIMIT 1) as print_khmer_date'),
+                DB::raw('(SELECT pic.picture_ori FROM picture AS pic WHERE pic.code = student.code ORDER BY pic.id DESC LIMIT 1) as stu_photo')
             ])
             ->join('department as dept', 'dept.code', '=', 'student.department_code')
             ->join('classes as cls', 'cls.code', '=', 'student.class_code')
@@ -114,5 +113,59 @@ class StudentModel extends Model
                 $query->where('student.code', $stu_code);
             })
             ->first();
+    }
+
+    // public static function getShowCardTotalStudent($dept_code, $class_code)
+    // {
+    //     $genderCounts = self::query()
+    //         ->selectRaw("COUNT(CASE WHEN student.gender = 'ប្រុស' THEN 1 END) as total_male")
+    //         ->selectRaw("COUNT(CASE WHEN student.gender = 'ស្រី' THEN 1 END) as total_female")
+    //         ->where('student.department_code', $dept_code)
+    //         ->whereNotNull('student.class_code')
+    //         ->when($class_code, function ($query, $class_code) {
+    //             $query->where('student.class_code', $class_code);
+    //         })
+    //         ->first();
+
+    //     return [
+    //         'total_male' => $genderCounts->total_male,
+    //         'total_female' => $genderCounts->total_female,
+    //         'total_students' => $genderCounts->total_male + $genderCounts->total_female,
+    //     ];
+    // }
+
+    public static function getShowCardTotalStudent($class_code)
+    {
+        $genderCounts = self::query()
+            ->selectRaw("COUNT(CASE WHEN student.gender = 'ប្រុស' THEN 1 END) as total_male")
+            ->selectRaw("COUNT(CASE WHEN student.gender = 'ស្រី' THEN 1 END) as total_female")
+            ->selectRaw("COUNT(CASE WHEN student.gender = 'ប្រុស' AND
+            (SELECT stu.status FROM cert_student_print_card AS stu
+             WHERE stu.stu_code = student.code
+             AND stu.class_code = student.class_code
+             LIMIT 1) = 1 THEN 1 END) as total_male_status_1")
+            ->selectRaw("COUNT(CASE WHEN student.gender = 'ស្រី' AND
+            (SELECT stu.status FROM cert_student_print_card AS stu
+             WHERE stu.stu_code = student.code
+             AND stu.class_code = student.class_code
+             LIMIT 1) = 1 THEN 1 END) as total_female_status_1")
+            ->join('department as dept', 'dept.code', '=', 'student.department_code')
+            ->join('classes as cls', 'cls.code', '=', 'student.class_code')
+            ->join('skills as sk', 'sk.code', '=', 'cls.skills_code')
+            ->whereNotNull('student.department_code')
+            ->whereNotNull('student.class_code')
+            ->when($class_code, function ($query, $class_code) {
+                $query->where('student.class_code', $class_code);
+            })
+            ->first();
+
+        return [
+            'total_male' => $genderCounts->total_male,
+            'total_female' => $genderCounts->total_female,
+            'total_students' => $genderCounts->total_male + $genderCounts->total_female,
+            'total_male_status_1' => $genderCounts->total_male_status_1,
+            'total_female_status_1' => $genderCounts->total_female_status_1,
+            'total_status_1' => $genderCounts->total_male_status_1 + $genderCounts->total_female_status_1,
+        ];
     }
 }

@@ -15,21 +15,18 @@
         ->where('study_type', 'new student')
         ->where('sections_code', $record->sections_code)
         ->count();
-    $new_student = \DB::table('student_registration')
+
+    $new_student = \DB::table('student')
                     ->where('skills_code', $record->skills_code)
                     ->where('qualification', $record->level)
                     ->where('department_code', $record->department_code)
+                  
                     ->where('study_type', 'new student')
                     ->where('sections_code', $record->sections_code)
                     ->count();
     
-    $student_done_class = \DB::table('student')
-        ->where('skills_code', $record->skills_code)
-        ->where('qualification', $record->level)
-        ->where('department_code', $record->department_code)
-        ->where('study_type', 'new student')
-        ->where('sections_code', $record->sections_code)
-        ->count();
+    // dd($new_student);
+   
 
 ?>  
     <tr id="row{{$record->code ?? ''}}">
@@ -47,12 +44,12 @@
                     <label class="badge badge-danger btn-sm mb-2 mb-md-0 me-2">
                         ពេញ 50 នាក់
                     </label>
-                @elseif($totals_student == $new_student)
-                <span>&nbsp;</span>
-                @else
+                @elseif($new_student != $new_student)
                     <label class="badge badge-success btn-sm mb-2 mb-md-0 me-2">
-                        មាននិស្សឹតថ្មី {{ $new_student - $student_done_class ??'' }}
+                        មាននិស្សឹតថ្មី
                     </label>
+                @else
+                   
                 @endif
             </span>
         </td>

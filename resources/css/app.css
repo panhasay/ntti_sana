@@ -10,6 +10,11 @@
 @import './../../public/asset/NTTI/vendors/font-awesome/css/font-awesome.min.css';
 @import './../../public/asset/NTTI/css/dashboard.css';
 
+
+
+@import "certificate/certificate.css";
+@import './../../public/asset/NTTI/css/dashboard.css';
+
 /* @import './../../public/asset/NTTI/vendors/sweetalert2/dist/sweetalert2.min.css'; */
 /* @import './../../public/asset/NTTI/css/dashboard.css';
 @import './../../public/asset/NTTI/css/global/modal.css'; */

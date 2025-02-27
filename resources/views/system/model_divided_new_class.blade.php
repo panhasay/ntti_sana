@@ -8,7 +8,6 @@
                 <th width="50">ឈ្មោះជាឡាតាំង</th>
                 <th>ភេទ</th>
                 <th>ថ្ងៃខែឆ្នាំកំណើត</th>
-                {{-- <th>ទីកន្លែងកំណើត</th> --}}
                 <th width="20">លេខទូរស័ព្ទ</th>
                 <th>ជំនាញ</th>
                 <th>កម្រិត</th>
@@ -20,7 +19,9 @@
         <tbody>
             @foreach ($students as $student)
             <?php 
-                $check_student_class = DB::table('student')->where('code', $student['code'])->value('code');
+                $check_student_class = DB::table('student')->where('code', $student['code'])->whereNot('class_code', '')->value('code');
+
+                $count_student = DB::table('student')->where('code', $student['code'])->whereNot('class_code', '')->count();
             ?>
                 <tr id="row{{ $student['code'] }}">
                     <!-- Add Button -->

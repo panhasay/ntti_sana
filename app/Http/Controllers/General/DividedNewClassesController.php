@@ -96,6 +96,7 @@ class DividedNewClassesController extends Controller
                     ->where('sections_code', $records->sections_code)
                     ->where('skills_code', $records->skills_code)
                     ->where('department_code', $records->department_code)
+                    ->orderByRaw("name_2 COLLATE utf8mb4_general_ci")
                     ->get();
             }
             return view('general.divided_new_classes_card', compact($params));
@@ -116,7 +117,8 @@ class DividedNewClassesController extends Controller
                 ->where('qualification', $class->level)
                 ->where('sections_code', $class->sections_code)
                 ->where('department_code', $class->department_code)
-                ->get();   // Use get() to fetch the records
+                ->orderBy('code', 'desc')
+                ->get();   
 
             $class_code = $class->code;
 
@@ -309,58 +311,12 @@ class DividedNewClassesController extends Controller
     {
         $data = $request->all();
 
-        $check =  Student::where('code', $data['code'])->first();
-        if ($check) {
-            return response()->json(['msg' => 'ទិន្ន័យមានរួចហើយ']);
-        }
+    
         try {
-            $records_student = StudentRegistration::where('code', $data['code'])->first();
-            $records = new Student();
-            if (!$records_student) {
-                return response()->json(['msg' => 'មិនមាន ទិន្ន័យ !']);
-            }
-            $records = new Student();
-            $records->code = $records_student->code;
+            $records =  Student::where('code', $data['code'])->first();
             $records->class_code = $data['class_code'];
-            $records->name_2 = $records_student->name_2;
-            $records->name = $records_student->name;
-            $records->date_of_birth = $records_student->date_of_birth;
-            $records->student_address = $records_student->student_address;
-            $records->current_address = $records_student->current_address;
-            $records->occupation = $records_student->occupation;
-            $records->phone_student = $records_student->phone_student;
-            $records->guardian_name = $records_student->guardian_name;
-            $records->guardian_phone = $records_student->guardian_phone;
-            $records->father_name = $records_student->father_name;
-            $records->father_occupation = $records_student->father_occupation;
-            $records->mother_name = $records_student->mother_name;
-            $records->mother_occupation = $records_student->mother_occupation;
-            $records->education_Level = $records_student->education_Level;
-            $records->skills_code = $records_student->skills_code;
-            $records->sections_code = $records_student->sections_code;
-            $records->apply_year = $records_student->apply_year;
-            $records->qualification = $records_student->qualification;
-            $records->status = $records_student->status;
-            $records->register_date = $records_student->register_date;
-            $records->study_type = "new student";
-            $records->gender = $records_student->gender;
-            $records->session_year_code = $records_student->session_year_code;
-            $records->semester = $records_student->semester;
-            $records->department_code = $records_student->department_code;
-            $records->user_id = Auth::user()->id;
-            $records->bakdop_results = $records_student->bakdop_results;
-            $records->year_final = $records_student->year_final;
-            $records->bakdop_index = $records_student->bakdop_index;
-            $records->bakdop_province = $records_student->bakdop_province;
-            $records->bakdop_type = $records_student->bakdop_type;
-            $records->scholarship = $records_student->scholarship;
-            $records->scholarship_type = $records_student->scholarship_type;
-            $records->submit_your_application = $records_student->submit_your_application;
-            $records->educational_institutions = $records_student->educational_institutions;
-            $records->save();
-
-            
-
+           
+            $records->update();
             $code_last = Student::latest('code')->first();
             $records = $code_last;
             $type = "add form Class . $records->class_code";
@@ -423,6 +379,7 @@ class DividedNewClassesController extends Controller
             // Fetch student records with relationships to avoid N+1 queries
             $records = Student::where('class_code', $this->services->Decr_string($_GET['code']))
                 ->where('study_type', 'new student')
+                ->orderByRaw("name_2 COLLATE utf8mb4_general_ci")
                 ->get()
                 ->map(function ($record) {
                     $record->skills = DB::table('skills')->where('code', $record->skills_code)->value('name_2');
