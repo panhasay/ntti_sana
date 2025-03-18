@@ -1,10 +1,12 @@
 <?php
 namespace App\Exports;
-use DB;
+
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
-use Maatwebsite\Excel\Concerns\FromCollection;
-class ExportData implements FromView
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+
+class ExportData implements FromView, WithStyles
 {
     protected $data;
     protected $blade_download;
@@ -33,10 +35,26 @@ class ExportData implements FromView
             'skills' => $this->skills,
             'sections' => $this->sections,
             'qualification' => $this->qualification,
-            'header' =>  $this->header,
+            'header' => $this->header,
         ]);
     }
+
+    public function styles(Worksheet $sheet)
+    {
+        return [
+            1 => [ // Apply styles to the first row (headers)
+                'font' => [
+                    'name' => 'Kh Battambang',
+                    'size' => 14, // Optional: Adjust font size
+                    'bold' => true, // Optional: Make headers bold
+                ],
+            ],
+            'A2:Z1000' => [ // Apply styles to the remaining rows
+                'font' => [
+                    'name' => 'Kh Battambang',
+                    'size' => 12,
+                ],
+            ],
+        ];
+    }
 }
-
-
- 

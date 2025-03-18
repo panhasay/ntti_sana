@@ -19,9 +19,14 @@
         <tbody>
             @foreach ($students as $student)
             <?php 
-                $check_student_class = DB::table('student')->where('code', $student['code'])->whereNot('class_code', '')->value('code');
+               $check_student_class = DB::table('student')
+                    ->where('code', $student['code'])
+                    ->whereNotNull('class_code') // If you are checking for NULL values
+                    ->value('code');
 
-                $count_student = DB::table('student')->where('code', $student['code'])->whereNot('class_code', '')->count();
+                // $count_student = DB::table('student')
+                //     ->where('code', $student['code'])
+                //     ->count();
             ?>
                 <tr id="row{{ $student['code'] }}">
                     <!-- Add Button -->

@@ -8,11 +8,9 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body p-2">    
-            <form id="frmDataSublist" role="form" class="form-sample" enctype="multipart/form-data">
-
-               
-
+            <form id="frmDataSublistStudentSana" role="form" class="form-sample" enctype="multipart/form-data">
                 <div class="form-group row">
+                    <input type="hidden" id="data_student">
                     <span class="labels col-sm-3 col-form-label text-end">ឈ្មោះនិស្សិត</span>
                     <div class="col-sm-9">
                         <select class="js-example-basic-single FieldRequired formSublist student_code" id="student_code" name="student_code" style="width: 100% !important;">
@@ -25,21 +23,17 @@
                         </select>
                     </div>
                 </div>
-
-               
-
-                <div class="form-group row">
+                {{-- <div class="form-group row">
                     <span class="labels col-sm-3 col-form-label text-end">ប្រធានបទសាណា</span>
                     <div class="col-sm-9">
                         <input class="formSublist form-control form-control-sm" type="text" date-name="topic" id="topic" name="topic" placeholder="ប្រធានបទសាណា" value="" style="width: 100%;">
                     </div>
-                </div>  
-
+                </div>   --}}
             </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">បិទ</button>
-          <button type="button" data-id="" class="btn btn-primary" id="SaveTeacherSchedule">រក្សាទុក</button>
+          <button type="button" data-id="" class="btn btn-primary BtnsaveStudentSana" id="BtnsaveStudentSana">រក្សាទុក</button>
         </div>
       </div>
     </div>

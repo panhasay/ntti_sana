@@ -11,11 +11,11 @@ class SanaLine extends Model
     use HasFactory;
     protected $table = 'sana_line';
     // protected $primaryKey = 'code';
-    // protected $foreignKey = 'code'; // Corrected property name
-    
+    // protected $foreignKey = 'code'; 
+
     protected $primaryKey = 'id';
-    protected $keyType = 'string'; // Specify the key type if necessary
-  
+    protected $keyType = 'string'; 
+
     protected $fillable = [
         '*',
     ];

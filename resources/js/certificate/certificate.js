@@ -299,21 +299,20 @@ function showCardView() {
                                                     "data-target",
                                                     "#modal_card_print_revisino"
                                                 )
+                                                .attr(
+                                                    "hidden",
+                                                    item.status_print == 0 ||
+                                                        item.status_print ==
+                                                            null
+                                                        ? true
+                                                        : false
+                                                )
                                                 .append(
                                                     $("<i>").addClass(
                                                         "mdi mdi-plus btn-icon-append"
                                                     )
                                                 )
-                                                .css(
-                                                    "margin-right",
-                                                    "5px",
-                                                    "display",
-                                                    item.status_print == 0 ||
-                                                        item.status_print ==
-                                                            null
-                                                        ? "none"
-                                                        : "inline-block"
-                                                )
+                                                .css("margin-right", "5px")
                                         )
                                         .append(
                                             $("<button>")
@@ -483,7 +482,7 @@ function showCardView() {
 
             setTimeout(function () {
                 $loader.fadeOut();
-            }, 100);
+            }, 50);
         },
         error: function (xhr, status, error) {
             notyf.error(
@@ -605,7 +604,7 @@ function showCardViewList() {
                                 })
                                 .append(
                                     $("<i>").addClass(
-                                        "bi bi-three-dots-vertical"
+                                        "mdi mdi-dots-vertical"
                                     )
                                 )
                         )
@@ -768,7 +767,7 @@ function showCardViewList() {
             $("#pagination_list").html(response.links);
             setTimeout(function () {
                 $loader.fadeOut();
-            }, 100);
+            }, 50);
         },
         error: function (xhr, status, error) {
             notyf.error(
@@ -824,6 +823,154 @@ function showCardTotalStudent() {
     });
 }
 
+function showExpireClass() {
+    $loader
+        .css({
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            "z-index": "1111",
+        })
+        .fadeIn("slow");
+
+    const level_code = $("#txt_due_level").val();
+    const class_code = $("#txt_due_class").val();
+    const $tbl = $("#tbl_view_expire");
+    const $tbody = $("#tbl_view_expire tbody");
+    const totalColumns = $tbl.find("thead th").length;
+    const fragment = document.createDocumentFragment();
+    const requestData = {
+        level_code: level_code,
+        class_code: class_code,
+    };
+    $.ajax({
+        url: "/certificate/student_card/expire/show",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(requestData),
+        beforeSend: function () {
+            $tbody.empty();
+        },
+        success: function (response) {
+            if (response && response.length > 0) {
+                $.each(response, function (index, item) {
+                    let classData = item.class;
+                    let isHiddenUpdate = item.updated_by;
+
+                    const $row = $("<tr>");
+                    $row.append(
+                        $("<td>")
+                            .attr("height", "40")
+                            .text(index + 1)
+                    );
+                    $row.append($("<td>").text(classData.level));
+                    $row.append($("<td>").text(classData.name));
+                    $row.append($("<td>").text(item.expire_date));
+                    $row.append($("<td>").text(item.print_expire_date));
+                    $row.append(
+                        $("<td>").append(
+                            $("<div>")
+                                .append(
+                                    $("<button>", {
+                                        type: "button",
+                                        class: "btn btn-outline-secondary btn-rounded btn-icon",
+                                        css: {
+                                            width: "30px",
+                                            height: "30px",
+                                            "margin-right": "5px",
+                                        },
+                                    }).append(
+                                        $("<label>", {
+                                            class: "text-primary",
+                                            html: `<i class="mdi mdi-account-check"></i>`,
+                                        })
+                                    )
+                                )
+                                .append(
+                                    $("<label>", {
+                                        class: "text-primary",
+                                        html:
+                                            item.created_by.name +
+                                            ":" +
+                                            item.create_by_date,
+                                    })
+                                )
+                        )
+                    );
+                    if (isHiddenUpdate == null) {
+                        $row.append(
+                            $("<td>").append(
+                                $("<label>", {
+                                    class: "text-primary",
+                                    html: "---",
+                                })
+                            )
+                        );
+                    } else {
+                        $row.append(
+                            $("<td>").append(
+                                $("<div>")
+                                    .append(
+                                        $("<button>", {
+                                            type: "button",
+                                            class: "btn btn-outline-secondary btn-rounded btn-icon",
+                                            css: {
+                                                width: "30px",
+                                                height: "30px",
+                                                "margin-right": "5px",
+                                            },
+                                        }).append(
+                                            $("<label>", {
+                                                class: "text-primary",
+                                                html: `<i class="mdi mdi-account-check"></i>`,
+                                            })
+                                        )
+                                    )
+                                    .append(
+                                        $("<label>", {
+                                            class: "text-primary",
+                                            html:
+                                                item.updated_by.name +
+                                                ":" +
+                                                item.update_by_date,
+                                        })
+                                    )
+                            )
+                        );
+                    }
+
+                    fragment.appendChild($row[0]);
+                });
+            } else {
+                const $row = $("<tr>");
+                $row.append(
+                    $("<td>")
+                        .attr("height", "40")
+                        .attr("colspan", totalColumns)
+                        .addClass("text-center")
+                        .append(
+                            $("<label>").text("រកមិនឃើញទិន្ន័យនៅក្នុងប្រព័ន្ធ!")
+                        )
+                );
+                fragment.appendChild($row[0]);
+            }
+
+            $tbody.append(fragment);
+            setTimeout(function () {
+                $loader.fadeOut();
+            }, 100);
+        },
+        error: function (xhr, status, error) {
+            notyf.error(
+                `Error submitting class code: ${
+                    xhr.statusText || "Unknown error"
+                }`
+            );
+        },
+    });
+}
+
 $sch_class_spec.on("change", function () {
     levelShiftSkill();
     showCardTotalStudent();
@@ -846,7 +993,14 @@ $sch_skill.on("change", function () {
 });
 $sch_skill.attr("disabled", true);
 
-$btn_search.on("click", function () {
+// $btn_search.on("click", function () {
+//     currentPage = 1;
+//     showCardView();
+
+//     currentPageList = 1;
+//     showCardViewList();
+// });
+$("#sch_info_student").on("keyup", function () {
     currentPage = 1;
     showCardView();
 
@@ -1503,11 +1657,13 @@ $("#modal_card_create_expire_date").on(
     "#btn_due_expire_card",
     function (e) {
         let txt_due_level = $("#txt_due_level").val();
+        let txt_due_class = $("#txt_due_class").val();
         let sl_due_expire_date = $("#sl_due_expire_date").val();
         let txt_due_expire_date = $("#txt_due_expire_date").val();
         const requestData = {
             session_code: $("#session_code").val(),
             level: txt_due_level,
+            class_code: txt_due_class,
             expire_date: sl_due_expire_date,
             print_expire_date: txt_due_expire_date,
         };
@@ -1556,10 +1712,11 @@ $("#modal_card_create_expire_date").on(
             success: function (data) {
                 if (data.status == 200) {
                     notyf.success(data.message);
-                    $("#fm_card_expire_date")[0].reset();
-                    $("#modal_card_create_expire_date .btn-close").trigger(
-                        "click"
-                    );
+                    // $("#fm_card_expire_date")[0].reset();
+                    // $("#modal_card_create_expire_date .btn-close").trigger(
+                    //     "click"
+                    // );
+                    showExpireClass();
                     showCardView();
                     showCardViewList();
                 } else {
@@ -1581,11 +1738,13 @@ $("#modal_card_create_expire_date").on(
     "#btn_due_update_expire_card",
     function (e) {
         let txt_due_level = $("#txt_due_level").val();
+        let txt_due_class = $("#txt_due_class").val();
         let sl_due_expire_date = $("#sl_due_expire_date").val();
         let txt_due_expire_date = $("#txt_due_expire_date").val();
         const requestData = {
             session_code: $("#session_code").val(),
             level: txt_due_level,
+            class_code: txt_due_class,
             expire_date: sl_due_expire_date,
             print_expire_date: txt_due_expire_date,
         };
@@ -1634,10 +1793,11 @@ $("#modal_card_create_expire_date").on(
             success: function (data) {
                 if (data.status == 200) {
                     notyf.success(data.message);
-                    $("#fm_card_expire_date")[0].reset();
-                    $("#modal_card_create_expire_date .btn-close").trigger(
-                        "click"
-                    );
+                    // $("#fm_card_expire_date")[0].reset();
+                    // $("#modal_card_create_expire_date .btn-close").trigger(
+                    //     "click"
+                    // );
+                    showExpireClass();
                     showCardView();
                     showCardViewList();
                 } else {
@@ -1679,17 +1839,21 @@ $("#modal_card_create_expire_date").on(
                 $("#sl_due_expire_date").val(formattedDate);
                 $("#txt_due_expire_date").val(data.record_exp_year);
 
+                $("#txt_due_class").append(
+                    new Option("Select All", "code_all", true, false)
+                );
+
                 $.map(data.record_level, function (item) {
                     $("#txt_due_class").append(
-                        new Option(item.name, item.code, true, true)
+                        new Option(item.name, item.code, false, false)
                     );
                 });
-
-                $("#txt_due_class").select2();
                 select2AdvancedModal(
                     "#txt_due_class",
                     "#modal_card_create_expire_date"
                 );
+
+                showExpireClass();
             },
             error: function (xhr, status, error) {
                 notyf.error(
@@ -1701,6 +1865,17 @@ $("#modal_card_create_expire_date").on(
         });
     }
 );
+$("#modal_card_create_expire_date").on(
+    "change",
+    "#txt_due_class",
+    function (e) {
+        showExpireClass();
+    }
+);
+
+$("body").on("click", "#btn_open_expire_date", function (e) {
+    showExpireClass();
+});
 
 showCardTotalStudent();
 showCardView();

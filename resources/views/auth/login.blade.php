@@ -1,5 +1,24 @@
+<style>
+  .footer {
+      color: color(dark);
+      padding: 14px 25px 12px 37px;
+      transition: all .25sease;
+      -moz-transition: all .25s ease;
+      -webkit-transition: all .25sease;
+      -ms-transition: all .25s ease;
+      font-size: .825rem;
+      font-family: Open Sans, sans-serif;
+      font-weight: 400;
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      color: #fff;
+      text-align: center;
+      background: #fbfbfb !important;
+  }
+</style>
 @extends('layout')
-  
 @section('content')
 <!-- Section: Design Block -->
 <section class="background-radial-gradient overflow-hidden">
@@ -52,7 +71,7 @@
     <footer class="footer">
       <div class="container">
         <div class="col-md-12">
-          {{-- <span class="text-whirt text-center text-sm-left d-block d-sm-inline-block text-whirt">Copyright © 2024 <a href="https://www.ntti.edu.kh/" target="_blank">National Technical Training Institute</a> <span>អាសយដ្ឋាន: មហាវិថី សហព័ន្ធរុស្ស៊ី សង្កាត់ទឹកថ្លា ខណ្ឌសែនសុខ រាជធានីភ្នំពេញ</span></span> --}}
+          <span class="text-black text-center text-sm-left d-block d-sm-inline-block" style="color: #333; font-family: Khmer OS Battambang !important;">Copyright © 2024 <a href="https://www.ntti.edu.kh/" target="_blank">National Technical Training Institute</a> <span style="color: #333; font-family: Khmer OS Battambang !important;">អាសយដ្ឋាន: មហាវិថី សហព័ន្ធរុស្ស៊ី សង្កាត់ទឹកថ្លា ខណ្ឌសែនសុខ រាជធានីភ្នំពេញ</span> <a href="https://www.facebook.com/panha.say.73" target="_blank">Deverlop By</a> </span>
         </div>
       </div>
     </footer>

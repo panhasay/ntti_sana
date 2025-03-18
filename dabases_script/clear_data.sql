@@ -13,4 +13,3 @@ TRUNCATE TABLE class_schedule;
 TRUNCATE TABLE student;
 
 
-

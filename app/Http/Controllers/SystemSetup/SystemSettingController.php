@@ -94,6 +94,10 @@ class SystemSettingController extends Controller
                     $records = Skills::whereRaw($extract_query)->paginate(1000);
                     $blade_file_record = 'general.skills_lists';
                     break;
+                case 'class':
+                    $records = Classes::whereRaw($extract_query)->paginate(1000);
+                    $blade_file_record = 'general.classes_lists';
+                    break;
                 case 'subjects':
                     $records = Subjects::whereRaw($extract_query)->paginate(1000);
                     $blade_file_record = 'general.subjects_lists';

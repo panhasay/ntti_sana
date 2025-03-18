@@ -214,10 +214,10 @@
         <div class="page-header flex-wrap" style="border-bottom: 0px solid #dfdcdc;">
             <div class="header-left p-3">
                 <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" data-toggle="modal"
-                    data-target="#modal_card_due_date">
+                    data-target="" id="modalcardduedate">
                     <i class="mdi mdi-av-timer"></i> Open Print Date</a>
 
-                <button type="button" class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2" data-toggle="modal"
+                <button type="button" id="btn_open_expire_date" class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2" data-toggle="modal"
                     data-target="#modal_card_create_expire_date">
                     <i class="mdi mdi-calendar-clock"></i> Open Expire Date
                 </button>
@@ -241,7 +241,7 @@
                 </a>
             </div>
         </div>
-        <div class="collapse " id="collapse_search">
+        <div class="collapse show" id="collapse_search">
             <div class="card card-body">
                 <form id="fm_search_student" role="form" class="form-horizontal" enctype="multipart/form-data">
                     <div class="row">
@@ -315,7 +315,7 @@
                                 <input type="text" class="form-control mb-2 mb-md-0 me-2" name="sch_info_student"
                                     id="sch_info_student" placeholder="ស្វែងរក អត្តលេខ ឈ្មោះ">
                             </div>
-                            <div class="row">
+                            <div class="row" hidden>
                                 <div class="col-md-3 pull-left">
                                     <button type="button" class="btn btn-primary text-white" id="btn_search">ស្វែងរក
                                     </button>
@@ -576,10 +576,10 @@
             <x-button class="btn-primary" label="Update" btn="btn_update_date_this_session" />
         </x-slot>
     </x-modal-first>
-    <x-modal-first id="modal_card_create_expire_date" title="Expire Date" size="lg">
+    <x-modal-first id="modal_card_create_expire_date" title="Expire Date" size="lg" fullscreen="true">
         <div class="row g-2">
             <div class="col-md-12 stretch-card">
-                <div class="card">
+                <div class="card" style="border-left: 0px solid #cae6f5;">
                     <div class="card-body">
                         <form id="fm_card_expire_date" role="form" class="form-horizontal"
                             enctype="multipart/form-data" method="POST">
@@ -628,6 +628,33 @@
                                 </div>
                             </div>
                         </form>
+
+                        <div class="card" style="border-left: 0px solid #cae6f5;">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <h4 class="text-center">View</h4>
+                                </h3>
+                            </div>
+                            <div class="card-body px-0" style="margin-top: -30px !important;">
+                                <div class="control-table table-responsive custom-data-table-wrapper2">
+                                    <table id="tbl_view_expire" class="table table-striped">
+                                        <thead>
+                                            <tr class="general-data">
+                                                <th>ល.រ</th>
+                                                <th>កម្រិត</th>
+                                                <th>ក្រុម</th>
+                                                <th>កាលបរិច្ចេទសុពលភាព</th>
+                                                <th>កាលបរិច្ឆេទសុពលភាព</th>
+                                                <th>Create By</th>
+                                                <th>Update By</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1070,6 +1097,28 @@
                 $(".modal-confirmation-text").html('Do you want to Downlaod prints ?');
                 $("#YesPrints").attr('data-code', $(this).attr('data-type'));
                 $("#ModelPrints").modal('show');
+            });
+            $(document).on('click', '#modalcardduedate', function() {
+                var class_code = $("#sch_class_spec").val();
+                $.ajax({
+                    
+                    type: 'get',
+                    url: '/certificate/get-date-card-due-date?class_code=' + class_code,
+                    beforeSend: function() {
+                        $('.loader').show();
+                    },
+                    success: function(response) {
+                    if (response.status == 'success') {
+                        $('.loader').hide();
+                        $("#txt_due_khmer_lunar").val(response.records.print_khmer_lunar)
+                        $("#txt_due_date_create").val(response.records.print_date_due)
+                        $("#modal_card_due_date").modal('show');
+                    } else {
+                        $('.loader').hide();
+                    }
+                    },
+                    error: function(xhr, ajaxOptions, thrownError) {}
+                });
             });
             $(document).on('click', '#YesPrints', function() {
                 var DataClass = $(this).attr('data-class'); 

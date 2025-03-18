@@ -77,6 +77,7 @@ class StudentModel extends Model
             ->when($class_code, function ($query, $class_code) {
                 $query->where('student.class_code', $class_code);
             })
+           
             ->when($search, function ($query, $search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('student.code', 'LIKE', "%{$search}%")
@@ -84,7 +85,8 @@ class StudentModel extends Model
                         ->orWhere('student.name_2', 'LIKE', "%{$search}%");
                 });
             })
-            ->paginate($rows_per_page);
+            ->orderByRaw("student.name_2 COLLATE utf8mb4_general_ci")
+            ->paginate($rows_per_page); 
 
         return $students;
     }

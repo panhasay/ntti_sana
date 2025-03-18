@@ -117,7 +117,7 @@ class DividedNewClassesController extends Controller
                 ->where('qualification', $class->level)
                 ->where('sections_code', $class->sections_code)
                 ->where('department_code', $class->department_code)
-                ->orderBy('code', 'desc')
+                ->orderBy('class_code', 'asc')
                 ->get();   
 
             $class_code = $class->code;
@@ -343,11 +343,10 @@ class DividedNewClassesController extends Controller
             if (!$records) {
                 return response()->json(['status' => 'error', 'msg' => 'Student record not found.']);
             }
-            $type = "DELTE form Class . $records->class_code";
+            $type = "remove form Class . $records->class_code";
             // Send Telegram notification
             $this->services->telegramSendDeleteStudent($records, $type);
             // Delete the student record
-            $records->delete();
             // Update StudentRegistration (if it exists)
             $update_class = StudentRegistration::where('code', $code)->first();
             if ($update_class) {

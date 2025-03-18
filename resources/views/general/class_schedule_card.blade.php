@@ -137,12 +137,12 @@
                         <div class="col-sm-9">
                             <select class="js-example-basic-single" id="level" name="level" style="width: 100%;" {{ (count($record_sub_lines) > 0) ? 'disabled' : '' }}>
                                 <?php 
-                            $options = [
-                                    'បរិញ្ញាបត្រ' => 'បរិញ្ញាបត្រ',
-                                    'សញ្ញាបត្រជាន់ខ្ពស់បច្ចេកទេស' => 'សញ្ញាបត្រជាន់ខ្ពស់បច្ចេកទេស',
-                                    'បន្តបរិញ្ញាបត្របច្ចេកវីទ្យា' => 'បន្តបរិញ្ញាបត្របច្ចេកវីទ្យា',
-                                ];
-                            ?>
+                                    $options = [
+                                        'បរិញ្ញាបត្រ' => 'បរិញ្ញាបត្រ',
+                                        'បរិញ្ញាបត្ររង' => 'បរិញ្ញាបត្ររង',
+                                        'បន្តបរិញ្ញាបត្របច្ចេកវិទ្យា' => 'បន្តបរិញ្ញាបត្របច្ចេកវិទ្យា',
+                                    ];
+                                ?>
                                 @foreach ($options as $value => $label)
                                 <option value="{{ $value }}" {{ isset($records->level) && $records->level == $value ? 'selected' : '' }}>
                                     {{ $label }}

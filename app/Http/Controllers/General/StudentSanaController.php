@@ -55,7 +55,7 @@ class StudentSanaController extends Controller
         $departments = Department::get();
         $classs = Classes::get();
         $teachers = DB::table('teachers')->get();
-        $students  = DB::table('student')->where('çlass_code',  $this->services->Decr_string($_GET['code']))->get();
+          
         
         try {
             $params = ['records', 'type', 'page', 'skills', 'departments', 'classs', 'record_sub_lines', 'teachers', 'students'];
@@ -63,6 +63,9 @@ class StudentSanaController extends Controller
             if (isset($_GET['code'])) {
                 $records = SanaHeader::where('no', $this->services->Decr_string($_GET['code']))->first();
                 $record_sub_lines = SanaLine::where('line_no', $records->no)->get();
+                $students  = DB::table('student')->where('class_code', $records->class_code)->get();
+
+                // dd($students);
             }
             return view('general.student_sana_card', compact($params));
         } catch (\Exception $ex) {
@@ -249,7 +252,25 @@ class StudentSanaController extends Controller
 
         try {
             $records = SanaLine::where('id',  $data['id'])->where('group', 'No')->first();
-            return response()->json(['status' => 'success', 'records' => $records]);
+            $students_name = $records->student->name_2;
+            return response()->json(['status' => 'success', 'records' => $records, 'students_name' => $students_name]);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+
+    public function SaveStudentSana(Request $request)
+    {
+        $data = $request->all();
+
+        dd($data);
+        
+        try {
+            $records = SanaLine::where('id',  $data['id'])->where('group', 'No')->first();
+            $students_name = $records->student->name_2;
+            return response()->json(['status' => 'success', 'records' => $records, 'students_name' => $students_name]);
         } catch (\Exception $ex) {
             DB::rollBack();
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());

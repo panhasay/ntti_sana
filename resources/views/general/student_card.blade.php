@@ -427,8 +427,7 @@
   @include('system.modal_create_user_student')
   <!--End Model-->
 </div><br><br>
-@endsection
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
 <script>
   $(document).ready(function() {
     $('#BtnSave').on('click', function() {
@@ -492,6 +491,7 @@
     $(document).on('click', '#btnClose', function() {
       $("#divCreateUser").modal('hide');
     });
+
   });
   function DownlaodExcel() {
     var url = '/student/downlaodexcel/';
@@ -528,10 +528,6 @@
       error: function(xhr, ajaxOptions, thrownError) {}
     });
   }
-
-
-
-
 
   function FieldRequired() {
     var inValid = false ;
@@ -624,7 +620,6 @@
           $('#guardian_address').removeClass('FieldRequired');
           inValid = false; 
       }
-
     });
     if(inValid){
         notyf.error('field is required');
@@ -632,3 +627,4 @@
     return inValid;
 }
 </script>
+@endsection

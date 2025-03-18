@@ -8,29 +8,30 @@
 @extends('app_layout.app_layout')
 @section('content')
 <div class="page-head page-head-custom">
-  <div class="row border-bottom p-2">
-    <div class="col-md-6 col-sm-6  col-6">
-      <div class="page-title page-title-custom">
-        <div class="title-page">
-          <a href="{{ url('skills') }}"><i class="mdi mdi-format-list-bulleted"></i></a>
-          @if($type == 'ed')
-          កែប្រែ, ជំនាញ {{ $records->name_2 ?? '' }}
-          @else
-          បន្ថែមថ្មី
-          @endif
-          &nbsp;&nbsp; <button type="button" id="BtnSave" class="btn btn-success"> save </button>
+    <div class="row border-bottom p-2">
+      <div class="col-md-6 col-sm-6  col-6">
+        <div class="page-title page-title-custom">
+          <div class="title-page">
+            <a href="{{ url('skills') }}"><i class="mdi mdi-format-list-bulleted"></i></a>
+            @if($type == 'ed')
+            កែប្រែ, ជំនាញ {{ $records->name_2 ?? '' }}
+            @else
+            បន្ថែមថ្មី
+            @endif
+            &nbsp;&nbsp; <button type="button" id="BtnSave" class="btn btn-success"> save </button>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="col-md-6 col-sm-6 col-6">
-      <div class="page-title page-title-custom text-right">
-        <h4 class="text-right">
-          <a id="btnShowMenuSetting" href="{{ url('skills') }}"><i class="mdi mdi-keyboard-return"></i></a>
+      <div class="col-md-6 col-sm-6 col-6">
+        <div class="page-title page-title-custom text-right">
+          <h4 class="text-right">
+            <a id="btnShowMenuSetting" href="{{ url('skills') }}"><i class="mdi mdi-keyboard-return"></i></a>
+        </div>
       </div>
     </div>
   </div>
 </div>
-</div>
+
 <div class="row">
   <form id="frmDataCard" role="form" class="form-sample" enctype="multipart/form-data">
     <div class="card-body p-3">
@@ -92,7 +93,6 @@
     </div>
   </form>
 </div>
-
 
 <div class="container-fluid p-2">
   <div class="row">
@@ -248,27 +248,67 @@
       });
     });
 
+    $(document).on('click', '.btnAddNewStudent', function() {
+      $('#ModalStudentSana').modal('show');
+    });
+
     $(document).on('click', '.btnEditStudentSana', function() {
-      let dataId = $(this).attr('data-id'); 
+        let dataId = $(this).attr('data-id'); // Get the data-id attribute
+
+        $.ajax({
+            type: 'GET',
+            url: 'student-sana/edit/student-sana/transaction?id=' + dataId,
+            beforeSend: function () {
+                $('.loader').show(); // Show loader before request
+            },
+            success: function (response) {
+                $('.loader').hide(); // Hide loader after success response
+                
+                if (response.status === 'success') {
+
+                    let $select = $('#student_code');
+                    $select.val(response.records.student_code).trigger('change');
+                    $('#ModalStudentSana').modal('show');
+                    $("#data_student").val(dataId);
+                } else {
+                    alert(response.msg); // Show error message if any
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                $('.loader').hide(); // Hide loader in case of an error
+                console.error('AJAX Error:', thrownError);
+            }
+        });
+    });
+
+    $(document).on('click', '.BtnsaveStudentSana', function() {
+      let studentCode = $('#student_code').val();  // Fixed typo
+      let id = $("#data_student").val();  // Fixed selector issue
+
       $.ajax({
           type: 'GET',
-          url: 'student-sana/edit/student-sana/transaction?id=' + dataId, 
+          url: 'student-sana/save/update-student-sana?student_code=' + studentCode + '&id=' + id,
           beforeSend: function () {
-              $('.loader').show(); 
+              $('.loader').show(); // Show loader before request
           },
           success: function (response) {
-              $('.loader').hide(); 
-              if(response.status == 'success') {
-                $('#ModalStudentSana').modal('show');
+              $('.loader').hide(); // Hide loader after success response
+              
+              if (response.status === 'success') {
+                  let $select = $('#student_code');
+                  $select.val(response.records.student_code).trigger('change');
+                  $('#ModalStudentSana').modal('show');
+              } else {
+                  alert(response.msg); // Show error message if any
               }
-              console.log(response);
           },
           error: function (xhr, ajaxOptions, thrownError) {
-              $('.loader').hide(); 
+              $('.loader').hide(); // Hide loader in case of an error
               console.error('AJAX Error:', thrownError);
           }
       });
-    });
+  });
+
     
   });
   function DownlaodExcel() {

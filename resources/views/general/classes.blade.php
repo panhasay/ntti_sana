@@ -31,7 +31,7 @@
             class="mdi mdi-printer btn-icon-append"></i> </button>
     </div>
     <div class="d-grid d-md-flex justify-content-md-end p-3">
-      <input type="text" class="form-control mb-2 mb-md-0 me-2" id="search_data" data-page="{{ $page ?? '' }}" name="search_data"
+      <input type="text" class="form-control mb-2 mb-md-0 me-2" id="search_data" data-page="class" name="search_data"
         placeholder="Serch...." aria-label="Recipient's username" aria-describedby="basic-addon2">
       <div>
       </div>
@@ -63,7 +63,7 @@
                   placeholder="Department" aria-label="Department">
               </div>
             </div>
-            <button type="button" class="btn btn-primary text-white" data-page="department" id="btn-adSearch">Search</button>
+            <button type="button" class="btn btn-primary text-white" data-page="class" id="btn-adSearch">Search</button>
           </div>
         </div>
       </form>

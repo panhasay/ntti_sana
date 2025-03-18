@@ -17,9 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Models\General\ClassSchedule;
-
 use function PHPSTORM_META\type;
-
 class ClassScheduleController extends Controller
 {
     //
@@ -67,10 +65,10 @@ class ClassScheduleController extends Controller
         $subjects = Subjects::orderBy('code', 'asc')->get();
         $date_name = DB::table('date_name')->orderBy('index', 'asc')->get();
         $days = $date_name->pluck('name')->toArray();
+        $qualification = DB::table('qualification')->get();
 
-        // dd($date_name);
         try {
-            $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'classs', 'study_years', 'teachers', 'subjects', 'record_sub_lines', 'date_name', 'days'];
+            $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'classs', 'study_years', 'teachers', 'subjects', 'record_sub_lines', 'date_name', 'days', 'qualification'];
             if ($type == 'cr') return view('general.class_schedule_card', compact($params));
             if (isset($_GET['code'])) {
                 $records = GeneralClassSchedule::where('id', $this->services->Decr_string($_GET['code']))->first();

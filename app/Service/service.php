@@ -239,15 +239,26 @@ class service{
             ->get();
         return $record;
     }
-    public static function extractQuery($data){
-        $creterial= '1=1 and ';
-        foreach($data as $key => $value){
-             if($value != ""){
-                $creterial .=  $key."="."'".$value."' and ";
-             }
+    // public static function extractQuery($data){
+    //     $creterial= '1=1 and ';
+    //     foreach($data as $key => $value){
+    //          if($value != ""){
+    //             $creterial .=  $key."="."'".$value."' and ";
+    //          }
+    //     }
+    //     $creterial.='1=1';
+    // return $creterial;
+    // }
+
+    public static function extractQuery($data) {
+        $creterial = '1=1 AND ';
+        foreach ($data as $key => $value) {
+            if ($value != "") {
+                $creterial .= $key . " LIKE '%" . $value . "%' AND ";
+            }
         }
-        $creterial.='1=1';
-    return $creterial;
+        $creterial .= '1=1';
+        return $creterial;
     }
     public static function HasColumn($table,$column){
         if(Schema::hasColumn($table, $column)){

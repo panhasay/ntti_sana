@@ -24,7 +24,7 @@
             background-repeat: no-repeat;
             background-position: center;
             position: relative;
-            height: 900px;
+            height: auto;
         }
 
         /* Dark overlay effect */

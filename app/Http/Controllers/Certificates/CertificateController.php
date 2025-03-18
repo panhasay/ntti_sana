@@ -247,7 +247,7 @@ class CertificateController extends Controller
 
             $records = StudentModel::getFilteredStudentsOnly($dept_code, $class_code, $stu_code);
             if ($records) {
-                
+
                 $records->print_khmer_date_format = formatDateToKhmer($records->print_khmer_date ?? now(), 'kh');
                 $filePath = public_path('uploads/student/' . $records->stu_photo);
                 $records->photo_status = $records->stu_photo && file_exists($filePath) ? true : false;
@@ -440,7 +440,7 @@ class CertificateController extends Controller
         $month = $LunarNewYear[$date->format('n') - 0];
         $year = $nameYear[(($date->format('Y') - 5) % 12)];
 
-        return "{$dayOfWeek} {$khmerDayInLunarPhase}{$lunarPhase} ខែ{$month} {$year} {$khmerYearCycle} ព.ស. {$buddhistYear}";
+        return "{$dayOfWeek} {$khmerDayInLunarPhase}{$lunarPhase} ខែ{$month} {$year} {$khmerYearCycle} ព.ស.{$buddhistYear}";
     }
 
     public function showViewCardInformation(Request $request)
@@ -511,7 +511,7 @@ class CertificateController extends Controller
 
             $photo->move(public_path('uploads/student'), $fileName);
             $existingPhoto = Picture::where('code', $stu_code)->first();
-            
+
             if ($existingPhoto && $existingPhoto->picture_ori != $fileName) {
                 $oldPhotoPath = public_path('uploads/student/' . $existingPhoto->picture_ori);
                 if (file_exists($oldPhotoPath)) {
@@ -563,6 +563,16 @@ class CertificateController extends Controller
         $existingRecord = CertificateStudentPrintCard::where('stu_code', $stu_code)->where('status', 1)->first();
         if ($existingRecord) {
             $existingRecord->update($validated);
+
+            $print_card_id = $existingRecord->id;
+
+            $check_revision = CertStudentPrintCardRevision::where('print_card_id', $print_card_id)
+                ->orderBy('id', 'desc')
+                ->first();
+
+            if ($check_revision) {
+                $check_revision->delete();
+            }
             $success = true;
             $message = 'Disable successfully!';
         } else {
@@ -591,37 +601,39 @@ class CertificateController extends Controller
         $imageSources = $request->input('imageSources');
 
         if ($type == 'zip') {
-        $request->validate([
-            'zipFile' => 'required|file|mimes:zip|max:20480',
-        ]);
-        $zip = new \ZipArchive;
-        $zipFile = $request->file('zipFile');
+            $request->validate([
+                'zipFile' => 'required|file|mimes:zip|max:20480',
+            ]);
+            $zip = new \ZipArchive;
+            $zipFile = $request->file('zipFile');
 
-        if ($zip->open($zipFile->getRealPath()) === TRUE) {
-            $updatedStudents = [];
+            if ($zip->open($zipFile->getRealPath()) === TRUE) {
+                $updatedStudents = [];
 
-            for ($i = 0; $i < $zip->numFiles; $i++) {
-                $fileName = $zip->getNameIndex($i);
+                for ($i = 0; $i < $zip->numFiles; $i++) {
+                    $fileName = $zip->getNameIndex($i);
 
-                if (!preg_match('/\.(jpg|jpeg|png)$/i', $fileName)) {
-                    continue;
-                }
+                    if (!preg_match('/\.(jpg|jpeg|png)$/i', $fileName)) {
+                        continue;
+                    }
 
-                $fileContent = $zip->getFromIndex($i);
-                $stu_code = pathinfo($fileName, PATHINFO_FILENAME);
-                $extension = pathinfo($fileName, PATHINFO_EXTENSION);
+                    $fileContent = $zip->getFromIndex($i);
+                    $stu_code = pathinfo($fileName, PATHINFO_FILENAME);
+                    $extension = pathinfo($fileName, PATHINFO_EXTENSION);
 
-                $date = now()->format('Ymd');
-                $newFileName = 'ntti_' . $stu_code . '_' . $date . '_' . uniqid() . '.' . $extension;
+                    $date = now()->format('Ymd');
+                    $newFileName = 'ntti_' . $stu_code . '_' . $date . '_' . uniqid() . '.' . $extension;
 
-                $student = Picture::where('code', $stu_code)->first();
+                    $student = Picture::where('code', $stu_code)->first();
 
                     $check_stu_code = StudentModel::where('code', $stu_code)->first();
-                    if ($check_stu_code) {
-                if ($student) {
-                            $uploadPath = public_path('uploads/student/');
+
+                    $uploadPath = public_path('uploads/student/');
                     $filePath = public_path('uploads/student/' . $newFileName);
 
+                    if ($check_stu_code) {
+                        $exists = Picture::where('code', $stu_code)->count();
+                        if ($exists > 0) {
                             // Remove old image if exists before saving new one
                             if (!empty($student->picture_ori)) {
                                 $oldFilePath = $uploadPath . $student->picture_ori;
@@ -630,25 +642,35 @@ class CertificateController extends Controller
                                 }
                             }
 
-                    file_put_contents($filePath, $fileContent);
+                            file_put_contents($filePath, $fileContent);
+                            $student->picture_ori = $newFileName;
+                            $student->save();
 
-                    $student->picture_ori = $newFileName;
-                    $student->save();
+                            $updatedStudents[] = $newFileName;
+                        } else {
+                            $picture = Picture::create([
+                                'code' => $stu_code,
+                                'type' => 'student',
+                                'picture_ori' => $newFileName,
+                            ]);
 
-                    $updatedStudents[] = $newFileName;
+                            $filePath = $uploadPath . $newFileName;
+                            file_put_contents($filePath, $fileContent);
+
+                            $updatedStudents[] = $newFileName;
                         }
+                    }
                 }
-            }
 
-            $zip->close();
+                $zip->close();
 
-            return response()->json([
-                'status' => 200,
-                'message' => 'ZIP processed successfully.',
-                'updatedStudents' => $updatedStudents,
-            ]);
-        } else {
-            return response()->json(['message' => 'Failed to open ZIP file.'], 200);
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'ZIP processed successfully.',
+                    'updatedStudents' => $updatedStudents,
+                ]);
+            } else {
+                return response()->json(['message' => 'Failed to open ZIP file.'], 200);
             }
         } else {
             if ($request->has('imageSources')) {
@@ -666,14 +688,15 @@ class CertificateController extends Controller
                         $imageTypeAux = explode("image/", $imageParts[0]);
                         $imageType = $imageTypeAux[1];
                         $imageBase64 = base64_decode($imageParts[1]);
-
                         $date = now()->format('Ymd');
                         $newFileName = 'ntti_' . $defaultFileName . '_' . $date . '_' . uniqid() . '.' . $imageType;
 
                         $student = Picture::where('code', $defaultFileName)->first();
+                        $exists = Picture::where('code', $defaultFileName)->count();
 
-                        if ($student) {
-                            $uploadPath = public_path('uploads/student/');
+                        $uploadPath = public_path('uploads/student/');
+
+                        if ($exists > 0) {
 
                             if (!File::exists($uploadPath)) {
                                 File::makeDirectory($uploadPath, 0755, true);
@@ -692,6 +715,17 @@ class CertificateController extends Controller
 
                             $student->picture_ori = $newFileName;
                             $student->save();
+
+                            $updatedStudents[] = $newFileName;
+                        } else {
+                            $picture = Picture::create([
+                                'code' => $defaultFileName,
+                                'type' => 'student',
+                                'picture_ori' => $newFileName,
+                            ]);
+
+                            $filePath = $uploadPath . $newFileName;
+                            file_put_contents($filePath, $imageBase64);
 
                             $updatedStudents[] = $newFileName;
                         }
@@ -737,7 +771,7 @@ class CertificateController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-    public function ExcelListClassification (Request $request)
+    public function ExcelListClassification(Request $request)
     {
         try {
             $filter = $request->all();
@@ -851,12 +885,16 @@ class CertificateController extends Controller
 
         $session_code = $request->input('session_code');
         $level = $request->input('level');
+        $class_code = $request->input('class_code');
         $expire_date = $request->input('expire_date');
         $print_expire_date = $request->input('print_expire_date');
 
         $query = Classes::whereNotNull('department_code');
         if (!empty($level)) {
             $query->where('level', $level);
+        }
+        if ($class_code != 'code_all') {
+            $query->where('code', $class_code);
         }
         $record_level = $query->get();
 
@@ -895,6 +933,7 @@ class CertificateController extends Controller
 
         $session_code = $request->input('session_code');
         $level = $request->input('level');
+        $class_code = $request->input('class_code');
         $expire_date = $request->input('expire_date');
         $print_expire_date = $request->input('print_expire_date');
 
@@ -902,7 +941,13 @@ class CertificateController extends Controller
         if (!empty($level)) {
             $query->where('level', $level);
         }
+        if ($class_code != 'code_all') {
+            $query->where('code', $class_code);
+        }
         $record_level = $query->get();
+
+        $status = '';
+        $message = '';
 
         foreach ($record_level as $class) {
             $validated = [
@@ -910,6 +955,8 @@ class CertificateController extends Controller
                 'class_code' => $class->code,
                 'expire_date' => $expire_date,
                 'print_expire_date' => $print_expire_date,
+                'update_by' => Auth::id() ?? 0,
+                'update_by_date' => now(),
                 'status' => 1,
             ];
 
@@ -950,5 +997,30 @@ class CertificateController extends Controller
             'record_date' => $newDate,
             'record_exp_year' => self::getKhmerDateCardStudent(new DateTime($newDate)),
         ));
+    }
+
+
+    public function showExpireClass(Request $request)
+    {
+        $level_code = $request->input('level_code');
+        $class_code = $request->input('class_code');
+
+        $query = CertStudentPrintCardExpireClass::where('status', 1);
+        if ($class_code !== 'code_all') {
+            $query->where('class_code', $class_code);
+        }
+        $query->whereHas('class', function ($q) use ($level_code) {
+            $q->where('level', $level_code);
+        });
+        $results = $query->with(['class', 'createdBy:id,name', 'updatedBy:id,name'])->get();
+        return response()->json($results);
+    }
+
+    public function GetDate(Request $request)
+    {
+        $data = $request->all();
+
+        $records = CertStudentPrintCardSession::first();
+        return response()->json(['status' =>'success','records' =>$records]);
     }
 }

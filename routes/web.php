@@ -293,6 +293,7 @@ Route::group(['perfix' => 'exam-schedule'], function (){
 Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static function () {
     Route::controller(CertificateController::class)->group(function () {
         Route::post('/level_shift_skill', 'showLevelShiftSkill');
+        Route::get('/get-date-card-due-date', 'GetDate');
     });
 });
 
@@ -372,6 +373,8 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
         Route::post('/card_due_expire', 'StoreDueDateExpireSession');
         Route::put('/card_due_expire_update', 'updateDueDateExpireSession');
         Route::post('/card_expire_show_level', 'showCardExpireLevel');
+       
+
 
         Route::get('/student_card/transaction', 'printCardStudentPdf');
 
@@ -382,6 +385,8 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
         Route::get('/D_IT/student_card/certificate/card-student-excel', 'ExcelListClassification');
         Route::get('/D_EL/student_card/certificate/card-student-excel', 'ExcelListClassification');
         Route::get('/D_CL/student_card/certificate/card-student-excel', 'ExcelListClassification');
+
+        Route::post('/student_card/expire/show', 'showExpireClass');
     });
 });
 
@@ -417,6 +422,7 @@ Route::group(['prefix' => 'student-sana'], function (){
     Route::POST ('/transfer-delete', [StudentSanaController::class, 'delete']);
     Route::get ('/update/student-sana/transaction', [StudentSanaController::class, 'EcitStudentTransactionSana']);
     Route::get ('/edit/student-sana/transaction', [StudentSanaController::class, 'EcitStudentSana']);
+    Route::get ('/save/update-student-sana', [StudentSanaController::class, 'SaveStudentSana']);
 })->middleware('auth');
 
 

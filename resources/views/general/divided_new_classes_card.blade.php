@@ -321,10 +321,11 @@
         });
         
         $(document).on('click', '#btnDeleteLine', function() {
-            $(".modal-confirmation-text").html('Do you want to delete?');
+            $(".modal-confirmation-text").html('Do you want to remove from class?');
             $("#btnYesLine").attr('data-code', $(this).attr('data-code'));
             $("#divConfirmationline").modal('show');
         });
+        
         $(document).on('click', '#btnYesLine', function() {
             var code = $(this).attr('data-code');
             $.ajax({

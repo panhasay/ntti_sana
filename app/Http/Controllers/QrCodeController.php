@@ -31,7 +31,7 @@ class QrCodeController extends Controller
         $qrCode = QrCode::size(60)
             ->margin(2)
             ->errorCorrection('H')
-            ->generate('https://myid.ntti.edu.kh/?code=' . urlencode($stu_code));
+            ->generate('https://myid.ntti.edu.kh/ntti' . urlencode($stu_code));
 
         return $qrCode;
     }
