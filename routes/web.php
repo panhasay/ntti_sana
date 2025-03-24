@@ -175,6 +175,7 @@ Route::group(['perfix' => 'table'], function (){
     Route::get('/menu-search', [SystemSettingController::class, 'pageSearch']);
     Route::get('/settings-customize-fields', [SystemSettingController::class, 'SettingsCustomizeField']);
     Route::get('/system/avanceSearch/{page}',[SystemSettingController::class, 'AvanceSearch']);
+    Route::get('/system/avanceSearch-clear-data/{page}',[SystemSettingController::class, 'avanceSearchClearData']);
     Route::get('/system/live-Search/{page}',[SystemSettingController::class, 'LiveSearch']);
 })->middleware('auth');
 
@@ -366,26 +367,22 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
         Route::post('/card_due_date', 'StoreDueDateSession');
         Route::post('/card_due_date_update', 'UpdateDueDateSession');
         Route::post('/card_total_student', 'showCardTotalStudent');
+        
         // Route::get('/print_card', static function () {
         //     return view('certificate/certificate_card_print_get');
         // });
+
         Route::get('/print_card_pdf', 'printCardStudentPdf');
         Route::post('/card_due_expire', 'StoreDueDateExpireSession');
         Route::put('/card_due_expire_update', 'updateDueDateExpireSession');
         Route::post('/card_expire_show_level', 'showCardExpireLevel');
-       
-
-
         Route::get('/student_card/transaction', 'printCardStudentPdf');
-
         Route::get('/D_IT/student_card/certificate/card-student-print', 'printListClassification');
         Route::get('/D_EL/student_card/certificate/card-student-print', 'printListClassification');
         Route::get('/D_CL/student_card/certificate/card-student-print', 'printListClassification');
-
         Route::get('/D_IT/student_card/certificate/card-student-excel', 'ExcelListClassification');
         Route::get('/D_EL/student_card/certificate/card-student-excel', 'ExcelListClassification');
         Route::get('/D_CL/student_card/certificate/card-student-excel', 'ExcelListClassification');
-
         Route::post('/student_card/expire/show', 'showExpireClass');
     });
 });

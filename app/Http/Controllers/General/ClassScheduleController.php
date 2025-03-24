@@ -39,13 +39,16 @@ class ClassScheduleController extends Controller
     }
     public function index()
     {
-        $page = $this->page;
-        $records = GeneralClassSchedule::orderBy('session_year_code', 'asc')->paginate(20);
-        // dd($records);
         if (!Auth::check()) {
             return redirect("login")->withSuccess('Opps! You do not have access');
         }
-        return view('general.class_schedule', compact('records', 'page'));
+        $page = $this->page;
+        $records = GeneralClassSchedule::orderBy('session_year_code', 'asc')->paginate(20);
+        $data = $this->services->GetDateIndexOption(now()); 
+
+        return view('general.class_schedule', array_merge($data, compact('page', 'records')));
+
+        // return view('general.class_schedule', compact('records', 'page', 'classs'));
     }
     public function transaction(request $request)
     {

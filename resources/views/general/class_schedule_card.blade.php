@@ -190,7 +190,7 @@
 <div class="container-fluid p-2">
     <div class="row">
         <div class="col-md-6 col-sm-6 col-6">
-            <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="AddTeacherSchedule" href="javascript:void(0);"><i class="mdi mdi-account-plus"></i> Add New</a>
+            <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="AddTeacherSchedule" href="javascript:void(0);"><i class="mdi mdi-account-plus"></i>បន្ថែមថ្មី</a>
             <button type="button" id="prints" class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2">Print
                 <i class="mdi mdi-printer btn-icon-append"></i>
             </button>
@@ -201,7 +201,6 @@
     </div>
 </div>
 <!-- Modal -->
-
 @include('system.model_class_schedule')<br>
 <!---PRINT--->
 <div class="modal fade" id="ModelPrints" tabindex="-1" role="dialog" aria-labelledby="ModelPrints" aria-hidden="true">

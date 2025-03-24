@@ -48,7 +48,7 @@
         <div class="col-md-12">
           <div class="form-group row">
             <div class="col-sm-3">
-              <span class="labels">លេខកូដ</span>
+              <span class="labels">ថា្នក់/ក្រុម</span>
               <input type="text" class="form-control form-control-sm" id="code" name="code" value=""
                 placeholder="លេខកូដ" aria-label="លេខកូដ">
             </div>

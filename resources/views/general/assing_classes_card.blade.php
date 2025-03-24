@@ -204,13 +204,14 @@
     <div class="row border-bottom p-2">
       <div class="col-md-6 col-sm-6  col-6">
         <div class="page-title page-title-custom">
-          <div class="title-page">
+          <div class="">
 
-            <a href="http://127.0.0.1:8000/classes"><i class="mdi mdi-format-list-bulleted"></i></a>
-              និស្សិត
+            <a href="#"><i class="mdi mdi-format-list-bulleted"></i></a>
+              <span class="bold">និស្សិត</span>
             <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="AssingStudentToClasses"
               href="javascript:;">
-              <i class="mdi mdi-account-plus"></i> Add New
+              <i class="mdi mdi-account-plus"></i>បន្ថែមថ្មី
+
             </a>
 
             <button type="button" id="BtnDownlaodExcelLine"
@@ -224,12 +225,12 @@
 
             <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="attendantStudent"
                 href="{{ url('get-attendant-student?assing_no=' . (isset($_GET['assing_no']) ? addslashes($_GET['assing_no']) : '')) }}">
-                Attendant
+                <i class="mdi mdi-account-multiple-outline"></i>អវត្តមាន
             </a>
 
             <a class="btn btn-success  btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="updatExamType"
                 href="javasript:void(0)">
-                បានប្រលងបញ្ចាប់
+                <i class="mdi mdi-checkbox-marked-outline"></i>បានប្រលងបញ្ចាប់
             </a>
 
           </div>

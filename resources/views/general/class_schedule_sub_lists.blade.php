@@ -181,8 +181,8 @@
                                 @if ($record->date_name == $day)
                                     <tr id="row{{$record->id ?? ''}}">
                                         <td class="text-center" rowspan="" width="10">
-                                            <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2 BtnEditeacher" data-code="{{ $record->id ?? '' }}" href="javascript:;"><i class="mdi mdi-border-color"></i>Edit</a>
-                                            <a class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2 BtnDeleteLine" data-code="{{ $record->id ?? '' }}" href="javascript:;"><i class="mdi mdi-delete-forever"></i>Delete</a>
+                                            <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2 BtnEditeacher" data-code="{{ $record->id ?? '' }}" href="javascript:;"><i class="mdi mdi-border-color"></i>កែប្រែ</a>
+                                            <a class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2 BtnDeleteLine" data-code="{{ $record->id ?? '' }}" href="javascript:;"><i class="mdi mdi-delete-forever"></i>លុប</a>
                                             {{ $index++ }}
                                         </td>
                                         <td class="text-left" rowspan="">{{ $record->teacher->name_2 ?? '' }}</td>

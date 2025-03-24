@@ -213,11 +213,7 @@ function showCardView() {
                                                     ? "No Class"
                                                     : item.class
                                             }
-                                                    <label class="${
-                                                        item.class_remaining
-                                                    } fw-bold" title="Expire Card">${
-                                                item.remaining
-                                            }</label>`)
+                                                <label class="${item.class_remaining} fw-bold" title="Expire Card">${item.remaining}</label>`)
                                         )
                                         .append($("<hr>"))
                                         .append(
@@ -603,9 +599,7 @@ function showCardViewList() {
                                     "margin-right": "5px",
                                 })
                                 .append(
-                                    $("<i>").addClass(
-                                        "mdi mdi-dots-vertical"
-                                    )
+                                    $("<i>").addClass("mdi mdi-dots-vertical")
                                 )
                         )
                         .append(
@@ -824,6 +818,10 @@ function showCardTotalStudent() {
 }
 
 function showExpireClass() {
+    var classCode = $("#sch_class_spec").val();
+    if (classCode == "") {
+        return notyf.error("សូមជ្រើសរើស ថ្នាក់/ក្រុម");
+    }
     $loader
         .css({
             position: "fixed",
@@ -840,19 +838,46 @@ function showExpireClass() {
     const $tbody = $("#tbl_view_expire tbody");
     const totalColumns = $tbl.find("thead th").length;
     const fragment = document.createDocumentFragment();
+
     const requestData = {
         level_code: level_code,
         class_code: class_code,
     };
     $.ajax({
-        url: "/certificate/student_card/expire/show",
-        type: "POST",
+        url: "/certificate/student_card/expire/show?data_class=" + classCode,
+        type: "post",
         contentType: "application/json",
         data: JSON.stringify(requestData),
         beforeSend: function () {
             $tbody.empty();
         },
         success: function (response) {
+            // panha
+            let valueToAdd = response.records.class_code;
+            if (
+                valueToAdd &&
+                $("#txt_due_class option[value='" + valueToAdd + "']")
+                    .length === 0
+            ) {
+                $("#txt_due_class").append(new Option(valueToAdd, valueToAdd));
+            }
+            $("#txt_due_class").val(valueToAdd).trigger("");
+
+            let qualification = response.qualification;
+            if (
+                qualification &&
+                $("#txt_due_level option[value='" + qualification + "']")
+                    .length === 0
+            ) {
+                $("#txt_due_level").append(
+                    new Option(qualification, qualification)
+                );
+            }
+            $("#txt_due_level").val(qualification).trigger("changes");
+
+            $("#sl_due_expire_date").val(response.records.expire_date);
+            $("#txt_due_expire_date").val(response.records.print_expire_date);
+
             if (response && response.length > 0) {
                 $.each(response, function (index, item) {
                     let classData = item.class;
@@ -960,6 +985,7 @@ function showExpireClass() {
             setTimeout(function () {
                 $loader.fadeOut();
             }, 100);
+            $("#modal_card_create_expire_date").modal("show");
         },
         error: function (xhr, status, error) {
             notyf.error(
@@ -1791,6 +1817,7 @@ $("#modal_card_create_expire_date").on(
             contentType: "application/json",
             data: JSON.stringify(requestData),
             success: function (data) {
+                window.location.reload();
                 if (data.status == 200) {
                     notyf.success(data.message);
                     // $("#fm_card_expire_date")[0].reset();

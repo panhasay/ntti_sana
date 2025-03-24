@@ -30,7 +30,6 @@ use App\Models\Certificates\CertStudentPrintCardExpireClass;
 use App\Http\Controllers\certificates\CertificateDegreeController;
 use App\Http\Controllers\Certificates\CertificateOfficialTranscriptController;
 
-
 use App\Models\General\Qualifications;
 use App\Models\Student\Student;
 use App\Service\service;
@@ -181,38 +180,41 @@ class CertificateController extends Controller
         $rows_per_page = $request->input('rows_per_page', 50);
 
         $students = StudentModel::getFilteredStudents($dept_code, $class_code, $search, $rows_per_page);
+
         $students->transform(function ($student) {
-            $student->stu_photo = DB::table('picture')
-                ->where('code', $student->code)
-                ->orderByDesc('id')
-                ->value('picture_ori');
+            
+            $student->stu_photo = DB::table('picture')->where('code', $student->code)->orderByDesc('id')->value('picture_ori');
 
             $filePath = public_path('uploads/student/' . $student->stu_photo);
 
             $student->photo_status = $student->stu_photo && file_exists($filePath) ? true : false;
 
             $record_card_expire = CertStudentPrintCardExpireClass::where('class_code', $student->class_code)
-                ->where('status', 1)
-                ->orderBy('session_code', 'desc')
-                ->first();
+                        ->where('status', 1)
+                        ->orderBy('session_code', 'desc')
+                        ->first();
 
             $now = Carbon::now()->subYear();
-            $expireDate = Carbon::parse($record_card_expire['expire_date'] ?? $now);
 
-            $diff = $expireDate->diff($now);
+            $expireDate = $this->services::DateYearKH($record_card_expire['expire_date']);
+
+            Carbon::parse($record_card_expire['expire_date'] ?? $now);
 
             $student->expire_date = $record_card_expire['expire_date'] ?? 0;
+
             $student->print_expire_date = $record_card_expire['print_expire_date'] ?? 0;
-            $student->remaining = "{$diff->y} years, {$diff->m} months, and {$diff->d} days";
+            $student->remaining = $expireDate;
+
             if ($expireDate <= $now) {
                 $student->class_remaining = 'text-danger';
             } else {
-                $student->class_remaining = 'text-success';
+                $student->class_remaining = 'text-danger';
             }
 
             $count_revision = CertStudentPrintCardRevision::where('print_card_id', $student->id)
                 ->where('status', 1)
                 ->count();
+                
             $student->count_revision = $count_revision;
             return $student;
         });
@@ -1002,6 +1004,7 @@ class CertificateController extends Controller
 
     public function showExpireClass(Request $request)
     {
+        $data = $request->all();
         $level_code = $request->input('level_code');
         $class_code = $request->input('class_code');
 
@@ -1012,8 +1015,18 @@ class CertificateController extends Controller
         $query->whereHas('class', function ($q) use ($level_code) {
             $q->where('level', $level_code);
         });
+
+        $records = CertStudentPrintCardExpireClass::where('class_code', $data['data_class'])->first();
+// 
+        $qualification = Classes::where('code', $data['data_class'])->value('level');
         $results = $query->with(['class', 'createdBy:id,name', 'updatedBy:id,name'])->get();
-        return response()->json($results);
+       
+
+        return response()->json([
+            'results' => $results,
+            'records' => $records,
+            'qualification' => $qualification
+        ]);
     }
 
     public function GetDate(Request $request)

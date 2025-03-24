@@ -47,12 +47,11 @@ class DividedNewClassesController extends Controller
     }
     public function index()
     {
+        if (!Auth::check()) {
+            return redirect("login")->withSuccess('Opps! You do not have access');
+        }
         $page = $this->page;
-        $sections = DB::table('sections')->get();
-        $department = Department::get();
-        $skills = DB::table('skills')->get();
-        $qualifications = Qualifications::get();
-
+        $data = $this->services->GetDateIndexOption(now()); 
         $records = Classes::leftJoin('student', 'student.class_code', '=', 'classes.code')
             ->select('classes.code',  'classes.level', 'classes.department_code', 'classes.school_year_code', 'classes.name', 'classes.skills_code', 'classes.sections_code', DB::raw('COUNT(student.name) as totals_student'))
             ->groupBy('classes.code',  'classes.level', 'classes.department_code', 'classes.school_year_code', 'classes.name', 'classes.skills_code', 'classes.sections_code')
@@ -63,10 +62,7 @@ class DividedNewClassesController extends Controller
             DB::raw('COUNT(name) AS total_count'),
         )->where('study_type', 'new student')
             ->get();
-        if (!Auth::check()) {
-            return redirect("login")->withSuccess('Opps! You do not have access');
-        }
-        return view('general.divided_new_classes', compact('records', 'page', 'department', 'sections', 'skills', 'qualifications', 'total_records'));
+        return view('general.divided_new_classes', array_merge($data, compact('page', 'records')));
     }
     public function transaction(request $request)
     {

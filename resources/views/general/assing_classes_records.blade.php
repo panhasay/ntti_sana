@@ -1,10 +1,13 @@
+@if(count($records) > 0)
+    
+
 <?php $index = 1; ?>
 @foreach ($records as $record)
     <tr id="row{{ $record->code ?? '' }}">
         <td class="">
             <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2"
                 href="{{ '/assign-classes/transaction?type=ed&code=' . App\Service\service::Encr_string($record->id) }}&years={{ $record->years ?? '' }}&type={{ $record->qualification ?? '' }}&assing_no={{ $record->assing_no ?? '' }}">
-                <i class="mdi mdi-border-color"></i> Open
+                <i class="mdi mdi-border-color"></i> បើក
             </a>
         </td>
         <td class="">{{ $record->session_year_code }}</td>
@@ -22,7 +25,10 @@
                 <label class="badge badge-danger btn-sm mb-2 mb-md-0 me-2">&nbsp;&nbsp;មិនទាន់ប្រលង&nbsp;&nbsp;</label>
             @endif
         </td>
-
-        
     </tr>
 @endforeach
+@else
+<tr>
+    <td colspan="10" class="text-center p-3">មិនមានទិន្ន័យ</td>
+</tr>
+@endif

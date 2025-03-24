@@ -64,7 +64,11 @@ class AssingClassesController extends Controller
             ];
             $users = Auth::user();
             $years = $school_year_map[$school_year] ?? '';
-             return view('general.assing_classes',compact('years', 'type', 'records', 'users'));
+
+            $data = $this->services->GetDateIndexOption(now()); 
+
+            return view('general.assing_classes', array_merge($data, compact('records', 'users', 'type', 'years')));
+            //  return view('general.assing_classes',compact('years', 'type', 'records', 'users'));
         }catch (\Exception $ex) {
             return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
         }

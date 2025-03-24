@@ -143,7 +143,7 @@
               <td>
                 <a class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2 DeletDataLine"
                   data-id="{{ $line->id ?? '' }}" href="javascript:void(0)">
-                  <i class="mdi mdi-delete-forever"></i> Delete
+                  <i class="mdi mdi-delete-forever"></i> ដកចេញ
                 </a>
               </td>
               <td class="text-center">{{ $line->student->code ?? ''}}</td>

@@ -218,7 +218,8 @@
                     <i class="mdi mdi-av-timer"></i> Open Print Date</a>
 
                 <button type="button" id="btn_open_expire_date" class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2" data-toggle="modal"
-                    data-target="#modal_card_create_expire_date">
+                    {{-- data-target="#modal_card_create_expire_date" --}}
+                    >
                     <i class="mdi mdi-calendar-clock"></i> Open Expire Date
                 </button>
                 <button type="button" class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" data-toggle="modal"
@@ -576,7 +577,7 @@
             <x-button class="btn-primary" label="Update" btn="btn_update_date_this_session" />
         </x-slot>
     </x-modal-first>
-    <x-modal-first id="modal_card_create_expire_date" title="Expire Date" size="lg" fullscreen="true">
+    <x-modal-first id="modal_card_create_expire_date" class="text-dark" title="Expire Date" size="lg" fullscreen="true">
         <div class="row g-2">
             <div class="col-md-12 stretch-card">
                 <div class="card" style="border-left: 0px solid #cae6f5;">
@@ -602,6 +603,7 @@
                                     <div class="col-sm-3">
                                         <span class="form-label">ក្រុម</span>
                                         <div class="input-group">
+                                            {{-- <input type="text" id="txt_due_classs" name="txt_due_classs"> --}}
                                             <select class="select2-sch-modal" id="txt_due_class" name="txt_due_class"
                                                 style="width: 100%" placeholder="សូមជ្រើសរើសក្រុម">
                                                 <option value="">សូមជ្រើសរើសក្រុម</option>
@@ -629,7 +631,7 @@
                             </div>
                         </form>
 
-                        <div class="card" style="border-left: 0px solid #cae6f5;">
+                        {{-- <div class="card" style="border-left: 0px solid #cae6f5;">
                             <div class="card-header">
                                 <h3 class="card-title">
                                     <h4 class="text-center">View</h4>
@@ -654,13 +656,14 @@
                                     </table>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
         </div>
         <x-slot name="footer">
-            <x-close-modal />
+            {{-- <x-close-modal /> --}}
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">បិទ</button>
             <x-button class="btn-primary" label="Save" btn="btn_due_expire_card" />
             <x-button class="btn-primary" label="Update" btn="btn_due_update_expire_card" />
         </x-slot>

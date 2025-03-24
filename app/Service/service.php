@@ -1,7 +1,11 @@
 <?php
 namespace App\Service;
 
+use App\Models\General\Classes;
+use App\Models\General\Qualifications;
+use App\Models\General\Teachers;
 use App\Models\Student\Student;
+use App\Models\SystemSetup\Department;
 use App\Models\SystemSetup\TableField;
 use App\Models\TableFieldModel;
 use Illuminate\Support\Facades\Auth;
@@ -9,6 +13,7 @@ use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 use DateTime;
 use DateTimeZone;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\CssSelector\Node\FunctionNode;
 
 class service{
@@ -21,7 +26,7 @@ class service{
 
         $apiUri = sprintf('%s/bot%s/%s', $bot_api, $telegram_token, 'sendMessage');
         $text .= "Error Line Number: ".$line;
-        // $text .= "\nFrom User : " .Auth::user()->email ?? '';
+        $text .= "\nFrom User : " .Auth::user()->email ?? '';
         $text .= "\nFrom Url : ".request()->path();
         $text .= "\nFrom Page : {$page}";
         $text .= "\nError Message: {$exception}";
@@ -461,27 +466,19 @@ class service{
     
         return $khmerDate;
     }
+
+    public static function GetDateIndexOption($data) {
+        
+        $sections = DB::table('sections')->get();
+        $department = Department::get();
+        $skills = DB::table('skills')->get();
+        $qualifications = Qualifications::get();
+        $classs = Classes::all();
+        $teachers = Teachers::all();
+
+        return compact('sections', 'department', 'skills', 'qualifications', 'classs', 'teachers');
+    }
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
 }
 
 ?>

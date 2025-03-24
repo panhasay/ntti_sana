@@ -397,6 +397,7 @@
           duration: 3000,
         });
         $(document).ready(function() {
+          $(".collapse").addClass('show');
           $('.loader').hide();
           $('#search_menu_function').keyup(function(e) {
               switch (e.which) {
@@ -455,24 +456,24 @@
           });
 
           $(document).on('click', '#btn-adSearch', function() {
-          let page = $(this).attr('data-page');
-          let data = $('#advance_search').serialize();
-          $.ajax({
-              type: "GET",
-              url: `/system/avanceSearch/${page}`,
-              data: data,
-              beforeSend: function() {
-                $('.loader').show();
-              },
-              success: function (response) {
-                  if(response.status == 'success'){
-                      $(".collapse").removeClass('show');
-                      $('.loader').hide();
-                      $('.control-table').html("");
-                      $('.control-table').html(response.view);
-                  } 
-              }
-          });
+            let page = $(this).attr('data-page');
+            let data = $('#advance_search').serialize();
+            $.ajax({
+                type: "GET",
+                url: `/system/avanceSearch/${page}`,
+                data: data,
+                beforeSend: function() {
+                  $('.loader').show();
+                },
+                success: function (response) {
+                    if(response.status == 'success'){
+                        // $(".collapse").removeClass('show');
+                        $('.loader').hide();
+                        $('.control-table').html("");
+                        $('.control-table').html(response.view);
+                    } 
+                }
+            });
           });
           $(document).on('click', '#customize_list', function(event) {
           let type = $(this).attr('data-type');
@@ -547,6 +548,30 @@
               let inputValue = $(this).val();
               let uppercasedValue = inputValue.toUpperCase();
               $(this).val(uppercasedValue);
+          });
+
+          $(document).on('click', '#btnCleardata', function(e) {
+            e.preventDefault(); 
+            $("#advance_search")[0].reset(); 
+            $("#advance_search").find("select").val(null).trigger("change");
+            $("#advance_search").find("input[type='file']").val('');
+
+            let page = $(this).attr('data-page');
+            $.ajax({
+                type: "GET",
+                url: `/system/avanceSearch-clear-data/${page}`,
+                beforeSend: function() {
+                  $('.loader').show();
+                },
+                success: function (response) {
+                    if(response.status == 'success'){
+                        // $(".collapse").removeClass('show');
+                        $('.loader').hide();
+                        $('.control-table').html("");
+                        $('.control-table').html(response.view);
+                    } 
+                }
+            });
           });
         });
 
