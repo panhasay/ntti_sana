@@ -37,7 +37,12 @@ class ClassesController extends Controller
         if(!Auth::check()){
             return redirect("login")->withSuccess('Opps! You do not have access');
         }  
-        return view('general.classes', compact('records','page'));	
+
+
+        $data = $this->services->GetDateIndexOption(now()); 
+
+        return view('general.classes', array_merge($data, compact('records', 'page')));
+        // return view('general.classes', compact('records','page'));	
         
     }
     public function transaction(request $request)
@@ -65,7 +70,7 @@ class ClassesController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-    public function delete(Request $request)
+    public function deleteCLASS(Request $request)
     {
         $code = $request->code;
 

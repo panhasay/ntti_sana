@@ -93,6 +93,8 @@ class StudnetController extends Controller
         $department = Department::get();
         $skills = DB::table('skills')->get();
         $qualifications = Qualifications::get();
+
+        $student_code = Student::where('study_type', 'new student')->get();
        
 
         if($user->role == "teacherss"){
@@ -129,7 +131,7 @@ class StudnetController extends Controller
 
             $records = StudentRegistration::with(['session_year'])->where('study_type', 'new student')->orderBy('code', 'desc')->paginate(15);
         }
-        return view('general.student_register', compact('records', 'total_records', 'qualifications', 'skills', 'department', 'sections', 'sections', 'total_student_have_class'));
+        return view('general.student_register', compact('records', 'total_records', 'qualifications', 'skills', 'department', 'sections', 'sections', 'total_student_have_class', 'student_code'));
     }
     public function transaction(request $request)
     {
@@ -949,6 +951,21 @@ class StudnetController extends Controller
         }
     }
 
+    public function getStudents(Request $request)
+    {
+        $query = Student::query()->where('study_type', 'new student');
+
+        if ($request->has('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('code', 'LIKE', '%' . $request->search . '%')
+                  ->orWhere('name_2', 'LIKE', '%' . $request->search . '%')
+                  ->orWhere('name', 'LIKE', '%' . $request->search . '%');
+            });
+        }
+        $students = $query->paginate(10); 
+
+        return response()->json($students);
+    }
     
 }
 

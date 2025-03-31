@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SystemSetup;
 
 use App\Http\Controllers\Controller;
+use App\Models\General\Picture;
 use App\Models\General\Teachers;
 use App\Models\Student\Student;
 use App\Models\User;
@@ -40,23 +41,12 @@ class UsersController extends Controller
     {
         $user = Auth::user();
         $records = User::where('id', $user->id)->first();
-        if ($records->role == "student") {
-            $records_by_user = Student::where('code', $records->user_code)->first();
-        } else if ($records->role == "teachers") {
-            $records_by_user = Teachers::where('code', $records->user_code)->first();
-        } else if ($records->role == "admin") {
-            $records_by_user = Student::where('code', $records->user_code)->first();
-        } else {
-            $records_by_user = Student::where('code', $records->user_code)->first();
-        }
 
         $page_title = $this->page;
         if (!Auth::check()) {
             return redirect("login")->withSuccess('Opps! You do not have access');
         }
-
-
-        return view('general.profile', compact('records', 'records_by_user'));
+        return view('general.profile', compact('records'));
     }
     public function transaction(request $request)
     {
@@ -170,4 +160,69 @@ class UsersController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
+
+    public function UpdateProfile(request $request)
+    {
+        $data = $request->all();
+
+        $records = User::where('id', $data['code'])->first();
+        if (!$data['code']) {
+            return response()->json(['status' => 'error', 'msg' => 'Data Not found !']);
+        }
+        try {
+            $records->name = $data['name'];
+            $records->gender = $data['gender'];
+            $records->date_of_birth = $data['date_of_birth'];
+            $records->phone = $data['phone'];
+            $records->save();
+            return response()->json(['store' => 'yes', 'msg' => 'Succesfully !']);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+
+    public function UploadImages(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $request->validate([
+                'file' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+                'code' => 'required'
+            ]);
+
+            $code = $request->code;
+            $uploadPath = public_path('upload/profile');
+            $existingImage = Picture::where('code', $code)->first();
+
+            if ($existingImage) {
+                $oldFilePath = str_replace(url('/'), public_path(), $existingImage->picture_ori);
+                $existingImage->delete();
+                if (file_exists($oldFilePath)) {
+                    unlink($oldFilePath);
+                }
+            }
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0777, true);
+            }
+            $file = $request->file('file');
+            $fileName = bin2hex(random_bytes(10)) . '.' . $file->getClientOriginalExtension();
+            $file->move($uploadPath, $fileName);
+
+            $filePath = url("upload/profile/$fileName");
+            Picture::create([
+                'picture_ori' => $filePath,
+                'code' => $code,
+                'type' => 'profile'
+            ]);
+
+            DB::commit();
+            return response()->json(['status' => 'success', 'msg' => 'រូបថតបានរក្សាទុក', 'path' => $filePath]);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+
 }

@@ -18,14 +18,14 @@ class CheckPermission
      */
     public function handle($request, Closure $next)
     {
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'ប្រព័ន្ធ កំពុងដំណើរការ...... !'
-                ], 403);
-            }
+            // if ($request->ajax() || $request->wantsJson()) {
+            //     return response()->json([
+            //         'status' => 'error',
+            //         'message' => 'ប្រព័ន្ធ កំពុងដំណើរការ...... !'
+            //     ], 403);
+            // }
     
-            return redirect()->back()->with('error', 'ប្រព័ន្ធ កំពុងដំណើរការ......!');
+            // return redirect()->back()->with('error', 'ប្រព័ន្ធ កំពុងដំណើរការ......!');
 
     
         return $next($request);

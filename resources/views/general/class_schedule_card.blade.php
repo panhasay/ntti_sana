@@ -23,7 +23,10 @@
                         បន្ថែមថ្មី 
                     @endif
                     @if(count($record_sub_lines) <= 0)
-                        <button type="button" id="BtnSave" class="btn btn-success"> save </button>
+                    <button type="button" id="BtnSave" class="btn btn-success btn-icon-text btn-sm text-center">
+                        <i class="mdi mdi-content-save"></i> រក្សាទុក
+                    </button>
+                        {{-- <button type="button" id="BtnSave" class="btn btn-success"> save </button> --}}
                     @endif
                 </div>
             </div>
@@ -87,7 +90,7 @@
                     <div class="form-group row">
                         <span class="labels col-sm-3 col-form-label text-end">ជំនាញ<strong style="color:red; font-size:15px;"> *</strong></span>
                         <div class="col-sm-9">
-                            <select class="js-example-basic-single FieldRequired" id="skills_code" name="skills_code" style="width: 100%;" {{ (count($record_sub_lines) > 0) ? 'disabled' : '' }}>
+                            <select class="js-example-basic-single FieldRequired" id="skills_code" readonly name="skills_code" style="width: 100%;" {{ (count($record_sub_lines) > 0) ? 'disabled' : '' }} >
                                 <option value="">&nbsp;</option>
                                 @foreach ($skills as $record)
                                 <option value="{{ $record->code ?? '' }}" {{ isset($records->skills_code) && $records->skills_code == $record->code ? 'selected' : '' }}>
@@ -253,6 +256,7 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         })
+
         $('#BtnSave').on('click', function() {
             var formData = $('#frmDataCard').serialize();
             var type = $('#type').val();
@@ -282,6 +286,7 @@
                 }
             });
         });
+
         $("#AddTeacherSchedule").on('click', function() {
             if (!header) {
                 notyf.error("សូមបំពេញ ព៏តមានថ្នាក់និងឆ្នាំសិក្សាខាងលើ");
@@ -305,6 +310,7 @@
             $("#teachers").append(new Option("សាស្រ្តាចារ្យ", "", true, true));
 
         });
+
         $("#SaveTeacherSchedule").on('click', function() {
             var frmDataSublist = $('#frmDataSublist').serialize();
             var code = "{{ isset($_GET['code']) ? addslashes($_GET['code']) : '' }}";
@@ -328,6 +334,7 @@
                 }
             });
         })
+
         $(".formSublista").on('change', function() {
             var name = $(this).attr('name');
             var value = $(this).val();
@@ -353,6 +360,7 @@
             $("#YesPrints").attr('data-code', $(this).attr('data-type'));
             $("#ModelPrints").modal('show');
         });
+
         $(document).on('click', '#YesPrints', function() {
             let code = "{{ isset($_GET['code']) ? addslashes($_GET['code']) : '' }}";
             let url = '/class-schedule-print?code=' + code;
@@ -379,6 +387,7 @@
                 error: function(xhr, ajaxOptions, thrownError) {}
             });
         });
+
         $(document).on('click', '.BtnEditeacher', function () {
             var code = $(this).attr('data-code');
             let url = 'update/class-schedule/transaction?id=' + code;
@@ -415,6 +424,7 @@
             $("#btnYesDeleteLine").attr('data-code', $(this).attr('data-code'));
             $("#divConfirmationDeleteLine").modal('show');
         });
+
         $(document).on('click', '#btnYesDeleteLine', function() {
             var code = $(this).attr('data-code');
             $.ajax({

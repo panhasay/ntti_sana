@@ -114,6 +114,7 @@ Route::group(['perfix' => 'student'], function (){
     Route::Post('/student/uploadimage',[StudnetController::class,'UploadImage']);
     Route::Post('/student/delete-image',[StudnetController::class,'DeleteImage']);
 
+    Route::get('/students/list', [StudnetController::class, 'getStudents'])->name('students.list');
 })->middleware('auth');
 
 Route::group(['perfix' => 'table'], function (){
@@ -166,6 +167,8 @@ Route::group(['perfix' => 'Users'], function (){
     Route::get('users', [UsersController::class, 'index'])->name('index');
     Route::get('profile', [UsersController::class, 'Profile'])->name('Profile');
     Route::get('profile/reset-password', [UsersController::class, 'ResetPassword'])->name('ResetPassword');
+    Route::GET('profile/update-information', [UsersController::class, 'UpdateProfile'])->name('UpdateProfile');
+    Route::POST('profile/upload-img', [UsersController::class, 'UploadImages'])->name('UploadImages');
     // Route::get('departments/transaction', [UsersController::class, 'transaction'])->name('transaction');
     // Route::post('departments/update', [UsersController::class, 'update'])->name('update');
     // Route::post('departments/store', [UsersController::class, 'store'])->name('store');
@@ -177,6 +180,7 @@ Route::group(['perfix' => 'table'], function (){
     Route::get('/system/avanceSearch/{page}',[SystemSettingController::class, 'AvanceSearch']);
     Route::get('/system/avanceSearch-clear-data/{page}',[SystemSettingController::class, 'avanceSearchClearData']);
     Route::get('/system/live-Search/{page}',[SystemSettingController::class, 'LiveSearch']);
+    Route::get('/system/class-get-data-group',[SystemSettingController::class, 'ClassGetData']);
 })->middleware('auth');
 
 
@@ -185,6 +189,7 @@ Route::group(['perfix' => 'classes'], function (){
     Route::get('/classes/transaction', [ClassesController::class, 'transaction']);
     Route::post('/classes/update', [ClassesController::class, 'update']);
     Route::post('/classes/store', [ClassesController::class, 'store']);
+    Route::post('/classes-delete', [ClassesController::class, 'deleteCLASS']);
     Route::POST ('/class-schedule', [ClassesController::class, 'delete']);
 })->middleware('auth');
 

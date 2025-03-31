@@ -12,7 +12,7 @@
           @else
             បន្ថែមថ្មី
           @endif
-          &nbsp;&nbsp; <button type="button" id="BtnSave" class="btn btn-success"> save </button>
+          &nbsp;&nbsp; <button type="button" id="BtnSave" class="btn btn-success float-left btn-sm mb-2 mb-md-0 me-2"> <i class="mdi mdi-content-save"></i> រក្សាទុក </button>
         </div>
       </div>
     </div>

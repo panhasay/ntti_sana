@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\General\AssingClasses;
 use App\Models\General\Classes;
 use App\Models\General\ClassSchedule;
+use App\Models\General\SessionYear;
 use App\Models\General\Skills;
 use App\Models\General\StudentRegistration;
 use App\Models\General\Subjects;
@@ -438,8 +439,8 @@ class SystemSettingController extends Controller
                     $blade_file_record = 'general.teachers_lists';
                     break;
                 case 'student_registration':
-                    $records = StudentRegistration::with(['session_year'])->whereRaw($extract_query)->paginate(1000);
-                    $total_records = StudentRegistration::selectRaw(
+                    $records = Student::whereRaw($extract_query)->paginate(1000);
+                    $total_records = Student::selectRaw(
                         DB::raw('COUNT(name) AS total_count'),
                     )->where('study_type', 'new student')
                         ->whereRaw($extract_query)
@@ -506,6 +507,24 @@ class SystemSettingController extends Controller
             return response()->json(['status' => 'success', 'view' => $view]);
         } catch (Exception $ex) {
             $this->service->telegram($ex->getMessage(), $page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+
+    public function ClassGetData(Request $request)
+    {
+        try {
+            $data =  $request->all();
+            $records = Classes::where('code', $data['class_code'])->first();
+
+            // dd($records->skill->name_2);
+            $skills =  $records->skill->name_2;
+            $sections =  $records->section->name_2;
+            $department =  $records->department->name_2;
+
+            $session_year = SessionYear::where('code', $records->school_year_code)->value('name');
+            return response()->json(['status' => 'success', 'records' => $records, 'skills' => $skills, 'sections' => $sections, 'department' => $department, 'session_year' => $session_year]);
+        } catch (Exception $ex) {
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }

@@ -595,7 +595,10 @@
                                                 style="width: 100%" placeholder="សូមជ្រើសរើសកម្រិត">
                                                 <option value="">សូមជ្រើសរើសកម្រិត</option>
                                                 @foreach ($record_level as $item)
-                                                    <option value="{{ $item->level }}">{{ $item->level }}</option>
+                                                <?php
+                                                    $description =  App\Models\General\Qualifications::where('code',$item->level)->first(); 
+                                                ?>
+                                                    <option value="{{ $item->level }}">{{ $description->name_3 ?? '' }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -1070,25 +1073,54 @@
                 if (file.type.startsWith('image/')) {
                     const reader = new FileReader();
                     reader.onload = (e) => {
-                        const img = document.createElement('img');
+                        const img = new Image();
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+
+                            const maxWidth = 150;
+                            const maxHeight = 200;
+                            let width = img.width;
+                            let height = img.height;
+
+                            if (width > height) {
+                                if (width > maxWidth) {
+                                    height = Math.round((height * maxWidth) / width);
+                                    width = maxWidth;
+                                }
+                            } else {
+                                if (height > maxHeight) {
+                                    width = Math.round((width * maxHeight) / height);
+                                    height = maxHeight;
+                                }
+                            }
+
+                            canvas.width = width;
+                            canvas.height = height;
+                            ctx.drawImage(img, 0, 0, width, height);
+                            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+
+
+                            const previewImg = document.createElement('img');
+                            previewImg.src = compressedDataUrl;
+                            previewImg.style.width = "150px";
+                            previewImg.style.height = "200px";
+                            previewImg.style.objectFit = "cover";
+                            previewImg.style.borderRadius = "5px";
+
+                            const fileNameWithoutExt = file.name.split('.').slice(0, -1).join('.');
+
+                            previewImg.setAttribute('data-name', fileNameWithoutExt);
+
+                            previewContainer.appendChild(previewImg);
+                        };
                         img.src = e.target.result;
-                        img.style.width = "150px";
-                        img.style.height = "200px";
-                        img.style.objectFit = "cover";
-                        img.style.borderRadius = "5px";
-
-                        // Extract default name (without extension)
-                        const fileNameWithoutExt = file.name.split('.').slice(0, -1).join('.');
-
-                        // Set data-name attribute
-                        img.setAttribute('data-name', fileNameWithoutExt);
-
-                        previewContainer.appendChild(img);
                     };
                     reader.readAsDataURL(file);
                 }
             });
         }
+
 
         $(document).ready(function() {
             $('#sch_class_spec').on('change', function() {

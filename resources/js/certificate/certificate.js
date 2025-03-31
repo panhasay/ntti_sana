@@ -19,6 +19,21 @@ let currentPageList = 1;
 select2AdvancedModal("#txt_due_class", "#modal_card_due_date");
 select2AdvancedModal("#txt_due_level", "#modal_card_create_expire_date");
 
+function loader(action) {
+    var $loader = $("#loader");
+    if (action === "show") {
+        $loader.css({
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            "z-index": "99999999999999999999",
+        }).fadeIn("slow");
+    } else if (action === "hide") {
+        $loader.fadeOut("slow");
+    }
+}
+
 function levelShiftSkill() {
     const class_code = $sch_class_spec.val();
     const sch_level = $sch_level.val();
@@ -1432,7 +1447,11 @@ $("body").on("click", "#btn_upload_zip_photo", function (e) {
         cache: false,
         async: false,
         data: formData,
+        beforeSend: function() {
+            loader("show");     
+        },
         success: function (data) {
+            loader("hide");
             if (data.status == 200) {
                 $("#fm_up_card_base_option")[0].reset();
                 $("#modal_card_upload_zip_photo .btn-close").trigger("click");

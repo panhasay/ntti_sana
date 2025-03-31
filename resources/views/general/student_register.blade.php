@@ -31,8 +31,8 @@
       </button>
   </div>
   <div class="d-grid d-md-flex justify-content-md-end p-3">
-    <input type="text" class="form-control mb-2 mb-md-0 me-2" id="search_data" data-page="student_registration" name="search_data"
-      placeholder="Serch...." aria-label="Recipient's username" aria-describedby="basic-addon2">
+    {{-- <input type="text" class="form-control mb-2 mb-md-0 me-2" id="search_data" data-page="student_registration" name="search_data"
+      placeholder="Serch...." aria-label="Recipient's username" aria-describedby="basic-addon2"> --}}
     <div>
       {{-- <button type="button" class="btn btn-outline-primary"> Seacrh </button> --}}
     </div>
@@ -43,34 +43,46 @@
 </div>
 <div class="collapse" id="Fliter">
   <div class="card card-body">
+
     <form id="advance_search" role="form" class="form-horizontal" enctype="multipart/form-data" action="">
       <div class="row">
         <div class="col-md-12">
           <div class="form-group row">
-            <div class="col-sm-3">
+            
+            <div class="col-sm-2">
               <span class="labels">អត្តលេខ</span>
-              <input type="text" class="form-control form-control-sm" id="code" name="code" value=""
-                placeholder="អត្តលេខ" aria-label="អត្តលេខ">
-            </div>
-            <div class="col-sm-3">
-              <span class="labels">គោត្តនាម និងនាម</span>
-              <input type="text" class="form-control form-control-sm" id="name_2" name="name_2" value=""
-                placeholder="គោត្តនាម និងនាម" aria-label="គោត្តនាម និងនាម">
-            </div>
-           
-            <div class="col-sm-3">
-              <span class="labels">ដេប៉ាតឺម៉ង់</span>
-              <select class="js-example-basic-single FieldRequired" id="department_code" name="department_code" style="width: 100%;">
-                <option value="">&nbsp;</option>
-                @foreach ($department as $record)
-                <option value="{{ $record->code ?? '' }}" {{ isset($records->department_code) && $records->department_code == $record->code ? 'selected' : '' }}>
-                    {{ isset($record->name_2) ? $record->name_2 : '' }}
-                </option>
-                @endforeach
-            </select>
+                <select class="js-example-basic-single FieldRequired" id="code" name="code" style="width: 100%;">
+                    <option value="">&nbsp;</option>
+                </select>
             </div>
 
-            <div class="col-sm-3">
+            <div class="col-sm-2">
+              <span class="labels">អក្សឡាតាំង</span>
+                <select class="js-example-basic-single FieldRequired" id="name" name="name" style="width: 100%;">
+                  <option value="">&nbsp;</option>
+                </select>
+            </div>
+
+            <div class="col-sm-2">
+              <span class="labels">គោត្តនាម និងនាម</span>
+                <select class="js-example-basic-single FieldRequired" id="name_2" name="name_2" style="width: 100%;">
+                  <option value="">&nbsp;</option>
+                </select>
+            </div>
+           
+            <div class="col-sm-2">
+              <span class="labels">ដេប៉ាតឺម៉ង់</span>
+                <select class="js-example-basic-single FieldRequired" id="department_code" name="department_code" style="width: 100%;">
+                    <option value="">&nbsp;</option>
+                      @foreach ($department as $record)
+                      <option value="{{ $record->code ?? '' }}" {{ isset($records->department_code) && $records->department_code == $record->code ? 'selected' : '' }}>
+                          {{ isset($record->name_2) ? $record->name_2 : '' }}
+                      </option>
+                      @endforeach
+                </select>
+            </div>
+
+            <div class="col-sm-2">
               <span class="labels">ជំនាញ</span>
                 <select class="js-example-basic-single FieldRequired" id="skills_code" name="skills_code" style="width: 100%;">
                     <option value="">&nbsp;</option>
@@ -82,7 +94,7 @@
                 </select>
             </div>
 
-            <div class="col-sm-3">
+            <div class="col-sm-2">
               <span class="labels">វេន</span>
               <div class="col-sm-9">
                 <select class="js-example-basic-single FieldRequired" id="sections_code" name="sections_code" style="width: 130%;">
@@ -96,7 +108,7 @@
             </div>
             </div>
 
-            <div class="col-sm-3">
+            <div class="col-sm-2">
               <span class="labels col-sm-3 col-form-label text-end">កម្រិត<strong style="color:red; font-size:15px;"> *</strong></span>
                 <div class="col-sm-9">
                     <select class="js-example-basic-single" id="qualification" name="qualification" style="width: 130%;">
@@ -109,23 +121,13 @@
                     </select>
                 </div>
             </div>
-
-            <div class="col-sm-3">
-              <span class="labels col-sm-3 col-form-label text-end">មានថ្នាក់/មិនមានថ្នាក់<strong style="color:red; font-size:15px;"> *</strong></span>
-                <div class="col-sm-9">
-                    <select class="js-example-basic-single" id="class_code" name="class_code" style="width: 130%;">
-                        <option value="">&nbsp;</option>
-                        {{-- <option value="true">មានថ្នាក់</option> --}}
-                        <option value="null">មិនមានថ្នាក់</option>
-                    </select>
-                </div>
-            </div>
-
           </div>
-          <button type="button" class="btn btn-primary text-white" data-page="student_registration" id="btn-adSearch">Search</button>
+          <button type="button" class="btn btn-primary text-white float-left btn-sm mb-2 mb-md-0 me-2" data-page="student_registration" id="btn-adSearch"><i class="mdi mdi-account-search"></i> ស្វែងរក</button>
+          <button type="button" class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2" data-page="student_registration" id="btnCleardata"><i class="mdi mdi-cloud-off-outline"></i> ជម្រះទិន្នន័យ</button>
         </div>
       </div>
     </form>
+
   </div>
 </div>
 <div class="print" style="display: none">
@@ -155,6 +157,10 @@
 @include('system.model_upload_excel')
 <script>
   $(document).ready(function() {
+    initSelect2('#code', 'អត្តលេខ', "{{ route('students.list') }}", 'code');
+    initSelect2('#name_2', 'គោត្តនាម និងនាម', "{{ route('students.list') }}", 'name_2');
+    initSelect2('#name', 'អក្សឡាតាំង', "{{ route('students.list') }}", 'name');
+
     $.ajaxSetup({
       headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -165,6 +171,7 @@
       $("#btnYes").attr('data-code', $(this).attr('data-code'));
       $("#divConfirmation").modal('show');
     });
+
     $(document).on('click', '#btnYes', function() {
       var code = $(this).attr('data-code');
       $.ajax({
@@ -184,6 +191,7 @@
         }
       });
     });
+
     $(document).on('click', '#btnExcel', function() {
       var fileInput = $('#dataExcel')[0];
       var file = fileInput.files[0];
@@ -215,9 +223,11 @@
         notyf.error('Please select a file');
       }
     });
+
     $(document).on('click', '.btn-browse', function() {
       $('.upload-item').trigger('click');
     });
+
     $(document).on('click', '#btn-Image', function() {
       let code = $(this).attr('data-code');
       $.ajax({
@@ -238,6 +248,7 @@
         }
       });
     });
+
     $(document).on('change', '#file', function() {
       let file = $('#file').val();
       let data = new FormData(formimg);
@@ -267,6 +278,7 @@
         }
       });
     });
+
     $(document).on('click', '.delete_image', function(param) {
       let id = $(this).attr('data-id');
       $.ajax({
@@ -298,9 +310,47 @@
       $("#btnYesExcel").attr('data-code', $(this).attr('data-type'));
       $("#divConfirmationExcel").modal('show');
     });
+
     $(document).on('click', '#btnYesExcel', function() {
       DownlaodExcel();
     });
+
+    // $('#code').select2({
+    //   placeholder: "អត្តលេខ",
+    //   allowClear: true,
+    //   minimumInputLength: 1, 
+    //   language: {
+    //       inputTooShort: function () {
+    //           return "សូមបញ្ចូល ទិន្ន័យ";
+    //       }
+    //   },
+    //   ajax: {
+    //       url: "{{ route('students.list') }}",
+    //       dataType: 'json',
+    //       delay: 250,
+    //       data: function (params) {
+    //           return {
+    //               search: params.term, 
+    //               page: params.page || 1 
+    //           };
+    //       },
+    //       processResults: function (data, params) {
+    //           params.page = params.page || 1;
+
+    //           return {
+    //               results: data.data.map(item => ({
+    //                   id: item.code, 
+    //                   text: item.code 
+    //               })),
+    //               pagination: {
+    //                   more: data.next_page_url ? true : false
+    //               }
+    //           };
+    //       },
+    //       cache: true
+    //   },
+    //   minimumInputLength: 1 
+    // });
 
   });
 
@@ -368,7 +418,6 @@
     $("#divConfirmationExcel").modal('hide');
   }
 
-
   function prints(ctrl) {
     var url = '/student/print';
     var data = '';
@@ -395,5 +444,44 @@
   function importExcel() {
     $("#divUplocadExcel").modal('show');
   }
+
+  function initSelect2(selector, placeholder, ajaxUrl, fieldKey) {
+    $(selector).select2({
+        placeholder: placeholder,
+        allowClear: true,
+        minimumInputLength: 1,
+        language: {
+            inputTooShort: function () {
+                return "សូមបញ្ចូល ទិន្ន័យ"; // Custom Khmer message
+            }
+        },
+        ajax: {
+            url: ajaxUrl,
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    search: params.term,
+                    page: params.page || 1
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+
+                return {
+                    results: data.data.map(item => ({
+                        id: item[fieldKey], // Use dynamic field key
+                        text: item[fieldKey] // Display dynamic field key
+                    })),
+                    pagination: {
+                        more: data.next_page_url ? true : false
+                    }
+                };
+            },
+            cache: true
+        }
+    });
+  }
+
 </script>
 @endsection

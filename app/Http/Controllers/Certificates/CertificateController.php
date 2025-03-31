@@ -750,6 +750,8 @@ class CertificateController extends Controller
 
     public function uploadMultiplePhoto(Request $request)
     {
+
+        dd("Hello uploadMultiplePhoto");
         $images = $request->input('images');
         if (!is_array($images) || empty($images)) {
             return response()->json(['message' => 'No images provided.'], 400);

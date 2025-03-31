@@ -70,14 +70,14 @@
         </div>
         <div class="container menu-list">
             <ul>
-                <li><a href="{{ url('department-setup') }}">Department - ដេប៉ាតឺម៉ង់</a></li>
+                <li><a href="{{ url('department-setup') }}">ដេប៉ាតឺម៉ង់</a></li>
                 {{-- <li><a href="{{ url('student') }}">Student -សិស្សនិស្សិត</a></li> --}}
-                <li><a href="{{ url('users') }}">User Management - អ្នកប្រើប្រាស់</a></li>
-                <li><a href="{{ url('classes') }}">Class-ថ្នាក់ / ក្រុម</a></li>
-                <li><a href="{{ url('skills') }}">skills-ជំនាញ</a></li>
-                <li><a href="{{ url('subject') }}">Subject-មុខវិជ្ជា</a></li>
-                <li><a href="{{ url('teachers') }}">Teachers-សាស្ត្រាចារ្យ លោកគ្រូអ្នកគ្រូ</a></li>
-                <li><a href="{{ url('attendance/dashboards-attendance') }}">Attendance-អវត្តមាន</a></li>
+                {{-- <li><a href="{{ url('users') }}">User Management - អ្នកប្រើប្រាស់</a></li> --}}
+                <li><a href="{{ url('classes') }}">ថ្នាក់ / ក្រុម</a></li>
+                <li><a href="{{ url('skills') }}">ជំនាញ</a></li>
+                <li><a href="{{ url('subject') }}">មុខវិជ្ជា</a></li>
+                <li><a href="{{ url('teachers') }}">សាស្ត្រាចារ្យ លោកគ្រូអ្នកគ្រូ</a></li>
+                <li><a href="{{ url('attendance/dashboards-attendance') }}">អវត្តមាន</a></li>
             </ul>
         </div>
     </div>
@@ -110,7 +110,7 @@
     <div class="col-md-3 col-sm-4 col-6">
         <div class="bold">
         <i class="mdi mdi-format-list-bulleted"></i>
-            Reports
+            របាយការណ៏
         </div>
         <div class="container menu-list">
             <ul>

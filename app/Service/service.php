@@ -52,7 +52,7 @@ class service{
     {
         $botApi = "https://api.telegram.org";
         $telegramId = "-4557828405"; // Replace with your actual chat ID
-        $telegramToken = "7286298295:AAG9-EFlyITzikQWsr1xz1URTez7vLrRaTc"; // Replace with your actual bot token
+        $telegramToken = "7286298295:AAE5VeNDbrjXIPF2mJNlZMpXa1MhojXHvnQ"; // Replace with your actual bot token
     
         $apiUri = sprintf('%s/bot%s/sendMessage', $botApi, $telegramToken);
     
@@ -101,7 +101,7 @@ class service{
         $bot_api = "https://api.telegram.org";
 
         $telegram_id = "-4557828405";
-        $telegram_token = "7286298295:AAG9-EFlyITzikQWsr1xz1URTez7vLrRaTc";
+        $telegram_token = "7286298295:AAE5VeNDbrjXIPF2mJNlZMpXa1MhojXHvnQ";
         
         $apiUri = sprintf('%s/bot%s/%s', $bot_api, $telegram_token, 'sendMessage');
         $text .= "\n" ."=== User Log NTTI Portal===";
@@ -136,7 +136,7 @@ class service{
         // Define the API URL and Telegram details
         $bot_api = "https://api.telegram.org";
         $telegram_id = "-4557828405"; // Replace with your Telegram group/channel/chat ID
-        $telegram_token = "7286298295:AAG9-EFlyITzikQWsr1xz1URTez7vLrRaTc"; // Replace with your bot token
+        $telegram_token = "7286298295:AAE5VeNDbrjXIPF2mJNlZMpXa1MhojXHvnQ"; // Replace with your bot token
         
         // Fetch student data
         $data = Student::where('code', '=', $records->code)->first();

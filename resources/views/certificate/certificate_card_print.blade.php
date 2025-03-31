@@ -298,7 +298,10 @@ use Illuminate\Support\Str;
             ជំនាញ<span class="ps-3"></span><span class="ps-4">&nbsp; {{ $records->skill }}</span>
         </div>
         <div class="id-card-left">
-            កម្រិត<span class="ps-5">&nbsp;&nbsp;{{ $records->level }}</span>
+            <?php 
+                $description =  App\Models\General\Qualifications::where('code',$records->level)->first();
+            ?>
+            កម្រិត<span class="ps-5">&nbsp;&nbsp;{{ $description->name_3 ?? '' }}</span>
         </div>
         <div class="id-card-date-khmer">
             {{ $records->print_khmer_lunar ?? $record_date_khmer }}

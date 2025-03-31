@@ -119,11 +119,11 @@
     <div class="d-flex justify-content-between mb-4">
         <div class="custom-action-buttons bold">
             <button id="ResetPassword" data-code="{{ $records->id ?? '' }}" class="btn btn-outline-info btn-sm">
-                <i class="mdi mdi-reload btn-icon-prepend"></i> Reset Password
+                <i class="mdi mdi-reload  btn-icon-prepend" data-code="{{ $records->id ?? '' }}"></i> Reset Password
             </button>
             My Profile
         </div>
-        <button class="btn btn-primary btn-sm">
+        <button class="btn btn-primary btn-sm" data-code="{{ $records->id ?? '' }}" id="btn-Update" >
             <i class="mdi mdi-upload btn-icon-prepend"></i> Update
         </button>
     </div>
@@ -133,19 +133,19 @@
         <div class="col-md-3">
             <div class="card profile-card mb-4">
                 <div class="card-body">
-                    <?php $picture =  App\Models\General\Picture::where('code', $records_by_user->code ?? '' )->where('type','student')->value('picture_ori'); ?>
+                    <?php $picture =  App\Models\General\Picture::where('code', $records->id ?? '' )->where('type','profile')->value('picture_ori'); ?>
                     @if($picture != null)
-                    <img class="btn-Image" id="btn-Image" data-code='{{$records_by_user->code ?? ''}}'
+                    <img class="btn-Image" id="btn-Image" data-code='{{$records->code ?? ''}}'
                         src="{{ $picture ?? '' }}" width="1000" height="1000">
                     @else
-                    <img class="btn-Image" id="btn-Image" data-code='{{$records_by_user->code ?? ''}}'
+                    <img class="btn-Image" id="btn-Image" data-code='{{$records->code ?? ''}}'
                         src="asset/NTTI/images/faces/default_User.jpg" width="1000" height="1000">
                     @endif
                     <h4 class="card-title">{{ $records->name ?? '' }}</h4>
                     <p class="text-muted">Ntti Portal</p>
-                    <button type="button" data-code="{{ $records_by_user->code ?? '' }}"
+                    <button type="button" data-code="{{ $records->id ?? '' }}"
                         class="btn btn-outline-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2 btn-Image-user">Upload
-                        Image
+                        រូបថត
                         <i class="mdi mdi-upload btn-icon-prepend"></i>
                     </button>
                 </div>
@@ -160,9 +160,9 @@
                     <h5 class="mb-0">General</h5>
                 </div>
                 <div class="card-body">
-                    <form>
+                    <form id="frmData" role="form" class="form-sample" enctype="multipart/form-data">
                         <div class="row mb-3">
-                            <label for="email" class="col-sm-3 col-form-label custom-form-label text-right">
+                            <label for="email"  class="col-sm-3 col-form-label custom-form-label text-right">
                                 អុីម៉ែល
                             </label>
                             <div class="col-sm-9">
@@ -175,19 +175,18 @@
                                 គោត្តនាម នាម
                             </label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" id="firstName"
+                                <input type="text" class="form-control" id="firstName" name="name"
                                     value="{{ $records->name ?? '' }}">
                             </div>
                         </div>
+
                         <div class="row mb-3">
                             <label for="email" class="col-sm-3 col-form-label custom-form-label text-right">
                                 ភេទ
                             </label>
                             <div class="col-sm-9">
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="firstName"
-                                        value="{{ $records_by_user->gender ?? '' }}">
-                                </div>
+                                <input type="text" class="form-control" id="firstName" name="gender"
+                                    value="{{ $records->gender ?? '' }}">
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -195,8 +194,8 @@
                                 ថ្ងៃខែឆ្នាំកំ់ណើត
                             </label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" id="dob"
-                                    value="{{ $records_by_user->date_of_birth ?? '' }}">
+                                <input type="date" class="form-control" id="dob" name="date_of_birth" 
+                                    value="{{ $records->date_of_birth ?? '' }}">
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -204,7 +203,7 @@
                                 លេខទូរស័ព្ទ
                             </label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" id="phone" placeholder="Phone No."
+                                <input type="text" class="form-control" id="phone" placeholder="Phone No." name="phone"
                                     value="{{ $records->phone ?? '' }}">
                             </div>
                         </div>
@@ -213,8 +212,8 @@
                                 ដេប៉ាតាម៉ង់
                             </label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" id="organization"
-                                    value="{{ $records->department->name_2 ?? '' }}">
+                                <input type="text" class="form-control" id="department_code" 
+                                    value="{{ $records->department->name_2 ?? '' }}" readonly>
                             </div>
                         </div>
                     </form>
@@ -222,7 +221,7 @@
             </div>
 
             <!-- Communication Section -->
-            <div class="card custom-form-container">
+            {{-- <div class="card custom-form-container">
                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Communication</h5>
                 </div>
@@ -259,7 +258,7 @@
                         </div>
                     </form>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
 </div>
@@ -296,35 +295,58 @@
       </div>
     </div>
   </div>
-
 <script>
     $(document).ready(function() {
         $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
         })
+
         $(document).on('click', '.btn-Image-user', function() {
             let code = $(this).attr('data-code');
-            alert(code);
-            $.ajax({
-                type: "GET",
-                url: `/student/getImages`,
-                data: {
-                code: code
-                },
-                beforeSend: function() {
-                    $('.global_laoder').show();
-                },
-                success: function(response) {
-                if (response.status == 'success') {
-                    $('#imageModal').modal('show');
-                    $('.PreImage').html();
-                    $('.PreImage').html(response.view);
+            
+            // Create file input dynamically
+            let inputFile = $('<input/>', {
+                type: 'file',
+                accept: 'image/*',
+                change: function(event) {
+                    let file = event.target.files[0];
+                    if (!file) return;
+
+                    let formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('code', code);
+                    formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+
+                    $.ajax({
+                        type: "POST",
+                        url: `/profile/upload-img`,
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        beforeSend: function() {
+                            $('.global_loader').show();
+                        },
+                        success: function(response) {
+                            $('.global_loader').hide();
+                            if (response.status === 'success') {
+                                notyf.success(response.msg);
+                                $('.btn-Image').attr('src', response.path); // Update image preview
+                            } else {
+                                notyf.error(response.msg);
+                            }
+                        },
+                        error: function(xhr) {
+                            $('.global_loader').hide();
+                            notyf.error("Error uploading image.");
+                            console.log(xhr.responseText);
+                        }
+                    });
                 }
-                }
-            });
+            }).click(); // Trigger file input click
         });
+
         $(document).on('click', '#ResetPassword', function() {
             let code = $(this).attr('data-code');
             $("#ModalResetPasswrod").modal('show');
@@ -335,7 +357,7 @@
             let new_value = $("#password_new").val(); 
             $.ajax({
                 type: "GET",
-                url: `/profile/reset-password?code=${code}&password=${orl_value}&new_value=${new_value}`,
+                url: `profile/reset-password?code=${code}&password=${orl_value}&new_value=${new_value}`,
                 data: {
                 code: code
                 },
@@ -350,6 +372,26 @@
                 }else {
                     notyf.error(response.msg);
                 }
+                }
+            });
+        });
+
+        $(document).on('click', '#btn-Update', function() {
+            var formData = $('#frmData').serialize();
+            let code = $(this).attr('data-code'); 
+            $.ajax({
+                type: "GET",
+                url: `/profile/update-information?code=${code}`,
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                beforeSend: function() {
+                    $('.loader').show();
+                },
+                success: function(response) {
+                    $('.loader').hide();
+                    notyf.success(response.msg);
                 }
             });
         });

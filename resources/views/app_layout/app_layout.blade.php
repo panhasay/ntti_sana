@@ -114,19 +114,10 @@
                     <?php
                         $user = Auth::user();
 
-                        $records = App\Models\User::where('id', $user->id ?? '')->first();
-                        if($records->role ?? '' == "student"){
-                          $records_by_user = DB::table('student')->where('code', $records->user_code ?? '')->first();
-                        }else if($records->role ?? '' == "teachers"){
-                            $records_by_user = App\Models\General\Teachers::where('code', $records->user_code ?? '')->first();
-                        }else if($records->role ?? '' == "admin"){
-                          $records_by_user = DB::table('student')->where('code', $records->user_code ?? '')->first();
-                        }else{
-                          $records_by_user = DB::table('student')->where('code', $records->user_code ?? '')->first();
-                        }
+                        
                         
 
-                        $picture =  App\Models\General\Picture::where('code', $records_by_user->code ?? '')->where('type','student')->value('picture_ori');
+                        $picture =  App\Models\General\Picture::where('code', $user->id ?? '')->where('type','profile')->value('picture_ori');
                     ?>
 
                     @if(isset($picture) && $picture != null)
@@ -397,6 +388,8 @@
           duration: 3000,
         });
         $(document).ready(function() {
+
+
           $(".collapse").addClass('show');
           $('.loader').hide();
           $('#search_menu_function').keyup(function(e) {
@@ -437,20 +430,25 @@
                   $('.contentMenu > .trigger').popover('hide');
               }
           });
+
           $('#btnShowMenuSetting').click(function(e){
             $("#system_overlay").removeClass("setting-overlay");
             $(".bgOverlay").addClass("bg-dark-overlay");
           });
+
           $('.container-fluids').click(function(e){
             $("#system_overlay").addClass("setting-overlay");
           });
+
           $('#bg_overlay').click(function(e){
             $(".bgOverlay").removeClass("bg-dark-overlay");
             $("#system_overlay").addClass("setting-overlay");
           });
+
           $('customerField').click(function(e){
             alert('Please enter');
           });
+
           $(cleaSearch).click(function() {
             $('.contentMenu').html('');
           });
@@ -475,29 +473,31 @@
                 }
             });
           });
+
           $(document).on('click', '#customize_list', function(event) {
-          let type = $(this).attr('data-type');
-          let table_id = $(this).attr('data-code');
-          let page = $(this).attr('data-page');
-          let data = {
-            type: type,
-            table_id: table_id
-          };
-          $.ajax({
-            type: 'POST',
-            url: `system/customize_page/${page}`,
-            data: data,
-            success: function(response) {
-              if(response.status == 'success'){
-                $('#CustomPageModal').modal('show');
-                $('.diveCustomPage').html("");
-                $('.diveCustomPage').html(response.view);
-              }else{
-                notyf.error(response.msg); 
+            let type = $(this).attr('data-type');
+            let table_id = $(this).attr('data-code');
+            let page = $(this).attr('data-page');
+            let data = {
+              type: type,
+              table_id: table_id
+            };
+            $.ajax({
+              type: 'POST',
+              url: `system/customize_page/${page}`,
+              data: data,
+              success: function(response) {
+                if(response.status == 'success'){
+                  $('#CustomPageModal').modal('show');
+                  $('.diveCustomPage').html("");
+                  $('.diveCustomPage').html(response.view);
+                }else{
+                  notyf.error(response.msg); 
+                }
               }
-            }
+            });
           });
-          });
+
           $('#search_data').keyup(function(e) {
               switch (e.which) {
                   case 38:
@@ -537,12 +537,15 @@
                   $('.contentMenu > .trigger').popover('hide');
               }
           });
+
           $(document).on('click', '#btnClose', function(e) {
             $("#divConfirmation").modal('hide');
           });
+
           $(document).on('click', '#systemSettings', function(e) {
             $("#divsystemSettings").modal('show');
           });
+
           // uppercased code to text Big
           $('#code').on('input', function(){
               let inputValue = $(this).val();
@@ -573,7 +576,69 @@
                 }
             });
           });
-        });
+
+          // $(document).on('change', '#class_code', function(e) {
+          //   let class_code = $('#class_code').val();
+          //   $.ajax({
+          //       type: "GET",
+          //       url: `/system/class-get-data-group?class_code=${class_code}`,
+          //       beforeSend: function() {
+          //         $('.loader').show();
+          //       },
+          //       success: function (response) {
+          //         $('.loader').hide();
+          //         if (response.status === 'success') {
+          //             let $skillsSelect = $('#skills_code');
+          //             $skillsSelect.empty();
+          //             $skillsSelect.append(`<option value="${response.records.skills_code}">${response.records.skills_code} - ${response.skills}</option>`);
+
+          //             let $selectionSelect = $('#sections_code');
+          //             $selectionSelect.empty();
+          //             $selectionSelect.append(`<option value="${response.records.sections_code}">${response.sections}</option>`);
+
+          //             let $departmentSelect = $('#department_code');
+          //             $departmentSelect.empty();
+          //             $departmentSelect.append(`<option value="${response.records.department_code}">${response.department}</option>`);
+                      
+          //             let $levelSelect = $('#level');
+          //             $levelSelect.empty();
+          //             $levelSelect.append(`<option value="${response.records.level}">${response.records.level}</option>`);
+
+          //             let $schoolyearcodeSelect = $('#school_year_code');
+          //             $schoolyearcodeSelect.empty();
+          //             $schoolyearcodeSelect.append(`<option value="${response.records.school_year_code}">${response.session_year}</option>`);
+          //         }
+          //       }
+          //   });
+          // });
+
+          $(document).on('change', '#class_code', function () {
+              let class_code = $(this).val();
+                  $.ajax({
+                      type: "GET",
+                      url: `/system/class-get-data-group?class_code=${class_code}`,
+                      beforeSend: function () {
+                          $('.loader').show();
+                      },
+                      success: function (response) {
+                          $('.loader').hide();
+                          if (response.status === 'success') {
+                              let selectData = {
+                                  '#skills_code': [response.records.skills_code, response.skills],
+                                  '#sections_code': [response.records.sections_code, response.sections],
+                                  '#department_code': [response.records.department_code, response.department],
+                                  '#level': [response.records.level, response.records.level],
+                                  '#school_year_code': [response.records.school_year_code, response.session_year]
+                              };
+
+                              $.each(selectData, function (selector, values) {
+                                  $(selector).empty().append(`<option value="${values[0]}">${values[0]} - ${values[1]}</option>`);
+                              });
+                          }
+                      }
+                  });
+              });
+          });
 
 
 
