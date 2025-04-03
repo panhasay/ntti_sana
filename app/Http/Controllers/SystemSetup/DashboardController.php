@@ -88,15 +88,59 @@ class DashboardController extends Controller
 
 
 
+            // $total_provinces = DB::table('student')
+            //     ->select(
+            //         DB::raw("SUBSTRING(student_address, LOCATE('ខេត្ត', student_address)) AS province"),
+            //         DB::raw("COUNT(*) AS total_provinces"),
+            //         DB::raw("COUNT(*) AS total_students")
+            //     )
+            //     ->groupBy(DB::raw("SUBSTRING(student_address, LOCATE('ខេត្ត', student_address))"))
+            //     ->orderByDesc(DB::raw("COUNT(*)"))
+            //     ->get();
+
+        
             $total_provinces = DB::table('student')
-                ->select(
-                    DB::raw("SUBSTRING(student_address, LOCATE('ខេត្ត', student_address)) AS province"),
-                    DB::raw("COUNT(*) AS total_provinces"),
-                    DB::raw("COUNT(*) AS total_students")
-                )
-                ->groupBy(DB::raw("SUBSTRING(student_address, LOCATE('ខេត្ត', student_address))"))
-                ->orderByDesc(DB::raw("COUNT(*)"))
-                ->get();
+            ->selectRaw("
+                CASE 
+                    WHEN student_address LIKE '%ភ្នំពេញ%' THEN 'ភ្នំពេញ'
+                    WHEN student_address LIKE '%ព្រៃវែង%' THEN 'ព្រៃវែង'
+                    WHEN student_address LIKE '%កំពត%' THEN 'កំពត'
+                    WHEN student_address LIKE '%កំពង់ឆ្នាំង%' THEN 'កំពង់ឆ្នាំង'
+                    WHEN student_address LIKE '%បន្ទាយមានជ័យ%' THEN 'បន្ទាយមានជ័យ'
+                    WHEN student_address LIKE '%សៀមរាប%' THEN 'សៀមរាប'
+                    WHEN student_address LIKE '%ព្រះវិហារ%' THEN 'ព្រះវិហារ'
+                    WHEN student_address LIKE '%កំពង់ចាម%' THEN 'កំពង់ចាម'
+                    WHEN student_address LIKE '%កំពង់ស្ពឺ%' THEN 'កំពង់ស្ពឺ'
+                    WHEN student_address LIKE '%ពោធិ៍សាត់%' OR student_address LIKE '%ពោធិសាត់%' THEN 'ពោធិ៍សាត់'
+                    WHEN student_address LIKE '%កណ្ដាល%' THEN 'កណ្ដាល'
+                    WHEN student_address LIKE '%ស្វាយរៀង%' THEN 'ស្វាយរៀង'
+                    WHEN student_address LIKE '%កែប%' THEN 'កែប'
+                    WHEN student_address LIKE '%បាត់ដំបង%' THEN 'បាត់ដំបង'
+                    WHEN student_address LIKE '%ក្រចេះ%' THEN 'ក្រចេះ'
+                    WHEN student_address LIKE '%រតនគីរី%' THEN 'រតនគីរី'
+                    WHEN student_address LIKE '%ត្បូងឃ្មុំ%' THEN 'ត្បូងឃ្មុំ'
+                    WHEN student_address LIKE '%កំពង់ធំ%' THEN 'កំពង់ធំ'
+                    WHEN student_address LIKE '%តាកែវ%' THEN 'តាកែវ'
+                    WHEN student_address LIKE '%កោះកុង%' THEN 'កោះកុង'
+                    WHEN student_address LIKE '%ប៉ៃលិន%' THEN 'ប៉ៃលិន'
+                    WHEN student_address LIKE '%ព្រះសីហនុ%' THEN 'ព្រះសីហនុ'
+                    WHEN student_address LIKE '%មណ្ឌលគិរី%' THEN 'មណ្ឌលគិរី'
+                    WHEN student_address LIKE '%ស្ទឹងត្រែង%' THEN 'ស្ទឹងត្រែង'
+                    WHEN student_address LIKE '%ឧត្តរមានជ័យ%' THEN 'ឧត្តរមានជ័យ'
+                    ELSE 'ផ្សេងៗ'
+                END AS province, COUNT(*) AS total_students
+            ")
+            ->groupBy('province')
+            ->orderByRaw("FIELD(province, 
+                'កណ្ដាល', 'កំពង់ចាម', 'កំពង់ឆ្នាំង', 'កំពង់ធំ', 'កំពង់ស្ពឺ', 
+                'កំពត', 'កែប', 'កោះកុង', 'ក្រចេះ', 'តាកែវ', 'ត្បូងឃ្មុំ', 
+                'បន្ទាយមានជ័យ', 'បាត់ដំបង', 'ប៉ៃលិន', 'ពោធិ៍សាត់', 
+                'ព្រះវិហារ', 'ព្រះសីហនុ', 'ព្រៃវែង', 'ភ្នំពេញ', 'មណ្ឌលគិរី', 
+                'រតនគីរី', 'សៀមរាប', 'ស្ទឹងត្រែង', 'ស្វាយរៀង', 'ឧត្តរមានជ័យ', 
+                'ផ្សេងៗ'
+            )")
+            ->get();
+        
 
 
             // Prepare labels for chart data

@@ -140,7 +140,7 @@ Route::group(['perfix' => 'reports-list-of-student'], function (){
 
 Route::group(['perfix' => 'report-first-year-student-registration'], function (){
     Route::get('report-first-year-student-registration', [ReportFirstYearStudentRegistrationController::class, 'index'])->name('index');
-    Route::get('reports-list-of-student-priview', [ReportFirstYearStudentRegistrationController::class, 'Priview'])->name('Priview');
+    Route::get('report-first-year-student-registration-priview', [ReportFirstYearStudentRegistrationController::class, 'Priview'])->name('Priview');
     Route::get('reports-list-of-student-print', [ReportFirstYearStudentRegistrationController::class, 'Print'])->name('Print');
     Route::get('reports-list-of-student-print/export/', [ReportFirstYearStudentRegistrationController::class, 'export']);
 })->middleware('auth');

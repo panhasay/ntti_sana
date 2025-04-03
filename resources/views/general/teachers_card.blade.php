@@ -13,16 +13,16 @@
               កែប្រែ |
             @endif
            {{ $records->name_2 ?? '' }} &nbsp;&nbsp; 
-           <button type="button" id="BtnSave" class="btn btn-success btn-icon-text btn-sm mb-2 mb-md-0 me-2"><i class="mdi mdi-content-save"></i> save</button>
-           <button type="button" id="BtnCreateUser" data-code="{{$records->code ?? ''}}" class="btn btn-dark btn-icon-text btn-sm mb-2 mb-md-0 me-2"><i class="mdi mdi-account"></i> create user</button>
+           <button type="button" id="BtnSave" class="btn btn-success btn-icon-text btn-sm mb-2 mb-md-0 me-2"><i class="mdi mdi-content-save"></i> រក្សាទុក</button>
+           <button type="button" id="BtnCreateUser" data-code="{{$records->code ?? ''}}" class="btn btn-dark btn-icon-text btn-sm mb-2 mb-md-0 me-2"><i class="mdi mdi-account"></i>បង្កើតអ្នកប្រើប្រាស់</button>
         </div>
       </div>
     </div>
     <div class="col-md-6 col-sm-6 col-6">
       <div class="page-title page-title-custom text-right">
-        <h4 class="text-right">
-          <a id="btnShowMenuSetting" href="{{ url('/teachers') }}"><i class="mdi mdi-keyboard-return"></i></a>
-        </h4>
+        <ol class="breadcrumb justify-content-end" style="border:none;margin-top: -10px;padding-right: 0px;">
+            <li class="breadcrumb-item"><a href="{{ url('teachers') }}" style="color:black;text-decoration:none;"><span class="breadcrumb-font-khmer">សាស្ត្រាចារ្យ លោកគ្រូ អ្នកគ្រូ</span></a></li>
+        </ol>
       </div>
     </div>
   </div>
@@ -354,6 +354,12 @@
 
     $(document).on('click', '#BtnCreateUser', function() {
       $("#btnYes").attr('data-code', $(this).attr('data-code'));
+      var email = $("#email").val(); 
+      $("#email").val(email);
+      if (!email) {
+        return notyf.error("សូមបំពេញ អុីម៉ែល");
+       
+      }
       $("#divCreateUser").modal('show');
     });
 

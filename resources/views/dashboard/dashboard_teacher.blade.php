@@ -51,26 +51,7 @@
                 </div>
             </a>
         </div>
-        <div class="col-md-3">
-            <div class="card text-white" style="border-radius: 15px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-                <div class="card-body position-relative" style="background: linear-gradient(45deg, #ebcc8d, #f0af52); padding: 35px">
-                    <div class="position-absolute" style="top: 0; right: 0; padding: 1rem;">
-                        <i class="mdi mdi-book-open-variant" style="font-size: 2.5rem; opacity: 0.3;"></i>
-                    </div>
-                    <h5 class="card-title" style="font-size: 1.1rem; margin-bottom: 1rem;">មុខវិជ្ជាដែលត្រូវបង្រៀន</h5>
-                    {{-- <h2 class="card-text mb-1" style="font-size: 2.5rem; font-weight: bold;">{{ $total_subject ?? '' }}</h2> --}}
-                    @foreach($assignedClasses as $record)
-                    <div style="font-size: 14px;"> 
-                        <a  href="{{ '/assign-classes/transaction?type=ed&code=' . App\Service\service::Encr_string($record->id) }}&years={{ $record->years ?? '' }}&type={{ $record->qualification ?? '' }}&assing_no={{ $record->assing_no ?? '' }}" style="color: #ffff;">
-                            {{ $record->subject->name ?? '' }}
-                        </a>
-                    </div>
-                    @endforeach
-                    <br>
-                    <small class="text-white-50">ឆមាសនេះ</small>
-                </div>
-            </div>
-        </div>
+
         <div class="col-md-3">
             <div class="card text-white" style="border-radius: 15px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                 <div class="card-body position-relative" style="background: linear-gradient(45deg, #77c5ed, #0083B0); padding: 1.5rem;">

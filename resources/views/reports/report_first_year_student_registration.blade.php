@@ -38,7 +38,59 @@
       </a>
     </div>
   </div>
-  @include("system.option_000020")
+
+  <form id="advance_search" role="form" class="form-horizontal" enctype="multipart/form-data" action="">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group row">
+                
+                <div class="col-sm-2">
+                    <span class="labels">ដេប៉ាតឺម៉ង់</span>
+                    <select class="js-example-basic-single FieldRequired" id="department_code" name="department_code"
+                        style="width: 100%;">
+                        <option value="">&nbsp;</option>
+                        @foreach ($department as $record)
+                        <option value="{{ $record->code ?? '' }}" {{ isset($records->department_code) &&
+                            $records->department_code == $record->code ? 'selected' : '' }}>
+                            {{ isset($record->name_2) ? $record->name_2 : '' }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-sm-2">
+                    <span class="labels">ជំនាញ</span>
+                    <select class="js-example-basic-single FieldRequired" id="skills_code" name="skills_code"
+                        style="width: 100%;">
+                        <option value="">&nbsp;</option>
+                        @foreach ($skills as $record)
+                        <option value="{{ $record->code ?? '' }}" {{ isset($records->skills_code) &&
+                            $records->skills_code == $record->code ? 'selected' : '' }}>
+                             {{ isset($record->name_2) ? $record->name_2 : '' }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-sm-2">
+                    <span class="labels">កម្រិត</span>
+                    <select class="js-example-basic-single FieldRequired" id="qualification" name="qualification"
+                        style="width: 100%;">
+                        <option value="">&nbsp;</option>
+                        @foreach ($qualifications as $value => $label)
+                            <option value="{{ $label->code }}" {{ isset($records->level) && $records->level ==
+                                $label->code ? 'selected' : '' }}>
+                                {{ $label->code ?? ''}}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</form>
+
   <!---end option-->
   <div class="print" style="display: none">
     <div class="print-content">
@@ -80,17 +132,11 @@
         $("#divConfirmation").modal('hide');
       });
       $(document).on('click', '#btn-priview', function() {
-        Swal.fire({
-            icon: 'warning',
-            title: 'NTTI PORTAL',
-            text: 'ប្រព័ន្ធ កំពុងដំណើរការ......!',
-        });
-        return false;
         let page = $(this).attr('data-page');
         let data = $('#advance_search').serialize();
         $.ajax({
           type: "GET",
-          url: '/reports-list-of-student-priview?type=priview',
+          url: '/report-first-year-student-registration-priview?type=priview',
           data: data,
           beforeSend: function() {
             $('.loader').show();

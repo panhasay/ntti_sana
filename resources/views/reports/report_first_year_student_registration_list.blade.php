@@ -39,7 +39,8 @@
         /* text-align: left !important; */
     }
 </style>
-<div class="report-container">
+
+<div class="control-table">
     <table class="report-table">
         <thead>
             <tr>
@@ -76,8 +77,7 @@
                     @foreach ($students->groupBy('skills_code') as $skill_code => $students_group)
                         <?php 
                         $skills_name = App\Models\General\Skills::where('code', $skill_code)->value('name_2'); 
-                        
-                        // Increment grand totals
+                     
                         $total_count = $students_group->sum('total_count');
                         $total_count_girl = $students_group->sum('total_count_girl');
                         $total_count_today = $students_group->sum('total_count_today');
@@ -91,57 +91,46 @@
                         <tr class="general">
                             <td class="text-center">{{ $index++ }}</td>
                             <td>{{ $skills_name ?? '' }}</td>
-                            <td class="text-center">{{ $total_count - $total_count_today }}</td> <!-- Total before today -->
-                            <td class="text-center">{{ $total_count_girl - $total_count_today_girl }}</td> <!-- Girls before today -->
+                            <td class="text-center">{{ $total_count - $total_count_today }}</td> 
+                            <td class="text-center">{{ $total_count_girl - $total_count_today_girl }}</td>
             
-                            <td class="text-center">{{ $total_count_today }}</td> <!-- Total today -->
-                            <td class="text-center">{{ $total_count_today_girl }}</td> <!-- Girls today -->
+                            <td class="text-center">{{ $total_count_today }}</td>
+                            <td class="text-center">{{ $total_count_today_girl }}</td> 
             
-                            <td class="text-center">{{ $total_count }}</td> <!-- Total overall -->
-                            <td class="text-center">{{ $total_count_girl }}</td> <!-- Girls overall -->
+                            <td class="text-center">{{ $total_count }}</td> 
+                            <td class="text-center">{{ $total_count_girl }}</td> 
                             <td></td>
                         </tr>
                     @endforeach
                     <tr>
-                        <td colspan="2">សរុប {{ $qualification }}</td>
-                        <td class="text-center">{{ $students->sum('total_count') - $students->sum('total_count_today') }}</td> <!-- Qualification total -->
-                        <td class="text-center">{{ $students->sum('total_count_girl') - $students->sum('total_count_today_girl') }}</td> <!-- Qualification girls -->
-                        <td class="text-center">{{ $students->sum('total_count_today') }}</td> <!-- Qualification today -->
-                        <td class="text-center">{{ $students->sum('total_count_today_girl') }}</td> <!-- Qualification girls today -->
+                        <td class="bold" colspan="2">សរុប {{ $qualification }}</td>
+                        <td class="text-center">{{ $students->sum('total_count') - $students->sum('total_count_today') }}</td> 
+                        <td class="text-center">{{ $students->sum('total_count_girl') - $students->sum('total_count_today_girl') }}</td> 
+                        <td class="text-center">{{ $students->sum('total_count_today') }}</td> 
+                        <td class="text-center">{{ $students->sum('total_count_today_girl') }}</td> 
 
-                        <td class="text-center">{{ $students->sum('total_count') }}</td> <!-- Qualification total -->
-                        <td class="text-center">{{ $students->sum('total_count_girl') }}</td> <!-- Qualification girls -->
+                        <td class="text-center">{{ $students->sum('total_count') }}</td> 
+                        <td class="text-center">{{ $students->sum('total_count_girl') }}</td> 
                         <td></td>
                     </tr>
                 @endforeach
             @endforeach
             
-            <!-- Grand Totals -->
             <tr class="grand-total">
                 <td colspan="2" class="text-right"><strong>សរុបរូម​</strong></td>
-                <td class="text-center"><strong>{{ $grand_total_count - $grand_total_today }}</strong></td> <!-- Grand total -->
-                <td class="text-center"><strong>{{ $grand_total_girl - $grand_total_today_girl }}</strong></td> <!-- Grand total girls -->
-                <td class="text-center"><strong>{{ $grand_total_today }}</strong></td> <!-- Grand total today -->
-                <td class="text-center"><strong>{{ $grand_total_today_girl }}</strong></td> <!-- Grand total girls today -->
+                <td class="text-center"><strong>{{ $grand_total_count - $grand_total_today }}</strong></td> 
+                <td class="text-center"><strong>{{ $grand_total_girl - $grand_total_today_girl }}</strong></td> 
+                <td class="text-center"><strong>{{ $grand_total_today }}</strong></td> 
+                <td class="text-center"><strong>{{ $grand_total_today_girl }}</strong></td> 
 
-                <td class="text-center"><strong>{{ $grand_total_count }}</strong></td> <!-- Grand total -->
-                <td class="text-center"><strong>{{ $grand_total_girl }}</strong></td> <!-- Grand total girls -->
+                <td class="text-center"><strong>{{ $grand_total_count }}</strong></td>
+                <td class="text-center"><strong>{{ $grand_total_girl }}</strong></td> 
                 <td></td>
             </tr>
-            <!-- Add more rows as necessary -->
         </tbody>
     </table>
 
-    {{-- <div class="signature-section">
-        <div>
-            <p>ហត្ថលេខា និងត្រាសាលា</p>
-            <p>អាស័យដ្ឋាន: សាលា...</p>
-        </div>
-        <div>
-            <p>អ្នកធ្វើរបាយការណ៍</p>
-            <p>ឈ្មោះ: </p>
-        </div>
-    </div> --}}
+  
 </div>
 <br>
 <br>

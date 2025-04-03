@@ -13,26 +13,27 @@
     </div>
     <div class="col-md-6 col-sm-6 col-6">
       <div class="page-title page-title-custom text-right">
-        <h4 class="text-right">
-          <a id="btnShowMenuSetting" href="javascript:;"><i class="mdi mdi-settings"></i></a>
-        </h4>
+        {{-- <p><a href="">សាស្ត្រាចារ្យ លោកគ្រូ អ្នកគ្រូ</a></p> --}}
+        {{-- <ol class="breadcrumb justify-content-end" style="border:none;margin-top: -10px;padding-right: 0px;">
+            <li class="breadcrumb-item"><a href="{{ url('teachers') }}" style="color:black;text-decoration:none;"><span class="breadcrumb-font-khmer">សាស្ត្រាចារ្យ លោកគ្រូ អ្នកគ្រូ/</span></a></li>
+        </ol> --}}
       </div>
     </div>
   </div>
 </div>
 <div class="page-header flex-wrap">
   <div class="header-left">
-    <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="BntCreate" href="{{url('teachers/transaction/?type=cr')}}"><i class="mdi mdi-account-plus"></i> Add New</i></a>
-    <button type="button" data-type="skill" onclick="prints()"
+    <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="BntCreate" href="{{url('teachers/transaction/?type=cr')}}"><i class="mdi mdi-account-plus"></i> បន្ថែមថ្មី</i></a>
+    {{-- <button type="button" data-type="skill" onclick="prints()"
       class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2"> Print
       <i class="mdi mdi-printer btn-icon-append"></i>
       <button type="button" onclick="DownlaodExcel()"
         class="btn btn-outline-success btn-icon-text btn-sm mb-2 mb-md-0 me-2">Excel <i
-          class="mdi mdi-printer btn-icon-append"></i> </button>
+          class="mdi mdi-printer btn-icon-append"></i> </button> --}}
   </div>
   <div class="d-grid d-md-flex justify-content-md-end p-3">
-    <input type="text" class="form-control mb-2 mb-md-0 me-2" id="search_data" data-page="{{ $page ?? '' }}" name="search_data"
-      placeholder="Serch...." aria-label="Recipient's username" aria-describedby="basic-addon2">
+    {{-- <input type="text" class="form-control mb-2 mb-md-0 me-2" id="search_data" data-page="{{ $page ?? '' }}" name="search_data"
+      placeholder="Serch...." aria-label="Recipient's username" aria-describedby="basic-addon2"> --}}
     <div>
     </div>
     <a class="btn btn-primary mb-2 mb-md-0 me-2" data-toggle="collapse" href="#Fliter" role="button"
@@ -47,36 +48,37 @@
       <div class="row">
         <div class="col-md-12">
           <div class="form-group row">
-            <div class="col-sm-3">
+            <div class="col-sm-2">
               <span class="labels">លេខកូដ</span>
               <input type="text" class="form-control form-control-sm" id="code" name="code" value=""
                 placeholder="លេខកូដ" aria-label="លេខកូដ">
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-2">
               <span class="labels">គោត្តនាម និងនាម</span>
               <input type="text" class="form-control form-control-sm" id="name_2" name="name_2" value=""
                 placeholder="គោត្តនាម និងនាម" aria-label="គោត្តនាម និងនាម">
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-2">
               <span class="labels">ឈ្មោះ ជាឡាតាំង</span>
               <input type="text" class="form-control form-control-sm" id="name" name="name" value=""
                 placeholder="ឈ្មោះ ជាឡាតាំង" aria-label="ឈ្មោះ ជាឡាតាំង">
             </div>
 
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                <span class="labels">ដេប៉ាតឺម៉ង់</span>
                   <select class="js-example-basic-single FieldRequired" id="department_code" name="department_code" style="width: 100%;">
                      <option value="">&nbsp;</option>
                      @foreach ($department as $record) 
                         <option value="{{ $record->code ?? '' }}" {{ isset($records->department_code) && $records->department_code == $record->code ? 'selected' : '' }}>
-                        {{ isset($record->code) ? $record->code : '' }} -  {{ isset($record->name_2) ? $record->name_2 : '' }}
+                          {{ isset($record->name_2) ? $record->name_2 : '' }}
                         </option>
                      @endforeach
                </select>
             </div>
 
           </div>
-          <button type="button" class="btn btn-primary text-white" data-page="teachers" id="btn-adSearch">Search</button>
+          <button type="button" class="btn btn-primary text-white float-left btn-sm mb-2 mb-md-0 me-2" data-page="teachers" id="btn-adSearch"><i class="mdi mdi-account-search"></i> ស្វែងរក</button>
+          <button type="button" class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2" data-page="teachers" id="btnCleardata"><i class="mdi mdi-cloud-off-outline"></i> ជម្រះទិន្នន័យ</button>
         </div>
       </div>
     </form>

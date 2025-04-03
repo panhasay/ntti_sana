@@ -2,25 +2,27 @@
     .menu-list ul li a {
         color: #2194ce;
     }
+
     .dashboard-stat {
         height: 110px;
         border-radius: 7px;
     }
-    
+
     .ColumnChart {
         margin-bottom: 100px;
     }
-    
+
     .titl-main-name {
         font-size: 15px;
         font-family: 'Khmer OS Battambang', Arial, sans-serif;
     }
+
     .nav {
         font-weight: bold;
         font-size: 18px;
         font-family: 'Khmer Moul', Arial, sans-serif;
     }
-    
+
     .card-counter {
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         border-radius: 8px;
@@ -32,63 +34,53 @@
         margin: 10px 10px 0px 0px;
         transition: .3s linear all;
     }
-    
+
     .card-counter:hover {
         box-shadow: 4px 4px 20px #DADADA;
         transition: .3s linear all;
     }
-    
+
     .card-counter i {
-        font-size: 10px;
-        opacity: 0.2;
-        position: absolute;
-        color: #ffffff;
-        top: 20px;
-        right: 20px;
+        font-size: 10px !important;
+        opacity: 0.2 !important;
+        position: absolute !important;
+        color: #ffffff !important;
+        top: 20px !important;
+        right: 20px !important;
     }
-    
+
     .card-counter .count-numbers {
-        font-size: 24px;
-        font-weight: bold;
-        margin-bottom: 10px;
-        display: block;
+        font-size: 24px !important;
+        font-weight: bold !important;
+        margin-bottom: 10px !important;
+        display: block !important;
     }
-    
+
     .card-counter .count-name {
-        font-size: 14px;
+        font-size: 20px !important;
         margin-top: 5px;
     }
-    
+
     .card-counter.primary {
         background-color: #007bff;
         /* Blue */
     }
-    
+
     .card-counter.danger {
         background-color: #ff5f5f;
         /* Red */
     }
-    
+
     .card-counter.success {
         background-color: #28a745;
         /* Green */
     }
-    
+
     .card-counter.info {
         background-color: #17a2b8;
         /* Cyan */
     }
-    
-    .like-dashboard {
-        text-decoration: none;
-        color: inherit;
-    }
-    
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-    
+
     .table th,
     .table td {
         vertical-align: middle;
@@ -98,1086 +90,1860 @@
         font-family: 'Khmer OS Battambang';
         padding: 5px;
     }
-    .count-numbers a{
+
+    .count-numbers a {
         text-decoration: none !important;
         color: #fff !important;
     }
-    </style>
-    @extends('app_layout.app_layout')
-    @section('content')
-    <div class="content-wrapper pb-0">
-        <section id="tabs" class="project-tab">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-12">
-                        <nav>
-                            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
-                                <a class="nav-item nav-link active" id="Student-tab" data-toggle="tab" href="#Student" role="tab" aria-controls="Student" aria-selected="true">ព័ត៏មាន និស្សិត
-                                </a>
-                                <a class="nav-item nav-link" id="info-teacher-tab" data-toggle="tab" href="#info-teacher" role="tab" aria-controls="info-teacher" aria-selected="false">ព័ត៏មាន​ សាស្រ្តាចារ្យ 
-                                </a>
-                                <a class="nav-item nav-link" id="info-schools-tab" data-toggle="tab" href="#info-schools" role="tab" aria-controls="info-schools" aria-selected="false">ព័ត៍មាន វិទ្យាស្ថាន</a>
-                            </div>
-                        </nav>
-                        <div class="tab-content" id="nav-tabContent">
-                            <div class="tab-pane fade show active" id="Student" role="tabpanel" aria-labelledby="Student-tab">
-                                <div class="row">
-                                    <div class="container">
-                                        <div class="row" style="--bs-gutter-x: -5px;">
-                                            <div class="col-md-3">
-                                                <div class="card-counter primary">
-                                                    <i class="fa fa-code-fork"></i>
-                                                    <span class="count-numbers">វេន សិក្សា</span>
-                                                    @foreach($sections as $datas)
-                                                        <span class="count-name">{{ $datas->name_2 ?? '' }}@if(!$loop->last), @endif</span>
-                                                    @endforeach
-                                                </div>
-                                            </div>
+
+    .card-counter a {
+        text-decoration: none !important;
+    }
+
+    .menu-list ul li a{
+     color: #2194ce;
+    }
+    .titl-main-name{
+        font-size: 15px;
+        font-family: 'Khmer M1';
+    }
+    .about-section {
+        padding: 30px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    .section-title {
+        color: #2194ce;
+        font-size: 24px;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #2194ce;
+    }
+    .sub-title {
+        color: #2c3e50;
+        font-size: 20px;
+        margin: 20px 0 15px 0;
+    }
+    .content-text {
+        color: #34495e;
+        line-height: 1.6;
+        text-align: justify;
+    }
+    .objective-list {
+        list-style: none;
+        padding-left: 20px;
+    }
+    .objective-list li {
+        position: relative;
+        padding-left: 25px;
+        margin-bottom: 10px;
+    }
+    .objective-list li:before {
+        content: "♦";
+        position: absolute;
+        left: 0;
+        color: #2194ce;
+    }
+    .banner-section {
+        position: relative;
+        width: 100%;
+        height: 300px;
+        margin-bottom: 30px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
     
-                                            <div class="col-md-3">
-                                                <div class="card-counter danger">
-                                                    <i class="fa fa-ticket"></i>
+    .banner-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
     
-                                                    <span class="count-numbers">
-                                                        <a href="{{ url('skills')}}">{{$total_skill ?? ""}}</a>
+    .banner-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5));
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        text-align: center;
+        padding: 20px;
+    }
+    .stat-item {
+        transition: all 0.3s ease;
+        background: white;
+        border: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    .stat-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .stat-item h4 {
+        color: #2194ce;
+        font-size: 24px;
+        font-weight: bold;
+    }
+    
+    .stat-item small {
+        color: #666;
+        font-size: 14px;
+    }
+    
+    .campus-image-container {
+        transition: all 0.3s ease;
+    }
+    
+    .campus-image-container:hover {
+        transform: scale(1.02);
+    }
+
+    /* Hero Banner */
+    .hero-banner {
+        height: 500px;
+        position: relative;
+        overflow: hidden;
+        border-radius: 20px;
+        margin-bottom: 40px;
+    }
+    .hero-banner img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: white;
+        padding: 20px;
+    }
+
+    /* Quick Stats */
+    .quick-stats {
+        margin-bottom: 40px;
+    }
+    .stat-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #2194ce;
+        margin-bottom: 10px;
+    }
+    .stat-label {
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    /* Content Sections */
+    .content-section {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .section-title {
+        color: #2194ce;
+        font-size: 1.8rem;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #2194ce;
+        display: flex;
+        align-items: center;
+    }
+    .section-title i {
+        margin-right: 10px;
+        font-size: 24px;
+    }
+
+    /* Contact Info */
+    .contact-info {
+        background: linear-gradient(45deg, #2194ce, #43b1e9);
+        color: white;
+        border-radius: 20px;
+        padding: 30px;
+    }
+    .contact-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    .contact-item:hover {
+        background: rgba(255,255,255,0.2);
+        transform: translateX(5px);
+    }
+    .contact-item i {
+        font-size: 24px;
+        margin-right: 15px;
+    }
+
+    /* Facilities Grid */
+    .facility-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    .facility-item {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    .facility-item:hover {
+        background: #e9ecef;
+        transform: translateY(-3px);
+    }
+
+    .staff-chart {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 15px;
+        margin-top: 30px;
+    }
+
+    .staff-chart img {
+        transition: transform 0.3s ease;
+    }
+
+    .staff-chart img:hover {
+        transform: scale(1.02);
+    }
+
+    .staff-chart h4 {
+        color: #2194ce;
+        font-weight: 600;
+    }
+
+    .org-chart {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 15px;
+        margin: 30px 0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .org-chart img {
+        transition: transform 0.3s ease;
+        max-width: 100%;
+        height: auto;
+    }
+
+    .org-chart img:hover {
+        transform: scale(1.02);
+    }
+
+    .org-chart h4 {
+        color: #2194ce;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .vision-image {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 15px;
+        margin: 20px 0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .vision-image img {
+        transition: transform 0.3s ease;
+        max-width: 100%;
+        height: auto;
+    }
+
+    .vision-image img:hover {
+        transform: scale(1.02);
+    }
+
+    .objectives-container {
+        background: #fff;
+        padding: 25px;
+        border-radius: 15px;
+        margin-top: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .objective-list {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    .objective-list li {
+        position: relative;
+        padding-left: 25px;
+        margin-bottom: 15px;
+        line-height: 1.6;
+    }
+
+    .objective-list li:before {
+        content: "♦";
+        position: absolute;
+        left: 0;
+        color: #2194ce;
+    }
+
+    .mission-container {
+        background: #fff;
+        padding: 25px;
+        border-radius: 15px;
+        margin-top: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .mission-content {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .mission-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        display: flex;
+        align-items: flex-start;
+        transition: all 0.3s ease;
+    }
+
+    .mission-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .mission-icon {
+        font-size: 24px;
+        color: #2194ce;
+        margin-right: 15px;
+        margin-top: 3px;
+    }
+
+    .mission-statement {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 10px;
+        margin-top: 20px;
+        border-left: 4px solid #2194ce;
+    }
+
+    .mission-statement p {
+        color: #34495e;
+        line-height: 1.8;
+        margin-bottom: 0;
+    }
+
+    .sub-title {
+        color: #2194ce;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid rgba(33, 148, 206, 0.1);
+    }
+
+    .leadership-card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .leadership-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+
+    .leadership-image {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        border: 4px solid #2194ce;
+        transition: all 0.3s ease;
+    }
+
+    .leadership-image-sm {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border: 3px solid #2194ce;
+        transition: all 0.3s ease;
+    }
+
+    .leadership-info {
+        padding: 15px;
+    }
+
+    .contact-details {
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .contact-details i {
+        color: #2194ce;
+    }
+
+    /* Slideshow styles */
+    .slideshow-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .slide {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.8s ease-in-out;
+        display: none;
+    }
+
+    .slide.active {
+        display: block;
+    }
+
+    .slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Slide animations */
+    .slide-left {
+        transform: translateX(-100%);
+    }
+
+    .slide-right {
+        transform: translateX(100%);
+    }
+
+    .slide-center {
+        transform: translateX(0);
+    }
+
+    /* Next & previous buttons */
+    .prev, .next {
+        cursor: pointer;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: auto;
+        padding: 16px;
+        color: white;
+        font-weight: bold;
+        font-size: 24px;
+        transition: 0.6s ease;
+        border-radius: 0 3px 3px 0;
+        user-select: none;
+        background-color: rgba(0,0,0,0.3);
+        text-decoration: none;
+        z-index: 2;
+    }
+
+    .next {
+        right: 0;
+        border-radius: 3px 0 0 3px;
+    }
+
+    .prev:hover, .next:hover {
+        background-color: rgba(0,0,0,0.8);
+    }
+
+    /* Dots/circles */
+    .dots-container {
+        position: absolute;
+        bottom: 20px;
+        width: 100%;
+        text-align: center;
+        z-index: 2;
+    }
+
+    .dot {
+        cursor: pointer;
+        height: 12px;
+        width: 12px;
+        margin: 0 4px;
+        background-color: rgba(255,255,255,0.5);
+        border-radius: 50%;
+        display: inline-block;
+        transition: background-color 0.6s ease;
+    }
+    /* Fading animation */
+    .fade {
+        animation-name: fade;
+        animation-duration: 1.5s;
+    }
+
+    @keyframes fade {
+        from {opacity: .4} 
+        to {opacity: 1}
+    }
+</style>
+
+@extends('app_layout.app_layout')
+@section('content')
+    <section id="tabs" class="project-tab">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <nav>
+                        <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                            <a class="nav-item nav-link active" id="Student-tab" data-toggle="tab" href="#Student"
+                                role="tab" aria-controls="Student" aria-selected="true">ព័ត៍មាន និស្សិត
+                            </a>
+                            {{-- <a class="nav-item nav-link" id="info-teacher-tab" data-toggle="tab" href="#info-teacher"
+                                role="tab" aria-controls="info-teacher" aria-selected="false">ព័ត៍មាន​ សាស្រ្តាចារ្យ
+                            </a> --}}
+                            <a class="nav-item nav-link" id="info-schools-tab" data-toggle="tab" href="#info-schools"
+                                role="tab" aria-controls="info-schools" aria-selected="false">អំពី វិទ្យាស្ថាន</a>
+                        </div>
+                    </nav>
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="Student" role="tabpanel" aria-labelledby="Student-tab">
+                            <div class="row">
+                                <div class="container">
+                                    <div class="row" style="--bs-gutter-x: -5px;">
+                                        <div class="col-md-3">
+                                            <div class="card-counter primary">
+                                                <i class="fa fa-code-fork"></i>
+                                                <span class="count-numbers">វេន សិក្សា</span>
+                                                @foreach ($sections as $datas)
+                                                    <span class="count-name">{{ $datas->name_2 ?? '' }}@if (!$loop->last)
+                                                            ,
+                                                        @endif
                                                     </span>
-    
-                                                    <span class="count-name">Skills</span>
-                                                </div>
+                                                @endforeach
                                             </div>
-    
-                                            <div class="col-md-3">
-                                                <div class="card-counter success">
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <div class="card-counter danger">
+                                                <a href="{{ url('skills') }}">
+                                                    <i class="fa fa-ticket"></i>
+                                                    <span class="count-numbers">
+                                                        {{ $total_skill ?? '' }}
+                                                    </span>
+                                                    <span class="count-name">ជំនាញ</span>
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <div class="card-counter success">
+                                                <a href="{{ url('/classes') }}">
                                                     <i class="fa fa-home"></i>
                                                     <span class="count-numbers">
-                                                        <a href="{{ url('/classes')}}">{{$total_class ?? ""}}</a>
+                                                        {{ $total_class ?? '' }}
                                                     </span>
-                                                    <span class="count-name">Class</span>
-                                                </div>
+                                                    <span class="count-name">ថ្នាក់</span>
+                                                </a>
                                             </div>
-    
-                                            <div class="col-md-3">
-                                                <div class="card-counter info">
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <div class="card-counter info">
+                                                <a href="{{ url('/student/registration') }}">
                                                     <i class="fa fa-users"></i>
                                                     <span class="count-numbers">
-                                                        <a href="{{url('/student')}}">{{$total_students ?? ""}}</a>
+                                                        {{ $total_students ?? '' }}
                                                     </span>
-                                                    <span class="count-name">Students</span>
-                                                </div>
+                                                    <span class="count-name">សិស្សសរុប</span>
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <!--- Department It --->
-                                <div class="row">
-                                    <div class="col-md-4 border">
-                                        <div id="records_student_by_skills" style="width: 500px; height: 400px; ">
-                                            
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 border">
-                                        <div id="student_by_year" style="width: 500px; height: 400px; ">
-                                            <div style="position: relative;">
-                                                <div dir="ltr" style="position: relative; width: 500px; height: 400px;">
-                                                    <div style="position: absolute; left: 0px; top: 0px; width: 100%; height: 100%;" aria-label="A chart."><svg width="500" height="400" aria-label="A chart." style="overflow: hidden;">
-                                                            <defs id="_ABSTRACT_RENDERER_ID_1">
-                                                                <filter id="_ABSTRACT_RENDERER_ID_13">
-                                                                    <feGaussianBlur in="SourceAlpha" stdDeviation="2"></feGaussianBlur>
-                                                                    <feOffset dx="1" dy="1"></feOffset>
-                                                                    <feComponentTransfer>
-                                                                        <feFuncA type="linear" slope="0.1"></feFuncA>
-                                                                    </feComponentTransfer>
-                                                                    <feMerge>
-                                                                        <feMergeNode></feMergeNode>
-                                                                        <feMergeNode in="SourceGraphic"></feMergeNode>
-                                                                    </feMerge>
-                                                                </filter>
-                                                            </defs>
-                                                            <rect x="0" y="0" width="500" height="400" stroke="none" stroke-width="0" fill="#ffffff"></rect>
-                                                            <g><text text-anchor="start" x="96" y="56.2" font-family="Arial" font-size="12" font-weight="bold" stroke="none" stroke-width="0" fill="#000000">ចំនួននិស្សិតសរុប តាមឆ្នាំសិស្សា</text>
-                                                                <rect x="96" y="46" width="309" height="12" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
-                                                            </g>
-                                                            <g>
-                                                                <rect x="306" y="77" width="99" height="194" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
-                                                                <g column-id="ឆ្នាំសិក្សា 2021-2022សិស្សសរុប3108នាក់ ស្រី379ប្រុស2729 ">
-                                                                    <rect x="306" y="77" width="99" height="60" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
-                                                                    <g><text text-anchor="start" x="323" y="87.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">ឆ្នាំសិក្សា</text><text text-anchor="start" x="323" y="103.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">2021-2022សិស្ស</text><text text-anchor="start" x="323" y="119.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">សរុប3108នាក់</text><text text-anchor="start" x="323" y="135.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">ស្រី379ប្រុស2…</text>
-                                                                        <rect x="323" y="77" width="82" height="60" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
-                                                                    </g>
-                                                                    <circle cx="312" cy="83" r="6" stroke="none" stroke-width="0" fill="#3366cc"></circle>
-                                                                </g>
-                                                                <g column-id="ឆ្នាំសិក្សា 2022-2023សិស្សសរុប5202នាក់ ស្រី626ប្រុស4576 ">
-                                                                    <rect x="306" y="144" width="99" height="60" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
-                                                                    <g><text text-anchor="start" x="323" y="154.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">ឆ្នាំសិក្សា</text><text text-anchor="start" x="323" y="170.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">2022-2023សិស្ស</text><text text-anchor="start" x="323" y="186.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">សរុប5202នាក់</text><text text-anchor="start" x="323" y="202.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">ស្រី626ប្រុស4…</text>
-                                                                        <rect x="323" y="144" width="82" height="60" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
-                                                                    </g>
-                                                                    <circle cx="312" cy="150" r="6" stroke="none" stroke-width="0" fill="#dc3912"></circle>
-                                                                </g>
-                                                                <g column-id="ឆ្នាំសិក្សា 2023-2024សិស្សសរុប480នាក់ ស្រី107ប្រុស373 ">
-                                                                    <rect x="306" y="211" width="99" height="60" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
-                                                                    <g><text text-anchor="start" x="323" y="221.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">ឆ្នាំសិក្សា</text><text text-anchor="start" x="323" y="237.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">2023-2024សិស្ស</text><text text-anchor="start" x="323" y="253.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">សរុប480នាក់</text><text text-anchor="start" x="323" y="269.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">ស្រី107ប្រុស373</text></g>
-                                                                    <circle cx="312" cy="217" r="6" stroke="none" stroke-width="0" fill="#ff9900"></circle>
-                                                                </g>
-                                                            </g>
-                                                            <g>
-                                                                <path d="M192,163L192,106A95,95,0,0,1,267.57992434464256,258.5558427621219L222.23196973785704,224.02233710484876A38,38,0,0,0,192,163" stroke="#ffffff" stroke-width="1" fill="#3366cc"></path><text text-anchor="start" x="233.31116975289854" y="176.31120938682307" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#ffffff">35.4%</text>
-                                                            </g>
-                                                            <g>
-                                                                <path d="M179.21616959247822,165.21489583483483L160.04042398119557,111.53723958708706A95,95,0,0,1,192,106L192,163A38,38,0,0,0,179.21616959247822,165.21489583483483" stroke="#ffffff" stroke-width="1" fill="#ff9900"></path>
-                                                            </g>
-                                                            <g>
-                                                                <path d="M222.23196973785704,224.02233710484876L267.57992434464256,258.5558427621219A95,95,0,1,1,160.04042398119557,111.53723958708706L179.21616959247822,165.21489583483483A38,38,0,1,0,222.23196973785704,224.02233710484876" stroke="#ffffff" stroke-width="1" fill="#dc3912"></path><text text-anchor="start" x="122.07381173267265" y="243.91384790422637" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#ffffff">59.2%</text>
-                                                            </g>
-                                                            <g></g>
-                                                        </svg>
-                                                        <div aria-label="A tabular representation of the data in the chart." style="position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden;">
-                                                            <table>
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Task</th>
-                                                                        <th>Hours per Day</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td>ឆ្នាំសិក្សា 2021-2022សិស្សសរុប3108នាក់ ស្រី379ប្រុស2729 </td>
-                                                                        <td>3,108</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>ឆ្នាំសិក្សា 2022-2023សិស្សសរុប5202នាក់ ស្រី626ប្រុស4576 </td>
-                                                                        <td>5,202</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>ឆ្នាំសិក្សា 2023-2024សិស្សសរុប480នាក់ ស្រី107ប្រុស373 </td>
-                                                                        <td>480</td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div aria-hidden="true" style="display: none; position: absolute; top: 410px; left: 510px; white-space: nowrap; font-family: Arial; font-size: 12px; font-weight: bold;">3,108 (35.4%)</div>
-                                                <div></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 border">
-                                        <div id="student_by_class" style="width: 500px; height: 400px; ">
-                                            <div style="position: relative;">
-                                                <div dir="ltr" style="position: relative; width: 500px; height: 400px;">
-                                                    <div style="position: absolute; left: 0px; top: 0px; width: 100%; height: 100%;" aria-label="A chart."><svg width="500" height="400" aria-label="A chart." style="overflow: hidden;">
-                                                            <defs id="_ABSTRACT_RENDERER_ID_2"></defs>
-                                                            <rect x="0" y="0" width="500" height="400" stroke="none" stroke-width="0" fill="#ffffff"></rect>
-                                                            <g><text text-anchor="start" x="96" y="56.2" font-family="Arial" font-size="12" font-weight="bold" stroke="none" stroke-width="0" fill="#000000">ចំនួននិស្សិតសរុប ដេប៉ាតឺម៉ង់</text>
-                                                                <rect x="96" y="46" width="309" height="12" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
-                                                            </g>
-                                                            <g>
-                                                                <rect x="306" y="77" width="99" height="194" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
-                                                                <g column-id="ដេប៉ាតឺម៉ង់ព័ត៌មានវិទ្យាសិស្សសរុប 946 ">
-                                                                    <rect x="306" y="77" width="99" height="44" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
-                                                                    <g><text text-anchor="start" x="323" y="87.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">ដេប៉ាតឺម៉ង់</text><text text-anchor="start" x="323" y="103.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">ព័ត៌មានវិទ្យា</text><text text-anchor="start" x="323" y="119.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">សិស្សសរុប 946</text></g>
-                                                                    <circle cx="312" cy="83" r="6" stroke="none" stroke-width="0" fill="#3366cc"></circle>
-                                                                </g>
-                                                                <g column-id="ដេប៉ាតឺម៉ង់វិស្វកម្មសំណង់ស៊ីវិលសិស្សសរុប 3052 ">
-                                                                    <rect x="306" y="128" width="99" height="60" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
-                                                                    <g><text text-anchor="start" x="323" y="138.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">ដេប៉ាតឺម៉ង់</text><text text-anchor="start" x="323" y="154.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">វិស្វកម្មសំណង់</text><text text-anchor="start" x="323" y="170.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">ស៊ីវិលសិស្សសរុប</text><text text-anchor="start" x="323" y="186.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">3052</text></g>
-                                                                    <circle cx="312" cy="134" r="6" stroke="none" stroke-width="0" fill="#dc3912"></circle>
-                                                                </g>
-                                                                <g column-id="ដេប៉ាតឺម៉ង់វិស្វកម្មអគ្គិសនី និងអេឡិចត្រូនិចសិស្សសរុប 3411 ">
-                                                                    <rect x="306" y="195" width="99" height="76" stroke="none" stroke-width="0" fill-opacity="0" fill="#ffffff"></rect>
-                                                                    <g><text text-anchor="start" x="323" y="205.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">ដេប៉ាតឺម៉ង់</text><text text-anchor="start" x="323" y="221.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">វិស្វកម្មអគ្គិសនី</text><text text-anchor="start" x="323" y="237.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">និង</text><text text-anchor="start" x="323" y="253.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">អេឡិចត្រូនិច</text><text text-anchor="start" x="323" y="269.2" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#222222">សិស្សសរុប 3411</text></g>
-                                                                    <circle cx="312" cy="201" r="6" stroke="none" stroke-width="0" fill="#ff9900"></circle>
-                                                                </g>
-                                                            </g>
-                                                            <g>
-                                                                <path d="M192,191.5L192,210.5L260.2977825082159,157.67326189461738L260.2977825082159,138.67326189461738" stroke="#264d99" stroke-width="1" fill="#264d99"></path>
-                                                                <path d="M192,191.5L192,115.5A95,76,0,0,1,260.2977825082159,138.67326189461738L192,191.5A0,0,0,0,0,192,191.5" stroke="#3366cc" stroke-width="1" fill="#3366cc"></path><text text-anchor="start" x="201.6426717696624" y="147.261679507349" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#ffffff">12.8%</text>
-                                                            </g>
-                                                            <g>
-                                                                <path d="M168.5977056501749,265.157945099392L168.5977056501749,284.157945099392A95,76,0,0,1,97,210.5L97,191.5A95,76,0,0,0,168.5977056501749,265.157945099392" stroke="#bf7300" stroke-width="1" fill="#bf7300"></path>
-                                                                <path d="M192,191.5L192,210.5L168.5977056501749,284.157945099392L168.5977056501749,265.157945099392" stroke="#bf7300" stroke-width="1" fill="#bf7300"></path>
-                                                                <path d="M192,191.5L168.5977056501749,265.157945099392A95,76,0,0,1,192,115.5L192,191.5A0,0,0,0,0,192,191.5" stroke="#ff9900" stroke-width="1" fill="#ff9900"></path><text text-anchor="start" x="110.64788702067219" y="189.0102448004066" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#ffffff">46%</text>
-                                                            </g>
-                                                            <g>
-                                                                <path d="M287,191.5L287,210.5A95,76,0,0,1,168.5977056501749,284.157945099392L168.5977056501749,265.157945099392A95,76,0,0,0,287,191.5" stroke="#a52b0e" stroke-width="1" fill="#a52b0e"></path>
-                                                                <path d="M192,191.5L260.2977825082159,138.67326189461738A95,76,0,0,1,168.5977056501749,265.157945099392L192,191.5A0,0,0,0,0,192,191.5" stroke="#dc3912" stroke-width="1" fill="#dc3912"></path><text text-anchor="start" x="230.68311227907688" y="220.60273987323336" font-family="Arial" font-size="12" stroke="none" stroke-width="0" fill="#ffffff">41.2%</text>
-                                                            </g>
-                                                            <g></g>
-                                                        </svg>
-                                                        <div aria-label="A tabular representation of the data in the chart." style="position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden;">
-                                                            <table>
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Task</th>
-                                                                        <th>Hours per Day</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td>ដេប៉ាតឺម៉ង់ព័ត៌មានវិទ្យាសិស្សសរុប 946 </td>
-                                                                        <td>946</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>និស្សិតស្រី</td>
-                                                                        <td>179</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td></td>
-                                                                        <td></td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>ដេប៉ាតឺម៉ង់វិស្វកម្មសំណង់ស៊ីវិល</td>
-                                                                        <td>3,052</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>និស្សិតស្រី</td>
-                                                                        <td>426</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td></td>
-                                                                        <td></td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>ដេប៉ាតឺម៉ង់វិស្វកម្មអគ្គិសនី និងអេឡិចត្រូនិច</td>
-                                                                        <td>3,411</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>និស្សិតស្រី</td>
-                                                                        <td>303</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td></td>
-                                                                        <td></td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div aria-hidden="true" style="display: none; position: absolute; top: 410px; left: 510px; white-space: nowrap; font-family: Arial; font-size: 12px;">សិស្សសរុប 3411</div>
-                                                <div></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-    
-                                <!--Department civel -->
-                                <div class="row p-2 border">
-                                    <div class="col-4">
-                                        <div class="table-responsive custom-data-table-wrapper2">
-                                            <table class="table table-bordered custom-data-table">
-                                                <thead class="text-nowrap">
-                                                    <tr>
-                                                        <td class="bold" scope="col">
-                                                            <button type="button" id="prints" class="btn btn-outline-info btn-sm" data-type="skill"><i class="mdi mdi-printer btn-icon-append"></i>
-                                                            </button>
-                                                        </td>
-                                                        <td widht="5px" class="bold" scope="col">ជំនាញ</td>
-                                                        <td class="bold text-right" scope="col">និស្សិតស្រី</td>
-                                                        <td class="bold text-right" scope="col">និស្សិតប្រុស</td>
-                                                        <td class="bold text-right" scope="col">និស្សិតសរុប</td>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach($results as $index => $result)
-                                                        <tr>
-                                                            <th class="text-center">{{ $index + 1 }} &nbsp;&nbsp;&nbsp;</th>
-                                                            <td>{{ $result->name_2 }}</td>
-                                                            <td class="text-right">{{ $result->total_f }}</td>
-                                                            <td class="text-right">{{ $result->total_m }}</td>
-                                                            <td class="text-right">{{ $result->total_students }}</td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-    
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="table-responsive custom-data-table-wrapper2">
-                                            <table class="table table-bordered custom-data-table">
-                                                <thead class="text-nowrap">
-                                                    <tr>
-                                                        <td class="bold" scope="col">
-                                                            <button type="button" id="prints" class="btn btn-outline-info btn-sm" data-type="year"><i class="mdi mdi-printer btn-icon-append"></i>
-                                                            </button>
-                                                        </td>
-                                                        <td widht="5px" class="bold" scope="col">ឆ្នាំសិក្សា</td>
-                                                        <td class="bold text-right" scope="col">និស្សិតស្រី</td>
-                                                        <td class="bold text-right" scope="col">និស្សិតប្រុស</td>
-                                                        <td class="bold text-right" scope="col">និស្សិតសរុប</td>
-                                                    </tr>
-                                                </thead>
+                            </div>
+                            <br><br>
+                            <!--Department civel -->
+                            
+                            <div class="row p-2 border">
+                                <div class="col-4">
+                                    <div class="table-responsive custom-data-table-wrapper2">
+                                        <table class="table table-bordered custom-data-table">
+                                            <thead class="text-nowrap">
+                                                <tr>
+                                                    <td class="bold" scope="col">
+                                                        ល.រ
+                                                    </td>
+                                                    <td widht="5px" class="bold" scope="col">ជំនាញ</td>
+                                                    <td class="bold text-right" scope="col">និស្សិតស្រី</td>
+                                                    <td class="bold text-right" scope="col">និស្សិតប្រុស</td>
+                                                    <td class="bold text-right" scope="col">និស្សិតសរុប</td>
+                                                </tr>
+                                            </thead>
                                             <tbody>
-                                                    @foreach($total_students_year as $index => $year)
-                                                        <tr>
-                                                            <th class="text-center">{{ $index + 1 }}</th>
-                                                            <td>ឆ្នាំសិក្សា {{ $year->year_code }}</td>
-                                                            <td class="text-right">{{ $year->total_female_students }}</td>
-                                                            <td class="text-right">{{ $year->total_male_students }}</td>
-                                                            <td class="text-right">{{ $year->total_students }}</td>
-                                                        </tr>
-                                                    @endforeach
-                                            </tbody>
-    
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="table-responsive custom-data-table-wrapper2">
-                                            <table class="table table-bordered custom-data-table">
-                                                <thead class="text-nowrap">
+                                                @foreach ($results as $index => $result)
                                                     <tr>
-                                                        <td class="bold" scope="col">
-                                                            <button type="button" id="prints" class="btn btn-outline-info btn-sm" data-type="department"><i class="mdi mdi-printer btn-icon-append"></i>
-                                                            </button>
-                                                        </td>
-                                                        <td widht="5px" class="bold" scope="col">ដេប៉ាតឺម៉ង់</td>
-                                                        <td class="bold text-right" scope="col">និស្សិតស្រី</td>
-                                                        <td class="bold text-right" scope="col">និស្សិតប្រុស</td>
-                                                        <td class="bold text-right" scope="col">និស្សិតសរុប</td>
+                                                        <th class="text-center">{{ $index + 1 }} &nbsp;&nbsp;&nbsp;</th>
+                                                        <td>{{ $result->name_2 }}</td>
+                                                        <td class="text-right">{{ $result->total_f }}</td>
+                                                        <td class="text-right">{{ $result->total_m }}</td>
+                                                        <td class="text-right">{{ $result->total_students }}</td>
                                                     </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach($total_departments as $index => $department)
-                                                        <tr>
-                                                            <th class="text-center">{{ $index + 1 }} &nbsp;&nbsp;&nbsp;</th>
-                                                            <td>{{ $department->department_name }}</td>
-                                                            <td class="text-right">{{ $department->total_female_students }}</td>
-                                                            <td class="text-right">{{ $department->total_male_students }}</td>
-                                                            <td class="text-right">{{ $department->total_students }}</td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-    
-                                            </table>
+                                                @endforeach
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="table-responsive custom-data-table-wrapper2">
+                                        <table class="table table-bordered custom-data-table">
+                                            <thead class="text-nowrap">
+                                                <tr>
+                                                    <td class="bold" scope="col">
+                                                        ល.រ
+                                                    </td>
+                                                    <td widht="5px" class="bold" scope="col">ឆ្នាំសិក្សា</td>
+                                                    <td class="bold text-right" scope="col">និស្សិតស្រី</td>
+                                                    <td class="bold text-right" scope="col">និស្សិតប្រុស</td>
+                                                    <td class="bold text-right" scope="col">និស្សិតសរុប</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($total_students_year as $index => $year)
+                                                    <tr>
+                                                        <th class="text-center">{{ $index + 1 }} &nbsp;&nbsp;&nbsp;</th>
+                                                        <td>ឆ្នាំសិក្សា {{ $year->year_code }}</td>
+                                                        <td class="text-right">{{ $year->total_female_students }}</td>
+                                                        <td class="text-right">{{ $year->total_male_students }}</td>
+                                                        <td class="text-right">{{ $year->total_students }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="table-responsive custom-data-table-wrapper2">
+                                        <table class="table table-bordered custom-data-table">
+                                            <thead class="text-nowrap">
+                                                <tr>
+                                                    <td class="bold" scope="col">
+                                                        ល.រ
+                                                    </td>
+                                                    <td widht="5px" class="bold" scope="col">ដេប៉ាតឺម៉ង់</td>
+                                                    <td class="bold text-right" scope="col">និស្សិតស្រី</td>
+                                                    <td class="bold text-right" scope="col">និស្សិតប្រុស</td>
+                                                    <td class="bold text-right" scope="col">និស្សិតសរុប</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($total_departments as $index => $department)
+                                                    <tr>
+                                                        <th class="text-center">{{ $index + 1 }} &nbsp;&nbsp;&nbsp;
+                                                        </th>
+                                                        <td>{{ $department->department_name }}</td>
+                                                        <td class="text-right">{{ $department->total_female_students }}
+                                                        </td>
+                                                        <td class="text-right">{{ $department->total_male_students }}</td>
+                                                        <td class="text-right">{{ $department->total_students }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <br><br>
+                            <!--- Department It --->
+                            <div class="row">
+                                <div class="col-md-4 border">
+                                    <div id="records_student_by_skills" style="width: 500px; height: 400px; ">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 border">
+                                    <div id="student_by_year" style="width: 500px; height: 400px; ">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 border">
+                                    <div id="student_by_class" style="width: 500px; height: 400px; ">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ColumnChart mt-2">
+                                <div class="row align-items-start">
+                                    <div class="col-8 border p-3">
+                                        <div id="students_by_province" style="width: auto; height: 400px;">
                                         </div>
                                     </div>
                                 </div>
-    
-                                <div class="barcharts mt-2">
-    
+                            </div>
+                        </div>
+                       
+                        <div class="tab-pane fade" id="info-schools" role="tabpanel" aria-labelledby="info-schools-tab">
+                           
+                            {{-- ព័ត៍មាន វិទ្យាស្ថាន --}}
+
+                            <div class="container-fluid py-4">
+                                <!-- Hero Banner -->
+                                <div class="hero-banner">
+                                    <div class="slideshow-container">
+                                        <!-- Slides -->
+                                        <div class="slide">
+                                            <img src="https://www.ntti.edu.kh/assets/images/best_1.jpg" alt="NTTI Campus 1">
+                                        </div>
+                                        <div class="slide">
+                                            <img src="https://www.ntti.edu.kh/assets/images/best_2.jpg" alt="NTTI Campus 2">
+                                        </div>
+                                        <div class="slide">
+                                            <img src="https://www.ntti.edu.kh/assets/images/best_3.jpg" alt="NTTI Campus 3">
+                                        </div>
+                                        <div class="slide">
+                                            <img src="https://www.ntti.edu.kh/assets/images/best_4.jpg" alt="NTTI Campus 4">
+                                        </div>
+                                        <div class="slide">
+                                            <img src="https://www.ntti.edu.kh/assets/images/best_5.jpg" alt="NTTI Campus 5">
+                                        </div>
+                                        
+                                        <!-- Navigation arrows -->
+                                        <a class="prev" onclick="changeSlide(-1)">❮</a>
+                                        <a class="next" onclick="changeSlide(1)">❯</a>
+                                        
+                                        <!-- Dots/circles -->
+                                        <div class="dots-container">
+                                            <span class="dot" onclick="currentSlide(1)"></span>
+                                            <span class="dot" onclick="currentSlide(2)"></span>
+                                            <span class="dot" onclick="currentSlide(3)"></span>
+                                            <span class="dot" onclick="currentSlide(4)"></span>
+                                            <span class="dot" onclick="currentSlide(5)"></span>
+                                        </div>
+                                    </div>
+                                    <div class="hero-overlay">
+                                        <h1 style="font-size: 3rem; margin-bottom: 1rem;">វិទ្យាស្ថានជាតិបណ្តុះបណ្តាលបច្ចេកទេស</h1>
+                                        <h2 style="font-size: 2rem;">National Technical Training Institute</h2>
+                                    </div>
                                 </div>
-    
-                                <div class="ColumnChart mt-2">
-                                    <div class="row align-items-start">
-                                        <div class="col-12 border p-3">
-                                            <div id="students_by_province" style="width: 800px; height: 500px;">
-                                             
+                            
+                                <!-- Quick Stats -->
+                                <div class="quick-stats">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="stat-card">
+                                                <div class="stat-number">300+</div>
+                                                <div class="stat-label">Teacher Trainees</div>
                                             </div>
                                         </div>
-                                        <div class="col-4 border p-3">
-                                            <div id="" style="width: 1600px; height: 440px;"></div>
+                                        <div class="col-md-3">
+                                            <div class="stat-card">
+                                                <div class="stat-number">1000+</div>
+                                                <div class="stat-label">Students</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="stat-card">
+                                                <div class="stat-number">116</div>
+                                                <div class="stat-label">Staff Members</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="stat-card">
+                                                <div class="stat-number">21</div>
+                                                <div class="stat-label">Buildings</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-    
+                            
+                                <div class="row">
+                                    <!-- Left Column -->
+                                    <div class="col-md-8">
+                                        <!-- About Section -->
+                                        <div class="content-section">
+                                            <h2 class="section-title">
+                                                <i class="mdi mdi-school"></i>
+                                                About NTTI
+                                            </h2>
+                                            <div class="content-text">
+                                                <p>The National Technical Training Institute (NTTI) is one of Cambodia's many higher education institutions providing Technical Vocational Education and Training under the umbrella of the Ministry of Labor and Vocational Training. In the academic year 2009-2010, NTTI hosts around 300 teacher trainees who are attending the technical teacher training course and more than 1000 students who are pursuing their degrees in the fields of Civil Engineering, Electrical Engineering, Electronics, Architecture and Information Technology. Moreover, it also provides short course program in Auto CAD, Surveying, Basic Computer and many others.</p>
+                                            </div>
+                                        </div>
+                                        <div class="content-section">
+                                            <h2 class="section-title">
+                                                <i class="mdi mdi-account-group"></i>
+                                                Employee Profile
+                                            </h2>
+                                            <div class="content-text">
+                                                <p>The workforce environment at NTTI is a dynamic, inclusive, and innovative space that fosters professional growth and collaboration among its employees. NTTI is dedicated to providing training and development opportunities to its staff, enabling them to stay ahead in their respective fields.</p>
+                                                
+                                                <p class="mt-3">NTTI has 116 full-time staff(34 Female) with a variety of tertiary qualifications, including PhDs, Master, Bachelor and Associate Degrees and is supported by administrative, maintenance and on-contract staff. Besides these, some of them have been sent to the United State of America, Australia, Russia, Japan, India, Thailand, Indonesia, Malaysia, Brunei Darussalam, Singapore, Vietnam, Laos, the Philippines, and Myanmar to pursue their degrees and attend short course programs.</p>
+                                                
+                                                <p class="mt-3">In addition, the institute maintains vast linkage networks with Cambodian and international construction companies, electrical companies, private and public educational institutions, foreign universities and government ministries. NTTI, with land area of 10 hectares, is located along the Russian Federation Boulevard, Sangkat Toeuk Thla, Khan Sen Sok, Phnom Penh and is roughly 6 kilometers from the city center Wat Phnom.</p>
+                            
+                                                <div class="staff-chart mt-4">
+                                                    <h4 class="text-center mb-3">Figure A1: NTTI Full-time Staff Qualification (n=116)</h4>
+                                                    <div class="text-center">
+                                                        <img src="https://www.ntti.edu.kh/assets/images/graph_staff.png" 
+                                                             alt="NTTI Staff Qualification Chart" 
+                                                             class="img-fluid rounded shadow-sm"
+                                                             style="max-width: 100%; height: auto;">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Vision, Mission and Objectives -->
+                                        <div class="content-section">
+                                            <h2 class="section-title">
+                                                <i class="mdi mdi-eye"></i>
+                                                Vision, Mission & Objectives
+                                            </h2>
+                                            <div class="content-text">
+                                                <!-- Vision Image -->
+                                                <div class="row mb-4">
+                                                    <div class="col-md-12">
+                                                        <div class="vision-image text-center mb-4">
+                                                            <img src="https://www.ntti.edu.kh/assets/images/vmg.png" 
+                                                                 alt="NTTI Vision Mission Goals" 
+                                                                 class="img-fluid rounded shadow-sm">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                            
+                                                <!-- Mission Statement -->
+                                                <div class="mission-container">
+                                                    <h3 class="sub-title">Our Mission</h3>
+                                                    <div class="mission-content">
+                                                        <div class="mission-card">
+                                                            <i class="mdi mdi-school-outline mission-icon"></i>
+                                                            <p>Create the opportunities for students by providing high quality and competency (Theories, Practice and Ethics) of Technical Vocational Education and Training</p>
+                                                        </div>
+                                                        
+                                                        <div class="mission-card">
+                                                            <i class="mdi mdi-certificate-outline mission-icon"></i>
+                                                            <p>Provide a unique of technical and vocational training to prepare them within technical skills to entrance the current and future needs of labor market.</p>
+                                                        </div>
+                            
+                                                        <div class="mission-statement">
+                                                            <p>The National Technical Training Institute is committed to its further development as a leading higher educational institution in Cambodia in providing Technical and Vocational Education and Training. It is committed to providing quality training courses in consistence with flexible and responsive National System of Technical and Vocational Education and Training to meet the needs of the labor market, developing a set of competency-based curricula for the technical and vocational centers of the country, training and upgrading capacity of the instructors and trainers, designing and producing a supply of appropriate teaching/ learning resources and becoming a center of excellence in instructor training in the region.</p>
+                                                            
+                                                            <p class="mt-3">In particular, NTTI prepares students to become effective and active members of Cambodian society, with professional capacity to apply, develop and enrich the teaching process, science and technology.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Objectives -->
+                                                <div class="objectives-container mt-5">
+                                                    <h3 class="sub-title">Training Quality Control Board Objectives</h3>
+                                                    <p class="mb-4">To achieve its set objectives, Training Quality Control Board has fulfilled its following duties:</p>
+                                                    
+                                                    <ul class="objective-list">
+                                                        <li>Sending staff to attend training courses in foreign countries such as Japan, Singapore, Malaysia, Brunei Darussalam, Thailand in order that they can perform their in a professional and responsible manner</li>
+                                                        <li>Providing training courses to upgrade the teaching capacity of our teaching staff</li>
+                                                        <li>Forming the a group of senior teachers to supervise and give feedback on the staff's teaching capacity</li>
+                                                        <li>Forming a research team to collect information related to the needs of the labor market</li>
+                                                        <li>Conducting the follow-up surveys to collect data on the problems and effectiveness of the training programs offered</li>
+                                                        <li>Developing curriculum which can effectively respond to the fasting changing needs of the labor market</li>
+                                                        <li>Conducting workshops, whose aims are to assist the graduates in getting a job, for example, workshops on "Job Hunting Skills, How to Write a Resume and Cover Letter"</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                            
+                                        <!-- Organization Structure -->
+                                        <div class="content-section">
+                                            <h2 class="section-title">
+                                                <i class="mdi mdi-sitemap"></i>
+                                                Organizational Structure
+                                            </h2>
+                                            <div class="content-text">
+                                                <p>The organizational structure of the National Technical Training Institute (NTTI) is designed to ensure efficient management and operation across various departments and functions. The hierarchy is led by the President, HE. Dr. Yok Sothy, and includes four Vice Presidents, each overseeing specific areas of responsibility.</p>
+                                                
+                                                <div class="org-chart mt-4">
+                                                    <h4 class="text-center mb-3">NTTI's Organizational Structure</h4>
+                                                    <div class="text-center">
+                                                        <img src="https://www.ntti.edu.kh/assets/images/org.png" 
+                                                             alt="NTTI Organizational Structure" 
+                                                             class="img-fluid rounded shadow-sm"
+                                                             style="max-width: 100%; height: auto;">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                            
+                                        <!-- Facilities Section -->
+                                        <div class="content-section">
+                                            <h2 class="section-title">
+                                                <i class="mdi mdi-domain"></i>
+                                                Our Facilities
+                                            </h2>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <img src="https://www.ntti.edu.kh/assets/images/best_6.jpg" 
+                                                         alt="NTTI Facilities" 
+                                                         class="img-fluid rounded mb-3">
+                                                    <img src="https://ntti.edu.kh/assets/images/hotnews/36_.jpg" alt="NTTI Facilities" class="img-fluid rounded mb-3">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="facility-grid">
+                                                        <div class="facility-item">
+                                                            <i class="mdi mdi-desk-lamp mdi-24px mb-2"></i>
+                                                            <h4>Classrooms</h4>
+                                                        </div>
+                                                        <div class="facility-item">
+                                                            <i class="mdi mdi-tools mdi-24px mb-2"></i>
+                                                            <h4>Workshops</h4>
+                                                        </div>
+                                                        <div class="facility-item">
+                                                            <i class="mdi mdi-flask mdi-24px mb-2"></i>
+                                                            <h4>Labs</h4>
+                                                        </div>
+                                                        <div class="facility-item">
+                                                            <i class="mdi mdi-library mdi-24px mb-2"></i>
+                                                            <h4>Library</h4>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                            
+                                    <!-- Right Column -->
+                                    <div class="col-md-4">
+                                        <!-- Leadership Team -->
+                                        <div class="content-section mt-4">
+                                            <h2 class="mb-4 text-primary">Leadership Team</h2>
+                                            <div class="leadership-grid">
+                                                <!-- Director -->
+                                                <div class="leadership-card">
+                                                    <div class="text-center mb-3">
+                                                        <img src="https://www.ntti.edu.kh/assets/images/director1.png" 
+                                                             alt="Director NTTI" 
+                                                             class="leadership-image rounded-circle shadow-sm">
+                                                    </div>
+                                                    <div class="leadership-info text-center">
+                                                        <h4 class="mb-1">His Excellency YOK SOTHY, Ph.D.</h4>
+                                                        <p class="text-primary mb-2">DIRECTOR OF NTTI</p>
+                                                        <div class="contact-details">
+                                                            <p><i class="mdi mdi-phone me-2"></i>012 667 753</p>
+                                                            <p><i class="mdi mdi-email me-2"></i>yok.sothy@ntti.edu.kh</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                            
+                                                <!-- Deputy Directors -->
+                                                <div class="row mt-4">
+                                                    <div class="col-md-6 mb-4">
+                                                        <div class="leadership-card">
+                                                            <div class="text-center mb-3">
+                                                                <img src="https://www.ntti.edu.kh/assets/images/sub_director1.png" 
+                                                                     alt="Deputy Director" 
+                                                                     class="leadership-image-sm rounded-circle shadow-sm">
+                                                            </div>
+                                                            <div class="leadership-info text-center">
+                                                                <h5 class="mb-1">Mr. Mom Somach</h5>
+                                                                {{-- <p class="text-primary mb-2">Deputy Director of Administration and Finance</p>
+                                                                <div class="contact-details">
+                                                                    <p><i class="mdi mdi-phone me-2"></i>012 772 828</p>
+                                                                    <p><i class="mdi mdi-email me-2"></i>mom_somach@yahoo.com</p>
+                                                                </div> --}}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 mb-4">
+                                                        <div class="leadership-card">
+                                                            <div class="text-center mb-3">
+                                                                <img src="https://www.ntti.edu.kh/assets/images/sub_director2.png" 
+                                                                     alt="Deputy Director" 
+                                                                     class="leadership-image-sm rounded-circle shadow-sm">
+                                                            </div>
+                                                            <div class="leadership-info text-center">
+                                                                <h5 class="mb-1">Mr. Meas Sarith</h5>
+                                                                {{-- <p class="text-primary mb-2">Deputy Director of Education</p>
+                                                                <div class="contact-details">
+                                                                    <p><i class="mdi mdi-phone me-2"></i>012 567 651</p>
+                                                                    <p><i class="mdi mdi-email me-2"></i>meas_sarith@ntti.edu.kh</p>
+                                                                </div> --}}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 mb-4">
+                                                        <div class="leadership-card">
+                                                            <div class="text-center mb-3">
+                                                                <img src="https://www.ntti.edu.kh/assets/images/sub_director3.png" 
+                                                                     alt="Deputy Director" 
+                                                                     class="leadership-image-sm rounded-circle shadow-sm">
+                                                            </div>
+                                                            <div class="leadership-info text-center">
+                                                                <h5 class="mb-1">Mr. Ek Phannarann</h5>
+                                                                {{-- <p class="text-primary mb-2">Deputy Director</p>
+                                                                <div class="contact-details">
+                                                                    <p><i class="mdi mdi-phone me-2"></i>012 957 684</p>
+                                                                    <p><i class="mdi mdi-email me-2"></i>ek.phannaran@ntti.edu.kh</p>
+                                                                </div> --}}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 mb-4">
+                                                        <div class="leadership-card">
+                                                            <div class="text-center mb-3">
+                                                                <img src="https://www.ntti.edu.kh/assets/images/sub_director4.png" 
+                                                                     alt="Deputy Director" 
+                                                                     class="leadership-image-sm rounded-circle shadow-sm">
+                                                            </div>
+                                                            <div class="leadership-info text-center">
+                                                                <h5 class="mb-1">Ms. Peng Lakhena</h5>
+                                                                {{-- <p class="text-primary mb-2">Deputy Director</p>
+                                                                <div class="contact-details">
+                                                                    <p><i class="mdi mdi-phone me-2"></i>077 675 727</p>
+                                                                    <p><i class="mdi mdi-email me-2"></i>peng.lakhena@yahoo.com</p>
+                                                                </div> --}}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div><div class="contact-info">
+                                            <h2 class="mb-4 text-white">Contact Information</h2>
+                                            <div class="contact-item">
+                                                <i class="mdi mdi-map-marker"></i>
+                                                <div>
+                                                    <h5 class="mb-1">Address</h5>
+                                                    Russian Blvd, Sangkat Teukthla<br>
+                                                    Khan Sensok, Phnom Penh<br>
+                                                    CAMBODIA
+                                                </div>
+                                            </div>
+                                            <div class="contact-item">
+                                                <i class="mdi mdi-phone"></i>
+                                                <div>
+                                                    <h5 class="mb-1">Phone</h5>
+                                                    023 883 039
+                                                </div>
+                                            </div>
+                                            <div class="contact-item">
+                                                <i class="mdi mdi-email"></i>
+                                                <div>
+                                                    <h5 class="mb-1">Email</h5>
+                                                    info@ntti.edu.kh
+                                                </div>
+                                            </div>
+                                        </div>
+                            
+                                        <!-- Map -->
+                                        <div class="content-section mt-4">
+                                            <div class="map-container">
+                                                <div class="mb-3" style="height: 300px; border-radius: 10px; overflow: hidden;">
+                                                    <iframe 
+                                                        src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d7817.532321653166!2d104.8778723!3d11.5686141!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x310951bd8ff5ab0f%3A0x14bf178a46f8f969!2sNational%20Technical%20Training%20Institute%20(NTTI)!5e0!3m2!1sen!2skh!4v1743607604963!5m2!1sen!2skh"
+                                                        width="100%" 
+                                                        height="100%" 
+                                                        style="border:0;" 
+                                                        allowfullscreen="" 
+                                                        loading="lazy">
+                                                    </iframe>
+                                                </div>
+                                            </div>
+                                        </div>
+                            
+                                    </div>
+                                </div>
                             </div>
-                            <div class="tab-pane fade" id="info-teacher" role="tabpanel" aria-labelledby="info-teacher-tab">
-                                <!---info-teacher ---->
-                                <h2 class="text-center mt-5">Dashbord Teacher proseccsing !</h2>
-                                <!--End info-teacher-->
-                            </div>
-                            <div class="tab-pane fade" id="info-schools" role="tabpanel" aria-labelledby="info-schools-tab">
-                                <h2 class="text-center mt-5">Dashbord schools proseccsing </h2>
-                            </div>
+
+                            {{-- end ព័ត៍មាន វិទ្យាស្ថាន --}}
+
                         </div>
                     </div>
                 </div>
             </div>
-            <br><br>
-            <div class="print" style="display: none">
-                <div class="print-content">
-                </div>
+        </div>
+        <br><br>
+        <div class="print" style="display: none">
+            <div class="print-content">
             </div>
-            <div class="modal fade" id="divConfirmation" tabindex="-1" role="dialog" aria-labelledby="divConfirmation" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header bg-m-header">
-                            <h5 class="modal-title" id="divConfirmation">Confirmation</h5>
-                        </div>
-                        <div class="modal-body">
-                            <h4 class="modal-confirmation-text text-center p-4"></h4>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" id="btnClose" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" id="btnYes" data-code="" class="btn btn-primary">Yes</button>
-                        </div>
+        </div>
+        <div class="modal fade" id="divConfirmation" tabindex="-1" role="dialog" aria-labelledby="divConfirmation"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-m-header">
+                        <h5 class="modal-title" id="divConfirmation">Confirmation</h5>
+                    </div>
+                    <div class="modal-body">
+                        <h4 class="modal-confirmation-text text-center p-4"></h4>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="btnClose" class="btn btn-secondary"
+                            data-dismiss="modal">Close</button>
+                        <button type="button" id="btnYes" data-code="" class="btn btn-primary">Yes</button>
                     </div>
                 </div>
             </div>
-        </section>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-        <script type="text/javascript">
-            google.charts.load("current", {
-                packages: ["corechart"]
-            });
-            google.charts.setOnLoadCallback(drawChartStudentBySkill);
-    
-            function drawChartStudentBySkill() {
-                // Prepare the data for Google Charts
-                var data = google.visualization.arrayToDataTable([
-                    ['Skill', 'Total Students'],
-    
-                    @foreach($results as $result)
-                        ['{{ $result->name_2 }}', {{ $result->total_students }}],
-                    @endforeach
-                ]);
-    
-                // Chart options
-                var options = {
-                    fontSize: 14,// Set font size
-                    title: 'សិស្សសរុបតាមជំនាញ',
-                    pieHole: 0.4,
-                };
-    
-                // Create the pie chart
-                var chart = new google.visualization.PieChart(document.getElementById('records_student_by_skills'));
-                chart.draw(data, options);
-            }
-            google.charts.load("current", {
-                packages: ["corechart"]
-            });
-            google.charts.setOnLoadCallback(drawCharts);
-    
-            function drawCharts() {
+        </div>
+    </section>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        google.charts.load("current", {
+            packages: ["corechart"]
+        });
+        google.charts.setOnLoadCallback(drawChartStudentBySkill);
+
+        function drawChartStudentBySkill() {
+            // Prepare the data for Google Charts
+            var data = google.visualization.arrayToDataTable([
+                ['Skill', 'Total Students'],
+
+                @foreach ($results as $result)
+                    ['{{ $result->name_2 }}', {{ $result->total_students }}],
+                @endforeach
+            ]);
+
+            // Chart options
+            var options = {
+                fontSize: 14, // Set font size
+                title: 'សិស្សសរុបតាមជំនាញ',
+                pieHole: 0.4,
+            };
+
+            // Create the pie chart
+            var chart = new google.visualization.PieChart(document.getElementById('records_student_by_skills'));
+            chart.draw(data, options);
+        }
+        google.charts.load("current", {
+            packages: ["corechart"]
+        });
+        google.charts.setOnLoadCallback(drawCharts);
+
+        function drawCharts() {
             var data = google.visualization.arrayToDataTable([
                 ['Task', 'Hours per Day'],
-                @foreach($data as $item)
+                @foreach ($data as $item)
                     ['{{ $item->label }}', {{ $item->total_students }}],
                 @endforeach
             ]);
-    
+
             var options = {
-                fontSize: 14,// Set font size
+                fontSize: 14, // Set font size
                 title: 'ចំនួននិស្សិតសរុប តាមឆ្នាំសិស្សា',
                 pieHole: 0.4,
             };
-    
+
             var chart = new google.visualization.PieChart(document.getElementById('student_by_year'));
             chart.draw(data, options);
         }
-            google.charts.load("current", {
-                packages: ["corechart"]
-            });
-            google.charts.setOnLoadCallback(drawChart);
-    
-            function drawChart() {
+        google.charts.load("current", {
+            packages: ["corechart"]
+        });
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
             var data = google.visualization.arrayToDataTable([
                 ['Task', 'Hours per Day'],
-                @foreach($total_departments as $result)
-                    ['{{ $result->department_name }} សិស្សសរុប {{ $result->total_students }}', {{ $result->total_students }}],
+                @foreach ($total_departments as $result)
+                    ['{{ $result->department_name }} សិស្សសរុប {{ $result->total_students }}',
+                        {{ $result->total_students }}
+                    ],
                 @endforeach
             ]);
-    
+
             var options = {
-                fontSize: 14,// Set font size
+                fontSize: 14, // Set font size
                 title: 'ចំនួននិស្សិតសរុប ដេប៉ាតឺម៉ង់',
                 is3D: true,
             };
-    
+
             var chart = new google.visualization.PieChart(document.getElementById('student_by_class'));
             chart.draw(data, options);
         }
-            $(document).ready(function() {
-                $(document).on('click', '#prints', function() {
-                    $(".modal-confirmation-text").html('Do you want to Print?');
-                    $("#btnYes").attr('data-code', $(this).attr('data-type'));
-                    $("#divConfirmation").modal('show');
-                });
+        $(document).ready(function() {
+            $(document).on('click', '#prints', function() {
+                $(".modal-confirmation-text").html('Do you want to Print?');
+                $("#btnYes").attr('data-code', $(this).attr('data-type'));
+                $("#divConfirmation").modal('show');
             });
-            $(document).on('click', '#btnYes', function() {
-                var type = $(this).attr('data-code');
-                var url = '/dahhboard-student-print?type=' + type;
-                $.ajax({
-                    type: 'get',
-                    url: url,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    beforeSend: function() {
-                        $('.loader').show();
-                    },
-                    success: function(response) {
-                        $('.print-content').printThis({});
-                        $('.loader').hide();
-                        $("#divConfirmation").modal('hide');
-                        $('.print-content').html(response);
-                    },
-                    error: function(response) {
-                        notyf.error('External Server Error');
+        });
+        $(document).on('click', '#btnYes', function() {
+            var type = $(this).attr('data-code');
+            var url = '/dahhboard-student-print?type=' + type;
+            $.ajax({
+                type: 'get',
+                url: url,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                beforeSend: function() {
+                    $('.loader').show();
+                },
+                success: function(response) {
+                    $('.print-content').printThis({});
+                    $('.loader').hide();
+                    $("#divConfirmation").modal('hide');
+                    $('.print-content').html(response);
+                },
+                error: function(response) {
+                    notyf.error('External Server Error');
+                }
+            });
+        });
+        // department it
+        google.charts.load("current", {
+            packages: ['corechart']
+        });
+        google.charts.setOnLoadCallback(department_it);
+
+        function department_it() {
+            var data = google.visualization.arrayToDataTable([
+                ["Element", "Total", {
+                    role: "style"
+                }],
+                ["ឆ្នាំសិក្សា2021-2022", 347, "#b87333"],
+                ["ចំនួនក្រុម/ថ្នាក់", 11, "#b87333"],
+                ["ឆ្នាំសិក្សា 2022-2023", 697, "gold"],
+                ["ចំនួនក្រុម/ថ្នាក់", 13, "gold"],
+                ["ឆ្នាំសិក្សា 2023-2024", 397, "#4285f4"],
+                ["ចំនួនក្រុម/ថ្នាក់", 8, "#4285f4"],
+            ]);
+
+            var view = new google.visualization.DataView(data);
+            view.setColumns([0, 1,
+                {
+                    calc: "stringify",
+                    sourceColumn: 1,
+                    type: "string",
+                    role: "annotation"
+                },
+                2
+            ]);
+
+            var options = {
+                title: "ដេប៉ាតឺម៉ង់ព័ត៌មានវិទ្យា : តារាងរបារសរុបចំនួននិស្សិត 2021-2024",
+                width: 732,
+                height: 500,
+                fontFamily: "Khmer OS Battambang", // Set the font family
+                fontSize: 12, // Set font size
+                bar: {
+                    groupWidth: "60%"
+                }, // Adjust this value to control bar width and spacing
+                legend: {
+                    position: "none"
+                },
+                annotations: {
+                    textStyle: {
+                        fontSize: 12,
+                        color: '#000'
                     }
-                });
-            });
-            // department it
-            google.charts.load("current", {
-                packages: ['corechart']
-            });
-            google.charts.setOnLoadCallback(department_it);
-    
-            function department_it() {
-                var data = google.visualization.arrayToDataTable([
-                    ["Element", "Total", {
-                        role: "style"
-                    }],
-                    ["ឆ្នាំសិក្សា2021-2022", 347, "#b87333"],
-                    ["ចំនួនក្រុម/ថ្នាក់", 11, "#b87333"],
-                    ["ឆ្នាំសិក្សា 2022-2023", 697, "gold"],
-                    ["ចំនួនក្រុម/ថ្នាក់", 13, "gold"],
-                    ["ឆ្នាំសិក្សា 2023-2024", 397, "#4285f4"],
-                    ["ចំនួនក្រុម/ថ្នាក់", 8, "#4285f4"],
-                ]);
-    
-                var view = new google.visualization.DataView(data);
-                view.setColumns([0, 1,
-                    {
-                        calc: "stringify",
-                        sourceColumn: 1,
-                        type: "string",
-                        role: "annotation"
-                    },
-                    2
-                ]);
-    
-                var options = {
-                    title: "ដេប៉ាតឺម៉ង់ព័ត៌មានវិទ្យា : តារាងរបារសរុបចំនួននិស្សិត 2021-2024",
-                    width: 732,
-                    height: 500,
-                    fontFamily: "Khmer OS Battambang", // Set the font family
-                    fontSize: 12, // Set font size
-                    bar: {
-                        groupWidth: "30%"
-                    }, // Adjust this value to control bar width and spacing
-                    legend: {
-                        position: "none"
-                    },
-                    annotations: {
-                        textStyle: {
-                            fontSize: 12,
-                            color: '#000'
-                        }
-                    },
-                };
-    
-                var chart = new google.visualization.ColumnChart(document.getElementById("department_it"));
-                chart.draw(view, options);
-            }
-    
-            google.charts.load("current", {
-                packages: ['corechart']
-            });
-            google.charts.setOnLoadCallback(department_it_class);
-    
-            function department_it_class() {
-                var data = google.visualization.arrayToDataTable([
-                    ["Element", "Total", {
-                        role: "style"
-                    }],
-                    ["ឆ្នាំសិក្សា2021-2022", 1468, "#b87333"],
-                    ["ចំនួនក្រុម/ថ្នាក់", 36, "#b87333"],
-    
-                    ["ឆ្នាំសិក្សា 2022-2023", 1177, "gold"],
-                    ["ចំនួនក្រុម/ថ្នាក់", 22, "gold"],
-    
-                    ["ឆ្នាំសិក្សា 2023-2024", , "#4285f4"],
-                    ["ចំនួនក្រុម/ថ្នាក់", , "#4285f4"],
-                    // ["វេនព្រឹក", 0, "#4285f4"],
-                    // ["វេនយប់",  0, "#4285f4"],
-                ]);
-    
-                var view = new google.visualization.DataView(data);
-                view.setColumns([0, 1,
-                    {
-                        calc: "stringify",
-                        sourceColumn: 1,
-                        type: "string",
-                        role: "annotation"
-                    },
-                    2
-                ]);
-    
-                var options = {
-                    title: "ដេប៉ាតឺម៉ង់វិស្វកម្មសំណង់ស៊ីវិល : តារាងរបារសរុបចំនួននិស្សិត 2021-2024",
-                    width: 732,
-                    height: 500,
-                    fontFamily: "Khmer OS Battambang", // Set the font family
-                    fontSize: 12, // Set font size
-                    bar: {
-                        groupWidth: "30%"
-                    }, // Adjust this value to control bar width and spacing
-                    legend: {
-                        position: "none"
-                    },
-                    annotations: {
-                        textStyle: {
-                            fontSize: 12,
-                            color: '#000'
-                        }
-                    },
-                };
-                var chart = new google.visualization.ColumnChart(document.getElementById("department_it_class"));
-                chart.draw(view, options);
-            }
-    
-            // Student_statistics_by_academic_year ស្ថិតិនិស្សិតតាមឆ្នាំសិក្សា
-            google.charts.load("current", {
-                packages: ['corechart']
-            });
-            google.charts.setOnLoadCallback(Student_statistics_by_academic_year);
-    
-            function Student_statistics_by_academic_year() {
-                var data = google.visualization.arrayToDataTable([
-                    ['Session', 'Quantity', {
-                        role: 'style'
-                    }],
-    
-                    @foreach($total_students_year as $student_year)
+                },
+            };
+
+            var chart = new google.visualization.ColumnChart(document.getElementById("department_it"));
+            chart.draw(view, options);
+        }
+
+        google.charts.load("current", {
+            packages: ['corechart']
+        });
+        google.charts.setOnLoadCallback(department_it_class);
+
+        function department_it_class() {
+            var data = google.visualization.arrayToDataTable([
+                ["Element", "Total", {
+                    role: "style"
+                }],
+                ["ឆ្នាំសិក្សា2021-2022", 1468, "#b87333"],
+                ["ចំនួនក្រុម/ថ្នាក់", 36, "#b87333"],
+
+                ["ឆ្នាំសិក្សា 2022-2023", 1177, "gold"],
+                ["ចំនួនក្រុម/ថ្នាក់", 22, "gold"],
+
+                ["ឆ្នាំសិក្សា 2023-2024", , "#4285f4"],
+                ["ចំនួនក្រុម/ថ្នាក់", , "#4285f4"],
+                // ["វេនព្រឹក", 0, "#4285f4"],
+                // ["វេនយប់",  0, "#4285f4"],
+            ]);
+
+            var view = new google.visualization.DataView(data);
+            view.setColumns([0, 1,
+                {
+                    calc: "stringify",
+                    sourceColumn: 1,
+                    type: "string",
+                    role: "annotation"
+                },
+                2
+            ]);
+
+            var options = {
+                title: "ដេប៉ាតឺម៉ង់វិស្វកម្មសំណង់ស៊ីវិល : តារាងរបារសរុបចំនួននិស្សិត 2021-2024",
+                width: 732,
+                height: 500,
+                fontFamily: "Khmer OS Battambang", // Set the font family
+                fontSize: 12, // Set font size
+                bar: {
+                    groupWidth: "60%"
+                }, // Adjust this value to control bar width and spacing
+                legend: {
+                    position: "none"
+                },
+                annotations: {
+                    textStyle: {
+                        fontSize: 12,
+                        color: '#000'
+                    }
+                },
+            };
+            var chart = new google.visualization.ColumnChart(document.getElementById("department_it_class"));
+            chart.draw(view, options);
+        }
+
+        // Student_statistics_by_academic_year ស្ថិតិនិស្សិតតាមឆ្នាំសិក្សា
+        google.charts.load("current", {
+            packages: ['corechart']
+        });
+        google.charts.setOnLoadCallback(Student_statistics_by_academic_year);
+
+        function Student_statistics_by_academic_year() {
+            var data = google.visualization.arrayToDataTable([
+                ['Session', 'Quantity', {
+                    role: 'style'
+                }],
+
+                @foreach ($total_students_year as $student_year)
                     ['{{ $student_year->year_name ?? '' }}', {{ $student_year->total_students }}, '#dc3e27'],
                     ['និស្សិតស្រី', {{ $student_year->total_female_students }}, '#4285f4'],
-                    @endforeach
-                ]);
-    
-                var view = new google.visualization.DataView(data);
-                view.setColumns([0, 1,
-                    {
-                        calc: "stringify",
-                        sourceColumn: 1,
-                        type: "string",
-                        role: "annotation"
-                    },
-                    2
-                ]);
-                var options = {
-                    fontSize: 14, // Set font size
-                    title: "ស្ថិតិនិស្សិតតាមឆ្នាំសិក្សា",
-                    width: 732,
-                    height: 500,
-                    fontFamily: 'Khmer OS Battambang', // Set the font family
-                    bar: {
-                        groupWidth: "70%"
-                    },
-                    legend: {
-                        position: "none"
-                    },
-                    annotations: {
-                        textStyle: {
-                            fontSize: 12,
-                            color: '#000'
-                        }
-                    },
-                };
-                var chart = new google.visualization.BarChart(document.getElementById("Student_statistics_by_academic_year"));
-                chart.draw(view, options);
-            }
-    
-            // records_student_by_skills ស្ថិតិនិស្សិតតាមជំនាញ
-            google.charts.load("current", {
-                packages: ['corechart']
-            });
-            google.charts.setOnLoadCallback(records_student_by_skills_barChart);
-    
-            function records_student_by_skills_barChart() {
-                var data = google.visualization.arrayToDataTable([
-                    ['Session', 'Quantity', {
-                        role: 'style'
-                    }],
-    
-                    @foreach($results as $result )
+                @endforeach
+
+                // ["ឆ្នាំសិក្សា 2021-2022", 3108, "#dc3e27"],
+                // ["និស្សិតស្រី", 379, "#4285f4"],
+                // ["", , "#4285f4"],
+                // ["ឆ្នាំសិក្សា 2022-2023", 5202, "#dc3e27"],
+                // ["និស្សិតស្រី", 626, "#4285f4"],
+                // ["", , "#4285f4"],
+                // ["ឆ្នាំសិក្សា 2023-2024", 480, "#dc3e27"],
+                // ["និស្សិតស្រី", 107, "#4285f4"],
+                // ["", , "#4285f4"],
+            ]);
+
+            var view = new google.visualization.DataView(data);
+            view.setColumns([0, 1,
+                {
+                    calc: "stringify",
+                    sourceColumn: 1,
+                    type: "string",
+                    role: "annotation"
+                },
+                2
+            ]);
+            var options = {
+                fontSize: 14, // Set font size
+                title: "ស្ថិតិនិស្សិតតាមឆ្នាំសិក្សា",
+                width: 732,
+                height: 600,
+                fontFamily: 'Khmer OS Battambang', // Set the font family
+                bar: {
+                    groupWidth: "10%"
+                },
+                legend: {
+                    position: "none"
+                },
+                annotations: {
+                    textStyle: {
+                        fontSize: 12,
+                        color: '#000'
+                    }
+                },
+            };
+            var chart = new google.visualization.BarChart(document.getElementById("Student_statistics_by_academic_year"));
+            chart.draw(view, options);
+        }
+
+        // records_student_by_skills ស្ថិតិនិស្សិតតាមជំនាញ
+        google.charts.load("current", {
+            packages: ['corechart']
+        });
+        google.charts.setOnLoadCallback(records_student_by_skills_barChart);
+
+        function records_student_by_skills_barChart() {
+            var data = google.visualization.arrayToDataTable([
+                ['Session', 'Quantity', {
+                    role: 'style'
+                }],
+
+                @foreach ($results as $result)
                     ['{{ $result->name_2 ?? '' }}', {{ $result->total_students }}, '#dc3e27'],
-                    ['និស្សិតស្រី', {{ $result->total_f}}, '#4285f4'],
-                    @endforeach
-    
-                    // ["ជំនាញ បរិក្ខារត្រជាក់", 108, "#dc3e27"],
-                    // ["និស្សិតស្រី", 0, "#4285f4"],
-                    // ["", , "#4285f4"],
-                    // ["ជំនាញ ព័ត៌មានវិទ្យា", 836, "#dc3e27"],
-                    // ["និស្សិតស្រី", 184, "#4285f4"],
-                    // ["", , "#4285f4"],
-                    // ["ជំនាញ សំណង់ស៊ីវិល", 2432, "#dc3e27"],
-                    // ["និស្សិតស្រី", 265, "#4285f4"],
-                    // ["", , "#4285f4"],
-                    // ["ជំនាញ ស្ថាបត្យកម្ម", 275, "#dc3e27"],
-                    // ["និស្សិតស្រី", 136, "#4285f4"],
-                    // ["", , "#4285f4"],
-                    // ["ជំនាញ អគ្គិសនី", 3480, "#dc3e27"],
-                    // ["និស្សិតស្រី", 302, "#4285f4"],
-                    // ["", , "#4285f4"],
-                    // ["ជំនាញ អេឡិចត្រូនិច", 15, "#dc3e27"],
-                    // ["និស្សិតស្រី", 3, "#4285f4"],
-                    // ["", , "#4285f4"],
-                ]);
-    
-                var view = new google.visualization.DataView(data);
-                view.setColumns([0, 1,
-                    {
-                        calc: "stringify",
-                        sourceColumn: 1,
-                        type: "string",
-                        role: "annotation"
-                    },
-                    2
-                ]);
-                var options = {
-                    fontSize: 14, // Set font size
-                    title: "ស្ថិតិនិស្សិតតាមជំនាញ",
-                    width: 932,
-                    height: 510,
-                    fontFamily: 'Khmer OS Battambang', // Set the font family
-                    bar: {
-                        groupWidth: "98%"
-                    },
-                    legend: {
-                        position: "none"
-                    },
-                    annotations: {
-                        textStyle: {
-                            fontSize: 12,
-                            color: '#000'
-                        }
-                    },
-                };
-                var chart = new google.visualization.BarChart(document.getElementById("records_student_by_skills_barChart"));
-                chart.draw(view, options);
-            }
-    
-            // records_student_by_departmentស្ថិតិនិស្សិតតាមដេម៉ាតដេម៉ង់
-            google.charts.load("current", {
-                packages: ['corechart']
-            });
-            google.charts.setOnLoadCallback(records_student_by_department_barChart);
-    
-            function records_student_by_department_barChart() {
-                var data = google.visualization.arrayToDataTable([
-                    ['Session', 'Quantity', {
-                        role: 'style'
-                    }],
-                    
-                    @foreach($total_departments as $departments )
+                    ['និស្សិតស្រី', {{ $result->total_f }}, '#4285f4'],
+                @endforeach
+
+                // ["ជំនាញ បរិក្ខារត្រជាក់", 108, "#dc3e27"],
+                // ["និស្សិតស្រី", 0, "#4285f4"],
+                // ["", , "#4285f4"],
+                // ["ជំនាញ ព័ត៌មានវិទ្យា", 836, "#dc3e27"],
+                // ["និស្សិតស្រី", 184, "#4285f4"],
+                // ["", , "#4285f4"],
+                // ["ជំនាញ សំណង់ស៊ីវិល", 2432, "#dc3e27"],
+                // ["និស្សិតស្រី", 265, "#4285f4"],
+                // ["", , "#4285f4"],
+                // ["ជំនាញ ស្ថាបត្យកម្ម", 275, "#dc3e27"],
+                // ["និស្សិតស្រី", 136, "#4285f4"],
+                // ["", , "#4285f4"],
+                // ["ជំនាញ អគ្គិសនី", 3480, "#dc3e27"],
+                // ["និស្សិតស្រី", 302, "#4285f4"],
+                // ["", , "#4285f4"],
+                // ["ជំនាញ អេឡិចត្រូនិច", 15, "#dc3e27"],
+                // ["និស្សិតស្រី", 3, "#4285f4"],
+                // ["", , "#4285f4"],
+            ]);
+
+            var view = new google.visualization.DataView(data);
+            view.setColumns([0, 1,
+                {
+                    calc: "stringify",
+                    sourceColumn: 1,
+                    type: "string",
+                    role: "annotation"
+                },
+                2
+            ]);
+            var options = {
+                fontSize: 14, // Set font size
+                title: "ស្ថិតិនិស្សិតតាមជំនាញ",
+                width: 732,
+                height: 600,
+                fontFamily: 'Khmer OS Battambang', // Set the font family
+                bar: {
+                    groupWidth: "80%"
+                },
+                legend: {
+                    position: "none"
+                },
+                annotations: {
+                    textStyle: {
+                        fontSize: 12,
+                        color: '#000'
+                    }
+                },
+            };
+            var chart = new google.visualization.BarChart(document.getElementById("records_student_by_skills_barChart"));
+            chart.draw(view, options);
+        }
+
+        // records_student_by_departmentស្ថិតិនិស្សិតតាមដេម៉ាតដេម៉ង់
+        google.charts.load("current", {
+            packages: ['corechart']
+        });
+        google.charts.setOnLoadCallback(records_student_by_department_barChart);
+
+        function records_student_by_department_barChart() {
+            var data = google.visualization.arrayToDataTable([
+                ['Session', 'Quantity', {
+                    role: 'style'
+                }],
+
+                @foreach ($total_departments as $departments)
                     ['{{ $departments->department_name ?? '' }}', {{ $departments->total_students }}, '#dc3e27'],
-                    ['និស្សិតស្រី', {{ $departments->total_female_students}}, '#4285f4'],
-                    @endforeach
-    
-    
-                    // ["ដេប៉ាតឺម៉ង់ព័ត៌មានវិទ្យា", 946, "#dc3e27"],
-                    // ["និស្សិតស្រី", 179, "#4285f4"],
-                    // ["", , "#4285f4"],
-                    // ["ដេប៉ាតឺម៉ង់វិស្វកម្មសំណង់ស៊ីវិល", 3052, "#dc3e27"],
-                    // ["និស្សិតស្រី", 426, "#4285f4"],
-                    // ["", , "#4285f4"],
-                    // ["ដេប៉ាតឺម៉ង់វិស្វកម្មអគ្គិសនី និងអេឡិចត្រូនិច", 3411, "#dc3e27"],
-                    // ["និស្សិតស្រី", 303, "#4285f4"],
-                    // ["", , "#4285f4"],
-                ]);
-    
-                var view = new google.visualization.DataView(data);
-                view.setColumns([0, 1,
-                    {
-                        calc: "stringify",
-                        sourceColumn: 1,
-                        type: "string",
-                        role: "annotation"
-                    },
-                    2
-                ]);
-                var options = {
-                    fontSize: 12, // Set font size
-                    title: "ស្ថិតិនិស្សិតតាមដេប៉ាតឺម៉ង់",
-                    width: 750,
-                    height: 1500,
-                    fontFamily: 'Khmer OS Battambang', // Set the font family
-                    bar: {
-                        groupWidth: "80%"
-                    },
-                    legend: {
-                        position: "none"
-                    },
-                    annotations: {
-                        textStyle: {
-                            fontSize: 12,
-                            color: '#000'
-                        }
-                    },
-                };
-                var chart = new google.visualization.BarChart(document.getElementById("records_student_by_department_barChart"));
-                chart.draw(view, options);
+                    ['និស្សិតស្រី', {{ $departments->total_female_students }}, '#4285f4'],
+                @endforeach
+
+
+                // ["ដេប៉ាតឺម៉ង់ព័ត៌មានវិទ្យា", 946, "#dc3e27"],
+                // ["និស្សិតស្រី", 179, "#4285f4"],
+                // ["", , "#4285f4"],
+                // ["ដេប៉ាតឺម៉ង់វិស្វកម្មសំណង់ស៊ីវិល", 3052, "#dc3e27"],
+                // ["និស្សិតស្រី", 426, "#4285f4"],
+                // ["", , "#4285f4"],
+                // ["ដេប៉ាតឺម៉ង់វិស្វកម្មអគ្គិសនី និងអេឡិចត្រូនិច", 3411, "#dc3e27"],
+                // ["និស្សិតស្រី", 303, "#4285f4"],
+                // ["", , "#4285f4"],
+            ]);
+
+            var view = new google.visualization.DataView(data);
+            view.setColumns([0, 1,
+                {
+                    calc: "stringify",
+                    sourceColumn: 1,
+                    type: "string",
+                    role: "annotation"
+                },
+                2
+            ]);
+            var options = {
+                fontSize: 14, // Set font size
+                title: "ស្ថិតិនិស្សិតតាមដេប៉ាតឺម៉ង់",
+                width: 732,
+                height: 650,
+                fontFamily: 'Khmer OS Battambang', // Set the font family
+                bar: {
+                    groupWidth: "40%"
+                },
+                legend: {
+                    position: "none"
+                },
+                annotations: {
+                    textStyle: {
+                        fontSize: 12,
+                        color: '#000'
+                    }
+                },
+            };
+            var chart = new google.visualization.BarChart(document.getElementById(
+                "records_student_by_department_barChart"));
+            chart.draw(view, options);
+        }
+
+        //student_Department_Class ស្ថិតិនិស្សិតតាមក្រុម
+        google.charts.load("current", {
+            packages: ['corechart']
+        });
+        google.charts.setOnLoadCallback(student_Department_Class);
+
+        function student_Department_Class() {
+            var data = google.visualization.arrayToDataTable([
+                ['Session', 'Quantity', {
+                    role: 'style'
+                }],
+
+                @foreach ($total_results as $bb)
+                    [
+                        "{{ $bb->name_2 }}",
+                        {{ $bb->total_studentss }},
+                        '#dc3e27'
+                    ],
+                    ["វេនព្រឹក", {{ $bb->mm_1 }}, '#4285f4'],
+                    ["វេនរសៀល", {{ $bb->aa_1 }}, '#4285f4'],
+                    ["វេនយប់", {{ $bb->nn_1 }}, '#4285f4'],
+                @endforeach
+            ]);
+
+            var view = new google.visualization.DataView(data);
+            view.setColumns([0, 1, {
+                calc: "stringify",
+                sourceColumn: 1,
+                type: "string",
+                role: "annotation"
+            }, 2]);
+
+            var options = {
+                fontSize: 14,
+                title: "ស្ថិតិនិស្សិតតាមក្រុម",
+                width: 732,
+                height: 650,
+                fontFamily: 'Khmer OS Battambang',
+                bar: {
+                    groupWidth: "80%"
+                },
+                legend: {
+                    position: "none"
+                },
+                annotations: {
+                    textStyle: {
+                        fontSize: 12,
+                        color: '#000'
+                    }
+                },
+            };
+
+            var chart = new google.visualization.BarChart(document.getElementById("student_Department_Class"));
+            chart.draw(view, options);
+        }
+
+        //Students_by_level ស្ថិតិនិស្សិតតាមកម្រិត
+        // google.charts.load("current", {
+        //     packages: ['corechart']
+        // });
+        google.charts.setOnLoadCallback(Students_by_level);
+
+        function Students_by_level() {
+            var data = google.visualization.arrayToDataTable([
+                ['Session', 'Quantity', {
+                    role: 'style'
+                }],
+                ["", 385, "#4285f4"],
+                ["ដេប៉ាតឺម៉ង់វិស្វកម្មសំណង់ស៊ីវិល", 45, "#f7c77c"],
+                ["", 100, "#f78900"],
+                ["", , "#4285f4"],
+                ["", 385, "#4285f4"],
+                ["ដេប៉ាតឺម៉ង់វិស្វកម្មអគ្គិសនី និងអេឡិចត្រូនិច", 45, "#f7c77c"],
+                ["", 100, "#f78900"],
+                ["", , "#4285f4"],
+                ["", 385, "#4285f4"],
+                ["ដេប៉ាតឺម៉ង់ព័ត៌មានវិទ្យា", 45, "#f7c77c"],
+                ["", 100, "#f78900"],
+                ["", , "#4285f4"],
+            ]);
+
+            var view = new google.visualization.DataView(data);
+            view.setColumns([0, 1,
+                {
+                    calc: "stringify",
+                    sourceColumn: 1,
+                    type: "string",
+                    role: "annotation"
+                },
+                2
+            ]);
+            var options = {
+                title: "ស្ថិតិនិស្សិតតាមកម្រិត",
+                width: 800,
+                height: 450,
+                fontFamily: 'Khmer OS Battambang', // Set the font family
+                fontSize: 11.3, // Set font size
+                bar: {
+                    groupWidth: "60%"
+                },
+                legend: {
+                    position: "none"
+                },
+                annotations: {
+                    textStyle: {
+                        fontSize: 12,
+                        color: '#000'
+                    }
+                },
+            };
+            var chart = new google.visualization.BarChart(document.getElementById("Students_by_level"));
+            chart.draw(view, options);
+        }
+        //scholarship_students ចំនួននិស្សិត អាហារូបករណ៍ តាមជំនាញ
+        google.charts.load("current", {
+            packages: ['corechart']
+        });
+        google.charts.setOnLoadCallback(scholarship_students);
+
+        function scholarship_students() {
+            var data = google.visualization.arrayToDataTable([
+                ['Session', 'Quantity', {
+                    role: 'style'
+                }],
+                ["ជំនាញបរិក្ខារត្រជាក់", 108, "#333"],
+                ["និស្សិតស្រី", 0, "#4285f4"],
+                ["", , "#4285f4"],
+                ["ជំនាញព័ត៌មានវិទ្យា", 836, "#333"],
+                ["និស្សិតស្រី", 184, "#4285f4"],
+                ["", , "#4285f4"],
+                ["ជំនាញសំណង់ស៊ីវិល", 2432, "#333"],
+                ["និស្សិតស្រី", 265, "#4285f4"],
+                ["", , "#4285f4"],
+                ["ជំនាញស្ថាបត្យកម្ម", 275, "#333"],
+                ["និស្សិតស្រី", 136, "#4285f4"],
+                ["", , "#4285f4"],
+                ["ជំនាញអគ្គិសនី", 3480, "#333"],
+                ["និស្សិតស្រី", 302, "#4285f4"],
+                ["", , "#4285f4"],
+                ["ជំនាញអេឡិចត្រូនិច", 15, "#333"],
+                ["និស្សិតស្រី", 3, "#4285f4"],
+                ["", , "#4285f4"],
+            ]);
+
+            var view = new google.visualization.DataView(data);
+            view.setColumns([0, 1,
+                {
+                    calc: "stringify",
+                    sourceColumn: 1,
+                    type: "string",
+                    role: "annotation"
+                },
+                2
+            ]);
+            var options = {
+                title: "ស្ថិតិចំនួននិស្សិត អាហារូបករណ៍ តាមជំនាញ",
+                width: 800,
+                height: 450,
+                fontFamily: 'Khmer OS Battambang', // Set the font family
+                fontSize: 11.3, // Set font size
+                bar: {
+                    groupWidth: "60%"
+                },
+                legend: {
+                    position: "none"
+                },
+                annotations: {
+                    textStyle: {
+                        fontSize: 12,
+                        color: '#000'
+                    }
+                },
+            };
+            var chart = new google.visualization.BarChart(document.getElementById("scholarship_students"));
+            chart.draw(view, options);
+        }
+        //students_by_province ចំនួននិស្សិត តាមខេត្តនិងរាជធានី
+        google.charts.load("current", {
+            packages: ['corechart']
+        });
+        google.charts.setOnLoadCallback(students_by_province);
+        function students_by_province() {
+            var data = google.visualization.arrayToDataTable([
+                ['Province', 'Quantity', { role: 'style' }],
+                @foreach ($total_provinces as $province)
+                    ['{{ $province->province }}', {{ $province->total_students }}, '#4285f4'],
+                @endforeach
+            ]);
+
+            var view = new google.visualization.DataView(data);
+            view.setColumns([0, 1,
+                {
+                    calc: "stringify",
+                    sourceColumn: 1,
+                    type: "string",
+                    role: "annotation"
+                },
+                2
+            ]);
+
+            var options = {
+                fontSize: 14,
+                title: "ស្ថិតិ ចំនួននិស្សិត តាមខេត្តនិងរាជធានី",
+                width: 1500,
+                height: 400,
+                fontFamily: 'Khmer OS Battambang',
+                bar: { groupWidth: "80%" },
+                legend: { position: "none" },
+                annotations: {
+                    textStyle: { fontSize: 12, color: '#000' }
+                },
+            };
+
+            var chart = new google.visualization.ColumnChart(document.getElementById("students_by_province"));
+            chart.draw(view, options);
+        }
+
+
+        // ព័ត៍មាន វិទ្យាស្ថាន
+        // Add this script for the date and time display
+        document.addEventListener('DOMContentLoaded', function() {
+            function updateDateTime() {
+                const now = new Date();
+                const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+                
+                document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', dateOptions);
+                document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', timeOptions);
             }
-    
-            //student_Department_Class ស្ថិតិនិស្សិតតាមក្រុម
-            google.charts.load("current", {
-        packages: ['corechart']
-    });
-    google.charts.setOnLoadCallback(student_Department_Class);
-    
-    function student_Department_Class() {
-        var data = google.visualization.arrayToDataTable([
-            ['Session', 'Quantity', {
-                role: 'style'
-            }],
+
+            updateDateTime();
+            setInterval(updateDateTime, 3000);
+        });
+
+        let slideIndex = 1;
+        let slideTimer;
+        let sliding = false;
+
+        function showSlides(n, direction = 'right') {
+            if (sliding) return;
+            sliding = true;
             
-            @foreach($total_results as $bb)
-            [
-                "{{ $bb->name_2 }}", 
-                {{ $bb->total_studentss }},
-                '#dc3e27'
-            ],
-            ["វេនព្រឹក", {{ $bb->mm_1 }}, '#4285f4'],
-            ["វេនរសៀល", {{ $bb->aa_1 }}, '#4285f4'],
-            ["វេនយប់", {{ $bb->nn_1 }}, '#4285f4'],
-            @endforeach
-        ]);
-    
-        var view = new google.visualization.DataView(data);
-        view.setColumns([0, 1, {
-            calc: "stringify",
-            sourceColumn: 1,
-            type: "string",
-            role: "annotation"
-        }, 2]);
-    
-        var options = {
-            fontSize: 12.5,
-            title: "ស្ថិតិនិស្សិតតាមក្រុម",
-            width: 900,
-            height: 1500,
-            fontFamily: 'Khmer OS Battambang',
-            bar: {
-                groupWidth: "90%"
-            },
-            legend: {
-                position: "none"
-            },
-            annotations: {
-                textStyle: {
-                    fontSize: 10,
-                    color: '#000'
+            let slides = document.getElementsByClassName("slide");
+            let dots = document.getElementsByClassName("dot");
+            
+            // Reset slideIndex if it goes beyond bounds
+            if (n > slides.length) {
+                slideIndex = 1;
+            }    
+            if (n < 1) {
+                slideIndex = slides.length;
+            }
+            
+            // Get current and next slide
+            let currentSlide = document.querySelector('.slide.active');
+            let nextSlide = slides[slideIndex-1];
+            
+            // Remove all transition classes
+            for (let slide of slides) {
+                slide.classList.remove('active', 'slide-left', 'slide-right', 'slide-center');
+                slide.style.display = 'none';
+            }
+            
+            // Set up the transition
+            if (currentSlide) {
+                currentSlide.style.display = 'block';
+                currentSlide.classList.add('active');
+                currentSlide.classList.add(direction === 'right' ? 'slide-left' : 'slide-right');
+            }
+            
+            nextSlide.style.display = 'block';
+            nextSlide.classList.add('active');
+            nextSlide.classList.add(direction === 'right' ? 'slide-right' : 'slide-left');
+            
+            // Trigger the transition
+            setTimeout(() => {
+                nextSlide.classList.remove('slide-left', 'slide-right');
+                nextSlide.classList.add('slide-center');
+            }, 50);
+            
+            // Update dots
+            for (let i = 0; i < dots.length; i++) {
+                dots[i].className = dots[i].className.replace(" active", "");
+            }
+            dots[slideIndex-1].className += " active";
+            
+            // Reset sliding flag after transition
+            setTimeout(() => {
+                sliding = false;
+                if (currentSlide) {
+                    currentSlide.classList.remove('active');
+                    currentSlide.style.display = 'none';
                 }
-            },
-        };
-    
-        var chart = new google.visualization.BarChart(document.getElementById("student_Department_Class"));
-        chart.draw(view, options);
-    }
-    
-            //Students_by_level ស្ថិតិនិស្សិតតាមកម្រិត
-            // google.charts.load("current", {
-            //     packages: ['corechart']
-            // });
-            google.charts.setOnLoadCallback(Students_by_level);
-    
-            function Students_by_level() {
-                var data = google.visualization.arrayToDataTable([
-                    ['Session', 'Quantity', {
-                        role: 'style'
-                    }],
-                    ["", 385, "#4285f4"],
-                    ["ដេប៉ាតឺម៉ង់វិស្វកម្មសំណង់ស៊ីវិល", 45, "#f7c77c"],
-                    ["", 100, "#f78900"],
-                    ["", , "#4285f4"],
-                    ["", 385, "#4285f4"],
-                    ["ដេប៉ាតឺម៉ង់វិស្វកម្មអគ្គិសនី និងអេឡិចត្រូនិច", 45, "#f7c77c"],
-                    ["", 100, "#f78900"],
-                    ["", , "#4285f4"],
-                    ["", 385, "#4285f4"],
-                    ["ដេប៉ាតឺម៉ង់ព័ត៌មានវិទ្យា", 45, "#f7c77c"],
-                    ["", 100, "#f78900"],
-                    ["", , "#4285f4"],
-                ]);
-    
-                var view = new google.visualization.DataView(data);
-                view.setColumns([0, 1,
-                    {
-                        calc: "stringify",
-                        sourceColumn: 1,
-                        type: "string",
-                        role: "annotation"
-                    },
-                    2
-                ]);
-                var options = {
-                    title: "ស្ថិតិនិស្សិតតាមកម្រិត",
-                    width: 800,
-                    height: 450,
-                    fontFamily: 'Khmer OS Battambang', // Set the font family
-                    fontSize: 11.3, // Set font size
-                    bar: {
-                        groupWidth: "90%"
-                    },
-                    legend: {
-                        position: "none"
-                    },
-                    annotations: {
-                        textStyle: {
-                            fontSize: 12,
-                            color: '#000'
-                        }
-                    },
-                };
-                var chart = new google.visualization.BarChart(document.getElementById("Students_by_level"));
-                chart.draw(view, options);
-            }
-            //scholarship_students ចំនួននិស្សិត អាហារូបករណ៍ តាមជំនាញ
-            google.charts.load("current", {
-                packages: ['corechart']
-            });
-            google.charts.setOnLoadCallback(scholarship_students);
-    
-            function scholarship_students() {
-                var data = google.visualization.arrayToDataTable([
-                    ['Session', 'Quantity', {
-                        role: 'style'
-                    }],
-                    ["ជំនាញបរិក្ខារត្រជាក់", 108, "#333"],
-                    ["និស្សិតស្រី", 0, "#4285f4"],
-                    ["", , "#4285f4"],
-                    ["ជំនាញព័ត៌មានវិទ្យា", 836, "#333"],
-                    ["និស្សិតស្រី", 184, "#4285f4"],
-                    ["", , "#4285f4"],
-                    ["ជំនាញសំណង់ស៊ីវិល", 2432, "#333"],
-                    ["និស្សិតស្រី", 265, "#4285f4"],
-                    ["", , "#4285f4"],
-                    ["ជំនាញស្ថាបត្យកម្ម", 275, "#333"],
-                    ["និស្សិតស្រី", 136, "#4285f4"],
-                    ["", , "#4285f4"],
-                    ["ជំនាញអគ្គិសនី", 3480, "#333"],
-                    ["និស្សិតស្រី", 302, "#4285f4"],
-                    ["", , "#4285f4"],
-                    ["ជំនាញអេឡិចត្រូនិច", 15, "#333"],
-                    ["និស្សិតស្រី", 3, "#4285f4"],
-                    ["", , "#4285f4"],
-                ]);
-    
-                var view = new google.visualization.DataView(data);
-                view.setColumns([0, 1,
-                    {
-                        calc: "stringify",
-                        sourceColumn: 1,
-                        type: "string",
-                        role: "annotation"
-                    },
-                    2
-                ]);
-                var options = {
-                    title: "ស្ថិតិចំនួននិស្សិត អាហារូបករណ៍ តាមជំនាញ",
-                    width: 800,
-                    height: 450,
-                    fontFamily: 'Khmer OS Battambang', // Set the font family
-                    fontSize: 11.3, // Set font size
-                    bar: {
-                        groupWidth: "90%"
-                    },
-                    legend: {
-                        position: "none"
-                    },
-                    annotations: {
-                        textStyle: {
-                            fontSize: 12,
-                            color: '#000'
-                        }
-                    },
-                };
-                var chart = new google.visualization.BarChart(document.getElementById("scholarship_students"));
-                chart.draw(view, options);
-            }
-            //students_by_province ចំនួននិស្សិត តាមខេត្តនិងរាជធានី
-            google.charts.load("current", {
-                packages: ['corechart']
-            });
-            google.charts.setOnLoadCallback(students_by_province);
-    
-            function students_by_province() {
-                var data = google.visualization.arrayToDataTable([
-                    ['Session', 'Quantity', {
-                        role: 'style'
-                    }],
-    
-                    @foreach($total_provinces as $provinces )
-                    ['{{ $provinces->province ?? '' }}', {{ $provinces->total_students }}, '#4285f4'],
-                    @endforeach
-    
-                    // ["ភ្នំពេញ", 6, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["កណ្ដាល", 2, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["កែប", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["កោះកុង", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["កំពង់ចាម", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["កំពង់ឆ្នាំង", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["កំពង់ធំ", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["កំពង់ស្ពឺ", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["កំពត", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["ក្រចេះ", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["តាកែវ", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["ត្បូងឃ្មុំ", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["បន្ទាយមានជ័យ", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["បាត់ដំបង", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["ប៉ៃលិន", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["ពោធិ៍សាត់", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["ព្រៃវែង", 1, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["ព្រះវិហារ", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["ព្រះសីហនុ", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["មណ្ឌលគិរី", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["រតនគិរី", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["សៀមរាប", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["ស្ទឹងត្រែង", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["ស្វាយរៀង", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                    // ["ឧត្ដរមានជ័យ", 0, "#4285f4"],
-                    // // ["និស្សិត", 1, "#dc3912"],
-                ]);
-                var view = new google.visualization.DataView(data);
-                view.setColumns([0, 1,
-                    {
-                        calc: "stringify",
-                        sourceColumn: 1,
-                        type: "string",
-                        role: "annotation"
-                    },
-                    2
-                ]);
-                var options = {
-                    fontSize: 14, // Set font size
-                    title: "ស្ថិតិ ចំនួននិស្សិត តាមខេត្តនិងរាជធានី",
-                    width: 1600,
-                    height: 450,
-                    fontFamily: 'Khmer OS Battambang', // Set the font family
-                    bar: {
-                        groupWidth: "70%"
-                    },
-                    legend: {
-                        position: "none"
-                    },
-                    annotations: {
-                        textStyle: {
-                            fontSize: 12,
-                            color: '#000'
-                        }
-                    },
-                };
-                var chart = new google.visualization.ColumnChart(document.getElementById("students_by_province"));
-                chart.draw(view, options);
-            }
-        </script>
+            }, 800);
+        }
+
+        function changeSlide(n) {
+            if (sliding) return;
+            clearTimeout(slideTimer);
+            showSlides(slideIndex += n, n > 0 ? 'right' : 'left');
+            autoSlide();
+        }
+
+        function currentSlide(n) {
+            if (sliding) return;
+            clearTimeout(slideTimer);
+            showSlides(slideIndex = n);
+            autoSlide();
+        }
+
+        function autoSlide() {
+            slideTimer = setTimeout(() => {
+                changeSlide(1);
+            }, 5000); // Change slide every 3 seconds
+        }
+
+        // Initialize slideshow when the document is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Make sure first slide is visible immediately
+            let firstSlide = document.querySelector('.slide');
+            firstSlide.classList.add('active', 'slide-center');
+            firstSlide.style.display = 'block';
+            
+            // Start the automatic slideshow
+            autoSlide();
+        });
+    </script>
     </div>
     </div>
-    @endsection
+@endsection

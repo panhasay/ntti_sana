@@ -172,13 +172,17 @@ class AssingClassesController extends Controller
     {
         $input = $request->all();
         $records = Student::where('class_code', $input['class_code'])->get();
+
+        if ($records->isEmpty()) {
+            return response()->json(['status' => 'warning', 'msg' => 'មិនមាន ទិន្ន័យនិស្សិត​ ក្នុងថា្នក់ !'.  $input['class_code']]);
+        }   
+
         try {
             if ($records) {
                 foreach ($records as $record) {
                     $exist = AssingClassesStudentLine::where('student_code', $record->code)
-                                ->where('assing_line_no', $request->assing_no)
-                                ->exists(); // This returns true if any records match the query, false otherwise
-
+                            ->where('assing_line_no', $request->assing_no)
+                            ->exists(); 
                     if (!$exist) {
                         $line = new AssingClassesStudentLine();
                         $line->student_code = $record->code;

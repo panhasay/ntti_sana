@@ -35,8 +35,8 @@
             </div>
         </div>
         <div class="modal-footer">
-          <button type="button" id="btnClose" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" id="btnYes" data-code="" class="btn btn-primary">Create</button>
+          <button type="button" id="btnClose" class="btn btn-secondary" data-dismiss="modal">បិទ</button>
+          <button type="button" id="btnYes" data-code="" class="btn btn-primary">បង្កើត</button>
         </div>
       </div>
     </div>

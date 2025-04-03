@@ -438,6 +438,8 @@
               $('#recordsLineTableBody').append(row);
               window.location.reload();
             });
+          }else {
+            notyf.error(response.msg);
           }
         }
       });
