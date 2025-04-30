@@ -106,7 +106,8 @@ class SystemSettingController extends Controller
                     $blade_file_record = 'general.subjects_lists';
                     break;
                 case 'teachers':
-                    $records = Teachers::whereRaw($extract_query)->paginate(1000);
+                    $records = Teachers::orderByRaw("name_2 COLLATE utf8mb4_general_ci")->whereRaw($extract_query)->WhitQueryPermission()->paginate(1000);
+
                     $blade_file_record = 'general.teachers_lists';
                     break;
                 case 'student_registration':

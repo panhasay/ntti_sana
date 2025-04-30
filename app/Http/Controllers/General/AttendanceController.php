@@ -5,14 +5,66 @@ namespace App\Http\Controllers\General;
 use App\Http\Controllers\Controller;
 use App\Models\General\ClassSchedule;
 use App\Models\General\AssingClasses;
+use App\Models\SystemSetup\Department;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
 {
+    private function getTimeSection($time) {
+        if (!$time) return null;
+        
+        $hour = (int) substr($time, 0, 2);
+        
+        // Define time ranges for each section
+        if ($hour >= 6 && $hour <= 13) {
+            return 'Morning';
+        } else if ($hour > 13 && $hour < 17) {
+            return 'Evening';
+        } else {
+            return 'Night';  // For hours >= 17 or < 6
+        }
+    }
+
+    private function getCurrentSection() {
+        $currentHour = (int) now()->format('H');
+        
+        if ($currentHour >= 6 && $currentHour <= 13) {
+            return 'Morning';
+        } else if ($currentHour > 13 && $currentHour < 17) {
+            return 'Evening';
+        } else {
+            return 'Night';
+        }
+    }
+
+    private function extractSectionName($section) {
+        if (!$section) return null;
+        
+        // First decode HTML entities
+        $decodedSection = html_entity_decode($section);
+        
+        try {
+            // Try to parse as JSON
+            $sectionData = json_decode($decodedSection, true);
+            if (is_array($sectionData) && isset($sectionData['name'])) {
+                return $sectionData['name'];
+            }
+        } catch (\Exception $e) {
+            // If JSON parsing fails, return the original section
+        }
+        
+        return $section;
+    }
+
     public function index(Request $request)
     {
         $classCode = $request->query('class_code');
+        $selectedDate = $request->query('date') ? Carbon::parse($request->query('date')) : Carbon::now();
+        $selectedDepartment = $request->query('department', 'All Departments');
+        
+        // Set default section based on current time if not specified in request
+        $selectedSection = $request->query('section') ?? $this->getCurrentSection();
         
         // If class code is provided, get the assignment record first
         if ($classCode) {
@@ -24,32 +76,48 @@ class AttendanceController extends Controller
             }
         }
 
-        // Get today's day name in lowercase
-        $today = strtolower(Carbon::now()->format('l'));
+        // Get the selected day name in lowercase
+        $selectedDay = strtolower($selectedDate->format('l'));
         
-        // Get the class schedules and related assignments for today
+        // Get the class schedules and related assignments for the selected date
         $schedules = ClassSchedule::with(['section', 'subject'])
-            ->whereDate('start_date', '<=', Carbon::now())
+            ->whereDate('start_date', '<=', $selectedDate)
             ->orderBy('start_date', 'asc')
             ->get()
-            ->map(function ($schedule) use ($today) {
-                // Get assignments for this schedule that match today
+            ->map(function ($schedule) use ($selectedDay, $selectedDepartment, $selectedSection) {
+                // Get assignments for this schedule that match selected day
                 $assignments = AssingClasses::where('class_schedule_id', $schedule->id)
-                    ->where('date_name', $today)
-                    ->with(['teacher', 'subject'])
-                    ->get();
+                    ->where('date_name', $selectedDay)
+                    ->with(['teacher', 'subject', 'department'])
+                    ->when($selectedDepartment !== 'All Departments', function ($query) use ($selectedDepartment) {
+                        $query->whereHas('department', function($q) use ($selectedDepartment) {
+                            $q->where('name', $selectedDepartment);
+                        });
+                    })
+                    ->get()
+                    ->filter(function ($assignment) use ($selectedSection) {
+                        if ($selectedSection === 'All') {
+                            return true; // Show all sections
+                        }
+                        
+                        $sectionName = $this->extractSectionName($assignment->section);
+                        return strtolower($sectionName) === strtolower($selectedSection);
+                    });
 
                 // Split assignments into separate schedule items if multiple exist for same time
                 $scheduleItems = collect();
                 
                 $assignments->each(function($assignment) use ($scheduleItems) {
+                    $sectionName = $this->extractSectionName($assignment->section);
+                    
                     $scheduleItems->push([
                         'teacher' => $assignment->teacher->name_2 ?? '',
                         'subject' => $assignment->subject->name ?? '',
                         'time' => $assignment->start_time . ' - ' . $assignment->end_time,
                         'room' => $assignment->room,
                         'checked' => (bool) $assignment->status,
-                        'assing_no' => $assignment->assing_no
+                        'assing_no' => $assignment->assing_no,
+                        'section' => $sectionName
                     ]);
                 });
 
@@ -66,6 +134,11 @@ class AttendanceController extends Controller
             })
             ->values();
 
-        return view('dashboard.dashboard_attendance_student', compact('schedules'));
+        // Get list of departments
+        $departments = Department::pluck('name')->toArray();
+        array_unshift($departments, 'All Departments');
+
+        return view('dashboard.dashboard_attendance_student', compact('schedules', 'selectedDate', 'selectedDepartment', 'selectedSection', 'departments'));
     }
+    
 }

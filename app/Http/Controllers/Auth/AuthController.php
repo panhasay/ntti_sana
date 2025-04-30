@@ -76,7 +76,7 @@ class AuthController extends Controller
         $user = $permission;
         $email =  $request->email;
         $role = $user->role;
-        $department = $user->department->name_2;
+        $department = $user->department->name_2 ?? '';
         $ip = request()->ip();
         $userAgent = request()->header('User-Agent');
         $ipAddress = request()->ip(); // Get the IP address

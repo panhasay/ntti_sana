@@ -2,11 +2,9 @@
     body {
         font-family: "Khmer OS Battambang", Tahoma, sans-serif !important;
     }
-
     * {
         font-family: "Khmer OS Battambang", Tahoma, sans-serif !important;
     }
-
     /* start scroll bar */
     ::-webkit-scrollbar {
         width: 10px;
@@ -195,7 +193,6 @@
     .modal-content {
         border: 0px solid #e4e9f0 !important;
     }
-
     /* customize css modal */
 </style>
 
@@ -1123,16 +1120,53 @@
 
 
         $(document).ready(function() {
+            
+
+            const cookieName = 'sch_class_spec';
+            const cookieValue = getCookie(cookieName);
+
+            // Set selected value from cookie on page load
+            if (cookieValue) {
+                $('#sch_class_spec').val(decodeURIComponent(cookieValue)).trigger('change');
+            }
+
+            // Save to cookie on change
+            $('#sch_class_spec').on('change', function () {
+                const value = $(this).val();
+                setCookie(cookieName, value, 7);
+            });
+
+            // Get cookie
+            function getCookie(name) {
+                let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+                if (match) return match[2];
+                return null;
+            }
+
+            // Set cookie
+            function setCookie(name, value, days) {
+                let expires = "";
+                if (days) {
+                    const date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toUTCString();
+                }
+                document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/";
+            }
+
+
             $('#sch_class_spec').on('change', function() {
                 let selectedValue = $(this).val();
                 $("#YesPrints").attr('data-class', selectedValue);
                 $("#btnYesExcel").attr('data-code', selectedValue);
             });
+
             $(document).on('click', '#prints', function() {
                 $(".modal-confirmation-text").html('Do you want to Downlaod prints ?');
                 $("#YesPrints").attr('data-code', $(this).attr('data-type'));
                 $("#ModelPrints").modal('show');
             });
+
             $(document).on('click', '#modalcardduedate', function() {
                 var class_code = $("#sch_class_spec").val();
                 $.ajax({
@@ -1155,6 +1189,7 @@
                     error: function(xhr, ajaxOptions, thrownError) {}
                 });
             });
+
             $(document).on('click', '#YesPrints', function() {
                 var DataClass = $(this).attr('data-class'); 
 
@@ -1187,11 +1222,13 @@
                     error: function(xhr, ajaxOptions, thrownError) {}
                 });
             });
+
             $(document).on('click', '#BtnDownlaodExcel', function() {
                 $(".modal-confirmation-text").html('Do you want to Downlaod Excel ?');
                 $("#btnYesExcel").attr('data-code', $(this).attr('data-type'));
                 $("#divConfirmationExcel").modal('show');
             });
+
             $(document).on('click', '#btnYesExcel', function() {
                 var DataClass = $(this).attr('data-code'); 
 
@@ -1200,6 +1237,8 @@
                 }
                 DownlaodExcel(DataClass);
             });
+
+           
         });
 
         function DownlaodExcel(DataClass) {

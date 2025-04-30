@@ -64,7 +64,7 @@ class ClassScheduleController extends Controller
         $school_years = DB::table('session_year')->orderBy('code', 'desc')->get();
         $skills = DB::table('skills')->get();
         $study_years = StudyYears::get();
-        $teachers = Teachers::orderBy('code', 'asc')->get();
+        $teachers = Teachers::WhitQueryPermission()->orderByRaw("name_2 COLLATE utf8mb4_general_ci")->get();
         $subjects = Subjects::orderBy('code', 'asc')->get();
         $date_name = DB::table('date_name')->orderBy('index', 'asc')->get();
         $days = $date_name->pluck('name')->toArray();

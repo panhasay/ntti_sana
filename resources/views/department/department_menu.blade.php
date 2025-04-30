@@ -34,7 +34,7 @@
     <div class="column">
         <div class="effect-9">
             <div class="effect-img">
-                <a href="{{ route('cert.dept_menu') }}">
+                <a href="{{ url('certificate/dept-menu/D_IT') }}">
                     <img src="https://img.freepik.com/free-photo/group-grads-cap-gown-with-graduation-certificate_53876-75182.jpg?t=st=1732638232~exp=1732641832~hmac=c353e6852e48656e544f36e333cacd24b9689d1b926d88dca320328b814d79ef&w=740" alt="Team Image">
                 </a>
             </div>

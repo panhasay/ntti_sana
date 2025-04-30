@@ -495,9 +495,17 @@ class service{
         $skills = DB::table('skills')->get();
         $qualifications = Qualifications::get();
         $classs = Classes::all();
-        $teachers = Teachers::all();
+        $teachers = Teachers::WhitQueryPermission()->orderByRaw("name_2 COLLATE utf8mb4_general_ci")->get();
 
         return compact('sections', 'department', 'skills', 'qualifications', 'classs', 'teachers');
+    }
+
+    public static function CheckLogin($data) {
+        
+        if(!Auth::check()){
+            return redirect("login")->withSuccess('Opps! You do not have access');
+        }  
+        return;
     }
     
 }

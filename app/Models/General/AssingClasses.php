@@ -5,6 +5,7 @@ namespace App\Models\General;
 use App\Models\SystemSetup\Department;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AssingClasses extends Model
@@ -45,5 +46,16 @@ class AssingClasses extends Model
     public function subject()
     {
         return $this->belongsTo(Subjects::class, 'subjects_code', 'code');
+    }
+
+    public function scopeWhitQueryPermissionTeacher($query)
+    {
+        $user = Auth::user();
+
+        if ($user->department_code === 'D_IT') {
+            return $query->where('department_code', 'D_IT');
+        }
+
+        return $query;
     }
 }

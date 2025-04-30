@@ -32,7 +32,8 @@ class TeacherController extends Controller
     }
     public function index(){
         $page = $this->page;
-        $records = Teachers::orderBy('code', 'asc')->paginate(10);
+        $records = Teachers::orderByRaw("name_2 COLLATE utf8mb4_general_ci")->WhitQueryPermission()->paginate(20);
+
         $department = Department::get();
         $skills = Skills::where('status', 'yes')->get();
         if(!Auth::check()){

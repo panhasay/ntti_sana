@@ -362,6 +362,19 @@
 <!--END MODEL--->
 <script>
   $(document).ready(function() {
+
+    let refreshCount = sessionStorage.getItem("refreshCount") || 0;
+
+    if (refreshCount < 1) { 
+        refreshCount++;
+        sessionStorage.setItem("refreshCount", refreshCount);
+        location.reload(); // or window.location.reload();
+    } else {
+        sessionStorage.removeItem("refreshCount"); // Reset after 2 reloads
+        console.log("Refreshed twice already.");
+    }
+
+
     $('.form_data').on('change', function() {
       var formData = $('#frmDataCard').serialize();
       var type = $('#type').val();

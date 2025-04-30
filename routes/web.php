@@ -3,7 +3,6 @@
 use App\Http\Controllers\Admin\adminController;
 use App\Http\Controllers\General\ClassesController;
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\General\AssingClassesController;
 use App\Http\Controllers\General\AttendanceController;
@@ -30,25 +29,15 @@ use App\Http\Controllers\Certificates\CertificateController;
 use App\Http\Controllers\General\StudentSanaController;
 use App\Http\Controllers\General\TransferController;
 use App\Http\Controllers\Report\ReportListOfStudentClassAndSectionController;
+use App\Http\Controllers\Report\ReportTotalScoreExamController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
 Route::get('/clear-all', function() {
-    Artisan::call('cache:clear');    // Clear application cache
-    Artisan::call('config:clear');   // Clear configuration cache
-    Artisan::call('route:clear');    // Clear route cache
-    Artisan::call('view:clear');     // Clear compiled views
+    Artisan::call('cache:clear');    
+    Artisan::call('config:clear');   
+    Artisan::call('route:clear');    
+    Artisan::call('view:clear');     
     return 'All specific caches cleared!';
 });
 
@@ -57,8 +46,6 @@ Route::get('/greeting/{locale}', function (string $locale) {
         abort(400);
     }
     App::setLocale($locale);
-    // ...
-    // Route::get('department', [AuthController::class, 'department']);
 });
     Route::get('/', function () {
         return view('auth.login');
@@ -73,17 +60,11 @@ Route::get('/greeting/{locale}', function (string $locale) {
         return view('errors.permission_acces');
     });
 
-
-        // Login Route
-    // Route::post('login', [AuthController::class, 'login'])->middleware('limit.logins')->name('login.post');
-
-    // Blocked Route
     Route::get('/login-blocked', function () {
-        return view('errors.login_block'); // Create a view to show the blocked message
+        return view('errors.login_block'); 
     })->name('login.blocked');
 
     Route::get('/return-login', [AuthController::class, 'returnlogin'])->name('returnlogin');
-
 
     Route::get('login', [AuthController::class, 'index'])->name('login');
     Route::post('post-login', [AuthController::class, 'postLogin'])->middleware('limit.logins')->name('login.post');
@@ -147,11 +128,9 @@ Route::group(['perfix' => 'report-first-year-student-registration'], function ()
 
 Route::group(['perfix' => 'dashboard'], function (){
     Route::get('dashboard', [DashboardController::class, 'index'])->name('index');
-    // Route::get('reports-list-of-student-priview', [DashboardController::class, 'Priview'])->name('Priview');
     Route::get('dahhboard-student-print', [DashboardController::class, 'Print'])->name('Print');
-    // Route::get('dashboard-student-account', [DashboardController::class, 'StudentUserAccount'])->name('StudentUserAccount');
     Route::get('teacher-dashboard', [DashboardController::class, 'TeacherDashboard'])->name('TeacherDashboard');
-    // Route::get('dashboard', [DashboardController::class, 'index'])->name('index');
+    Route::get('teacher-management-class', [DashboardController::class, 'TeacherMmanagementClass'])->name('TeacherMmanagementClass');
 });
 Route::get('dsa', [DashboardController::class, 'StudentUserAccount'])->name('StudentUserAccount');
 Route::group(['perfix' => 'department' ,  'middleware' => 'permission'], function (){
@@ -169,9 +148,6 @@ Route::group(['perfix' => 'Users'], function (){
     Route::get('profile/reset-password', [UsersController::class, 'ResetPassword'])->name('ResetPassword');
     Route::GET('profile/update-information', [UsersController::class, 'UpdateProfile'])->name('UpdateProfile');
     Route::POST('profile/upload-img', [UsersController::class, 'UploadImages'])->name('UploadImages');
-    // Route::get('departments/transaction', [UsersController::class, 'transaction'])->name('transaction');
-    // Route::post('departments/update', [UsersController::class, 'update'])->name('update');
-    // Route::post('departments/store', [UsersController::class, 'store'])->name('store');
 })->middleware('auth');
 
 Route::group(['perfix' => 'table'], function (){
@@ -237,6 +213,7 @@ Route::group(['perfix' => 'teachers' ], function (){
     Route::get('/get-exam-results-print-exam',[AssingClassesController::class,'PrintExamResults']);
     Route::get('/get-exam-results-excel-exam',[AssingClassesController::class,'ExcelExamResults']);
     Route::get('/assign-classes/downlaodexcel-line',[AssingClassesController::class,'DownlaodexcelLine']);
+    Route::post('/update-score-student', [AssingClassesController::class, 'UpdateScoreStudent']);
 })->middleware('auth');
 Route::group(['prefix' => 'attendance'], function () {
     Route::get('/dashboards-attendance', [AttendanceController::class, 'index']);
@@ -300,46 +277,12 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
     Route::controller(CertificateController::class)->group(function () {
         Route::post('/level_shift_skill', 'showLevelShiftSkill');
         Route::get('/get-date-card-due-date', 'GetDate');
+        Route::get('/get-date-card-due-date', 'GetDate');
+        Route::get('/D_IT/degree/MD_DE', 'IndexPrintCertificates');
+        Route::get('/degree-print', 'CertificatesDegrePrints');
+        Route::get('/degree-priview', 'CertificatesDegrePriview');
     });
 });
-
-// Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static function () {
-//     Route::controller(CertificateController::class)->group(function () {
-//         Route::get('/dept-menu', 'index')->name('cert.dept_menu');
-//         Route::get('/dept-menu/{dept_code}', 'showMenuModule')->where('dept_code', '[A-Z_]+')->name('cert.dept.list');
-
-//         $subModules = DB::table('cert_sub_module')->where('active', 1)->whereNotNull('route')->get();
-//         foreach ($subModules as $item) {
-//             Route::get('/{dept_code}' . '/' . $item->route . '/{module_code}', $item->controller)->name('certificate.' . $item->route);
-//         }
-
-//         Route::prefix('student')->group(function () {
-//             Route::post('/bar', 'getStudentPieBarChartData');
-//         });
-
-//         Route::post('/level_shift_skill', 'showLevelShiftSkill');
-//         Route::post('/card_view', 'showCardView');
-//         Route::post('/card_view_list', 'showCardView');
-//         Route::post('/print_card', 'printCardStudent');
-//         Route::post('/card_view_info', 'showViewCardInformation');
-//         Route::post('/upload_student_info', 'updateCardInformation');
-//         Route::post('/disable_student_info', 'disableCardInformation');
-//         Route::post('/show_change_date_print_card', 'showChangeDatePrintCard');
-//         Route::post('/upload_zip_photo', 'uploadZip');
-//         Route::post('/upload_multiple_photo', 'uploadMultiplePhoto');
-//         Route::get('/print_card', static function () {
-//             return view('certificate/certificate_card_print_get');
-//         });
-//         Route::get('/print_card_pdf', 'printCardStudentPdf');
-//         Route::get('/D_IT/student_card/certificate/card-student-print', 'printListClassification');
-//         Route::get('/D_EL/student_card/certificate/card-student-print', 'printListClassification');
-//         Route::get('/D_CL/student_card/certificate/card-student-print', 'printListClassification');
-
-//         Route::get('/D_IT/student_card/certificate/card-student-excel', 'ExcelListClassification');
-//         Route::get('/D_EL/student_card/certificate/card-student-excel', 'ExcelListClassification');
-//         Route::get('/D_CL/student_card/certificate/card-student-excel', 'ExcelListClassification');
-//     });
-// });
 
 Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static function () {
     Route::controller(CertificateController::class)->group(function () {
@@ -393,6 +336,7 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
 });
 
 
+
 Route::group(['prefix' => 'admin-panel', 'middleware' => 'auth'], static function () {
     Route::controller(adminController::class)->group(function () {
         Route::get('/', 'index')->name('admin.ap');
@@ -426,6 +370,12 @@ Route::group(['prefix' => 'student-sana'], function (){
     Route::get ('/edit/student-sana/transaction', [StudentSanaController::class, 'EcitStudentSana']);
     Route::get ('/save/update-student-sana', [StudentSanaController::class, 'SaveStudentSana']);
 })->middleware('auth');
+
+Route::group(['prefix' => 'report-total-score'], function (){
+    Route::get('/',[ReportTotalScoreExamController::class,'index']);
+    Route::get('/report-total-score-priview',[ReportTotalScoreExamController::class,'Priview']);
+})->middleware('auth');
+
 
 
 

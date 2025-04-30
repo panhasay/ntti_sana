@@ -263,4 +263,16 @@ class DashboardController extends Controller
             ->get();
         return view('dashboard.dashboard_teacher', compact('record', 'total_class', 'total_subject', 'assignedClasses', 'Classes_history'));
     }
+    public function TeacherMmanagementClass(Request $request)
+    {
+        $filter = $request->all();
+        $type = $filter['type'] ?? '';
+        $data = $this->services->GetDateIndexOption(now()); 
+
+       
+        $records = AssingClasses::where('teachers_code',$filter['code'])->get();
+
+        return view('dashboard.dashboard_teacher_management_class', array_merge($data, compact('records', 'type')));
+        // return view('dashboard.dashboard_teacher_management_class', compact('records'));
+    }
 }

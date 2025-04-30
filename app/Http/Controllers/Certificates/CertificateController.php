@@ -60,9 +60,43 @@ class CertificateController extends Controller
      */
     public function index()
     {
-        $record_dept = Department::where('is_active', 'Yes')->take('3')->get();
+        $record_dept = Department::where('is_active', 'Yes')->where('code', 'D_IT')->take('3')->get();
 
         return view('certificate/certificate_department_menu', compact('record_dept'));
+    }
+
+    public function IndexPrintCertificates(){
+        $page = "Certificate-Degree";
+        $records = Student::paginate(20);
+        $data = $this->services->GetDateIndexOption(now()); 
+
+        return view('certificate.certificate_degree', array_merge($data, compact('records', 'page')));
+    }
+
+    public function CertificatesDegrePrints(Request $request){
+        $data = $request->all();
+        $records = Student::where('code', $data['code'])->first();
+        return view('certificate.certificate_degree_print', compact('records'));
+    }
+
+    public function CertificatesDegrePriview(Request $request)
+    {
+        $data = $request->all();
+        $records = Student::where('code', $data['code'])->first();
+
+        if (!$records) {
+            return response()->json([
+                'status' => 'error',
+                'msg' => 'មិនមានទិន្ន័យសម្រាប់លេខនេះ!'
+            ]);
+        }
+
+        $view = view('certificate.certificate_degree_priview', compact('records'))->render();
+
+        return response()->json([
+            'status' => 'success',
+            'html' => $view
+        ]);
     }
     /**
      * showMenuModule

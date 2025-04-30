@@ -5,6 +5,7 @@ namespace App\Http\Controllers\General;
 use App\Http\Controllers\Controller;
 use App\Models\General\AssingClasses;
 use App\Models\General\AssingClassesStudentLine;
+use App\Models\General\student_score;
 use App\Models\General\Classes;
 use App\Models\General\Subjects;
 use App\Models\Student\Student;
@@ -46,12 +47,14 @@ class AssingClassesController extends Controller
             $records = AssingClasses::with(['department', 'section', 'skill', 'teacher','subject' ])
                 ->where('years', $data['years'])
                 ->where('teachers_code', $user->user_code)
+                ->WhitQueryPermissionTeacher()
                 ->where('qualification', $data['type'])
                 ->paginate(20);
         }else{
             $records = AssingClasses::with(['department', 'section', 'skill', 'teacher','subject' ])
                 ->where('years', $data['years'])
                 ->where('qualification', $data['type'])
+                ->WhitQueryPermissionTeacher()
                 ->orderBy('session_year_code', 'DESC')
                 ->paginate(20);
         }
@@ -97,46 +100,26 @@ class AssingClassesController extends Controller
             if (isset($_GET['code'])) {
                 $records = AssingClasses::where('id', $this->services->Decr_string($_GET['code']))->first();
                 $Assingstudent = Student::where('class_code', $records->class_code ?? '')->get();
-            }
-    
-            $student_codes = $recordsLine->pluck('student_code')->toArray(); 
-            $attendances = DB::table('assing_classes_student_line')
-                ->select('student_code')
-                ->selectRaw('
-                    SUM(
-                        COALESCE(score_week_1, 0) + COALESCE(score_week_2, 0) + COALESCE(score_week_3, 0) + COALESCE(score_week_4, 0) + 
-                        COALESCE(score_week_5, 0) + COALESCE(score_week_6, 0) + COALESCE(score_week_7, 0) + COALESCE(score_week_8, 0) + 
-                        COALESCE(score_week_9, 0) + COALESCE(score_week_10, 0) + COALESCE(score_week_11, 0) + COALESCE(score_week_12, 0) + 
-                        COALESCE(score_week_13, 0) + COALESCE(score_week_14, 0) + COALESCE(score_week_15, 0) + COALESCE(score_week_16, 0) + 
-                        COALESCE(score_week_17, 0) + COALESCE(score_week_18, 0)
-                    ) AS Total_Raw_Score')
-                ->selectRaw('
-                    ROUND(
-                        (SUM(
-                            COALESCE(score_week_1, 0) + COALESCE(score_week_2, 0) + COALESCE(score_week_3, 0) + COALESCE(score_week_4, 0) + 
-                            COALESCE(score_week_5, 0) + COALESCE(score_week_6, 0) + COALESCE(score_week_7, 0) + COALESCE(score_week_8, 0) + 
-                            COALESCE(score_week_9, 0) + COALESCE(score_week_10, 0) + COALESCE(score_week_11, 0) + COALESCE(score_week_12, 0) + 
-                            COALESCE(score_week_13, 0) + COALESCE(score_week_14, 0) + COALESCE(score_week_15, 0) + COALESCE(score_week_16, 0) + 
-                            COALESCE(score_week_17, 0) + COALESCE(score_week_18, 0)
-                        ) / 36.0) * 15, 2
-                    ) AS Scaled_Attendance_Score')
-                ->whereIn('student_code', $student_codes)
-                ->where('assing_line_no', $data['assing_no'])
-                ->groupBy('student_code') // Group by student_code for proper aggregation
-                ->get();
+                
+                $students = Student::where('class_code', $records->class_code)->get();
 
-            // Update the attendance for each student
-            foreach ($attendances as $attendance) {
-                // Find the record to update
-                $record = AssingClassesStudentLine::where('assing_line_no', $data['assing_no'])
-                    ->where('student_code', $attendance->student_code)
-                    ->first();
+                if ($students->isNotEmpty()) {
+                    $studentCodes = $students->pluck('code');
 
-                if ($record) {
-                    $record->attendance = $attendance->Scaled_Attendance_Score; // Update attendance score
-                    $record->save(); // Save the changes
+                    $recordExists = AssingClassesStudentLine::whereIn('student_code', $studentCodes)
+                                        ->where('assing_line_no', $records->assing_no)
+                                        ->exists(); 
+
+                    if (!$recordExists) {
+                        foreach ($students as $student) {
+                            $recordStudent = new AssingClassesStudentLine();
+                            $recordStudent->student_code = $student->code;
+                            $recordStudent->assing_line_no = $records->assing_no;
+                            $recordStudent->save();
+                        }
+                    }
                 }
-
+                
             }
             return view('general.assing_classes_card', compact($params));
         } catch (\Exception $ex) {
@@ -296,7 +279,30 @@ class AssingClassesController extends Controller
             $records = AssingClassesStudentLine::with(['student'])
                     ->where('assing_line_no', $data['assing_no'])
                     ->get();
+
+            // Get scores for the specific date
+            $selectedDate = $request->get('date', date('Y-m-d'));
+            
+            // Get all student scores for this assignment and date
+            $student_scores = student_score::where('assign_line_no', $data['assing_no'])
+                ->whereDate('att_date', $selectedDate)
+                ->get()
+                ->keyBy('student_code'); // Index by student_code for easier lookup
+
+            // Add attendance data to each student record
+            $records = $records->map(function($record) use ($student_scores) {
+                $score = $student_scores->get($record->student_code);
+                $record->score = $score ? $score->att_score : null;
+                return $record;
+            });
+
             $header = AssingClasses::where('assing_no', $data['assing_no'])->first();
+            $scores = $student_scores->map(function($score) {
+                return [
+                    'student_id' => $score->student_code,
+                    'att_score' => $score->att_score
+                ];
+            })->values()->toArray();
 
             return view('general.assing_attendant_lists', compact('records', 'header'));
 
@@ -553,6 +559,37 @@ class AssingClassesController extends Controller
         } catch (\Exception $ex){
             $this->services->telegram($ex->getMessage(),'list of student',$ex->getLine());
             return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
+        }
+    }
+
+    public function UpdateScoreStudent(Request $request)
+    {
+        $data = $request->all();
+        try {
+            // Check if a record exists for the same student, assign_line_no, and att_date
+            
+            $record = student_score::where('assign_line_no', $data['assign_line_no'])
+                ->where('student_code', $data['student_code'])
+                ->whereDate('att_date', $data['date']) // Use provided date
+                ->first();
+    
+            if ($record) {
+                // If found, update the existing record
+                $record->att_score = $data['score'];
+                $record->save();
+            } else {
+                // If no record exists for the given date, create a new one
+                student_score::create([
+                    'assign_line_no' => $data['assign_line_no'],
+                    'student_code' => $data['student_code'],
+                    'att_date' => $data['date'], // Use provided date
+                    'att_score' => $data['score']
+                ]);
+            }
+            
+            return response()->json(['status' => 'success', 'msg' => 'ពិន្ទុត្រូវបានរក្សាទុក!']);
+        } catch (\Exception $ex) {
+            return response()->json(['status' => 'error', 'msg' => $ex->getMessage()]);
         }
     }
 }

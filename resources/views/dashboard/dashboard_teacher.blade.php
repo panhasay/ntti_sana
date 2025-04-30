@@ -38,7 +38,8 @@
     <!-- Teacher Stats -->
     <div class="row mb-4">
         <div class="col-md-3">
-            <a href="{{ url('/manage-academic-work') }}" style="text-decoration: none;">
+            <?php $teacher_code = $record->code; ?>
+            <a href="{{ url('/teacher-management-class?code='.$record->code ?? '' ) }}" style="text-decoration: none;">
                 <div class="card text-white" style="border-radius: 15px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                     <div class="card-body position-relative" style="background: linear-gradient(45deg, #43b1e9, #edbd9d); padding: 1.5rem;">
                         <div class="position-absolute" style="top: 0; right: 0; padding: 1rem;">
@@ -71,18 +72,63 @@
                 </div>
             </div>
         </div>
+
+       
         <div class="col-md-3">
-            <div class="card text-white" style="border-radius: 15px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">   
-            <a href="{{ url('/class-schedule') }}" style="text-decoration: none;">
-                    <div class="card-body position-relative" style="background: linear-gradient(45deg, #29c3b6, #38ef7d); padding: 1.5rem;">
-                    <h5 class="card-title" style="font-size: 1.1rem; margin-bottom: 1rem;">កាលបរិច្ឆេទ</h5>     
-                    <div class="d-flex justify-content-center align-items-center" style="height: 85px;">
-                            <i class="mdi mdi-calendar-clock" style="font-size: 1.5rem; color: white;"> {{ Carbon\Carbon::now()->locale('km')->isoFormat('ថ្ងៃdddd ទីD ខែMMMM ឆ្នាំY') }}</i>
+            <a href="{{ url('/teacher-management-class?type=schedule&code='.$teacher_code ?? '' ) }}" style="text-decoration: none;">
+                <div class="card text-white" style="border-radius: 15px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    <div class="card-body position-relative" style="background: linear-gradient(45deg, #43b1e9, #edbd9d); padding: 1.5rem;">
+                        <div class="position-absolute" style="top: 0; right: 0; padding: 1rem;">
+                            <i class="mdi mdi-teach" style="font-size: 2.5rem; opacity: 0.3;"></i>
                         </div>
+                        <h5 class="card-title" style="font-size: 1.1rem; margin-bottom: 1rem;">កាលវិភាគបង្រៀន</h5>
+                        <div class="card-text mb-1" style="font-size: 25px; font-weight: bold;">
+                            @php
+                            $khmerDays = [
+                                  'sunday' => 'អាទិត្យ',
+                                  'monday' => 'ចន្ទ',
+                                  'tuesday' => 'អង្គារ',
+                                  'wednesday' => 'ពុធ',
+                                  'thursday' => 'ព្រហស្បតិ៍',
+                                  'friday' => 'សុក្រ',
+                                  'saturday' => 'សៅរ៍',
+                              ];
+                          @endphp
+                          @if(count($assignedClasses) > 0)
+                            @foreach($assignedClasses as $record)
+                                ថ្ងៃ : {{ $khmerDays[strtolower($record->date_name)] ?? $record->date_name }} ...
+                            @endforeach
+                          @else
+                                ថ្ងៃ : ចន្ទ...
+                          @endif
+                        </div>
+                        <small class="text-white-50">ឆមាសនេះ</small>
                     </div>
-                </a>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white" style="border-radius: 15px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                <div class="card-body position-relative" style="background: linear-gradient(45deg, #77c5ed, #0083B0); padding: 1.5rem;">
+                    <div class="position-absolute" style="top: 0; right: 0; padding: 1rem;">
+                        <i class="mdi mdi-calendar-today" style="font-size: 2.5rem; opacity: 0.3;"></i>
+                    </div>
+                    <h5 class="card-title" style="font-size: 1.1rem; margin-bottom: 1rem;">កាលវិភាគ កាប្រឡង</h5>
+                    <h2 class="card-text mb-1" style="font-size: 2.5rem; font-weight: bold;">{{ count($assignedClasses) ?? '0'}} 
+                        @foreach($assignedClasses as $record)
+                            <span style="font-size: 18px;"> 
+                                <a  href="{{ '/assign-classes/transaction?type=ed&code=' . App\Service\service::Encr_string($record->id) }}&years={{ $record->years ?? '' }}&type={{ $record->qualification ?? '' }}&assing_no={{ $record->assing_no ?? '' }}" style="color: #ffff;">{{ $record->class_code }}</a>
+                                {{-- <span style="font-size: 12px;">{{ $record->subject->name ?? '' }}</span> --}}
+                            </span>
+                        @endforeach
+                    </h2>
+                    <small class="text-white-50">ឆមាសនេះ</small>
+                </div>
             </div>
         </div>
+      
+
     </div>
 
 
@@ -446,6 +492,32 @@
 </div>
 
 <script>
+
+    function updateTime() {
+        const now = new Date();
+
+        const day = String(now.getDate()).padStart(2, '0');
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const month = monthNames[now.getMonth()];
+        const year = now.getFullYear();
+
+        let hour = now.getHours();
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        hour = hour % 12;
+        hour = hour ? hour : 12;
+        const minute = String(now.getMinutes()).padStart(2, '0');
+        const second = String(now.getSeconds()).padStart(2, '0');
+
+        const formatted = `${day} - ${month} - ${year} ${hour}:${minute}:${second} ${ampm}`;
+
+        $('#realtime').text(formatted);
+    }
+
+    $(document).ready(function() {
+        updateTime(); 
+        setInterval(updateTime, 1000); 
+    });
 function filterTeacherClasses() {
     const classCode = document.getElementById('class_select').value;
     
