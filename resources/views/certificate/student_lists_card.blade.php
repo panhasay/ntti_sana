@@ -30,7 +30,7 @@
     <div class="col-2">
     </div>
     <div class="col-5 text-center KhmerOSMuolLight">
-        ព្រះរាជាណាចក្រកម្ពុជា
+        ព្រះរាជាណាចក្រកម្ពុជា <br>
         ជាតិ សាសនា ព្រះមហាក្សត្រ
     </div>
 

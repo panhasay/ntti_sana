@@ -27,6 +27,7 @@
     font-family: 'Khmer OS Muol Light';
   }
 </style>
+
 @if($type == 'is_print')
   <style>
     @page {
@@ -132,6 +133,7 @@
           <th class="text-center" width="150">Mid 15%</th>
           <th class="text-center" width="150">Final 55%</th>
           <th class="text-center" width="150">Total</th>
+          <th class="text-center" width="150">ផ្សេងៗ</th>
         </tr>
       </thead>
         <tbody id="recordsLineTableBody">
@@ -143,10 +145,10 @@
               <td>
                 <a class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2 DeletDataLine"
                   data-id="{{ $line->id ?? '' }}" href="javascript:void(0)">
-                  <i class="mdi mdi-delete-forever"></i> ដកចេញ
+                    <i class="mdi mdi-delete-forever"></i> ដកចេញ
                 </a>
               </td>
-              <td class="text-center">{{ $line->student->code ?? ''}}</td>
+              <td class="text-center">{{ $line->student->code ?? ''}}</td>  
               <td>{{ $line->student->name_2 ?? ''}}</td>
               <td>{{ $line->student->name ?? ''}}</td>
               <td class="text-center">{{ $line->student->gender ?? ''}}</td>
@@ -171,6 +173,12 @@
                   placeholder="0" aria-label="0">
               </td>
               <td class="text-center total_score" id="total_score">{{ $total_score ?? '' }}</td>
+
+              <td class="text-center total_score">
+                 <input type="text" class="form-control-line form-control-sm form_data_line" data-id="{{ $line->id }}"
+                  student-code="{{ $line->student_noted ?? '' }}" id="student_noted" name="student_noted" value="{{ $line->student_noted ?? "" }}"
+                  placeholder="ផ្សេងៗ" aria-label="0">
+              </td>
             </form>
           </tr>
           @endforeach

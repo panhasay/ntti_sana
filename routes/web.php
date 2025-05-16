@@ -24,6 +24,8 @@ use App\Models\General\DividedNewClasses;
 use GuzzleHttp\Middleware;
 use Illuminate\support\Facades\App;
 
+use App\Http\Controllers\General\ScoreController;
+
 use App\Models\General\ExamSchedule;
 use App\Http\Controllers\Certificates\CertificateController;
 use App\Http\Controllers\General\StudentSanaController;
@@ -72,9 +74,11 @@ Route::get('/greeting/{locale}', function (string $locale) {
     Route::post('post-registration', [AuthController::class, 'postRegistration'])->name('register.post');
    
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
-Route::group(['perfix' => 'department', 'middleware' => 'user_permission'], function (){
+    Route::group(['perfix' => 'department', 'middleware' => 'user_permission'], function (){
     Route::get('/department-menu', [AuthController::class, 'departmentMenu']);
+   
 });
+Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('forgot.password');
 Route::group(['perfix' => 'student'], function (){
     Route::get('/student', [StudnetController::class, 'index'])->name('student');
     Route::get('/settings-customize-field', [StudnetController::class, 'SettingsCustomizeField'])->name('SettingsCustomizeField');
@@ -376,6 +380,7 @@ Route::group(['prefix' => 'report-total-score'], function (){
     Route::get('/report-total-score-priview',[ReportTotalScoreExamController::class,'Priview']);
 })->middleware('auth');
 
+Route::get('/score', [ScoreController::class, 'index']);
 
 
 

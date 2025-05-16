@@ -13,7 +13,9 @@
     <td>{{ $record->name_2 ?? '' }}</td>
     <td>{{ ucwords(strtolower($record->name ?? '')) }}</td>
     <td>{{ $record->gender ?? '' }}</td>
-    <td>{{ App\Service\service::DateYearKH($record->date_of_birth) ?? '' }}</td>
+    <td>
+      {{-- {{ App\Service\service::DateYearKH($record->date_of_birth) ?? '' }} --}}
+    </td>
     <td>{{ $record->phone_student ?? '' }}</td>
     <td>{{ $record->class_code ?? '' }}</td>
     <td>{{ DB::table('skills')->where('code', $record->skills_code)->value('name_2') ?? '' }}</td>

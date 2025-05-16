@@ -31,8 +31,8 @@
       </button>
   </div>
   <div class="d-grid d-md-flex justify-content-md-end p-3">
-    {{-- <input type="text" class="form-control mb-2 mb-md-0 me-2" id="search_data" data-page="student_registration" name="search_data"
-      placeholder="Serch...." aria-label="Recipient's username" aria-describedby="basic-addon2"> --}}
+    <input type="text" class="form-control mb-2 mb-md-0 me-2" id="search_data" data-page="student_registration" name="search_data"
+      placeholder="ស្វែងរក...." aria-label="Recipient's username" aria-describedby="basic-addon2">
     <div>
       {{-- <button type="button" class="btn btn-outline-primary"> Seacrh </button> --}}
     </div>
@@ -51,23 +51,18 @@
             
             <div class="col-sm-2">
               <span class="labels">អត្តលេខ</span>
-                <select class="js-example-basic-single FieldRequired" id="code" name="code" style="width: 100%;">
-                    <option value="">&nbsp;</option>
-                </select>
+              <input type="text" class="form-control form-control-sm" id="code" name="code" value="" placeholder="អត្តលេខ" aria-label="អត្តលេខ">
             </div>
 
             <div class="col-sm-2">
               <span class="labels">អក្សឡាតាំង</span>
-                <select class="js-example-basic-single FieldRequired" id="name" name="name" style="width: 100%;">
-                  <option value="">&nbsp;</option>
-                </select>
+              <input type="text" class="form-control form-control-sm" id="name" name="name" value="" placeholder="អក្សឡាតាំង" aria-label="អក្សឡាតាំង">
             </div>
 
             <div class="col-sm-2">
               <span class="labels">គោត្តនាម និងនាម</span>
-                <select class="js-example-basic-single FieldRequired" id="name_2" name="name_2" style="width: 100%;">
-                  <option value="">&nbsp;</option>
-                </select>
+              <input type="text" class="form-control form-control-sm" id="name_2" name="name_2" value="" placeholder="គោត្តនាម និងនាម" aria-label="គោត្តនាម និងនាម">
+
             </div>
            
             <div class="col-sm-2">
@@ -157,9 +152,10 @@
 @include('system.model_upload_excel')
 <script>
   $(document).ready(function() {
-    initSelect2('#code', 'អត្តលេខ', "{{ route('students.list') }}", 'code');
-    initSelect2('#name_2', 'គោត្តនាម និងនាម', "{{ route('students.list') }}", 'name_2');
-    initSelect2('#name', 'អក្សឡាតាំង', "{{ route('students.list') }}", 'name');
+  
+    // initSelect2('#code', 'អត្តលេខ', "{{ route('students.list') }}", 'code');
+    // initSelect2('#name_2', 'គោត្តនាម និងនាម', "{{ route('students.list') }}", 'name_2');
+    // initSelect2('#name', 'អក្សឡាតាំង', "{{ route('students.list') }}", 'name');
 
     $.ajaxSetup({
       headers: {
@@ -445,43 +441,43 @@
     $("#divUplocadExcel").modal('show');
   }
 
-  function initSelect2(selector, placeholder, ajaxUrl, fieldKey) {
-    $(selector).select2({
-        placeholder: placeholder,
-        allowClear: true,
-        minimumInputLength: 1,
-        language: {
-            inputTooShort: function () {
-                return "សូមបញ្ចូល ទិន្ន័យ"; // Custom Khmer message
-            }
-        },
-        ajax: {
-            url: ajaxUrl,
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    search: params.term,
-                    page: params.page || 1
-                };
-            },
-            processResults: function (data, params) {
-                params.page = params.page || 1;
+  // function initSelect2(selector, placeholder, ajaxUrl, fieldKey) {
+  //   $(selector).select2({
+  //       placeholder: placeholder,
+  //       allowClear: true,
+  //       minimumInputLength: 1,
+  //       language: {
+  //           inputTooShort: function () {
+  //               return "សូមបញ្ចូល ទិន្ន័យ"; // Custom Khmer message
+  //           }
+  //       },
+  //       ajax: {
+  //           url: ajaxUrl,
+  //           dataType: 'json',
+  //           delay: 250,
+  //           data: function (params) {
+  //               return {
+  //                   search: params.term,
+  //                   page: params.page || 1
+  //               };
+  //           },
+  //           processResults: function (data, params) {
+  //               params.page = params.page || 1;
 
-                return {
-                    results: data.data.map(item => ({
-                        id: item[fieldKey], // Use dynamic field key
-                        text: item[fieldKey] // Display dynamic field key
-                    })),
-                    pagination: {
-                        more: data.next_page_url ? true : false
-                    }
-                };
-            },
-            cache: true
-        }
-    });
-  }
+  //               return {
+  //                   results: data.data.map(item => ({
+  //                       id: item[fieldKey], // Use dynamic field key
+  //                       text: item[fieldKey] // Display dynamic field key
+  //                   })),
+  //                   pagination: {
+  //                       more: data.next_page_url ? true : false
+  //                   }
+  //               };
+  //           },
+  //           cache: true
+  //       }
+  //   });
+  // }
 
 </script>
 @endsection

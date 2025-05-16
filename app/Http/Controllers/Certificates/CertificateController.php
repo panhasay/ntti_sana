@@ -30,6 +30,7 @@ use App\Models\Certificates\CertStudentPrintCardExpireClass;
 use App\Http\Controllers\certificates\CertificateDegreeController;
 use App\Http\Controllers\Certificates\CertificateOfficialTranscriptController;
 
+
 use App\Models\General\Qualifications;
 use App\Models\Student\Student;
 use App\Service\service;
@@ -60,43 +61,9 @@ class CertificateController extends Controller
      */
     public function index()
     {
-        $record_dept = Department::where('is_active', 'Yes')->where('code', 'D_IT')->take('3')->get();
+        $record_dept = Department::where('is_active', 'Yes')->take('3')->get();
 
         return view('certificate/certificate_department_menu', compact('record_dept'));
-    }
-
-    public function IndexPrintCertificates(){
-        $page = "Certificate-Degree";
-        $records = Student::paginate(20);
-        $data = $this->services->GetDateIndexOption(now()); 
-
-        return view('certificate.certificate_degree', array_merge($data, compact('records', 'page')));
-    }
-
-    public function CertificatesDegrePrints(Request $request){
-        $data = $request->all();
-        $records = Student::where('code', $data['code'])->first();
-        return view('certificate.certificate_degree_print', compact('records'));
-    }
-
-    public function CertificatesDegrePriview(Request $request)
-    {
-        $data = $request->all();
-        $records = Student::where('code', $data['code'])->first();
-
-        if (!$records) {
-            return response()->json([
-                'status' => 'error',
-                'msg' => 'មិនមានទិន្ន័យសម្រាប់លេខនេះ!'
-            ]);
-        }
-
-        $view = view('certificate.certificate_degree_priview', compact('records'))->render();
-
-        return response()->json([
-            'status' => 'success',
-            'html' => $view
-        ]);
     }
     /**
      * showMenuModule
@@ -214,31 +181,37 @@ class CertificateController extends Controller
         $rows_per_page = $request->input('rows_per_page', 50);
 
         $students = StudentModel::getFilteredStudents($dept_code, $class_code, $search, $rows_per_page);
-
         $students->transform(function ($student) {
-            
-            $student->stu_photo = DB::table('picture')->where('code', $student->code)->orderByDesc('id')->value('picture_ori');
+            $student->stu_photo = DB::table('picture')
+                ->where('code', $student->code)
+                ->orderByDesc('id')
+                ->value('picture_ori');
 
             $filePath = public_path('uploads/student/' . $student->stu_photo);
 
             $student->photo_status = $student->stu_photo && file_exists($filePath) ? true : false;
 
+            
+            
             $record_card_expire = CertStudentPrintCardExpireClass::where('class_code', $student->class_code)
-                        ->where('status', 1)
-                        ->orderBy('session_code', 'desc')
-                        ->first();
+                ->where('status', 1)
+                ->orderBy('session_code', 'desc')
+                ->first();
+
+            $expireDate = null;
+
+            if ($record_card_expire && isset($record_card_expire->expire_date)) {
+                $expireDate = $this->services::DateYearKH($record_card_expire->expire_date);
+            }
 
             $now = Carbon::now()->subYear();
-
-            $expireDate = $this->services::DateYearKH($record_card_expire['expire_date']);
-
+          
             Carbon::parse($record_card_expire['expire_date'] ?? $now);
-
+            // $diff = $expireDate->diff($now);
             $student->expire_date = $record_card_expire['expire_date'] ?? 0;
-
             $student->print_expire_date = $record_card_expire['print_expire_date'] ?? 0;
             $student->remaining = $expireDate;
-
+            
             if ($expireDate <= $now) {
                 $student->class_remaining = 'text-danger';
             } else {
@@ -248,7 +221,6 @@ class CertificateController extends Controller
             $count_revision = CertStudentPrintCardRevision::where('print_card_id', $student->id)
                 ->where('status', 1)
                 ->count();
-                
             $student->count_revision = $count_revision;
             return $student;
         });
@@ -784,8 +756,6 @@ class CertificateController extends Controller
 
     public function uploadMultiplePhoto(Request $request)
     {
-
-        dd("Hello uploadMultiplePhoto");
         $images = $request->input('images');
         if (!is_array($images) || empty($images)) {
             return response()->json(['message' => 'No images provided.'], 400);
@@ -1042,7 +1012,9 @@ class CertificateController extends Controller
     {
         $data = $request->all();
         $level_code = $request->input('level_code');
-        $class_code = $request->input('class_code');
+        $class_code = $request->input('data_class');
+
+        // dd($class_code);
 
         $query = CertStudentPrintCardExpireClass::where('status', 1);
         if ($class_code !== 'code_all') {
@@ -1052,9 +1024,17 @@ class CertificateController extends Controller
             $q->where('level', $level_code);
         });
 
-        $records = CertStudentPrintCardExpireClass::where('class_code', $data['data_class'])->first();
+        $records = CertStudentPrintCardExpireClass::where('class_code', $class_code)->first();
+        $class = Classes::where('code', $class_code)->first();
+        
+        if (!$records) {
+            $exists = new CertStudentPrintCardExpireClass();
+            $exists->class_code = $class->code;
+            $exists->session_code = $class->school_year_code; // corrected typo
+            $exists->save(); // don't forget to save the new record
+        }
 // 
-        $qualification = Classes::where('code', $data['data_class'])->value('level');
+        $qualification = Classes::where('code', $class_code)->value('level');
         $results = $query->with(['class', 'createdBy:id,name', 'updatedBy:id,name'])->get();
        
 

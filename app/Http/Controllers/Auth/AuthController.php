@@ -199,7 +199,7 @@ class AuthController extends Controller
         $record->session_token =  "";
         $record->update();
 
-        $department = $user->department->name_2;
+        $department = $user->department->name_2 ?? '';
         $ip = request()->ip();
         $userAgent = request()->header('User-Agent');
         $ipAddress = request()->ip(); // Get the IP address
@@ -211,4 +211,23 @@ class AuthController extends Controller
         Auth::logout();
         return Redirect('login');
     }
+    public function sendResetLink(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'newpassword' => 'required|min:6', // Validate password
+        ]);
+
+        $user = \App\Models\User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Email not found.'], 404);
+        }
+
+        $user->password = \Illuminate\Support\Facades\Hash::make($request->newpassword);
+        $user->save(); // Save updated password
+
+        return response()->json(['message' => 'Password reset successfully.'], 200);
+    }
+
 }

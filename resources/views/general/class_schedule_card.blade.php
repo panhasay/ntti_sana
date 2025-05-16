@@ -62,7 +62,7 @@
                                 <option value="">&nbsp;</option>
                                 @foreach ($classs as $record)
                                 <option value="{{ $record->code ?? '' }}" {{ isset($records->class_code) && $records->class_code == $record->code ? 'selected' : '' }}>
-                                    {{ isset($record->code) ? $record->code : '' }} - {{ isset($record->name) ? $record->name : '' }}
+                                    {{ str_replace('.', '', $record->name ?? '') }}
                                 </option>
                                 @endforeach
                             </select>
@@ -78,7 +78,7 @@
                                 <option value="">&nbsp;</option>
                                 @foreach ($sections as $record)
                                 <option value="{{ $record->code ?? '' }}" {{ isset($records->sections_code) && $records->sections_code == $record->code ? 'selected' : '' }}>
-                                    {{ isset($record->code) ? $record->code : '' }} - {{ isset($record->name_2) ? $record->name_2 : '' }}
+                                    {{ isset($record->name_2) ? $record->name_2 : '' }}
                                 </option>
                                 @endforeach
                             </select>
@@ -94,7 +94,7 @@
                                 <option value="">&nbsp;</option>
                                 @foreach ($skills as $record)
                                 <option value="{{ $record->code ?? '' }}" {{ isset($records->skills_code) && $records->skills_code == $record->code ? 'selected' : '' }}>
-                                    {{ isset($record->code) ? $record->code : '' }} - {{ isset($record->name_2) ? $record->name_2 : '' }}
+                                    {{ isset($record->name_2) ? $record->name_2 : '' }}
                                 </option>
                                 @endforeach
                             </select>
@@ -110,7 +110,7 @@
                                 <option value="">&nbsp;</option>
                                 @foreach ($department as $record)
                                 <option value="{{ $record->code ?? '' }}" {{ isset($records->department_code) && $records->department_code == $record->code ? 'selected' : '' }}>
-                                    {{ isset($record->code) ? $record->code : '' }} - {{ isset($record->name_2) ? $record->name_2 : '' }}
+                                     {{ isset($record->name_2) ? $record->name_2 : '' }}
                                 </option>
                                 @endforeach
                             </select>
@@ -177,7 +177,7 @@
                                 <option value="">&nbsp;</option>
                                 @foreach ($study_years as $record)
                                 <option value="{{ $record->code ?? '' }}" {{ isset($records->years) && $records->years == $record->code ? 'selected' : '' }}>
-                                    {{ isset($record->code) ? $record->code : '' }} - {{ isset($record->name_2) ? $record->name_2 : '' }}
+                                    {{ isset($record->name_2) ? $record->name_2 : '' }}
                                 </option>
                                 @endforeach
                             </select>
@@ -204,7 +204,8 @@
     </div>
 </div>
 <!-- Modal -->
-@include('system.model_class_schedule')<br>
+@include('system.model_class_schedule')
+<br>
 <!---PRINT--->
 <div class="modal fade" id="ModelPrints" tabindex="-1" role="dialog" aria-labelledby="ModelPrints" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -409,6 +410,9 @@
                         $('#end_time').val(records.end_time);
                         $('#room').val(records.room);
                         $("#ModalTeacherSchedule").modal("show");
+                         $('#teachers_code, #subjects_code, #date_name, #subjects_code_wednesday, #subjects_code_thursday, #subjects_code_friday, #subjects_code_saturday').select2({
+                            dropdownParent: $('#ModalTeacherSchedule') 
+                        });
                         $('#SaveTeacherSchedule').attr('data-id', records.id);
                     }
                 },

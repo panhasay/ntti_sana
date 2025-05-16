@@ -102,13 +102,9 @@
                     </div>
 
                     <hr class="my-2" />
-
-                    <div class="d-flex justify-content-between small text-muted mb-1">
-                        <div><i class="bi bi-clock"></i> {{ $record->start_time ?? '' }} - {{ $record->end_time ?? '' }}</div>
-                        <div>Room : ({{ $record->room ?? '' }})</div>
-                    </div>
-                    <div class="text-muted small">វេន : {{ $record->section->name_2 ?? '' }}</div>
-
+                      <div class="text-muted small">{{ $record->start_time ?? '' }} - {{ $record->end_time ?? '' }}</div>
+                      <div class="text-muted small">Room : ({{ $record->room ?? '' }})</div>
+                      <div class="text-muted small">វេន : {{ $record->section->name_2 ?? '' }}</div>
                     <span class="position-absolute bottom-0 end-0 m-2 bg-warning rounded-circle" style="width:10px; height:10px;"></span>
                 </div>
             </div>

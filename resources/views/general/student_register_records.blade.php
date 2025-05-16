@@ -3,6 +3,8 @@
     <?php 
         $gender = ($record->gender == 'male') ? 'ប្រុស' : 'ស្រី';
         $khmerDate = !empty($record->date_of_birth) ? App\Service\service::DateYearKH($record->date_of_birth) : '';
+        $student_picture = App\Models\General\Picture::where('code', $record->code)->value('picture_ori');	
+
     ?>
     <tr id="row{{$record->code}}">
       <td>
@@ -12,8 +14,8 @@
         <button class="btn btn-danger btn-icon-text btn-sm" id="btnDelete" data-code="{{ $record->code ?? '' }}">
           <i class="mdi mdi-delete-forever"></i> លុប
         </button>
-        @if($record->student_picture)
-          <img class="btn-Image" id="btn-Image" data-code="{{ $record->code ?? '' }}" src="/uploads/student/{{ $record->student_picture }}" width="100" height="100">
+        @if($student_picture)
+          <img class="btn-Image" id="btn-Image" data-code="{{ $record->code ?? '' }}" src="/uploads/student/{{ $student_picture ?? '' }}" width="100" height="100">
         @else
           <img class="btn-Image" id="btn-Image" data-code="{{ $record->code ?? '' }}" src="/asset/NTTI/images/faces/default_User.jpg" width="100" height="100">
         @endif

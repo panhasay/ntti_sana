@@ -90,12 +90,21 @@ class AssingClassesController extends Controller
         $teachers = DB::table('teachers')->get();
         $classes = Classes::get();
         $subjects = Subjects::get();
-        $recordsLine = AssingClassesStudentLine::with(['student'])
+
+        $recordsLine = AssingClassesStudentLine::with('student')
                 ->where('assing_line_no', $data['assing_no'])
-                ->get();
+                ->get()
+                ->sortBy(function ($line) {
+                    return optional($line->student)->name_2;
+                }, SORT_REGULAR, false); 
+
+        $isEmpty = $recordsLine->isEmpty(); 
+
+        // update suore student 
+
         $Assingstudent = null;
         try {
-            $params = ['records', 'type', 'page', 'skills', 'department', 'sections', 'session_years', 'classes', 'teachers', 'subjects', 'recordsLine', 'Assingstudent'];
+            $params = ['records', 'type', 'page', 'skills', 'department', 'sections', 'session_years', 'classes', 'teachers', 'subjects', 'recordsLine', 'Assingstudent', 'isEmpty'];
             if ($type == 'cr') return view('general.assing_classes_card', compact($params));
             if (isset($_GET['code'])) {
                 $records = AssingClasses::where('id', $this->services->Decr_string($_GET['code']))->first();
@@ -119,7 +128,6 @@ class AssingClassesController extends Controller
                         }
                     }
                 }
-                
             }
             return view('general.assing_classes_card', compact($params));
         } catch (\Exception $ex) {
@@ -201,7 +209,7 @@ class AssingClassesController extends Controller
             }
         $recordsLine = $records;
         $total_score = $recordsLine->attendance + $recordsLine->assessment + $recordsLine->midterm + $recordsLine->final;
-            return response()->json(['status' => 'success', 'total_score' => $total_score,'msg' => 'ពិន្ទុ update!', '$records' => $records]);
+            return response()->json(['status' => 'success', 'total_score' => $total_score,'msg' => 'update!', '$records' => $records]);
         } catch (\Exception $ex) {
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
@@ -229,6 +237,7 @@ class AssingClassesController extends Controller
             if ($exstan) return response()->json(['status' => 'error', 'msg' => "និស្សិតឈ្មោះ $records->name_2 មានរូចហើយ​! "]);
             $recordLine = new AssingClassesStudentLine();
             $recordLine->student_code = $records->code;
+            $recordLine->assing_line_no = $request->assing_no;
             $recordLine->save();
             DB::commit();
             return response()->json(['status' => 'success', 'msg' => "និស្សិតឈ្មោះ $records->name_2 បានបញ្ចូល! "]);

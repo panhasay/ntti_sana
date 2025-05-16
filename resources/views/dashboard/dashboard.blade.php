@@ -100,20 +100,23 @@
         text-decoration: none !important;
     }
 
-    .menu-list ul li a{
-     color: #2194ce;
+    .menu-list ul li a {
+        color: #2194ce;
     }
-    .titl-main-name{
+
+    .titl-main-name {
         font-size: 15px;
         font-family: 'Khmer M1';
     }
+
     .about-section {
         padding: 30px;
         background: #fff;
         border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         margin-bottom: 30px;
     }
+
     .section-title {
         color: #2194ce;
         font-size: 24px;
@@ -121,31 +124,37 @@
         padding-bottom: 10px;
         border-bottom: 2px solid #2194ce;
     }
+
     .sub-title {
         color: #2c3e50;
         font-size: 20px;
         margin: 20px 0 15px 0;
     }
+
     .content-text {
         color: #34495e;
         line-height: 1.6;
         text-align: justify;
     }
+
     .objective-list {
         list-style: none;
         padding-left: 20px;
     }
+
     .objective-list li {
         position: relative;
         padding-left: 25px;
         margin-bottom: 10px;
     }
+
     .objective-list li:before {
         content: "♦";
         position: absolute;
         left: 0;
         color: #2194ce;
     }
+
     .banner-section {
         position: relative;
         width: 100%;
@@ -153,23 +162,23 @@
         margin-bottom: 30px;
         border-radius: 10px;
         overflow: hidden;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
-    
+
     .banner-image {
         width: 100%;
         height: 100%;
         object-fit: cover;
         object-position: center;
     }
-    
+
     .banner-overlay {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5));
+        background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5));
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -178,32 +187,33 @@
         text-align: center;
         padding: 20px;
     }
+
     .stat-item {
         transition: all 0.3s ease;
         background: white;
-        border: 1px solid rgba(0,0,0,0.1);
+        border: 1px solid rgba(0, 0, 0, 0.1);
     }
-    
+
     .stat-item:hover {
         transform: translateY(-3px);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
-    
+
     .stat-item h4 {
         color: #2194ce;
         font-size: 24px;
         font-weight: bold;
     }
-    
+
     .stat-item small {
         color: #666;
         font-size: 14px;
     }
-    
+
     .campus-image-container {
         transition: all 0.3s ease;
     }
-    
+
     .campus-image-container:hover {
         transform: scale(1.02);
     }
@@ -216,18 +226,20 @@
         border-radius: 20px;
         margin-bottom: 40px;
     }
+
     .hero-banner img {
         width: 100%;
         height: 100%;
         object-fit: cover;
     }
+
     .hero-overlay {
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+        background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7));
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -241,23 +253,27 @@
     .quick-stats {
         margin-bottom: 40px;
     }
+
     .stat-card {
         background: white;
         border-radius: 15px;
         padding: 25px;
         text-align: center;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
+
     .stat-card:hover {
         transform: translateY(-5px);
     }
+
     .stat-number {
         font-size: 2.5rem;
         font-weight: bold;
         color: #2194ce;
         margin-bottom: 10px;
     }
+
     .stat-label {
         color: #666;
         font-size: 1.1rem;
@@ -269,8 +285,9 @@
         border-radius: 20px;
         padding: 30px;
         margin-bottom: 30px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
+
     .section-title {
         color: #2194ce;
         font-size: 1.8rem;
@@ -280,6 +297,7 @@
         display: flex;
         align-items: center;
     }
+
     .section-title i {
         margin-right: 10px;
         font-size: 24px;
@@ -292,19 +310,22 @@
         border-radius: 20px;
         padding: 30px;
     }
+
     .contact-item {
         display: flex;
         align-items: center;
         margin-bottom: 20px;
         padding: 15px;
-        background: rgba(255,255,255,0.1);
+        background: rgba(255, 255, 255, 0.1);
         border-radius: 10px;
         transition: all 0.3s ease;
     }
+
     .contact-item:hover {
-        background: rgba(255,255,255,0.2);
+        background: rgba(255, 255, 255, 0.2);
         transform: translateX(5px);
     }
+
     .contact-item i {
         font-size: 24px;
         margin-right: 15px;
@@ -317,6 +338,7 @@
         gap: 20px;
         margin-top: 20px;
     }
+
     .facility-item {
         background: #f8f9fa;
         padding: 20px;
@@ -324,6 +346,7 @@
         text-align: center;
         transition: all 0.3s ease;
     }
+
     .facility-item:hover {
         background: #e9ecef;
         transform: translateY(-3px);
@@ -354,7 +377,7 @@
         padding: 25px;
         border-radius: 15px;
         margin: 30px 0;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
 
     .org-chart img {
@@ -378,7 +401,7 @@
         padding: 25px;
         border-radius: 15px;
         margin: 20px 0;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
 
     .vision-image img {
@@ -396,7 +419,7 @@
         padding: 25px;
         border-radius: 15px;
         margin-top: 30px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
 
     .objective-list {
@@ -423,7 +446,7 @@
         padding: 25px;
         border-radius: 15px;
         margin-top: 30px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
 
     .mission-content {
@@ -443,7 +466,7 @@
 
     .mission-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
     .mission-icon {
@@ -479,13 +502,13 @@
         background: white;
         border-radius: 15px;
         padding: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
     }
 
     .leadership-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     }
 
     .leadership-image {
@@ -557,7 +580,8 @@
     }
 
     /* Next & previous buttons */
-    .prev, .next {
+    .prev,
+    .next {
         cursor: pointer;
         position: absolute;
         top: 50%;
@@ -570,7 +594,7 @@
         transition: 0.6s ease;
         border-radius: 0 3px 3px 0;
         user-select: none;
-        background-color: rgba(0,0,0,0.3);
+        background-color: rgba(0, 0, 0, 0.3);
         text-decoration: none;
         z-index: 2;
     }
@@ -580,8 +604,9 @@
         border-radius: 3px 0 0 3px;
     }
 
-    .prev:hover, .next:hover {
-        background-color: rgba(0,0,0,0.8);
+    .prev:hover,
+    .next:hover {
+        background-color: rgba(0, 0, 0, 0.8);
     }
 
     /* Dots/circles */
@@ -598,11 +623,12 @@
         height: 12px;
         width: 12px;
         margin: 0 4px;
-        background-color: rgba(255,255,255,0.5);
+        background-color: rgba(255, 255, 255, 0.5);
         border-radius: 50%;
         display: inline-block;
         transition: background-color 0.6s ease;
     }
+
     /* Fading animation */
     .fade {
         animation-name: fade;
@@ -610,8 +636,13 @@
     }
 
     @keyframes fade {
-        from {opacity: .4} 
-        to {opacity: 1}
+        from {
+            opacity: .4
+        }
+
+        to {
+            opacity: 1
+        }
     }
 </style>
 
@@ -624,13 +655,14 @@
                     <nav>
                         <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
                             <a class="nav-item nav-link active" id="Student-tab" data-toggle="tab" href="#Student"
-                                role="tab" aria-controls="Student" aria-selected="true">ព័ត៍មាន និស្សិត
+                                role="tab" aria-controls="Student" aria-selected="true">ព័ត៌មានអំពី និស្សិត
                             </a>
                             {{-- <a class="nav-item nav-link" id="info-teacher-tab" data-toggle="tab" href="#info-teacher"
                                 role="tab" aria-controls="info-teacher" aria-selected="false">ព័ត៍មាន​ សាស្រ្តាចារ្យ
                             </a> --}}
                             <a class="nav-item nav-link" id="info-schools-tab" data-toggle="tab" href="#info-schools"
-                                role="tab" aria-controls="info-schools" aria-selected="false">អំពី វិទ្យាស្ថាន</a>
+                                role="tab" aria-controls="info-schools" aria-selected="false">ព័ត៌មានអំពី
+                                វិទ្យាស្ថាន</a>
                         </div>
                     </nav>
                     <div class="tab-content" id="nav-tabContent">
@@ -691,7 +723,7 @@
                             </div>
                             <br><br>
                             <!--Department civel -->
-                            
+
                             <div class="row p-2 border">
                                 <div class="col-4">
                                     <div class="table-responsive custom-data-table-wrapper2">
@@ -809,9 +841,9 @@
                                 </div>
                             </div>
                         </div>
-                       
+
                         <div class="tab-pane fade" id="info-schools" role="tabpanel" aria-labelledby="info-schools-tab">
-                           
+
                             {{-- ព័ត៍មាន វិទ្យាស្ថាន --}}
 
                             <div class="container-fluid py-4">
@@ -820,25 +852,30 @@
                                     <div class="slideshow-container">
                                         <!-- Slides -->
                                         <div class="slide">
-                                            <img src="https://www.ntti.edu.kh/assets/images/best_1.jpg" alt="NTTI Campus 1">
+                                            <img src="https://www.ntti.edu.kh/assets/images/best_1.jpg"
+                                                alt="NTTI Campus 1">
                                         </div>
                                         <div class="slide">
-                                            <img src="https://www.ntti.edu.kh/assets/images/best_2.jpg" alt="NTTI Campus 2">
+                                            <img src="https://www.ntti.edu.kh/assets/images/best_2.jpg"
+                                                alt="NTTI Campus 2">
                                         </div>
                                         <div class="slide">
-                                            <img src="https://www.ntti.edu.kh/assets/images/best_3.jpg" alt="NTTI Campus 3">
+                                            <img src="https://www.ntti.edu.kh/assets/images/best_3.jpg"
+                                                alt="NTTI Campus 3">
                                         </div>
                                         <div class="slide">
-                                            <img src="https://www.ntti.edu.kh/assets/images/best_4.jpg" alt="NTTI Campus 4">
+                                            <img src="https://www.ntti.edu.kh/assets/images/best_4.jpg"
+                                                alt="NTTI Campus 4">
                                         </div>
                                         <div class="slide">
-                                            <img src="https://www.ntti.edu.kh/assets/images/best_5.jpg" alt="NTTI Campus 5">
+                                            <img src="https://www.ntti.edu.kh/assets/images/best_5.jpg"
+                                                alt="NTTI Campus 5">
                                         </div>
-                                        
+
                                         <!-- Navigation arrows -->
                                         <a class="prev" onclick="changeSlide(-1)">❮</a>
                                         <a class="next" onclick="changeSlide(1)">❯</a>
-                                        
+
                                         <!-- Dots/circles -->
                                         <div class="dots-container">
                                             <span class="dot" onclick="currentSlide(1)"></span>
@@ -849,11 +886,12 @@
                                         </div>
                                     </div>
                                     <div class="hero-overlay">
-                                        <h1 style="font-size: 3rem; margin-bottom: 1rem;">វិទ្យាស្ថានជាតិបណ្តុះបណ្តាលបច្ចេកទេស</h1>
+                                        <h1 style="font-size: 3rem; margin-bottom: 1rem;">
+                                            វិទ្យាស្ថានជាតិបណ្តុះបណ្តាលបច្ចេកទេស</h1>
                                         <h2 style="font-size: 2rem;">National Technical Training Institute</h2>
                                     </div>
                                 </div>
-                            
+
                                 <!-- Quick Stats -->
                                 <div class="quick-stats">
                                     <div class="row">
@@ -871,19 +909,19 @@
                                         </div>
                                         <div class="col-md-3">
                                             <div class="stat-card">
-                                                <div class="stat-number">116</div>
+                                                <div class="stat-number">116+</div>
                                                 <div class="stat-label">Staff Members</div>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="stat-card">
-                                                <div class="stat-number">21</div>
-                                                <div class="stat-label">Buildings</div>
+                                                <div class="stat-number">21+</div>
+                                                <div class="stat-label">Departments</div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            
+
                                 <div class="row">
                                     <!-- Left Column -->
                                     <div class="col-md-8">
@@ -894,7 +932,17 @@
                                                 About NTTI
                                             </h2>
                                             <div class="content-text">
-                                                <p>The National Technical Training Institute (NTTI) is one of Cambodia's many higher education institutions providing Technical Vocational Education and Training under the umbrella of the Ministry of Labor and Vocational Training. In the academic year 2009-2010, NTTI hosts around 300 teacher trainees who are attending the technical teacher training course and more than 1000 students who are pursuing their degrees in the fields of Civil Engineering, Electrical Engineering, Electronics, Architecture and Information Technology. Moreover, it also provides short course program in Auto CAD, Surveying, Basic Computer and many others.</p>
+                                                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;វិទ្យាស្ថានជាតិបណ្តុះបណ្តាលបច្ចេកទេស
+                                                    (NTTI)
+                                                    គឺជាគ្រឹះស្ថានឧត្តមសិក្សាមួយក្នុងចំណោមគ្រឹះស្ថានឧត្តមសិក្សាជាច្រើនរបស់កម្ពុជា
+                                                    ដែលផ្តល់ការអប់រំ និងបណ្តុះបណ្តាលបច្ចេកទេស ក្រោមក្រសួងការងារ
+                                                    និងបណ្តុះបណ្តាលវិជ្ជាជីវៈ។ ក្នុងឆ្នាំសិក្សា ២០០៩-២០១០ NTTI
+                                                    មានសិក្ខាកាមប្រមាណ ៣០០នាក់ ដែលកំពុងចូលរួមវគ្គបណ្តុះបណ្តាលគ្រូបច្ចេកទេស
+                                                    និងសិស្សជាង ១០០០នាក់
+                                                    ដែលកំពុងបន្តការសិក្សាថ្នាក់បរិញ្ញាបត្រក្នុងវិស័យវិស្វកម្មសំណង់ស៊ីវិល
+                                                    វិស្វកម្មអគ្គិសនី អេឡិចត្រូនិច ស្ថាបត្យកម្ម និងបច្ចេកវិទ្យាព័ត៌មាន។
+                                                    ជាងនេះទៅទៀត វាក៏ផ្តល់នូវកម្មវិធីសិក្សាខ្លីៗក្នុង Auto CAD, Surveying,
+                                                    Basic Computer និងកម្មវិធីជាច្រើនទៀត។</p>
                                             </div>
                                         </div>
                                         <div class="content-section">
@@ -903,19 +951,36 @@
                                                 Employee Profile
                                             </h2>
                                             <div class="content-text">
-                                                <p>The workforce environment at NTTI is a dynamic, inclusive, and innovative space that fosters professional growth and collaboration among its employees. NTTI is dedicated to providing training and development opportunities to its staff, enabling them to stay ahead in their respective fields.</p>
-                                                
-                                                <p class="mt-3">NTTI has 116 full-time staff(34 Female) with a variety of tertiary qualifications, including PhDs, Master, Bachelor and Associate Degrees and is supported by administrative, maintenance and on-contract staff. Besides these, some of them have been sent to the United State of America, Australia, Russia, Japan, India, Thailand, Indonesia, Malaysia, Brunei Darussalam, Singapore, Vietnam, Laos, the Philippines, and Myanmar to pursue their degrees and attend short course programs.</p>
-                                                
-                                                <p class="mt-3">In addition, the institute maintains vast linkage networks with Cambodian and international construction companies, electrical companies, private and public educational institutions, foreign universities and government ministries. NTTI, with land area of 10 hectares, is located along the Russian Federation Boulevard, Sangkat Toeuk Thla, Khan Sen Sok, Phnom Penh and is roughly 6 kilometers from the city center Wat Phnom.</p>
-                            
+                                                <p>បរិយាកាសកម្លាំងការងារនៅ NTTI គឺជាកន្លែងដែលមានភាពស្វាហាប់ រួមបញ្ចូល
+                                                    និងប្រកបដោយភាពច្នៃប្រឌិត ដែលជំរុញកំណើនអាជីព
+                                                    និងកិច្ចសហការក្នុងចំណោមបុគ្គលិករបស់ខ្លួន។ NTTI
+                                                    ប្តេជ្ញាផ្តល់ឱកាសបណ្តុះបណ្តាល និងអភិវឌ្ឍន៍ដល់បុគ្គលិករបស់ខ្លួន
+                                                    ដែលអាចឱ្យពួកគេបន្តទៅមុខក្នុងវិស័យរៀងៗខ្លួន។</p>
+
+                                                <p class="mt-3">NTTI មានបុគ្គលិកពេញម៉ោងចំនួន 116 នាក់ (ស្រី 34 នាក់)
+                                                    ជាមួយនឹងភាពខុសគ្នានៃគុណវុឌ្ឍិកម្រិតឧត្តមសិក្សា រួមមាន បណ្ឌិត អនុបណ្ឌិត
+                                                    បរិញ្ញាបត្រ និងបរិញ្ញាបត្ររង ហើយត្រូវបានគាំទ្រដោយបុគ្គលិកផ្នែករដ្ឋបាល
+                                                    ការថែទាំ និងតាមកិច្ចសន្យា។ ក្រៅពីនេះ
+                                                    ពួកគេមួយចំនួនត្រូវបានបញ្ជូនទៅសហរដ្ឋអាមេរិក អូស្ត្រាលី រុស្សី ជប៉ុន ឥណ្ឌា
+                                                    ថៃ ឥណ្ឌូនេស៊ី ម៉ាឡេស៊ី ប្រ៊ុយណេ ដារូសាឡឹម សិង្ហបុរី វៀតណាម ឡាវ ហ្វីលីពីន
+                                                    និងមីយ៉ាន់ម៉ា ដើម្បីបន្តការសិក្សាថ្នាក់បរិញ្ញាបត្រ
+                                                    និងចូលរួមកម្មវិធីវគ្គខ្លី។</p>
+
+                                                <p class="mt-3">លើសពីនេះ
+                                                    វិទ្យាស្ថានរក្សាបាននូវបណ្តាញទំនាក់ទំនងយ៉ាងទូលំទូលាយជាមួយក្រុមហ៊ុនសំណង់កម្ពុជា
+                                                    និងអន្តរជាតិ ក្រុមហ៊ុនអគ្គិសនី គ្រឹះស្ថានអប់រំឯកជន និងសាធារណៈ
+                                                    សាកលវិទ្យាល័យបរទេស និងក្រសួងរដ្ឋាភិបាល។ NTTI ដែលមានផ្ទៃដី១០ហិចតា
+                                                    មានទីតាំងនៅតាមបណ្តោយមហាវិថីសហព័ន្ធរុស្សី សង្កាត់ទឹកថ្លា ខណ្ឌសែនសុខ
+                                                    រាជធានីភ្នំពេញ និងមានចម្ងាយប្រហែល៦គីឡូម៉ែត្រពីកណ្តាលក្រុងវត្តភ្នំ។</p>
+
                                                 <div class="staff-chart mt-4">
-                                                    <h4 class="text-center mb-3">Figure A1: NTTI Full-time Staff Qualification (n=116)</h4>
+                                                    <h4 class="text-center mb-3">Figure A1: NTTI Full-time Staff
+                                                        Qualification (n=116)</h4>
                                                     <div class="text-center">
-                                                        <img src="https://www.ntti.edu.kh/assets/images/graph_staff.png" 
-                                                             alt="NTTI Staff Qualification Chart" 
-                                                             class="img-fluid rounded shadow-sm"
-                                                             style="max-width: 100%; height: auto;">
+                                                        <img src="https://www.ntti.edu.kh/assets/images/graph_staff.png"
+                                                            alt="NTTI Staff Qualification Chart"
+                                                            class="img-fluid rounded shadow-sm"
+                                                            style="max-width: 100%; height: auto;">
                                                     </div>
                                                 </div>
                                             </div>
@@ -931,53 +996,88 @@
                                                 <div class="row mb-4">
                                                     <div class="col-md-12">
                                                         <div class="vision-image text-center mb-4">
-                                                            <img src="https://www.ntti.edu.kh/assets/images/vmg.png" 
-                                                                 alt="NTTI Vision Mission Goals" 
-                                                                 class="img-fluid rounded shadow-sm">
+                                                            <img src="https://www.ntti.edu.kh/assets/images/vmg.png"
+                                                                alt="NTTI Vision Mission Goals"
+                                                                class="img-fluid rounded shadow-sm">
                                                         </div>
                                                     </div>
                                                 </div>
-                            
+
                                                 <!-- Mission Statement -->
                                                 <div class="mission-container">
                                                     <h3 class="sub-title">Our Mission</h3>
                                                     <div class="mission-content">
                                                         <div class="mission-card">
                                                             <i class="mdi mdi-school-outline mission-icon"></i>
-                                                            <p>Create the opportunities for students by providing high quality and competency (Theories, Practice and Ethics) of Technical Vocational Education and Training</p>
+                                                            <p>បង្កើតឱកាសសម្រាប់និស្សិតដោយផ្តល់នូវគុណភាពខ្ពស់ និងសមត្ថភាព
+                                                                (ទ្រឹស្តី ការអនុវត្ត និងក្រមសីលធម៌) នៃការអប់រំ
+                                                                និងបណ្តុះបណ្តាលបច្ចេកទេសវិជ្ជាជីវៈ</p>
                                                         </div>
-                                                        
+
                                                         <div class="mission-card">
                                                             <i class="mdi mdi-certificate-outline mission-icon"></i>
-                                                            <p>Provide a unique of technical and vocational training to prepare them within technical skills to entrance the current and future needs of labor market.</p>
+                                                            <p>ផ្តល់ការបណ្តុះបណ្តាលបច្ចេកទេស និងវិជ្ជាជីវៈពិសេសមួយ
+                                                                ដើម្បីរៀបចំពួកគេឱ្យស្ថិតក្នុងជំនាញបច្ចេកទេស
+                                                                ដើម្បីចូលទៅក្នុងតម្រូវការបច្ចុប្បន្ន
+                                                                និងអនាគតនៃទីផ្សារការងារ។</p>
                                                         </div>
-                            
+
                                                         <div class="mission-statement">
-                                                            <p>The National Technical Training Institute is committed to its further development as a leading higher educational institution in Cambodia in providing Technical and Vocational Education and Training. It is committed to providing quality training courses in consistence with flexible and responsive National System of Technical and Vocational Education and Training to meet the needs of the labor market, developing a set of competency-based curricula for the technical and vocational centers of the country, training and upgrading capacity of the instructors and trainers, designing and producing a supply of appropriate teaching/ learning resources and becoming a center of excellence in instructor training in the region.</p>
-                                                            
-                                                            <p class="mt-3">In particular, NTTI prepares students to become effective and active members of Cambodian society, with professional capacity to apply, develop and enrich the teaching process, science and technology.</p>
+                                                            <p>វិទ្យាស្ថានជាតិបណ្តុះបណ្តាលបច្ចេកទេសបានប្តេជ្ញាចិត្ត
+                                                                ការអភិវឌ្ឍបន្ថែមទៀតជាការអប់រំកម្រិតខ្ពស់ឈានមុខគេ
+                                                                ស្ថាប័ននៅកម្ពុជាក្នុងការផ្តល់បច្ចេកទេស និង
+                                                                ការអប់រំ និងបណ្តុះបណ្តាលវិជ្ជាជីវៈ។ វាត្រូវបានប្តេជ្ញាចិត្ត
+                                                                ការផ្តល់វគ្គបណ្តុះបណ្តាលប្រកបដោយគុណភាពស្របតាម
+                                                                ប្រព័ន្ធបច្ចេកទេសជាតិដែលអាចបត់បែនបាន និងឆ្លើយតប
+                                                                ការអប់រំ និងបណ្តុះបណ្តាលវិជ្ជាជីវៈ ដើម្បីបំពេញតម្រូវការរបស់
+                                                                គ
+                                                                ទីផ្សារការងារ បង្កើតកម្មវិធីសិក្សាផ្អែកលើសមត្ថភាព
+                                                                សម្រាប់មជ្ឈមណ្ឌលបច្ចេកទេស និងវិជ្ជាជីវៈនៃប្រទេស
+                                                                ការបណ្តុះបណ្តាល និងបង្កើនសមត្ថភាពរបស់គ្រូ និង
+                                                                បណ្តុះបណ្តាល រចនា និងផលិតការផ្គត់ផ្គង់សមស្រប
+                                                                ធនធានបង្រៀន/រៀន និងក្លាយជាមជ្ឈមណ្ឌលនៃ
+                                                                ឧត្តមភាពក្នុងការបណ្តុះបណ្តាលគ្រូក្នុងតំបន់។</p>
+
+                                                            <p class="mt-3">ជាពិសេស NTTI រៀបចំសិស្សទៅ
+                                                                ក្លាយជាសមាជិកដ៏មានប្រសិទ្ធភាព និងសកម្មនៃសង្គមកម្ពុជា
+                                                                ជាមួយនឹងសមត្ថភាពវិជ្ជាជីវៈក្នុងការអនុវត្ត អភិវឌ្ឍ
+                                                                និងពង្រឹងសមត្ថភាព
+                                                                ដំណើរការបង្រៀន វិទ្យាសាស្ត្រ និងបច្ចេកវិទ្យា។</p>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <!-- Objectives -->
                                                 <div class="objectives-container mt-5">
-                                                    <h3 class="sub-title">Training Quality Control Board Objectives</h3>
-                                                    <p class="mb-4">To achieve its set objectives, Training Quality Control Board has fulfilled its following duties:</p>
-                                                    
+                                                    <h3 class="sub-title">
+                                                        គោលបំណងនៃក្រុមប្រឹក្សាភិបាលត្រួតពិនិត្យគុណភាពបណ្តុះបណ្តាល</h3>
+                                                    <p class="mb-4">ដើម្បីសម្រេចបាននូវគោលបំណងដែលបានកំណត់របស់ខ្លួន
+                                                        គុណភាពបណ្តុះបណ្តាល
+                                                        ក្រុមប្រឹក្សាភិបាលបានបំពេញភារកិច្ចដូចខាងក្រោមៈ</p>
+
                                                     <ul class="objective-list">
-                                                        <li>Sending staff to attend training courses in foreign countries such as Japan, Singapore, Malaysia, Brunei Darussalam, Thailand in order that they can perform their in a professional and responsible manner</li>
-                                                        <li>Providing training courses to upgrade the teaching capacity of our teaching staff</li>
-                                                        <li>Forming the a group of senior teachers to supervise and give feedback on the staff's teaching capacity</li>
-                                                        <li>Forming a research team to collect information related to the needs of the labor market</li>
-                                                        <li>Conducting the follow-up surveys to collect data on the problems and effectiveness of the training programs offered</li>
-                                                        <li>Developing curriculum which can effectively respond to the fasting changing needs of the labor market</li>
-                                                        <li>Conducting workshops, whose aims are to assist the graduates in getting a job, for example, workshops on "Job Hunting Skills, How to Write a Resume and Cover Letter"</li>
+                                                        <li>ការបញ្ជូនបុគ្គលិកទៅចូលរួមវគ្គបណ្តុះបណ្តាលនៅបរទេស
+                                                            ដូចជា ជប៉ុន សិង្ហបុរី ម៉ាឡេស៊ី ប្រ៊ុយណេ ដារូសាឡឹម ថៃ
+                                                            ដើម្បីឱ្យពួកគេអាចអនុវត្តរបស់ពួកគេប្រកបដោយវិជ្ជាជីវៈ និង
+                                                            របៀបទទួលខុសត្រូវ</li>
+                                                        <li>ផ្តល់វគ្គបណ្តុះបណ្តាល ដើម្បីបង្កើនសមត្ថភាពបង្រៀនរបស់
+                                                            បុគ្គលិកបង្រៀនរបស់យើង។</li>
+                                                        <li>បង្កើតក្រុមគ្រូបង្រៀនជាន់ខ្ពស់ ដើម្បីត្រួតពិនិត្យ និងផ្តល់ឱ្យ
+                                                            មតិកែលម្អលើសមត្ថភាពបង្រៀនរបស់បុគ្គលិក</li>
+                                                        <li>បង្កើតក្រុមស្រាវជ្រាវ ដើម្បីប្រមូលព័ត៌មានទាក់ទងនឹង
+                                                            តម្រូវការទីផ្សារការងារ</li>
+                                                        <li>ធ្វើការអង្កេតតាមដាន ដើម្បីប្រមូលទិន្នន័យអំពីបញ្ហា
+                                                            និងប្រសិទ្ធភាពនៃកម្មវិធីបណ្តុះបណ្តាលដែលផ្តល់ជូន</li>
+                                                        <li>បង្កើតកម្មវិធីសិក្សាដែលអាចឆ្លើយតបប្រកបដោយប្រសិទ្ធភាព
+                                                            ការផ្លាស់ប្តូរយ៉ាងឆាប់រហ័សនៃតម្រូវការទីផ្សារការងារ</li>
+                                                        <li>រៀបចំសិក្ខាសាលាដែលមានគោលបំណងជួយដល់និស្សិតបញ្ចប់ការសិក្សា
+                                                            ការទទួលបានការងារជាឧទាហរណ៍ សិក្ខាសាលាស្តីពី "ជំនាញស្វែងរកការងារ។
+                                                            របៀបសរសេរប្រវត្តិរូបសង្ខេប និង Cover Letter"។</li>
                                                     </ul>
                                                 </div>
                                             </div>
                                         </div>
-                            
+
                                         <!-- Organization Structure -->
                                         <div class="content-section">
                                             <h2 class="section-title">
@@ -985,20 +1085,25 @@
                                                 Organizational Structure
                                             </h2>
                                             <div class="content-text">
-                                                <p>The organizational structure of the National Technical Training Institute (NTTI) is designed to ensure efficient management and operation across various departments and functions. The hierarchy is led by the President, HE. Dr. Yok Sothy, and includes four Vice Presidents, each overseeing specific areas of responsibility.</p>
-                                                
+                                                <p>រចនាសម្ព័ន្ធអង្គការរបស់វិទ្យាស្ថានជាតិបណ្តុះបណ្តាលបច្ចេកទេស
+                                                    (NTTI) ត្រូវបានរចនាឡើងដើម្បីធានាបាននូវការគ្រប់គ្រង
+                                                    និងប្រតិបត្តិការប្រកបដោយប្រសិទ្ធភាព
+                                                    នាយកដ្ឋាន និងមុខងារផ្សេងៗ។ ឋានានុក្រមត្រូវបានដឹកនាំដោយ
+                                                    ប្រធាន ឯកឧត្តម លោក​បណ្ឌិត យក់ សុធី និង​រួម​មាន​អនុប្រធាន​បួន​រូប​ម្នាក់ៗ
+                                                    ត្រួតពិនិត្យផ្នែកជាក់លាក់នៃការទទួលខុសត្រូវ។</p>
+
                                                 <div class="org-chart mt-4">
                                                     <h4 class="text-center mb-3">NTTI's Organizational Structure</h4>
                                                     <div class="text-center">
-                                                        <img src="https://www.ntti.edu.kh/assets/images/org.png" 
-                                                             alt="NTTI Organizational Structure" 
-                                                             class="img-fluid rounded shadow-sm"
-                                                             style="max-width: 100%; height: auto;">
+                                                        <img src="https://www.ntti.edu.kh/assets/images/org.png"
+                                                            alt="NTTI Organizational Structure"
+                                                            class="img-fluid rounded shadow-sm"
+                                                            style="max-width: 100%; height: auto;">
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                            
+
                                         <!-- Facilities Section -->
                                         <div class="content-section">
                                             <h2 class="section-title">
@@ -1007,10 +1112,10 @@
                                             </h2>
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <img src="https://www.ntti.edu.kh/assets/images/best_6.jpg" 
-                                                         alt="NTTI Facilities" 
-                                                         class="img-fluid rounded mb-3">
-                                                    <img src="https://ntti.edu.kh/assets/images/hotnews/36_.jpg" alt="NTTI Facilities" class="img-fluid rounded mb-3">
+                                                    <img src="https://www.ntti.edu.kh/assets/images/best_6.jpg"
+                                                        alt="NTTI Facilities" class="img-fluid rounded mb-3">
+                                                    <img src="https://ntti.edu.kh/assets/images/hotnews/36_.jpg"
+                                                        alt="NTTI Facilities" class="img-fluid rounded mb-3">
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="facility-grid">
@@ -1035,7 +1140,7 @@
                                             </div>
                                         </div>
                                     </div>
-                            
+
                                     <!-- Right Column -->
                                     <div class="col-md-4">
                                         <!-- Leadership Team -->
@@ -1045,9 +1150,9 @@
                                                 <!-- Director -->
                                                 <div class="leadership-card">
                                                     <div class="text-center mb-3">
-                                                        <img src="https://www.ntti.edu.kh/assets/images/director1.png" 
-                                                             alt="Director NTTI" 
-                                                             class="leadership-image rounded-circle shadow-sm">
+                                                        <img src="https://www.ntti.edu.kh/assets/images/director1.png"
+                                                            alt="Director NTTI"
+                                                            class="leadership-image rounded-circle shadow-sm">
                                                     </div>
                                                     <div class="leadership-info text-center">
                                                         <h4 class="mb-1">His Excellency YOK SOTHY, Ph.D.</h4>
@@ -1058,15 +1163,15 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                            
+
                                                 <!-- Deputy Directors -->
                                                 <div class="row mt-4">
                                                     <div class="col-md-6 mb-4">
                                                         <div class="leadership-card">
                                                             <div class="text-center mb-3">
-                                                                <img src="https://www.ntti.edu.kh/assets/images/sub_director1.png" 
-                                                                     alt="Deputy Director" 
-                                                                     class="leadership-image-sm rounded-circle shadow-sm">
+                                                                <img src="https://www.ntti.edu.kh/assets/images/sub_director1.png"
+                                                                    alt="Deputy Director"
+                                                                    class="leadership-image-sm rounded-circle shadow-sm">
                                                             </div>
                                                             <div class="leadership-info text-center">
                                                                 <h5 class="mb-1">Mr. Mom Somach</h5>
@@ -1081,9 +1186,9 @@
                                                     <div class="col-md-6 mb-4">
                                                         <div class="leadership-card">
                                                             <div class="text-center mb-3">
-                                                                <img src="https://www.ntti.edu.kh/assets/images/sub_director2.png" 
-                                                                     alt="Deputy Director" 
-                                                                     class="leadership-image-sm rounded-circle shadow-sm">
+                                                                <img src="https://www.ntti.edu.kh/assets/images/sub_director2.png"
+                                                                    alt="Deputy Director"
+                                                                    class="leadership-image-sm rounded-circle shadow-sm">
                                                             </div>
                                                             <div class="leadership-info text-center">
                                                                 <h5 class="mb-1">Mr. Meas Sarith</h5>
@@ -1098,9 +1203,9 @@
                                                     <div class="col-md-6 mb-4">
                                                         <div class="leadership-card">
                                                             <div class="text-center mb-3">
-                                                                <img src="https://www.ntti.edu.kh/assets/images/sub_director3.png" 
-                                                                     alt="Deputy Director" 
-                                                                     class="leadership-image-sm rounded-circle shadow-sm">
+                                                                <img src="https://www.ntti.edu.kh/assets/images/sub_director3.png"
+                                                                    alt="Deputy Director"
+                                                                    class="leadership-image-sm rounded-circle shadow-sm">
                                                             </div>
                                                             <div class="leadership-info text-center">
                                                                 <h5 class="mb-1">Mr. Ek Phannarann</h5>
@@ -1115,9 +1220,9 @@
                                                     <div class="col-md-6 mb-4">
                                                         <div class="leadership-card">
                                                             <div class="text-center mb-3">
-                                                                <img src="https://www.ntti.edu.kh/assets/images/sub_director4.png" 
-                                                                     alt="Deputy Director" 
-                                                                     class="leadership-image-sm rounded-circle shadow-sm">
+                                                                <img src="https://www.ntti.edu.kh/assets/images/sub_director4.png"
+                                                                    alt="Deputy Director"
+                                                                    class="leadership-image-sm rounded-circle shadow-sm">
                                                             </div>
                                                             <div class="leadership-info text-center">
                                                                 <h5 class="mb-1">Ms. Peng Lakhena</h5>
@@ -1131,7 +1236,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div><div class="contact-info">
+                                        </div>
+                                        <div class="contact-info">
                                             <h2 class="mb-4 text-white">Contact Information</h2>
                                             <div class="contact-item">
                                                 <i class="mdi mdi-map-marker"></i>
@@ -1157,23 +1263,21 @@
                                                 </div>
                                             </div>
                                         </div>
-                            
+
                                         <!-- Map -->
                                         <div class="content-section mt-4">
                                             <div class="map-container">
-                                                <div class="mb-3" style="height: 300px; border-radius: 10px; overflow: hidden;">
-                                                    <iframe 
+                                                <div class="mb-3"
+                                                    style="height: 300px; border-radius: 10px; overflow: hidden;">
+                                                    <iframe
                                                         src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d7817.532321653166!2d104.8778723!3d11.5686141!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x310951bd8ff5ab0f%3A0x14bf178a46f8f969!2sNational%20Technical%20Training%20Institute%20(NTTI)!5e0!3m2!1sen!2skh!4v1743607604963!5m2!1sen!2skh"
-                                                        width="100%" 
-                                                        height="100%" 
-                                                        style="border:0;" 
-                                                        allowfullscreen="" 
-                                                        loading="lazy">
+                                                        width="100%" height="100%" style="border:0;"
+                                                        allowfullscreen="" loading="lazy">
                                                     </iframe>
                                                 </div>
                                             </div>
                                         </div>
-                            
+
                                     </div>
                                 </div>
                             </div>
@@ -1798,9 +1902,12 @@
             packages: ['corechart']
         });
         google.charts.setOnLoadCallback(students_by_province);
+
         function students_by_province() {
             var data = google.visualization.arrayToDataTable([
-                ['Province', 'Quantity', { role: 'style' }],
+                ['Province', 'Quantity', {
+                    role: 'style'
+                }],
                 @foreach ($total_provinces as $province)
                     ['{{ $province->province }}', {{ $province->total_students }}, '#4285f4'],
                 @endforeach
@@ -1823,10 +1930,17 @@
                 width: 1500,
                 height: 400,
                 fontFamily: 'Khmer OS Battambang',
-                bar: { groupWidth: "80%" },
-                legend: { position: "none" },
+                bar: {
+                    groupWidth: "80%"
+                },
+                legend: {
+                    position: "none"
+                },
                 annotations: {
-                    textStyle: { fontSize: 12, color: '#000' }
+                    textStyle: {
+                        fontSize: 12,
+                        color: '#000'
+                    }
                 },
             };
 
@@ -1840,9 +1954,18 @@
         document.addEventListener('DOMContentLoaded', function() {
             function updateDateTime() {
                 const now = new Date();
-                const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
-                
+                const dateOptions = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                };
+                const timeOptions = {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                };
+
                 document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', dateOptions);
                 document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', timeOptions);
             }
@@ -1858,51 +1981,50 @@
         function showSlides(n, direction = 'right') {
             if (sliding) return;
             sliding = true;
-            
+
             let slides = document.getElementsByClassName("slide");
             let dots = document.getElementsByClassName("dot");
-            
+
             // Reset slideIndex if it goes beyond bounds
             if (n > slides.length) {
                 slideIndex = 1;
-            }    
+            }
             if (n < 1) {
                 slideIndex = slides.length;
             }
-            
+
             // Get current and next slide
             let currentSlide = document.querySelector('.slide.active');
-            let nextSlide = slides[slideIndex-1];
-            
-            // Remove all transition classes
+            let nextSlide = slides[slideIndex - 1];
+
             for (let slide of slides) {
                 slide.classList.remove('active', 'slide-left', 'slide-right', 'slide-center');
                 slide.style.display = 'none';
             }
-            
+
             // Set up the transition
             if (currentSlide) {
                 currentSlide.style.display = 'block';
                 currentSlide.classList.add('active');
                 currentSlide.classList.add(direction === 'right' ? 'slide-left' : 'slide-right');
             }
-            
+
             nextSlide.style.display = 'block';
             nextSlide.classList.add('active');
             nextSlide.classList.add(direction === 'right' ? 'slide-right' : 'slide-left');
-            
+
             // Trigger the transition
             setTimeout(() => {
                 nextSlide.classList.remove('slide-left', 'slide-right');
                 nextSlide.classList.add('slide-center');
             }, 50);
-            
+
             // Update dots
             for (let i = 0; i < dots.length; i++) {
                 dots[i].className = dots[i].className.replace(" active", "");
             }
-            dots[slideIndex-1].className += " active";
-            
+            dots[slideIndex - 1].className += " active";
+
             // Reset sliding flag after transition
             setTimeout(() => {
                 sliding = false;
@@ -1930,17 +2052,13 @@
         function autoSlide() {
             slideTimer = setTimeout(() => {
                 changeSlide(1);
-            }, 5000); // Change slide every 3 seconds
+            }, 5000); 
         }
 
-        // Initialize slideshow when the document is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            // Make sure first slide is visible immediately
             let firstSlide = document.querySelector('.slide');
             firstSlide.classList.add('active', 'slide-center');
             firstSlide.style.display = 'block';
-            
-            // Start the automatic slideshow
             autoSlide();
         });
     </script>

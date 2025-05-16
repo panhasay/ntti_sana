@@ -259,16 +259,14 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <span class="form-label">ក្រុម
-                                        <?php
-                                             $record_class =  DB::table('classes')->get();
-                                        ?>
+                                        <?php $record_class =  DB::table('classes')->get(); ?>
                                     </span>
                                     <div class="input-group">
                                         <select class="select2-search" id="sch_class_spec" name="sch_class_spec"
                                             style="width: 100%" placeholder="ជ្រើសរើសក្រុមទាំងអស់">
                                             <option value="">ជ្រើសរើសក្រុមទាំងអស់</option>
                                             @foreach ($record_class as $item)
-                                                <option value="{{ $item->code }}">{{ $item->name }}</option>
+                                                <option value="{{ $item->code }}">{{ str_replace('.', '', $item->name) }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -1191,7 +1189,7 @@
             });
 
             $(document).on('click', '#YesPrints', function() {
-                var DataClass = $(this).attr('data-class'); 
+               var DataClass = $(this).attr('data-class') || $('#sch_class_spec').val();
 
 
                 if (DataClass == '') {
@@ -1230,7 +1228,7 @@
             });
 
             $(document).on('click', '#btnYesExcel', function() {
-                var DataClass = $(this).attr('data-code'); 
+             var DataClass = $(this).attr('data-class') || $('#sch_class_spec').val();
 
                 if (DataClass == '') {
                     return notyf.error("សូមជ្រើសរើស ថ្នាក់/ក្រុម");

@@ -388,47 +388,50 @@
           duration: 3000,
         });
         $(document).ready(function() {
+          $('.js-example-basic-single').select2({
+              placeholder: "សូមជ្រើសរើស",
+              allowClear: true             
+          });
+          
+          // $(".collapse").addClass('show');
 
-
-          $(".collapse").addClass('show');
           $('.loader').hide();
-          $('#search_menu_function').keyup(function(e) {
-              switch (e.which) {
-                  case 38:
-                      return;
-                      break;
-                  case 40:
-                      return;
-                      break;
-                  case 37:
-                      return;
-                      break;
-                  case 39:
-                      return;
-                      break;
-              }
-              if ($('#search_menu_function').val().trim().length > 3) {
+           $('#search_menu_function').on('input', function () {
+              let searchValue = $(this).val().trim();
+
+              // Only search if input length > 3
+              if (searchValue.length > 3) {
                   $.ajax({
                       type: 'GET',
-                      url: '/menu-search',
+                      url: '/menu-search', // Change this URL if needed
                       data: {
-                          string: $('#search_menu_function').val()
+                          string: searchValue
                       },
-                      beforeSend: function() {
+                      beforeSend: function () {
+                          // Optional: Show loading indicator
                           // $('.contentMenu').LoadingOverlay("show");
                       },
-                      success: function(response) {
+                      success: function (response) {
                           // $('.contentMenu').LoadingOverlay("hide");
                           if (response !== 'none') {
                               $('.contentMenu').html(response);
                           } else {
                               $('.contentMenu').html('');
                           }
+                      },
+                      error: function () {
+                          console.error("Error during AJAX request.");
+                          $('.contentMenu').html('<p>Error loading data.</p>');
                       }
                   });
               } else {
                   $('.contentMenu > .trigger').popover('hide');
               }
+          });
+
+          // Ensure IME input (like Khmer) is finalized before triggering input
+          $('#search_menu_function').on('compositionend', function () {
+              $(this).trigger('input');
           });
 
           $('#btnShowMenuSetting').click(function(e){
@@ -622,6 +625,7 @@
                       },
                       success: function (response) {
                           $('.loader').hide();
+
                           if (response.status === 'success') {
                               let selectData = {
                                   '#skills_code': [response.records.skills_code, response.skills],
@@ -632,7 +636,7 @@
                               };
 
                               $.each(selectData, function (selector, values) {
-                                  $(selector).empty().append(`<option value="${values[0]}">${values[0]} - ${values[1]}</option>`);
+                                  $(selector).empty().append(`<option value="${values[0]}">${values[1]}</option>`);
                               });
                           }
                       }

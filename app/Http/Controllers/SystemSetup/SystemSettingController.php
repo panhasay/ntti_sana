@@ -84,34 +84,34 @@ class SystemSettingController extends Controller
             switch ($page) {
                 case 'student':
                     if ($data['class_code'] != null) {
-                        $records = Student::where('class_code', $data['class_code'])->paginate(1000);
+                        $records = Student::where('class_code', $data['class_code'])->paginate(100);
                     }
-                    $records = Student::whereRaw($extract_query)->paginate(1000);
+                    $records = Student::whereRaw($extract_query)->paginate(100);
                     $blade_file_record = 'general.student_list';
                     break;
                 case 'department':
-                    $records = Department::whereRaw($extract_query)->paginate(1000);
+                    $records = Department::whereRaw($extract_query)->paginate(100);
                     $blade_file_record = 'department.department_list';
                     break;
                 case 'skills':
-                    $records = Skills::whereRaw($extract_query)->paginate(1000);
+                    $records = Skills::whereRaw($extract_query)->paginate(100);
                     $blade_file_record = 'general.skills_lists';
                     break;
                 case 'class':
-                    $records = Classes::whereRaw($extract_query)->paginate(1000);
+                    $records = Classes::whereRaw($extract_query)->paginate(100);
                     $blade_file_record = 'general.classes_lists';
                     break;
                 case 'subjects':
-                    $records = Subjects::whereRaw($extract_query)->paginate(1000);
+                    $records = Subjects::whereRaw($extract_query)->paginate(100);
                     $blade_file_record = 'general.subjects_lists';
                     break;
                 case 'teachers':
-                    $records = Teachers::orderByRaw("name_2 COLLATE utf8mb4_general_ci")->whereRaw($extract_query)->WhitQueryPermission()->paginate(1000);
+                    $records = Teachers::orderByRaw("name_2 COLLATE utf8mb4_general_ci")->whereRaw($extract_query)->WhitQueryPermission()->paginate(100);
 
                     $blade_file_record = 'general.teachers_lists';
                     break;
                 case 'student_registration':
-                    $records = StudentRegistration::with(['session_year'])->whereRaw($extract_query)->paginate(1000);
+                    $records = StudentRegistration::with(['session_year'])->whereRaw($extract_query)->paginate(100);
                     $total_records = StudentRegistration::selectRaw(
                         DB::raw('COUNT(name) AS total_count'),
                     )->where('study_type', 'new student')
@@ -126,7 +126,7 @@ class SystemSettingController extends Controller
                     $blade_file_record = 'general.student_register_lists';
                     break;
                 case 'class-new':
-                    $records = Classes::whereRaw($extract_query)->paginate(1000);
+                    $records = Classes::whereRaw($extract_query)->paginate(100);
                     $updated_query = $extract_query;
                     if (!empty($data['code'])) {
                         $updated_query = preg_replace("/code=('.*?')/", "class_code=$1", $extract_query);
@@ -155,23 +155,23 @@ class SystemSettingController extends Controller
 
                     $records = StudentRegistration::whereRaw($extract_query)->where('study_type', 'new student')
                         ->whereNull('class_code')
-                        ->paginate(1000);
+                        ->paginate(100);
                     $blade_file_record = 'general.student_register_remaining_lists';
                     break;
                 case 'scholarship':
                     $records = Student::whereRaw($extract_query)->where('study_type', 'new student')
                         ->whereNotNull('scholarship')
-                        ->paginate(10000);
+                        ->paginate(1000);
                     $blade_file_record = 'general.student_scholarship_lists';
                     break;
                 case 'class-schedule':
                     $records = ClassSchedule::whereRaw($extract_query)
-                        ->paginate(10000);
+                        ->paginate(1000);
                     $blade_file_record = 'general.class_schedule_lists';
                     break;
                 case 'assign-classes':
                     $records = AssingClasses::whereRaw($extract_query)
-                        ->paginate(10000);
+                        ->paginate(1000);
                     $blade_file_record = 'general.assing_classes_lists';
                     break;
                 default:
@@ -294,37 +294,37 @@ class SystemSettingController extends Controller
                     $menus = DB::table('student')->where('name', 'like', $search_value . "%")
                         ->orWhere('code', 'like', $search_value . "%")
                         ->orWhere('name_2', 'like', $search_value . "%")
-                        ->where('class_code', '<>', null)->paginate(1000);
+                        ->where('class_code', '<>', null)->paginate(100);
                     $blade_file_record = 'general.student_list';
                 } else if ($page == 'department') {
                     $menus = DB::table('department')->where('name', 'like', $search_value . "%")
                         ->orWhere('code', 'like', $search_value . "%")
                         ->orWhere('name_2', 'like', $search_value . "%")
-                        ->where('id', '<>', null)->paginate(1000);
+                        ->where('id', '<>', null)->paginate(100);
                     $blade_file_record = 'department.department_list';
                 } else if ($page == 'classes') {
                     $menus = DB::table('classes')->where('name', 'like', $search_value . "%")
                         ->orWhere('code', 'like', $search_value . "%")
                         ->orWhere('name_2', 'like', $search_value . "%")
-                        ->where('code', '<>', null)->paginate(1000);
+                        ->where('code', '<>', null)->paginate(100);
                     $blade_file_record = 'general.classes_lists';
                 } else if ($page == 'skills') {
                     $menus = Skills::where('name', 'like', $search_value . "%")
                         ->orWhere('code', 'like', $search_value . "%")
                         ->orWhere('name_2', 'like', $search_value . "%")
-                        ->where('code', '<>', null)->paginate(1000);
+                        ->where('code', '<>', null)->paginate(100);
                     $blade_file_record = 'general.skills_lists';
                 } else if ($page == 'subjects') {
                     $menus = DB::table('subjects')->where('name', 'like', $search_value . "%")
                         ->orWhere('code', 'like', $search_value . "%")
                         ->orWhere('name_2', 'like', $search_value . "%")
-                        ->where('code', '<>', null)->paginate(1000);
+                        ->where('code', '<>', null)->paginate(100);
                     $blade_file_record = 'general.subjects_lists';
                 } else if ($page == 'teachers') {
                     $menus = DB::table('teachers')->where('name', 'like', $search_value . "%")
                         ->orWhere('code', 'like', $search_value . "%")
                         ->orWhere('name_2', 'like', $search_value . "%")
-                        ->where('code', '<>', null)->paginate(1000);
+                        ->where('code', '<>', null)->paginate(100);
                     $blade_file_record = 'general.teachers_lists';
                 } else if ($page == 'student_registration') {
                     $menus = DB::table('student')
@@ -334,14 +334,14 @@ class SystemSettingController extends Controller
                                 ->orWhere('name_2', 'like', $search_value . "%");
                         })
                         ->whereNotNull('code')
-                        ->paginate(1000);
+                        ->paginate(100);
                     $blade_file_record = 'general.student_register_lists';
                 } else if ($page == 'class-new') {
                     $menus = DB::table('classes')->where('name', 'like', $search_value . "%")
                         ->orWhere('code', 'like', $search_value . "%")
                         ->orWhere('name_2', 'like', $search_value . "%")
                         ->where('department_code', Auth::user()->department_code)
-                        ->where('code', '<>', null)->paginate(1000);
+                        ->where('code', '<>', null)->paginate(100);
                     $blade_file_record = 'general.divided_new_classes_lists';
                 } else if ($page == 'scholarship') {
                     $menus = DB::table('student')
@@ -352,16 +352,16 @@ class SystemSettingController extends Controller
                         })
                         ->whereNotNull('scholarship')
                         ->whereNotNull('code')
-                        ->paginate(1000);
+                        ->paginate(100);
                     $blade_file_record = 'general.student_scholarship_lists';
                 } else if ($page == 'class-schedule') {
                     $menus = DB::table('class_schedule')->where('class_code', 'like', '%' . $search_value . '%')
-                        ->orWhere('skills_code', 'like', $search_value . '%')->paginate(1000);
+                        ->orWhere('skills_code', 'like', $search_value . '%')->paginate(100);
                         $blade_file_record = 'general.class_schedule_lists';
                 } else if ($page == 'assign-classes') {
                     $menus = AssingClasses::with(['department', 'section', 'skill', 'teacher','subject' ])
                     ->where('class_code', 'like', '%' . $search_value . '%')
-                    ->paginate(1000);
+                    ->paginate(100);
                     $blade_file_record = 'general.assing_classes_lists';
                 }
             }
@@ -371,25 +371,25 @@ class SystemSettingController extends Controller
                 if ($page == 'student') {
                     $records = Student::where('department_code', $user->childs)->paginate(10);
                 } else if ($page == 'department') {
-                    $records = Department::where('code', null)->paginate(1000);
+                    $records = Department::where('code', null)->paginate(100);
                 } else if ($page == 'classes') {
-                    $records = DB::table('classes')->where('code', null)->paginate(1000);
+                    $records = DB::table('classes')->where('code', null)->paginate(100);
                 } else if ($page == 'skills') {
-                    $records = DB::table('skills')->where('code', null)->paginate(1000);
+                    $records = DB::table('skills')->where('code', null)->paginate(100);
                 } else if ($page == 'subjects') {
-                    $records = DB::table('subjects')->where('code', null)->paginate(1000);
+                    $records = DB::table('subjects')->where('code', null)->paginate(100);
                 } else if ($page == 'teachers') {
-                    $records = Teachers::where('code', null)->paginate(1000);
+                    $records = Teachers::where('code', null)->paginate(100);
                 } else if ($page == 'student_registration') {
-                    $records = StudentRegistration::paginate(1000);
+                    $records = StudentRegistration::paginate(100);
                 } else if ($page == 'class-new') {
-                    $records = Classes::where('department_code', Auth::user()->department_code)->paginate(1000);
+                    $records = Classes::where('department_code', Auth::user()->department_code)->paginate(100);
                 } else if ($page == 'scholarship') {
-                    $records = StudentRegistration::where('department_code', Auth::user()->department_code)->paginate(1000);
+                    $records = StudentRegistration::where('department_code', Auth::user()->department_code)->paginate(100);
                 } else if ($page == 'class-schedule') {
-                    $records = ClassSchedule::paginate(1000);
+                    $records = ClassSchedule::paginate(100);
                 } else if ($page == 'assign-classes') {
-                    $records = AssingClasses::paginate(1000);
+                    $records = AssingClasses::paginate(100);
                 } 
             }
             $view = view($blade_file_record, compact('records'))->render();
@@ -414,33 +414,33 @@ class SystemSettingController extends Controller
             switch ($page) {
                 case 'student':
                     if ($data['class_code'] != null) {
-                        $records = Student::where('class_code', $data['class_code'])->paginate(1000);
+                        $records = Student::where('class_code', $data['class_code'])->paginate(100);
                     }
-                    $records = Student::whereRaw($extract_query)->paginate(1000);
+                    $records = Student::whereRaw($extract_query)->paginate(100);
                     $blade_file_record = 'general.student_list';
                     break;
                 case 'department':
-                    $records = Department::whereRaw($extract_query)->paginate(1000);
+                    $records = Department::whereRaw($extract_query)->paginate(100);
                     $blade_file_record = 'department.department_list';
                     break;
                 case 'skills':
-                    $records = Skills::whereRaw($extract_query)->paginate(1000);
+                    $records = Skills::whereRaw($extract_query)->paginate(100);
                     $blade_file_record = 'general.skills_lists';
                     break;
                 case 'class':
-                    $records = Classes::whereRaw($extract_query)->paginate(1000);
+                    $records = Classes::whereRaw($extract_query)->paginate(100);
                     $blade_file_record = 'general.classes_lists';
                     break;
                 case 'subjects':
-                    $records = Subjects::whereRaw($extract_query)->paginate(1000);
+                    $records = Subjects::whereRaw($extract_query)->paginate(100);
                     $blade_file_record = 'general.subjects_lists';
                     break;
                 case 'teachers':
-                    $records = Teachers::whereRaw($extract_query)->paginate(1000);
+                    $records = Teachers::whereRaw($extract_query)->paginate(100);
                     $blade_file_record = 'general.teachers_lists';
                     break;
                 case 'student_registration':
-                    $records = Student::whereRaw($extract_query)->paginate(1000);
+                    $records = Student::whereRaw($extract_query)->paginate(100);
                     $total_records = Student::selectRaw(
                         DB::raw('COUNT(name) AS total_count'),
                     )->where('study_type', 'new student')
@@ -455,7 +455,7 @@ class SystemSettingController extends Controller
                     $blade_file_record = 'general.student_register_lists';
                     break;
                 case 'class-new':
-                    $records = Classes::whereRaw($extract_query)->paginate(1000);
+                    $records = Classes::whereRaw($extract_query)->paginate(100);
                     $updated_query = $extract_query;
                     if (!empty($data['code'])) {
                         $updated_query = preg_replace("/code=('.*?')/", "class_code=$1", $extract_query);
@@ -484,13 +484,13 @@ class SystemSettingController extends Controller
 
                     $records = StudentRegistration::whereRaw($extract_query)->where('study_type', 'new student')
                         ->whereNull('class_code')
-                        ->paginate(1000);
+                        ->paginate(100);
                     $blade_file_record = 'general.student_register_remaining_lists';
                     break;
                 case 'scholarship':
                     $records = Student::whereRaw($extract_query)->where('study_type', 'new student')
                         ->whereNotNull('scholarship')
-                        ->paginate(10000);
+                        ->paginate(1000);
                     $blade_file_record = 'general.student_scholarship_lists';
                     break;
                 case 'class-schedule':

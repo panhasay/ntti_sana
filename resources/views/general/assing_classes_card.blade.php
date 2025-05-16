@@ -19,9 +19,9 @@
     <div class="col-md-6 col-sm-6 col-6">
       <div class="page-title page-title-custom text-right">
         <h4 class="text-right">
-          <a href="{{ url('/assign-classes?years=' . ($records->years ?? '') . '&type=' . ($records->qualification ?? '')) }}">
-            <i class="mdi mdi-keyboard-return"></i>
-          </a>
+         <a href="#" onclick="history.back(); return false;">
+          <i class="mdi mdi-keyboard-return"></i>
+        </a>
       </div>
     </div>
   </div>
@@ -245,9 +245,16 @@
                 <select class="js-example-basic-single FieldRequired" id="Assingstudent" name="Assingstudent"
                   style="width: 100%;">
                   <option value="">&nbsp;</option>
+                    @php
+                        $usedCodes = $recordsLine->pluck('student.code')->filter()->unique();
+                    @endphp
+
                   @foreach ($Assingstudent as $record)
-                  <option value="{{ $record->code ?? '' }}">{{ $record->name_2 ?? '' }}-{{ $record->name ?? '' }}
-                  </option>
+                      @if (!$usedCodes->contains($record->code))
+                          <option value="{{ $record->code ?? '' }}">
+                              {{ $record->name_2 ?? '' }} - {{ $record->name ?? '' }}
+                          </option>
+                      @endif
                   @endforeach
                 </select>
               </div>
@@ -362,18 +369,19 @@
 <!--END MODEL--->
 <script>
   $(document).ready(function() {
+    const isEmpty = {{ $isEmpty ? 'true' : 'false' }};
+    if (isEmpty) {
+        let refreshCount = sessionStorage.getItem("refreshCount") || 0;
 
-    let refreshCount = sessionStorage.getItem("refreshCount") || 0;
-
-    if (refreshCount < 1) { 
-        refreshCount++;
-        sessionStorage.setItem("refreshCount", refreshCount);
-        location.reload(); // or window.location.reload();
-    } else {
-        sessionStorage.removeItem("refreshCount"); // Reset after 2 reloads
-        console.log("Refreshed twice already.");
+        if (refreshCount < 1) {
+            refreshCount++;
+            sessionStorage.setItem("refreshCount", refreshCount);
+            location.reload();
+        } else {
+            sessionStorage.removeItem("refreshCount");
+            console.log("Refreshed twice already.");
+        }
     }
-
 
     $('.form_data').on('change', function() {
       var formData = $('#frmDataCard').serialize();
@@ -472,6 +480,7 @@
 
       if (name in maxValues && (isNaN(value) || value > maxValues[name])) {
         notyf.error(`ពិន្ទុ ${name.charAt(0).toUpperCase() + name.slice(1)} មិនអាចធំជា ${maxValues[name]} ពិន្ទុ`);
+        $(this).val(0);
         return;
       }
       
@@ -520,16 +529,19 @@
     });
     $('#Assingstudent').on('change', function() {
       var code = $(this).val();
+      var assing_no = "{{ isset($_GET['assing_no']) ? addslashes($_GET['assing_no']) : '' }}";
+
       $.ajax({
         type: "get",
         url: `/assign-student-line-by-code`,
         data: {
-          code: code
+          code: code, // <-- Add comma here
+          assing_no: assing_no
         },
         success: function(response) {
           if (response.status == 'success') {
             $("#divConfirmationLine").modal('hide');
-            // $("#rowLine" + id).remove();
+            // $("#rowLine" + id).remove(); // Uncomment if needed
             notyf.success(response.msg);
           } else if (response.status == 'error') {
             notyf.error(response.msg);
