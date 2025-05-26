@@ -49,7 +49,7 @@ use Illuminate\Support\Str;
     .id-card-left {
         text-align: left;
         font-weight: bold;
-          color: rgb(0, 18, 138);
+        color: rgb(0, 18, 138);
         font-size: 11.05px !important;
         font-family: "Battambang" !important;
     }
@@ -71,9 +71,9 @@ use Illuminate\Support\Str;
     .id-card-date-khmer {
           color: rgb(0, 18, 138);
         text-align: center;
-        margin-left: -15px !important;
+        margin-left: -24px !important;
         margin-top: 10.5px;
-        font-size: 9.2px;
+        font-size: 9px !important;
         font-weight: 600 !important;
         font-family: "Battambang" !important;
     }
@@ -81,7 +81,7 @@ use Illuminate\Support\Str;
     .id-card-date-khmer-pp {
         float: right;
           color: rgb(0, 18, 138);
-        font-size: 9.3px;
+        font-size: 9px !important;
         padding-right: 32px !important;
         font-weight: 600 !important;    
         font-family: "Battambang" !important;

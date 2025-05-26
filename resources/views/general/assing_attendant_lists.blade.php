@@ -1,17 +1,13 @@
-<!DOCTYPE html>
-<html lang="km">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Student Attendance</title>
+<div class="container mx-auto">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@100;300;400;700;900&display=swap" rel="stylesheet"> 
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/notyf/notyf.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+</div>
+@extends('app_layout.app_layout')
+@section('content')
     <style>
 
         body {
@@ -23,21 +19,28 @@
             color: white;
             border: none;
         }
+        .py-2 {
+            padding-top: .5rem !important;
+            padding-bottom: .5rem !important;
+            font-size: 15px !important;
+        }
     </style>
-</head>
 <body class="bg-gray-50 ">
-    
     <div class=" p-2 sm:p-6 space-y-2 md:space-y-6 lg:px-24 lg:py-12  ">
         <!-- Header Controls -->
-        <div class="flex items-center justify-between gap-1  sm:gap-4 ">
+        <div class="flex items-center justify-between">
             <div class="flex items-center gap-1 sm:gap-2">
-                <input type="search" placeholder="ស្វែងរក..." class=" w-full px-4 py-2 border rounded-lg min-w-[100px] max-w-[500px]" id="search-input">
-                <button class="px-2 py-2 border rounded-lg flex items-center justify-center gap-2" id="filter-button">
+                <input type="search" placeholder="ស្វែងរក..." class="w-full px-3 py-2 border rounded-lg min-w-[100px] max-w-[500px] " id="search-input" style="height: 38px !important;">
+
+                <button class="px-2 py-2 border rounded-lg flex items-center justify-center gap-2  min-w-[100px] max-w-[500px]" id="button-saveAttendant-Byday" style="height: 38px !important;">
+                    រក្សាទុក
+                </button>
+                {{-- <button class="px-2 py-2 border rounded-lg flex items-center justify-center gap-2" id="filter-button">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                     </svg>
                     <span class="hidden sm:inline">ស្រង់</span>
-                </button>
+                </button> --}}
             </div>
             
             <div id="alert-message" class="fixed top-0  right-0 p-4 mb-4 text-md text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
@@ -47,6 +50,7 @@
             <div class="text-lg font-semibold">
                 កាលបរិច្ឆេទ: {{ isset($_GET['date']) ? $_GET['date'] : date('Y-m-d') }}
             </div>
+            <input type="hidden" id="att-date" value="{{ request('date', date('Y-m-d')) }}">
         </div>
         <!-- Add Filter Panel -->
         <div id="filter-panel" class="hidden mt-2 p-4 bg-white border rounded-lg ">
@@ -140,10 +144,10 @@
                     @if($students->student && $students->student->code)
                     <tr class="border-b">
                         <td class="px-2 py-2 text-center"><input type="checkbox" class="rounded border-gray-300"></td>
-                        <td class="px-2 py-2 text-xs sm:text-sm">#{{$students->student->code}}</td>
-                        <td class="px-2 py-2 sm:table-cell hidden">{{$students->student->gender}}</td>
-                        <td class="px-2 py-2 hidden sm:table-cell">{{$students->student->name}}</td>
-                        <td class="px-2 py-2">{{$students->student->name_2}}</td>
+                        <td class="px-2 py-2 text-xs sm:text-sm">{{$students->student->code}}</td>
+                        <td class="px-2 py-2 text-xs sm:text-sm">{{$students->student->gender}}</td>
+                        <td class="px-2 py-2 text-xs sm:text-sm">{{$students->student->name}}</td>
+                        <td class="px-2 py-2 text-xs sm:text-sm">{{$students->student->name_2}}</td>
                         <td class="px-2 py-2">
                             <div class="flex gap-2 justify-center">
                                 <div id="tooltip-present-{{$students->id}}" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
@@ -195,22 +199,46 @@
                 </tbody>
             </table>
         </div>
-
-      
-    
-   
-
 </body>
 </html> 
 
 
-   
-    
 <script>
+  
+
     const record = <?php echo json_encode($records); ?>;
     const currentDate = "{{ isset($_GET['date']) ? $_GET['date'] : date('Y-m-d') }}";
     console.log(record);
     const scores = <?php echo json_encode($scores ?? []); ?>;
+
+    $(document).ready(function() {
+  
+        $.ajaxSetup({
+            headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $(document).on('click', '#button-saveAttendant-Byday', function() {
+            var assing_no = "{{ isset($_GET['assing_no']) ? addslashes($_GET['assing_no']) : '' }}";
+            var att_date = $('#att-date').val();
+            $.ajax({
+                type: "POST",
+                url: "/attendance/submit-by-date", 
+                data: { assing_no: assing_no, att_date: att_date },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        notyf.success(response.msg);
+                    } else {
+                        notyf.error(response.msg);
+                    }
+                }
+            });
+        });
+    });
 
     // Initialize scores and attendance buttons
     function initializeScores() {
@@ -417,3 +445,7 @@
     // Initially hide the toast
     toast.classList.add("hidden");
 </script>
+
+
+
+@endsection

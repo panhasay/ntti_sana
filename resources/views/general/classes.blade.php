@@ -31,8 +31,8 @@
             class="mdi mdi-printer btn-icon-append"></i> </button> --}}
     </div>
     <div class="d-grid d-md-flex justify-content-md-end p-3">
-      {{-- <input type="text" class="form-control mb-2 mb-md-0 me-2" id="search_data" data-page="classes" name="search_data"
-        placeholder="Serch...." aria-label="Recipient's username" aria-describedby="basic-addon2"> --}}
+      <input type="text" class="form-control mb-2 mb-md-0 me-2" id="search_data" data-page="classes" name="search_data"
+        placeholder="ស្វែងរក..." aria-label="Recipient's username" aria-describedby="basic-addon2">
       <div>
       </div>
       <a class="btn btn-primary mb-2 mb-md-0 me-2" data-toggle="collapse" href="#Fliter" role="button"

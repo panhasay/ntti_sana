@@ -5,12 +5,34 @@ namespace App\Http\Controllers\General;
 use App\Http\Controllers\Controller;
 use App\Models\General\ClassSchedule;
 use App\Models\General\AssingClasses;
+use App\Models\General\student_score;
 use App\Models\SystemSetup\Department;
+use App\Service\service;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
+use PDF;
 
 class AttendanceController extends Controller
 {
+    public $services;
+    public $page_id;
+    public $page;
+    public $prefix;
+    public $table_id;
+    public $arrayJoin = [];
+    function __construct()
+    {
+        $this->services = new service();
+        $this->page_id = "10001";
+        $this->page = "attendance";
+        $this->prefix = "attendance";
+        $this->arrayJoin = ['10001', '10007', '10008'];
+        $this->table_id = "10005";
+    }
+    //
     private function getTimeSection($time) {
         if (!$time) return null;
         
@@ -140,5 +162,84 @@ class AttendanceController extends Controller
 
         return view('dashboard.dashboard_attendance_student', compact('schedules', 'selectedDate', 'selectedDepartment', 'selectedSection', 'departments'));
     }
-    
+   
+    public function SumbitDocumentByDate(Request $request)
+{
+    try {
+        $assign_no = $request->input('assing_no');
+        $att_date = $request->input('att_date');
+        $att_date = Carbon::parse($att_date)->format('Y-m-d');
+
+        // 1. Get data
+            // 1. Fetch student scores
+        $students = student_score::where('assign_line_no', $assign_no)
+            ->where('att_date', $att_date)
+            ->get();
+
+        foreach ($students as $student) {
+            $student->status = "Yes";
+            $student->save();
+        }
+
+        // 2. Fetch related class assignment data
+        $record = AssingClasses::with(['teacher', 'subject', 'section'])
+            ->where('assing_no', $assign_no)
+            ->first();
+
+        // 3. Get class info or default to 'N/A'
+        $classCode    = $record->class_code ?? 'N/A';
+        $teacherName  = $record->teacher->name_2 ?? 'N/A';
+        $subjectName  = $record->subject->name ?? 'N/A';
+        $sectionName  = $record->section->name_2 ?? 'N/A';
+
+        // 4. Count student statuses
+        $total        = $students->count();
+        $present      = $students->where('att_score', 2)->count();
+        $absent       = $students->where('att_score', 0)->count();
+        $permission   = $students->where('att_score', 0.5)->count();
+        $late         = $students->where('att_score', 1)->count();
+
+        // 5. Compose message
+        $message  = "📋 របាយការណ៍អវត្តមានប្រចាំថ្ងៃ ក្រុម $classCode\n";
+        $message .= "🕒 ម៉ោងលោកគ្រូ: $teacherName\n";
+        $message .= "📚 មុខវិជ្ជា: $subjectName\n";
+        $message .= "🕘 វេន: $sectionName\n";
+        $message .= "🗓️ ថ្ងៃទី: " . $att_date . "\n";
+        $message .= "📝 សរុប: $total\n";
+        $message .= "✅ វត្តមាន: $present\n";
+        $message .= "❌ អវត្តមាន: $absent\n";
+        $message .= "📄 ច្បាប់: $permission\n";
+        $message .= "⏰ យឺត: $late\n";
+        $message .= "👤 អ្នកហៅអវត្តមាន: " . Auth()->user()->name . "\n";
+        
+        $telegramId = "-4557828405";
+        $telegramToken = "7286298295:AAE5VeNDbrjXIPF2mJNlZMpXa1MhojXHvnQ";
+
+        Http::post("https://api.telegram.org/bot{$telegramToken}/sendMessage", [
+            'chat_id' => $telegramId,
+            'text' => $message,
+        ]);
+
+        // // 4. Send the PDF
+        // $response = Http::attach(
+        //     'document',
+        //     file_get_contents($filePath),
+        //     $filename
+        // )->post("https://api.telegram.org/bot{$telegramToken}/sendDocument", [
+        //     'chat_id' => $telegramId,
+        //     'caption' => 'សូមពិនិត្យរបាយការណ៍ PDF ខាងក្រោម។',
+        // ]);
+
+        return response()->json([
+            'status' => 'success',
+            'msg' => 'បានបញ្ជូន PDF និងព័ត៌មានទៅ Telegram',
+            // 'telegram_response' => $response->json()
+        ]);
+    } catch (\Exception $ex) {
+        return response()->json([
+            'status' => 'error',
+            'msg' => $ex->getMessage()
+        ]);
+    }
+}
 }

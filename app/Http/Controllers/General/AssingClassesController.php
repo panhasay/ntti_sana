@@ -99,8 +99,26 @@ class AssingClassesController extends Controller
                 }, SORT_REGULAR, false); 
 
         $isEmpty = $recordsLine->isEmpty(); 
+       // Prepare the attendance scores indexed by student_code
+        $results = DB::table('student_score')
+            ->select(
+                'student_code',
+                DB::raw('SUM(att_score) AS total_att_score'),
+                DB::raw('((SUM(att_score) / 2) * 15) / COUNT(att_date) AS attendance_score')
+            )
+            ->where('assign_line_no', $data['assing_no'])
+            ->groupBy('student_code')
+            ->get()
+            ->keyBy('student_code'); // <-- Create a map indexed by student_code
 
-        // update suore student 
+        // Update each student line with corresponding attendance score
+        foreach ($recordsLine as $line) {
+            $studentCode = $line->student_code;
+            if (isset($results[$studentCode])) {
+                $line->attendance = $results[$studentCode]->attendance_score;
+                $line->save();
+            }
+        }
 
         $Assingstudent = null;
         try {

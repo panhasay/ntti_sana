@@ -10,8 +10,8 @@
                 <i class="mdi mdi-border-color"></i> បើក
             </a>
         </td>
-        <td class="">{{ $record->session_year_code }}</td>
-        <td class="">{{ $record->class_code }}</td>
+        <td class="">{{ str_replace('_', ' - ', $record->session_year_code) }}</td>
+        <td class="">{{ str_replace('.', '', $record->class_code) }}</td>
         <td class="">{{ $record->section->name_2 ?? '' }}</td>
         <td class="">{{ $record->skill->name_2 ?? '' }}</td>
         <td class="">{{ $record->department->name_2 ?? '' }}</td>

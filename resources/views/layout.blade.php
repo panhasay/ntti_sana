@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
-    {{-- <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> --}}
+    <title>NTTI Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Bayon&family=Moul&family=Noto+Serif+Khmer:wght@800&family=Suwannaphum&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="https://nttiportal.com/./uploads/school_content/logo/front_fav_icon-619eeffe4674b6.56720560.png" type="image/x-icon">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
     <style type="text/css">
@@ -18,7 +15,7 @@
             font-weight: 400;
             color: #212529;
             text-align: left;
-            background-color: #202020; /* Set a fallback dark color */
+            background-color: #202020; 
             background-image: url('asset/NTTI/images/img_login.jpg');
             background-size: cover;
             background-repeat: no-repeat;

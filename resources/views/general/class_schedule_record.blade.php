@@ -23,7 +23,7 @@
         <td class="text-center">{{ $record->qualification ?? '' }}</td>
         <td class="text-center">{{ $department ?? '' }}</td>
         <td class="text-center">{{ $formattedDate  ?? '' }}</td>
-        <td class="text-center">{{ $record->session_year_code ?? '' }}</td>
+        <td class="text-center">{{ str_replace('_', ' - ', $record->session_year_code ?? "") }}</td>
         <td class="text-center">ឆ្នាំទី​ {{ $record->years ?? '' }}​</td>
     </tr>
 @endforeach

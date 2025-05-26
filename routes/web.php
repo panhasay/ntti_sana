@@ -221,7 +221,7 @@ Route::group(['perfix' => 'teachers' ], function (){
 })->middleware('auth');
 Route::group(['prefix' => 'attendance'], function () {
     Route::get('/dashboards-attendance', [AttendanceController::class, 'index']);
-
+    Route::post('/submit-by-date', [AttendanceController::class, 'SumbitDocumentByDate']);
 })->middleware('auth');
 Route::group(['perfix' => '/class-schedule'], function (){
     Route::get('/class-schedule', [ClassScheduleController::class, 'index']);

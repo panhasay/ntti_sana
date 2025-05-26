@@ -19,7 +19,7 @@
         <td class="text-center">{{ $skills ?? '' }}</td>
         <td class="text-center">{{ $record->level ?? '' }} </td>
         <td class="text-center">{{ $department ?? '' }}</td>
-        <td class="text-center">{{ $record->school_year_code }}</td>
+        <td class="text-center">{{ str_replace('_', ' - ', $record->school_year_code ?? '') }}</td>
         <td class="text-center">
             <label class="badge {{ $record->is_active == 'no' ? 'badge-danger' : 'badge-success' }} btn-sm mb-2 mb-md-0 me-2">
                 {{ $record->is_active ?? '' }}

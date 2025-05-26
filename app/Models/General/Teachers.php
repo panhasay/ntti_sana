@@ -24,7 +24,6 @@ class Teachers extends Model
         if ($user->department_code === 'D_IT') {
             return $query->where('department_code', 'D_IT');
         }
-
         return $query;
     }
     

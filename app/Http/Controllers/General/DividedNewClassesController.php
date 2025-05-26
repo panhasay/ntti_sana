@@ -57,7 +57,9 @@ class DividedNewClassesController extends Controller
             ->groupBy('classes.code',  'classes.level', 'classes.department_code', 'classes.school_year_code', 'classes.name', 'classes.skills_code', 'classes.sections_code')
             ->orderBy('totals_student', 'desc')
             ->orderBy('classes.department_code', 'desc')
+            ->WithQueryPermissionTeacher()
             ->paginate(20);
+            
         $total_records = Student::select(
             DB::raw('COUNT(name) AS total_count'),
         )->where('study_type', 'new student')

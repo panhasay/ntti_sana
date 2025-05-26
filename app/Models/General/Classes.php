@@ -5,6 +5,7 @@ namespace App\Models\General;
 use App\Models\SystemSetup\Department;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Classes extends Model
 {
@@ -50,5 +51,15 @@ class Classes extends Model
     public function qualification()
     {
         return $this->belongsTo(Qualifications::class, 'qualification', 'code');
+    }
+   public function scopeWithQueryPermissionTeacher($query)
+    {
+        $user = Auth::user();
+
+        if ($user->department_code === 'D_IT') {
+            return $query->where('classes.department_code', 'D_IT');
+        }
+
+        return $query;
     }
 }
