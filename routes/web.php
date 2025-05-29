@@ -293,13 +293,13 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
         Route::get('/dept-menu', 'index')->name('cert.dept_menu');
         Route::get('/dept-menu/{dept_code}', 'showMenuModule')->where('dept_code', '[A-Z_]+')->name('cert.dept.list');
 
-        $subModules = DB::table('cert_sub_module')->where('active', 1)->whereNotNull('route')->get();
-        Route::prefix('{dept_code}')->group(function () use ($subModules) {
-            foreach ($subModules as $item) {
-                Route::get($item->route . '/{module_code}', $item->controller)
-                    ->name('certificate.' . $item->route);
-            }
-        });
+        // $subModules = DB::table('cert_sub_module')->where('active', 1)->whereNotNull('route')->get();
+        // Route::prefix('{dept_code}')->group(function () use ($subModules) {
+        //     foreach ($subModules as $item) {
+        //         Route::get($item->route . '/{module_code}', $item->controller)
+        //             ->name('certificate.' . $item->route);
+        //     }
+        // });
 
         Route::prefix('student')->group(function () {
             Route::post('/bar', 'getStudentPieBarChartData');

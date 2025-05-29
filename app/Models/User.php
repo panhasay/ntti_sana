@@ -20,10 +20,19 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'pageination',
         'name',
+        'department_code',
         'email',
+        'email_verified_at',
         'password',
+        'remember_token',
+        'user_code',
+        'user_type',
+        'role',
+        'permission',
         'phone',
+        'session_token',
     ];
 
     /**
@@ -34,6 +43,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'session_token',
     ];
 
     /**
@@ -41,15 +51,14 @@ class User extends Authenticatable
      *
      * @var array<string, string>
      */
-    protected $casts = [
+     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
+        'phone' => 'decimal:0',
+        'pageination' => 'decimal:0',
     ];
 
     public function department()
     {
         return $this->belongsTo(Department::class, 'department_code', 'code');
     }
-
-
 }
