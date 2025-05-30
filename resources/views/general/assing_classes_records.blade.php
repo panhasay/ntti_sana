@@ -18,6 +18,7 @@
         <td class="">{{ $record->teacher->name_2 ?? '' }}</td>
         <td class="">{{ $record->subject->name ?? '' }}</td>
         <td class="">{{ $record->semester == '1' ? 'ឆមាសទី ១' : ($record->semester == '2' ? 'ឆមាសទី ២' : '') }}</td>
+        <td class="">{{ $record->years == '1' ? 'ឆ្នាំទី ១' : ($record->years == '2' ? 'ឆ្នាំទី ២' : '') }}</td>
         <td class="">
             @if($record->exam_type == 'Yes')
                 <label class="badge badge-success btn-sm mb-2 mb-md-0 me-2" id="exam_type">បានប្រលងបញ្ចាប់</label>

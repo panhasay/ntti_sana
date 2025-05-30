@@ -688,7 +688,7 @@
                                                 <a href="{{ url('skills') }}">
                                                     <i class="fa fa-ticket"></i>
                                                     <span class="count-numbers">
-                                                        {{ $total_skill ?? '' }}
+                                                       {{ \App\Service\Service::convertToKhmerNumber($total_skill ?? '') }}
                                                     </span>
                                                     <span class="count-name">ជំនាញ</span>
                                                 </a>
@@ -700,7 +700,7 @@
                                                 <a href="{{ url('/classes') }}">
                                                     <i class="fa fa-home"></i>
                                                     <span class="count-numbers">
-                                                        {{ $total_class ?? '' }}
+                                                         {{ \App\Service\Service::convertToKhmerNumber($total_class ?? '') }}
                                                     </span>
                                                     <span class="count-name">ថ្នាក់</span>
                                                 </a>
@@ -712,7 +712,7 @@
                                                 <a href="{{ url('/student/registration') }}">
                                                     <i class="fa fa-users"></i>
                                                     <span class="count-numbers">
-                                                        {{ $total_students ?? '' }}
+                                                         {{ \App\Service\Service::convertToKhmerNumber($total_students ?? '') }}
                                                     </span>
                                                     <span class="count-name">សិស្សសរុប</span>
                                                 </a>

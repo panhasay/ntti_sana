@@ -43,7 +43,7 @@ class ClassScheduleController extends Controller
             return redirect("login")->withSuccess('Opps! You do not have access');
         }
         $page = $this->page;
-        $records = GeneralClassSchedule::orderBy('session_year_code', 'asc')->paginate(20);
+        $records = GeneralClassSchedule::orderBy('semester', 'asc')->orderBy('years', 'asc')->paginate(20);
         $data = $this->services->GetDateIndexOption(now()); 
 
         return view('general.class_schedule', array_merge($data, compact('page', 'records')));
@@ -174,6 +174,14 @@ class ClassScheduleController extends Controller
             if (empty($input[$field])) {
                 return response()->json(['status' => 'error', 'msg' => $message]);
             }
+        }
+
+        $exists = GeneralClassSchedule::where('class_code', $request->class_code)
+                ->where('semester', $request->semester)
+                ->where('years', $request->years)
+                ->exists();
+        if ($exists) {
+             return response()->json(['status' => 'error', 'msg' => 'ថ្នាក់ ឆមាស និងឆ្នាំដូចគ្នា រួចហើយ!']);
         }
         try {
             $records = new GeneralClassSchedule();

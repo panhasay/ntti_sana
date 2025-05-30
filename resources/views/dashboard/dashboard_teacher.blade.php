@@ -7,6 +7,9 @@
         font-size: 15px;
         font-family: 'Khmer M1';
     }
+    .general-data > th{
+        background: #ded9d9;
+    }
 </style>
 @extends('app_layout.app_layout')
 @section('content')
@@ -129,10 +132,27 @@
                 </div>
             </a>
         </div>
-      
-
     </div>
 
+    <div class="row">
+        <table>
+            <thead class="table table-striped">
+               <thead>
+                    <tr class="general-data">
+                        <th class="text-center" colspan="2">ចន្ទ</th>
+                        <th class="text-center" colspan="2">អង្គា</th>
+                        <th class="text-center" colspan="2">ពុធ</th>
+                        <th class="text-center" colspan="2">ព្រហស្បត៏</th>
+                        <th class="text-center" colspan="2">សុក្រ</th>
+                        <th class="text-center" colspan="2">សៅរ៏</th>
+                    </tr>
+                </thead>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+    </div>
 
     <div class="row">
         <div class="col-md-3 col-sm-4 col-6">

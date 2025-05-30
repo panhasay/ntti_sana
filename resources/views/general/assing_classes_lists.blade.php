@@ -12,6 +12,7 @@
           <th class="">លោកគ្រូ</th>
           <th class="">មុខវិជ្ជា</th>
           <th class="">ឆមាស</th>
+          <th class="">ឆ្នាំ</th>
           <th class="">ការប្រឡង</th>
         </tr>
       </thead>
@@ -19,5 +20,5 @@
         @include('general.assing_classes_records')
       </tbody>
     </table>
-    {{$records->links("pagination::bootstrap-4")}}
+    {{ $records->appends(['type' => $type, 'years' => request('years')])->links("pagination::bootstrap-4") }}
   </div><br><br>

@@ -49,13 +49,14 @@ class AssingClassesController extends Controller
                 ->where('teachers_code', $user->user_code)
                 ->WhitQueryPermissionTeacher()
                 ->where('qualification', $data['type'])
+                ->orderBy('semester', 'asc')->orderBy('years', 'asc')
                 ->paginate(20);
         }else{
             $records = AssingClasses::with(['department', 'section', 'skill', 'teacher','subject' ])
                 ->where('years', $data['years'])
                 ->where('qualification', $data['type'])
                 ->WhitQueryPermissionTeacher()
-                ->orderBy('session_year_code', 'DESC')
+                ->orderBy('semester', 'asc')->orderBy('years', 'asc')
                 ->paginate(20);
         }
         try{

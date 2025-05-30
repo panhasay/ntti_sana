@@ -17,7 +17,7 @@
             <button class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="btnDelete" data-code="{{ $record->id ?? '' }}"><i class="mdi mdi-delete-forever"></i> លុប</button>
         </td>
         <td class="text-center">{{ $index++ }}</td>
-        <td class="text-center">{{ $record->class_code ?? '' }}</td>
+        <td class="text-center">{{ str_replace(['.', '_'], '', $record->class_code ?? "") }}</td>
         <td class="text-center">{{ $sections ?? '' }}</td>
         <td class="text-center">{{ $skills ?? '' }}</td>
         <td class="text-center">{{ $record->qualification ?? '' }}</td>
@@ -25,5 +25,6 @@
         <td class="text-center">{{ $formattedDate  ?? '' }}</td>
         <td class="text-center">{{ str_replace('_', ' - ', $record->session_year_code ?? "") }}</td>
         <td class="text-center">ឆ្នាំទី​ {{ $record->years ?? '' }}​</td>
+        <td class="text-center">ឆមាស {{ $record->semester ?? '' }}​</td>
     </tr>
 @endforeach
