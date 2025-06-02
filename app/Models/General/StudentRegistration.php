@@ -9,6 +9,7 @@ use App\Models\General\Sections;
 use App\Models\General\Skills;
 use App\Models\General\StudyYears;
 use App\Models\General\Teachers;
+use Illuminate\Support\Facades\Auth;
 
 class StudentRegistration extends Model
 {
@@ -55,4 +56,14 @@ class StudentRegistration extends Model
    {
        return $this->belongsTo(SessionYear::class, 'session_year_code', 'code');
    }
+    public function scopeWithQueryPermission($query)
+    {
+        $user = Auth::user();
+        if ($user->department_code) {
+           return $query->where('department_code', $user->department_code);
+        }else {
+            return $query;
+        }
+        
+    }
 }

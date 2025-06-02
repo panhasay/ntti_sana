@@ -7,12 +7,12 @@
             <div class="page-title page-title-custom">
                 <div class="title-page">
                     <a href="{{ url('skills') }}"><i class="mdi mdi-format-list-bulleted"></i></a>
+                    <button type="button" id="BtnSave" class="btn btn-success">ស្នើសុំការអនុញ្ញាតិ</button>
                     @if($type == 'ed')
-                    កែប្រែ, ជំនាញ {{ $records->name_2 ?? '' }}
+                       ស្នើរសុំប្ដូរក្រុម/ប្ដូរវេនសិក្សា {{ $records->name_2 ?? '' }}
                     @else
-                    បន្ថែមថ្មី
+                        បន្ថែមថ្មី
                     @endif
-                    &nbsp;&nbsp; <button type="button" id="BtnSave" class="btn btn-success"> save </button>
                 </div>
             </div>
         </div>

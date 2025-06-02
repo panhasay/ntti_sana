@@ -123,7 +123,7 @@
     <table class="table table-striped">
       <thead>
         <tr>
-          <th width="50"></th>
+          {{-- <th width="50"></th> --}}
           <th class="text-center" width="20">អត្តលេខ</th>
           <th class="text-center" width="30">គោត្តនាម និងនាម</th>
           <th class="text-center" width="30">ឈ្មោះជាឡាតាំង</th>
@@ -142,12 +142,12 @@
           <?php  $total_score = (float) $line->attendance + (float) $line->assessment + (float) $line->final + (float) $line->midterm; ?>
           <tr id="rowLine{{$line->id ?? ''}}" data-id="{{ $line->id ?? ''}}">
             <form id="frmDataLine" role="form" class="form-sample" enctype="multipart/form-data">
-              <td>
+              {{-- <td>
                 <a class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2 DeletDataLine"
                   data-id="{{ $line->id ?? '' }}" href="javascript:void(0)">
                     <i class="mdi mdi-delete-forever"></i> ដកចេញ
                 </a>
-              </td>
+              </td> --}}
               <td class="text-center">{{ $line->student->code ?? ''}}</td>  
               <td>{{ $line->student->name_2 ?? ''}}</td>
               <td>{{ $line->student->name ?? ''}}</td>

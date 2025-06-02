@@ -3296,7 +3296,7 @@ textarea.is-invalid.tt-hint {
 .dropdown-item {
   display: block;
   width: 100%;
-  padding: 0.25rem 1rem;
+  padding: 11px !important;
   clear: both;
   font-weight: 400;
   color: #030303;
@@ -14349,3 +14349,4 @@ dl {
   font-style: normal;
   font-size: 30px !important;
 }
+

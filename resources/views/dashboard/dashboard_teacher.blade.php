@@ -8,7 +8,35 @@
         font-family: 'Khmer M1';
     }
     .general-data > th{
-        background: #ded9d9;
+        background: #ebebeb;
+        border: 1px solid #ddd;
+        padding: 15px !important
+    }
+    .general-data > td{
+        border: 1px solid #ddd;
+        padding: 1.2px !important;
+        font-size: 9px !important;
+    }
+    .no-decoration {
+        text-decoration: none !important; 
+        color: rgb(25, 25, 28) !important; 
+        transition: 
+            color 0.3s ease, 
+            background-color 0.3s ease, 
+            transform 0.3s ease, 
+            box-shadow 0.3s ease;
+        padding: 4px 6px;
+        border-radius: 6px;
+        display: inline-block;
+    }
+
+    .no-decoration:hover {
+        text-decoration: underline;
+        color: rgb(90, 90, 200);
+        /* background-color: #f9f9f9e1;   */
+        font-weight: bold;          
+        transform: scale(1.02);     
+        /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);  */
     }
 </style>
 @extends('app_layout.app_layout')
@@ -98,9 +126,10 @@
                               ];
                           @endphp
                           @if(count($assignedClasses) > 0)
-                            @foreach($assignedClasses as $record)
+                           ថ្ងៃ : ចន្ទ...
+                            {{-- @foreach($assignedClasses as $record)
                                 ថ្ងៃ : {{ $khmerDays[strtolower($record->date_name)] ?? $record->date_name }} ...
-                            @endforeach
+                            @endforeach --}}
                           @else
                                 ថ្ងៃ : ចន្ទ...
                           @endif
@@ -120,12 +149,12 @@
                         </div>
                         <h5 class="card-title" style="font-size: 1.1rem; margin-bottom: 1rem;">កាលវិភាគ កាប្រឡង</h5>
                         <h2 class="card-text mb-1" style="font-size: 2.5rem; font-weight: bold;">{{ count($assignedClasses) ?? '0'}} 
-                            @foreach($assignedClasses as $record)
+                            {{-- @foreach($assignedClasses as $record)
                                 <span style="font-size: 18px;"> 
                                     <a  href="{{ url('/exam-schedule') }}" style="color: #ffff;">{{ $record->class_code }}</a>
-                                    {{-- <span style="font-size: 12px;">{{ $record->subject->name ?? '' }}</span> --}}
+                                    <span style="font-size: 12px;">{{ $record->subject->name ?? '' }}</span>
                                 </span>
-                            @endforeach
+                            @endforeach --}}
                         </h2>
                         <small class="text-white-50">ឆមាសនេះ</small>
                     </div>
@@ -134,26 +163,91 @@
         </div>
     </div>
 
-    <div class="row">
-        <table>
+    <div>
+        <h6 class="welcome-title" style="font-size: 17px; color: #2c3e50; margin-bottom: 1rem;">
+            តារាងការបង្រៀន
+        </h6>
+    </div>
+            @php
+                $daysKhmer = [
+                    'monday'    => 'ច័ន្ទ',
+                    'tuesday'   => 'អង្គារ',
+                    'wednesday' => 'ពុធ',
+                    'thursday'  => 'ព្រហស្បតិ៍',
+                    'friday'    => 'សុក្រ',
+                    'saturday'  => 'សៅរ៍',
+                    'sunday'    => 'អាទិត្យ',
+                ];
+                $groupedByDay = collect($schedules_recored)
+                                ->groupBy(function($record) {
+                                    return strtolower($record->date_name);
+                                });
+                $groupedByDayAndGroup = [];
+                foreach ($groupedByDay as $day => $records) {
+                    $groupedByDayAndGroup[$day] = $records->groupBy(function($item) {
+                        return $item->class_code . '-' . $item->semester . '-' . $item->qualification;
+                    });
+                }
+                $allGroupKeys = collect();
+                foreach ($groupedByDayAndGroup as $day => $groups) {
+                    foreach ($groups as $groupKey => $items) {
+                        $allGroupKeys->push($groupKey);
+                    }
+                }
+                $allGroupKeys = $allGroupKeys->unique()->values();
+            @endphp
+            <div class="row">
+                <table border="1" style="border-collapse: collapse; width: 100%;">
             <thead class="table table-striped">
-               <thead>
-                    <tr class="general-data">
-                        <th class="text-center" colspan="2">ចន្ទ</th>
-                        <th class="text-center" colspan="2">អង្គា</th>
-                        <th class="text-center" colspan="2">ពុធ</th>
-                        <th class="text-center" colspan="2">ព្រហស្បត៏</th>
-                        <th class="text-center" colspan="2">សុក្រ</th>
-                        <th class="text-center" colspan="2">សៅរ៏</th>
-                    </tr>
-                </thead>
+                <tr class="general-data">
+                    @foreach($daysKhmer as $eng => $khmer)
+                        <th width="120" class="text-center">{{ $khmer }}</th>
+                    @endforeach
+                </tr>
             </thead>
             <tbody>
-                
+                @php
+                    $filteredGroupKeys = $allGroupKeys->filter(function($groupKey) use ($groupedByDayAndGroup, $daysKhmer) {
+                        foreach ($daysKhmer as $dayKey => $dayName) {
+                            if (!empty($groupedByDayAndGroup[$dayKey][$groupKey]) && $groupedByDayAndGroup[$dayKey][$groupKey]->isNotEmpty()) {
+                                return true;
+                            }
+                        }
+                        return false; 
+                    })->values();
+                @endphp
+                @foreach($filteredGroupKeys as $groupKey)
+                    <tr class="general-data">
+                        @foreach($daysKhmer as $eng => $khmer)
+                            @php
+                                $records = $groupedByDayAndGroup[$eng][$groupKey] ?? collect();
+                            @endphp
+
+                            @if($records->isNotEmpty())
+                                <td class="text-center" style="padding: 5px;">
+                                    @foreach($records as $record)
+                                        <a class="no-decoration" href="{{ '/assign-classes/transaction?type=ed&code=' . App\Service\service::Encr_string($record->id) }}&years={{ $record->years ?? '' }}&type={{ $record->qualification ?? '' }}&assing_no={{ $record->assing_no ?? '' }}">
+                                            <div style="margin-bottom: 5px;">
+                                                {{ $record->class_code ?? '' }},
+                                                ឆ្នាំទី {{ $record->years ?? '' }},
+                                                {{ $record->qualification ?? '' }},
+                                                ឆមាសទី {{ $record->semester ?? '' }}
+                                                <br>
+                                                មុខវិជ្ជា {{ $record->subject->name ?? '' }}
+                                            </div>
+                                        </a>
+                                    @endforeach
+                                </td>
+                            @else
+                                <td></td> 
+                            @endif
+                        @endforeach
+                    </tr>
+                @endforeach
             </tbody>
         </table>
     </div>
-
+    <br><br>
     <div class="row">
         <div class="col-md-3 col-sm-4 col-6">
             <div class="titl-main-name">
@@ -509,6 +603,7 @@
             </div>
         </div>
     </div> --}}
+    <br><br> <br><br> <br><br>
 </div>
 
 <script>

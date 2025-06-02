@@ -249,6 +249,7 @@ class DashboardController extends Controller
             ->orderBy('start_date', 'asc')
             ->get();
 
+        
         // Extract class_schedule IDs as an array
         $class_schedule_ids = $schedules->pluck('id')->toArray();
         $date_name  = $schedules->pluck('date_name')->toArray();
@@ -261,7 +262,25 @@ class DashboardController extends Controller
             ->get();
         $Classes_history = AssingClasses::where('teachers_code', $record->code)
             ->get();
-        return view('dashboard.dashboard_teacher', compact('record', 'total_class', 'total_subject', 'assignedClasses', 'Classes_history'));
+
+
+        $schedules_recored = AssingClasses::with(['section', 'subject', 'teacher', 'skill'])
+                ->where('teachers_code', $record->code)
+                ->get();
+
+            // dd($schedules_recored);
+
+            $daysKhmer = [
+            'monday'    => 'ច័ន្ទ',
+            'tuesday'   => 'អង្គារ',
+            'wednesday' => 'ពុធ',
+            'thursday'  => 'ព្រហស្បតិ៍',
+            'friday'    => 'សុក្រ',
+            'saturday'  => 'សៅរ៍',
+            'sunday'    => 'អាទិត្យ',
+        ];
+
+        return view('dashboard.dashboard_teacher', compact('record', 'daysKhmer', 'total_class', 'total_subject', 'assignedClasses', 'Classes_history', 'schedules_recored'));
     }
     public function TeacherMmanagementClass(Request $request)
     {
