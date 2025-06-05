@@ -41,7 +41,7 @@ function sendErrorToLaravel(errorDetails) {
                 "X-CSRF-TOKEN": getCSRFToken(),
             },
             body: JSON.stringify(errorDetails),
-            credentials: "same-origin", // Important for sending cookies
+            credentials: "same-origin",
         })
             .then((response) => {
                 if (!response.ok) {
@@ -65,18 +65,15 @@ function sendErrorToLaravel(errorDetails) {
     }
 }
 
-// Helper function to get CSRF token
 function getCSRFToken() {
     const metaToken = document.querySelector('meta[name="csrf-token"]');
     return metaToken ? metaToken.getAttribute("content") : null;
 }
 
-// Function to filter out unimportant errors
 function shouldIgnoreError(errorDetails) {
     const ignoredErrors = [
         "ResizeObserver loop limit exceeded",
         "Script error.",
-        // Add more patterns of errors you want to ignore
     ];
 
     return ignoredErrors.some((pattern) =>

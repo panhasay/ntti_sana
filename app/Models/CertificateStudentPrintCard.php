@@ -12,15 +12,15 @@ class CertificateStudentPrintCard extends Model
     protected $primaryKey = 'id';
     protected $fillable = [
         'stu_code',
-        'print_code',
         'class_code',
+        'print_code',
         'print_by',
         'print_by_date',
         'update_by',
         'update_by_date',
-        'status',
         'disable_by',
         'disable_by_date',
+        'status',
     ];
     //protected $fillable = [];
     public $timestamps = false;

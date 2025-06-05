@@ -19,6 +19,7 @@ class CertStudentPrintCardExpireClass extends Model
     protected $fillable = [
         'session_code',
         'class_code',
+        'year',
         'expire_date',
         'print_expire_date',
         'create_by',
@@ -27,7 +28,7 @@ class CertStudentPrintCardExpireClass extends Model
         'update_by_date',
         'status',
     ];
-    
+
     public static function boot()
     {
         parent::boot();

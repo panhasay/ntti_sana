@@ -1,4 +1,16 @@
 import { select2AdvancedModal } from "../utils/helpers";
+
+const notyf = new Notyf({
+    duration: 2000,
+    ripple: true,
+    dismissible: true,
+    position: {
+        x: "right",
+        y: "top",
+    },
+});
+
+const $sch_dept = $("#sch_dept");
 const $sch_class_spec = $("#sch_class_spec");
 const $sch_level = $("#sch_level");
 const $sch_shift = $("#sch_shift");
@@ -12,27 +24,16 @@ const $btn_print_card = $("#btn_print_card");
 const $btn_print_card_view = $("#btn_print_card_view");
 const $btn_update_view_info_print = $("#btn_update_view_info_print");
 var $txt_up_date_card = $("#txt_up_date_card");
+var $btn_open_print_date = $("#btn_open_print_date");
+var $txt_due_year = $("#txt_due_year");
+var $txt_due_level = $("#txt_due_level");
 
 let currentPage = 1;
 let currentPageList = 1;
 
 select2AdvancedModal("#txt_due_class", "#modal_card_due_date");
 select2AdvancedModal("#txt_due_level", "#modal_card_create_expire_date");
-
-function loader(action) {
-    var $loader = $("#loader");
-    if (action === "show") {
-        $loader.css({
-            position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            "z-index": "99999999999999999999",
-        }).fadeIn("slow");
-    } else if (action === "hide") {
-        $loader.fadeOut("slow");
-    }
-}
+select2AdvancedModal("#txt_due_year", "#modal_card_create_expire_date");
 
 function levelShiftSkill() {
     const class_code = $sch_class_spec.val();
@@ -41,7 +42,7 @@ function levelShiftSkill() {
     const sch_skill = $sch_skill.val();
 
     const requestData = {
-        dept_code: dept_code,
+        dept_code: $sch_dept.val(),
         class_code: class_code,
         sch_level: sch_level,
         sch_shift: sch_shift,
@@ -89,7 +90,7 @@ function showClassStudent() {
     const sch_shift = $sch_shift.val();
     const sch_skill = $sch_skill.val();
     const requestData = {
-        dept_code: dept_code,
+        dept_code: $sch_dept.val(),
         class_code: class_code,
         sch_level: sch_level,
         sch_shift: sch_shift,
@@ -132,7 +133,7 @@ function showCardView() {
 
     const class_code = $sch_class_spec.val();
     const requestData = {
-        dept_code: dept_code,
+        dept_code: $sch_dept.val(),
         class_code: class_code,
         search: $sch_info_student.val(),
         page: currentPage,
@@ -228,7 +229,11 @@ function showCardView() {
                                                     ? "No Class"
                                                     : item.class
                                             }
-                                                <label class="${item.class_remaining} fw-bold" title="Expire Card">${item.remaining}</label>`)
+                                                    <label class="${
+                                                        item.class_remaining
+                                                    } fw-bold" title="Expire Card">${
+                                                item.expire_formate_date
+                                            }</label>`)
                                         )
                                         .append($("<hr>"))
                                         .append(
@@ -261,7 +266,7 @@ function showCardView() {
                                                     "data-class_code",
                                                     item.class_code
                                                 )
-                                                .attr("title", "Print")
+                                                .attr("title", "បោះពុម្ភ")
                                                 .attr("data-toggle", "modal")
                                                 .attr(
                                                     "data-target",
@@ -280,7 +285,7 @@ function showCardView() {
                                                 .addClass(
                                                     "btn btn-outline-danger btn-sm"
                                                 )
-                                                .attr("title", "Print")
+                                                .attr("title", "បន្ថែមបោះពុម្ភ")
                                                 .attr(
                                                     "name",
                                                     "btn_print_card_set_revision_view"
@@ -332,7 +337,7 @@ function showCardView() {
                                                     "btn btn-outline-success btn-sm"
                                                 )
                                                 .attr("id", "btn_card_view")
-                                                .attr("title", "View Detail")
+                                                .attr("title", "មើល")
                                                 .attr("data-toggle", "modal")
                                                 .attr(
                                                     "data-target",
@@ -365,7 +370,7 @@ function showCardView() {
                                                 .addClass(
                                                     "btn btn-outline-primary btn-sm"
                                                 )
-                                                .attr("title", "Update")
+                                                .attr("title", "កែប្រែ")
                                                 .attr(
                                                     "name",
                                                     "btn_update_view_info_print"
@@ -406,10 +411,7 @@ function showCardView() {
                                                 .addClass(
                                                     "btn btn-outline-danger btn-sm"
                                                 )
-                                                .attr(
-                                                    "title",
-                                                    "Disable Active Print"
-                                                )
+                                                .attr("title", "ដកបោះពុម្ភ")
                                                 .attr(
                                                     "name",
                                                     "btn_diable_view_info_print"
@@ -442,10 +444,6 @@ function showCardView() {
                                                     $("<i>").addClass(
                                                         "mdi mdi-shuffle-disabled"
                                                     )
-                                                )
-                                                .prop(
-                                                    "hidden",
-                                                    item.status_print !== 1
                                                 )
                                         )
                                         .append(
@@ -493,7 +491,7 @@ function showCardView() {
 
             setTimeout(function () {
                 $loader.fadeOut();
-            }, 50);
+            }, 100);
         },
         error: function (xhr, status, error) {
             notyf.error(
@@ -518,7 +516,7 @@ function showCardViewList() {
 
     const class_code = $sch_class_spec.val();
     const requestData = {
-        dept_code: dept_code,
+        dept_code: $sch_dept.val(),
         class_code: class_code,
         search: $sch_info_student.val(),
         page: currentPageList,
@@ -540,6 +538,10 @@ function showCardViewList() {
             const fragment = document.createDocumentFragment();
             if (json && json.length > 0) {
                 $.each(json, function (index, item) {
+                    var img =
+                        item.photo_status == false
+                            ? "/asset/NTTI/images/faces/default_User.jpg"
+                            : `/uploads/student/${item.stu_photo}`;
                     const $row = $("<tr>");
 
                     $row.append(
@@ -547,7 +549,44 @@ function showCardViewList() {
                             .attr("height", "40")
                             .text(index + 1 + (currentPage - 1) * rowsPerPage)
                     );
-                    $row.append($("<td>").text(item.code));
+                    $row.append(
+                        $("<td>").append(
+                            $("<div>")
+                                .addClass("hover-photo")
+                                .append(
+                                    $("<img>")
+                                        .attr("src", img)
+                                        .attr("alt", "NTTI Student")
+                                        .css("cursor", "pointer")
+                                        .attr("data-bs-toggle", "modal")
+                                        .attr(
+                                            "data-bs-target",
+                                            `#imageModal-${item.code}`
+                                        )
+                                )
+                                .append(" ")
+                                .append($("<span>").text(item.code))
+                        )
+                    );
+                    $("body").append(`
+                        <div class="modal fade" id="imageModal-${item.code}" tabindex="-1" aria-labelledby="imageModalLabel-${item.code}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="imageModalLabel-${item.code}">Student Photo</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body text-center">
+                                        <img
+                                            src="${img}"
+                                            alt="NTTI Student"
+                                            class="img-fluid"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `);
                     $row.append($("<td>").text(item.name_2));
                     $row.append($("<td>").text(item.name));
                     $row.append($("<td>").text(item.gender));
@@ -561,21 +600,6 @@ function showCardViewList() {
                     $row.append($("<td>").text(item.skill));
                     $row.append($("<td>").text(item.level));
 
-                    // Photo column
-                    const $photoDiv = $("<div>")
-                        .addClass("hover-photo")
-                        .append(
-                            $("<img>")
-                                .attr(
-                                    "src",
-                                    item.photo_status == false
-                                        ? "/asset/NTTI/images/faces/default_User.jpg"
-                                        : `/uploads/student/${item.stu_photo}`
-                                )
-                                .attr("alt", "John's Photo")
-                        );
-                    $row.append($("<td>").append($photoDiv));
-
                     $row.append(
                         $("<td>")
                             .addClass("text-center")
@@ -584,13 +608,17 @@ function showCardViewList() {
 
                     // Status badge column
                     const $statusBadge = $("<div>")
-                        .addClass("badge badge-pill")
+                        .addClass("badge badge-pill mb-2 mb-md-0 me-2")
                         .addClass(
                             item.status_print == 1
                                 ? "badge-success"
                                 : "badge-danger"
                         )
-                        .text(item.status_print == 1 ? "Already" : "No");
+                        .text(
+                            item.status_print == 1
+                                ? "បានបោះពុម្ភ"
+                                : "មិនទាន់បោះពុម្ភ"
+                        );
                     $row.append($("<td>").append($statusBadge));
 
                     // Dropdown menu
@@ -614,7 +642,9 @@ function showCardViewList() {
                                     "margin-right": "5px",
                                 })
                                 .append(
-                                    $("<i>").addClass("mdi mdi-dots-vertical")
+                                    $("<i>").addClass(
+                                        "bi bi-three-dots-vertical"
+                                    )
                                 )
                         )
                         .append(
@@ -643,7 +673,7 @@ function showCardViewList() {
                                                 $("<i>").addClass(
                                                     "mdi mdi-printer btn-icon-append"
                                                 ),
-                                                " Print"
+                                                " បោះពុម្ភ"
                                             )
                                     )
                                 )
@@ -674,7 +704,7 @@ function showCardViewList() {
                                                       $("<i>").addClass(
                                                           "mdi mdi-plus btn-icon-append"
                                                       ),
-                                                      " Print"
+                                                      " បន្ថែមបោះពុម្ភ"
                                                   )
                                           )
                                 )
@@ -699,7 +729,7 @@ function showCardViewList() {
                                                 $("<i>").addClass(
                                                     "mdi mdi-account-search"
                                                 ),
-                                                " View"
+                                                " មើល"
                                             )
                                     )
                                 )
@@ -709,7 +739,7 @@ function showCardViewList() {
                                             .addClass("dropdown-item")
                                             .attr({
                                                 href: "javascript:void(0)",
-                                                title: "Update",
+                                                title: "កែប្រែ",
                                                 name: "btn_update_view_info_print",
                                                 id: "btn_update_view_info_print",
                                                 "data-stu_code": item.code,
@@ -725,7 +755,7 @@ function showCardViewList() {
                                                 $("<i>").addClass(
                                                     "mdi mdi-border-color"
                                                 ),
-                                                " Update"
+                                                " កែប្រែ"
                                             )
                                     )
                                 )
@@ -735,7 +765,7 @@ function showCardViewList() {
                                             .addClass("dropdown-item")
                                             .attr({
                                                 href: "javascript:void(0)",
-                                                title: "Disable Active Print",
+                                                title: "ដកបោះពុម្ភ",
                                                 name: "btn_diable_view_info_print",
                                                 id: "btn_diable_view_info_print",
                                                 "data-stu_code": item.code,
@@ -751,7 +781,7 @@ function showCardViewList() {
                                                 $("<i>").addClass(
                                                     "mdi mdi-shuffle-disabled"
                                                 ),
-                                                " Disable"
+                                                " ដកបោះពុម្ភ"
                                             )
                                     )
                                 )
@@ -776,7 +806,7 @@ function showCardViewList() {
             $("#pagination_list").html(response.links);
             setTimeout(function () {
                 $loader.fadeOut();
-            }, 50);
+            }, 100);
         },
         error: function (xhr, status, error) {
             notyf.error(
@@ -801,7 +831,7 @@ function showCardTotalStudent() {
 
     const class_code = $sch_class_spec.val();
     const requestData = {
-        dept_code: dept_code,
+        dept_code: $sch_dept.val(),
         class_code: class_code,
     };
     $.ajax({
@@ -833,10 +863,6 @@ function showCardTotalStudent() {
 }
 
 function showExpireClass() {
-    var classCode = $("#sch_class_spec").val();
-    if (classCode == "") {
-        return notyf.error("សូមជ្រើសរើស ថ្នាក់/ក្រុម");
-    }
     $loader
         .css({
             position: "fixed",
@@ -853,46 +879,17 @@ function showExpireClass() {
     const $tbody = $("#tbl_view_expire tbody");
     const totalColumns = $tbl.find("thead th").length;
     const fragment = document.createDocumentFragment();
-
     const requestData = {
         level_code: level_code,
         class_code: class_code,
     };
     $.ajax({
-        url: "/certificate/student_card/expire/show?data_class=" + classCode,
-        type: "post",
+        url: "/certificate/student_card/expire/show",
+        type: "POST",
         contentType: "application/json",
         data: JSON.stringify(requestData),
-        beforeSend: function () {
-            $tbody.empty();
-        },
+        beforeSend: function () {},
         success: function (response) {
-            // panha
-            let valueToAdd = response.records.class_code;
-            if (
-                valueToAdd &&
-                $("#txt_due_class option[value='" + valueToAdd + "']")
-                    .length === 0
-            ) {
-                $("#txt_due_class").append(new Option(valueToAdd, valueToAdd));
-            }
-            $("#txt_due_class").val(valueToAdd).trigger("");
-
-            let qualification = response.qualification;
-            if (
-                qualification &&
-                $("#txt_due_level option[value='" + qualification + "']")
-                    .length === 0
-            ) {
-                $("#txt_due_level").append(
-                    new Option(qualification, qualification)
-                );
-            }
-            $("#txt_due_level").val(qualification).trigger("changes");
-
-            $("#sl_due_expire_date").val(response.records.expire_date);
-            $("#txt_due_expire_date").val(response.records.print_expire_date);
-
             if (response && response.length > 0) {
                 $.each(response, function (index, item) {
                     let classData = item.class;
@@ -904,8 +901,9 @@ function showExpireClass() {
                             .attr("height", "40")
                             .text(index + 1)
                     );
-                    $row.append($("<td>").text(classData.level));
+                    $row.append($("<td>").text(classData.qualification.name_3));
                     $row.append($("<td>").text(classData.name));
+                    $row.append($("<td>").text(`ឆ្នាំទី ${item.year}`));
                     $row.append($("<td>").text(item.expire_date));
                     $row.append($("<td>").text(item.print_expire_date));
                     $row.append(
@@ -996,11 +994,10 @@ function showExpireClass() {
                 fragment.appendChild($row[0]);
             }
 
-            $tbody.append(fragment);
+            $tbody.html(fragment);
             setTimeout(function () {
                 $loader.fadeOut();
             }, 100);
-            $("#modal_card_create_expire_date").modal("show");
         },
         error: function (xhr, status, error) {
             notyf.error(
@@ -1012,6 +1009,21 @@ function showExpireClass() {
     });
 }
 
+$("#fm_search_student input").keydown(function (event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+    }
+});
+
+$sch_dept.on("change", function () {
+    levelShiftSkill();
+    showCardTotalStudent();
+    currentPage = 1;
+    showCardView();
+
+    currentPageList = 1;
+    showCardViewList();
+});
 $sch_class_spec.on("change", function () {
     levelShiftSkill();
     showCardTotalStudent();
@@ -1093,6 +1105,7 @@ $("body").on("click", "#btn_print_card_view", function (e) {
 });
 
 $("body").on("click", "#btn_print_card", function (e) {
+    e.preventDefault();
     const requestData = {
         print_card_id: $("#hidden_print_card_id").val(),
         stu_code: $("#hidden_stu_code").val(),
@@ -1161,7 +1174,9 @@ $("body").on("click", "#btn_print_set_revision", function (e) {
         contentType: "application/json",
         data: JSON.stringify(requestData),
         async: true,
-        success: function (response) {},
+        success: function (response) {
+            notyf.success(response.message);
+        },
         complete: function () {
             showCardTotalStudent();
             showCardView();
@@ -1203,7 +1218,9 @@ $("body").on("click", "#btn_update_view_info_print", function (e) {
             $("#txt_up_view_skill").html(data.skill);
             $("#txt_up_view_level").html(data.level);
             $("#txt_up_view_shift").html(data.section_type);
-            $("#txt_up_view_expire_card").html(data.print_expire_date);
+            $("#txt_up_view_expire_card").html(
+                data.print_expire_date == 0 ? "N/A" : data.print_expire_date
+            );
 
             var img =
                 data.photo_status == false
@@ -1246,7 +1263,9 @@ $("body").on("click", "#btn_card_view", function (e) {
             $("#txt_view_skill").html(data.skill);
             $("#txt_view_level").html(data.level);
             $("#txt_view_shift").html(data.section_type);
-            $("#txt_view_expire_card").html(data.print_expire_date);
+            $("#txt_view_expire_card").html(
+                data.print_expire_date == "0" ? "N/A" : data.print_expire_date
+            );
 
             $("#txt_view_fullname_kh").html(data.name_2);
             $("#txt_view_fullname_eng").html(data.name);
@@ -1297,6 +1316,8 @@ $("body").on("click", "#btn_update_info", function (e) {
     if (fileInput) {
         formData.append("photo", fileInput);
     } else {
+        notyf.error("សូមជ្រើសរើសរូបថត");
+        return false;
         formData.append("photo", null);
     }
 
@@ -1310,6 +1331,7 @@ $("body").on("click", "#btn_update_info", function (e) {
         data: formData,
         success: function (data) {
             if (data.success == true) {
+                $("#modal_card_update .btn-close").trigger("click");
                 $("#fileUploadProfileStu").val("");
                 showCardView();
                 showCardViewList();
@@ -1424,6 +1446,11 @@ $("body").on("click", "#btn_upload_zip_photo", function (e) {
     let formData = new FormData();
     var fileInput = $("#zipFile")[0].files[0];
 
+    if (!fileInput && up_type_option == "zip") {
+        notyf.error("សូមជ្រើសរើសឯកសារ ZIP");
+        return false;
+    }
+
     formData.append("type", up_type_option);
     formData.append("zipFile", fileInput);
     formData.append("dept_code", dept_code);
@@ -1431,6 +1458,11 @@ $("body").on("click", "#btn_upload_zip_photo", function (e) {
     $("#previewContainer img").each(function () {
         let base64Data = $(this).attr("src");
         let fileName = $(this).attr("data-name");
+
+        if (!fileName && up_type_option == "multiple") {
+            notyf.error("សូមជ្រើសរើសរូបថត");
+            return false;
+        }
 
         formData.append("imageSources[]", base64Data);
         formData.append("fileNames[]", fileName);
@@ -1447,11 +1479,7 @@ $("body").on("click", "#btn_upload_zip_photo", function (e) {
         cache: false,
         async: false,
         data: formData,
-        beforeSend: function() {
-            loader("show");     
-        },
         success: function (data) {
-            loader("hide");
             if (data.status == 200) {
                 $("#fm_up_card_base_option")[0].reset();
                 $("#modal_card_upload_zip_photo .btn-close").trigger("click");
@@ -1705,10 +1733,12 @@ $("#modal_card_create_expire_date").on(
         let txt_due_class = $("#txt_due_class").val();
         let sl_due_expire_date = $("#sl_due_expire_date").val();
         let txt_due_expire_date = $("#txt_due_expire_date").val();
+        let year = $("#txt_due_year").val();
         const requestData = {
             session_code: $("#session_code").val(),
             level: txt_due_level,
             class_code: txt_due_class,
+            year: year,
             expire_date: sl_due_expire_date,
             print_expire_date: txt_due_expire_date,
         };
@@ -1732,7 +1762,11 @@ $("#modal_card_create_expire_date").on(
             }
         });
 
-        let selectFields = ["#txt_due_level", "#txt_due_class"];
+        let selectFields = [
+            "#txt_due_level",
+            "#txt_due_class",
+            "#txt_due_year",
+        ];
         selectFields.forEach(function (selector) {
             let field = $(selector);
             let select2Container = field.next(".select2-container");
@@ -1757,10 +1791,6 @@ $("#modal_card_create_expire_date").on(
             success: function (data) {
                 if (data.status == 200) {
                     notyf.success(data.message);
-                    // $("#fm_card_expire_date")[0].reset();
-                    // $("#modal_card_create_expire_date .btn-close").trigger(
-                    //     "click"
-                    // );
                     showExpireClass();
                     showCardView();
                     showCardViewList();
@@ -1836,7 +1866,6 @@ $("#modal_card_create_expire_date").on(
             contentType: "application/json",
             data: JSON.stringify(requestData),
             success: function (data) {
-                window.location.reload();
                 if (data.status == 200) {
                     notyf.success(data.message);
                     // $("#fm_card_expire_date")[0].reset();
@@ -1861,56 +1890,97 @@ $("#modal_card_create_expire_date").on(
     }
 );
 
+function generateDateExpire() {
+    let level = $txt_due_level.val();
+    let year = $txt_due_year.val();
+    const requestData = {
+        level: level,
+        year: parseInt(year),
+    };
+    $.ajax({
+        url: "/certificate/card_expire_show_level",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(requestData),
+        beforeSend: function () {
+            $("#txt_due_class").empty();
+        },
+        success: function (data) {
+            let card = data.record_level;
+            let formattedDate = new Date(data.record_date)
+                .toISOString()
+                .split("T")[0];
+            $("#sl_due_expire_date").val(formattedDate);
+            $("#txt_due_expire_date").val(data.record_exp_year);
+
+            $("#txt_due_class").append(
+                new Option("ជ្រើសរើសក្រុមទាំងអស់", "code_all", true, false)
+            );
+
+            $.map(data.record_level, function (item) {
+                $("#txt_due_class").append(
+                    new Option(item.name, item.code, false, false)
+                );
+            });
+            select2AdvancedModal(
+                "#txt_due_class",
+                "#modal_card_create_expire_date"
+            );
+
+            showExpireClass();
+        },
+        error: function (xhr, status, error) {
+            notyf.error(
+                `Error submitting class code: ${
+                    xhr.statusText || "Unknown error"
+                }`
+            );
+        },
+    });
+}
+function generateDateExpireBaseYear() {
+    let level = $txt_due_level.val();
+    let year = $txt_due_year.val();
+    const requestData = {
+        level: level,
+        year: parseInt(year),
+    };
+    $.ajax({
+        url: "/certificate/card_expire_show_level",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(requestData),
+        beforeSend: function () {},
+        success: function (data) {
+            let card = data.record_level;
+            let formattedDate = new Date(data.record_date)
+                .toISOString()
+                .split("T")[0];
+            $("#sl_due_expire_date").val(formattedDate);
+            $("#txt_due_expire_date").val(data.record_exp_year);
+
+            showExpireClass();
+        },
+        error: function (xhr, status, error) {
+            notyf.error(
+                `Error submitting class code: ${
+                    xhr.statusText || "Unknown error"
+                }`
+            );
+        },
+    });
+}
+
 $("#modal_card_create_expire_date").on(
     "change",
     "#txt_due_level",
     function (e) {
-        let level = $(this).val();
-        const requestData = {
-            level: level,
-        };
-        $.ajax({
-            url: "/certificate/card_expire_show_level",
-            type: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(requestData),
-            beforeSend: function () {
-                $("#txt_due_class").empty();
-            },
-            success: function (data) {
-                let card = data.record_level;
-                let formattedDate = new Date(data.record_date)
-                    .toISOString()
-                    .split("T")[0];
-                $("#sl_due_expire_date").val(formattedDate);
-                $("#txt_due_expire_date").val(data.record_exp_year);
-
-                $("#txt_due_class").append(
-                    new Option("Select All", "code_all", true, false)
-                );
-
-                $.map(data.record_level, function (item) {
-                    $("#txt_due_class").append(
-                        new Option(item.name, item.code, false, false)
-                    );
-                });
-                select2AdvancedModal(
-                    "#txt_due_class",
-                    "#modal_card_create_expire_date"
-                );
-
-                showExpireClass();
-            },
-            error: function (xhr, status, error) {
-                notyf.error(
-                    `Error submitting class code: ${
-                        xhr.statusText || "Unknown error"
-                    }`
-                );
-            },
-        });
+        generateDateExpire();
     }
 );
+$("#modal_card_create_expire_date").on("change", "#txt_due_year", function (e) {
+    generateDateExpireBaseYear();
+});
 $("#modal_card_create_expire_date").on(
     "change",
     "#txt_due_class",
@@ -1920,21 +1990,34 @@ $("#modal_card_create_expire_date").on(
 );
 
 $("body").on("click", "#btn_open_expire_date", function (e) {
+    $("#modal_card_create_expire_date").modal("toggle");
     showExpireClass();
 });
 
-showCardTotalStudent();
+$btn_open_print_date.on("click", function (e) {
+    const requestData = {
+        session_code: $("#session_code").val(),
+    };
+    $.ajax({
+        url: "/certificate/card_due_date_show",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(requestData),
+        beforeSend: function () {
+            $("#modal_card_due_date").modal("toggle");
+        },
+        success: function (data) {
+            if (data.status == 200) {
+                $("#txt_due_khmer_lunar").val(data.data.print_khmer_lunar);
+                $("#txt_due_date_create").val(data.data.print_date_due);
+            }
+        },
+        error: function (xhr, status, error) {
+            notyf.error(xhr.statusText);
+        },
+    });
+});
+
 showCardView();
 showCardViewList();
-
-// sendAjaxRequest(
-//     "/users",
-//     "POST",
-//     JSON.stringify({ data: 1 }),
-//     function (response) {
-//         console.log("Success: " + JSON.stringify(response));
-//     },
-//     function (xhr, status, error) {
-//         alert("Error: " + xhr.responseText);
-//     }
-// );
+showCardTotalStudent();

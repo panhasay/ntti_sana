@@ -3,7 +3,7 @@ use Illuminate\Support\Str;
 ?>
 <style>
     body {
-       
+
         margin: 0;
         display: flex;
         justify-content: center;
@@ -18,20 +18,22 @@ use Illuminate\Support\Str;
         position: relative;
         font-size: 9.1px;
         margin-left: 10px !important;
-        font-family: "Battambang" !important;
+        font-family: "Khmer OS Battambang" !important;
     }
 
     .card_background {
         background: url('asset/NTTI/images/modules/ntti_background_03.png') no-repeat center center;
         background-size: cover;
     }
+
     .id-card .flag {
         position: absolute;
         width: 100%;
         height: 100%;
         z-index: 1;
-        /* font-family: "Battambang" !important; */
+        /* font-family: "Khmer OS Battambang" !important; */
     }
+
     .id-card>.profile {
         position: absolute;
         width: 2cm;
@@ -43,7 +45,6 @@ use Illuminate\Support\Str;
         text-align: center;
         margin-left: -15px;
         border-radius: 2px !important
-        
     }
 
     .id-card-left {
@@ -51,40 +52,42 @@ use Illuminate\Support\Str;
         font-weight: bold;
         color: rgb(0, 18, 138);
         font-size: 11.05px !important;
-        font-family: "Battambang" !important;
+        font-family: "Khmer OS Battambang" !important;
     }
-    .id-card-left span .name_2{
+
+    .id-card-left span .name_2 {
         text-align: left;
         font-weight: 900;
-          color: rgb(0, 18, 138);
+        color: rgb(0, 18, 138);
         font-size: 11.05px !important;
         font-family: "Arial" !important;
     }
+
     .id-card-left label {
         text-align: left;
         font-weight: 900;
         color: rgb(0, 18, 138);
         font-size: 11.05px !important;
-        font-family: "Battambang" !important;
+        font-family: "Khmer OS Battambang" !important;
     }
 
     .id-card-date-khmer {
-          color: rgb(0, 18, 138);
+        color: rgb(0, 18, 138);
         text-align: center;
-        margin-left: -24px !important;
+        margin-left: -15px !important;
         margin-top: 10.5px;
-        font-size: 9px !important;
-        font-weight: 600 !important;
-        font-family: "Battambang" !important;
+        font-size: 9.1px;
+        font-weight: 900 !important;
+        font-family: "Khmer OS Battambang" !important;
     }
 
     .id-card-date-khmer-pp {
         float: right;
-          color: rgb(0, 18, 138);
-        font-size: 9px !important;
+        color: rgb(0, 18, 138);
+        font-size: 9.3px;
         padding-right: 32px !important;
-        font-weight: 600 !important;    
-        font-family: "Battambang" !important;
+        font-weight: 900 !important;
+        font-family: "Khmer OS Battambang" !important;
     }
 
     .id-card-center {
@@ -94,18 +97,19 @@ use Illuminate\Support\Str;
         font-family: "Arial" !important;
         margin-bottom: 3px !important;
     }
-    .id-card-center label{
+
+    .id-card-center label {
         text-align: center;
         margin-left: -15px;
         font-size: 11px !important;
         font-weight: bold !important;
-        font-family: "Battambang" !important;
+        font-family: "Khmer OS Battambang" !important;
     }
 
     .id-signature>.stamp {
         height: 75px;
         margin-right: 0px;
-        font-family: "Battambang" !important;
+        font-family: "Khmer OS Battambang" !important;
     }
 
     .id-signature>.id-qr-code {
@@ -119,34 +123,34 @@ use Illuminate\Support\Str;
     .card-body .info {
         font-size: 14px;
         margin-bottom: 0px;
-        font-family: "Battambang" !important;
+        font-family: "Khmer OS Battambang" !important;
     }
 
     .ps-1 {
         padding-left: 0.28rem !important;
-        font-family: "Battambang" !important;
+        font-family: "Khmer OS Battambang" !important;
     }
 
     .ps-3 {
         padding-left: 0.80rem !important;
-        font-family: "Battambang" !important;
+        font-family: "Khmer OS Battambang" !important;
     }
 
     .ps-4 {
         padding-left: 1.49rem !important;
-        font-family: "Battambang" !important;
+        font-family: "Khmer OS Battambang" !important;
     }
 
     .ps-5 {
         padding-left: 2.50rem !important;
-        font-family: "Battambang" !important;
+        font-family: "Khmer OS Battambang" !important;
     }
 
     .id-card-left>.pull-right {
         float: right;
         padding-right: 1.2rem !important;
         font-weight: bold !important;
-        font-family: "Battambang" !important;
+        font-family: "Khmer OS Battambang" !important;
     }
 
     .id-signature>.pull-left {
@@ -156,7 +160,7 @@ use Illuminate\Support\Str;
     .id-signature>.signature_leader {
         float: right !important;
         padding-right: 2.90rem !important;
-        font-family: "Battambang" !important;
+        font-family: "Khmer OS Battambang" !important;
     }
 
 
@@ -166,11 +170,11 @@ use Illuminate\Support\Str;
         text-align: center;
         padding: 25px 20px 0px;
         position: relative;
-        font-family: "Battambang" !important;
+        font-family: "Khmer OS Battambang" !important;
     }
 
     .stu-card-header {
-         color: rgb(0, 18, 138);
+        color: rgb(0, 18, 138);
         font-size: 11px;
         font-family: 'Khmer OS Muol Light', sans-serif;
         text-align: center;
@@ -184,7 +188,7 @@ use Illuminate\Support\Str;
     }
 
     .stu-card-header-sub {
-          color: rgb(0, 18, 138);
+        color: rgb(0, 18, 138);
         font-size: 9px;
         font-family: 'Khmer OS Muol Light', sans-serif;
         text-align: center;
@@ -201,6 +205,7 @@ use Illuminate\Support\Str;
         position: absolute;
         top: 0px;
         right: 10px;
+        size: 2px;
     }
 
     .card-students .footer {
@@ -217,19 +222,19 @@ use Illuminate\Support\Str;
         padding-top: 10px;
         padding-bottom: 10px;
         border-top: 2px solid #f61616;
-        font-family: "Battambang" !important;
+        font-family: "Khmer OS Battambang" !important;
     }
 
     .card-students .footer a {
         color: #0a0a0a;
         text-decoration: none;
         display: block;
-        font-family: "Battambang" !important;
+        font-family: "Khmer OS Battambang" !important;
     }
 
     .card-students .footer a:hover {
         text-decoration: underline;
-        font-family: "Battambang" !important;
+        font-family: "Khmer OS Battambang" !important;
     }
 
     .card-body {
@@ -240,18 +245,59 @@ use Illuminate\Support\Str;
         justify-content: center;
         height: 113px;
         line-height: 30px;
-        font-family: "Battambang" !important;
+        font-family: "Khmer OS Battambang" !important;
     }
 
     .card-body span {
         font-size: 12px;
         color: #d9534f;
         margin: 0;
-        font-family: "Battambang" !important;
+        font-family: "Khmer OS Battambang" !important;
     }
 
     .card-body .card-personal {
         font-family: 'Khmer OS Muol Light', sans-serif;
+    }
+
+    .ribbon-corner {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 3cm;
+        height: 3cm;
+        overflow: hidden;
+    }
+
+    .ribbon-corner::before,
+    .ribbon-corner::after,
+    .ribbon-corner span {
+        content: "";
+        position: absolute;
+        width: 200%;
+        height: 1cm;
+        transform: rotate(45deg);
+        left: -1cm;
+    }
+
+    .ribbon-corner::before {
+        background: #001871;
+        /* Left Blue */
+        top: 0.2cm;
+        z-index: 1;
+    }
+
+    .ribbon-corner span {
+        background: #e4003a;
+        /* Red center */
+        top: 0.45cm;
+        z-index: 2;
+    }
+
+    .ribbon-corner::after {
+        background: #001871;
+        /* Right Blue */
+        top: 0.7cm;
+        z-index: 3;
     }
 
     @media print {
@@ -260,10 +306,12 @@ use Illuminate\Support\Str;
             size: 5.5cm 8.6cm;
             margin: 0;
         }
+
         .page-break {
             page-break-before: always;
             break-before: page;
         }
+
         .khmer-text img {
             position: absolute !important;
             top: 65px;
@@ -272,7 +320,7 @@ use Illuminate\Support\Str;
     }
 </style>
 <div class="id-card card_background">
-    <img alt="Portrait of a person in an orange robe" class="profile" 
+    <img alt="Portrait of a person in an orange robe" class="profile"
         src="{{ $records->photo_status == true ? '/uploads/student/' . $records->stu_photo : '/asset/NTTI/images/faces/default_User.jpg' }}"
         width="120">
     <div class="details">
@@ -298,8 +346,8 @@ use Illuminate\Support\Str;
             ជំនាញ<span class="ps-3"></span><span class="ps-4">&nbsp; {{ $records->skill }}</span>
         </div>
         <div class="id-card-left">
-            <?php 
-                $description =  App\Models\General\Qualifications::where('code',$records->level)->first();
+            <?php
+            $description = App\Models\General\Qualifications::where('code', $records->level)->first();
             ?>
             កម្រិត<span class="ps-5">&nbsp;&nbsp;{{ $description->name_3 ?? '' }}</span>
         </div>
@@ -321,8 +369,9 @@ use Illuminate\Support\Str;
 <div class="page-break"></div>
 <div class="card-students">
     <div class="logo">
-        <img src="/asset/NTTI/images/modules/ntti_flage_05.png" height="80" width="100" alt="Logo">
+        <img src="/asset/NTTI/images/modules/ntti_flage_06.png" height="100" alt="Logo">
     </div>
+
     <div class="stu-card-header">
         <span>ព្រះរាជាណាចក្រកម្ពុជា</span>
         <span>ជាតិ សាសនា ព្រះមហាក្សត្រ</span>

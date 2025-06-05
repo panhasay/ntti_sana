@@ -2,31 +2,41 @@
 
 namespace App\Models\Certificates;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class CertificateOfficialTranscript extends Model
 {
     use HasFactory;
-    protected $table = 'cert_qr_code_short_url';
+    protected $table = 'cert_student_official_transcript';
+
+    protected $primaryKey = 'id';
+
+    public $incrementing = true;
+
+    public $timestamps = false;
 
     protected $fillable = [
-        'original_url',
-        'short_code',
-        'expires_at',
+        'stu_code',
+        'class_code',
+        'off_code',
+        'reference_code',
+        'print_date',
+        'print_by',
+        'print_by_date',
+        'status',
     ];
 
-    protected $casts = [
-        'expires_at' => 'datetime',
-    ];
-
-    /**
-     * Check if the short URL has expired.
-     *
-     * @return bool
-     */
-    public function isExpired()
+    protected static function boot()
     {
-        return $this->expires_at && $this->expires_at->isPast();
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (!$model->exists) {
+                $model->print_by = Auth::id() ?? 0;
+                $model->print_by_date = now();
+            }
+        });
     }
 }
