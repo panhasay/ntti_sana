@@ -3,8 +3,8 @@
         margin-bottom: -30px;
     }
 
-    .breadcrumb-font-khmer{
-        font-family:  "Khmer OS Battambang" !important;
+    .breadcrumb-font-khmer {
+        font-family: Tahoma, "Khmer OS Battambang" !important;
     }
 
     @media (max-width: 767px) {
@@ -26,10 +26,10 @@
     <div class="row">
         <div class="col-md-3 col-sm-5 col-8">
             <div class="page-title page-title-custom">
-                <div class="title-page header-right title-page">
+                <div class="title-page header-right">
                     <i class="mdi mdi-format-list-bulleted"></i>
                     <a href="{{ url($firstItem['route']) }}"
-                        style="color:black;text-decoration:none;font-family: 'Moul' !important;">{{ $firstItem['title'] }}</a>
+                        style="color:black;text-decoration:none;font-family: Tahoma, 'Moul', sans-serif !important;">{{ $firstItem['title'] }}</a>
                 </div>
             </div>
         </div>
@@ -42,7 +42,8 @@
                         @foreach ($array as $index => $item)
                             @if ($index > 0)
                                 <li class="breadcrumb-item"><a href="{{ url($item['route']) }}"
-                                        style="color:black;text-decoration:none;"><span class="breadcrumb-font-khmer">{{ $item['title'] }}</span></a></li>
+                                        style="color:black;text-decoration:none;font-size: 11pt;"><span
+                                            class="breadcrumb-font-khmer">{{ $item['title'] }}</span></a></li>
                             @endif
                         @endforeach
                     </ol>
@@ -57,7 +58,8 @@
                             @foreach ($array as $index => $item)
                                 @if ($index > 0)
                                     <li><a class="dropdown-item" href="{{ url($item['route']) }}"
-                                            style="font-family: 'Khmer OS Battambang'"><span class="breadcrumb-font-khmer">{{ $item['title'] }}</span></a></li>
+                                            style="font-family: 'Khmer OS Battambang'"><span
+                                                class="breadcrumb-font-khmer">{{ $item['title'] }}</span></a></li>
                                 @endif
                             @endforeach
                         </ul>
