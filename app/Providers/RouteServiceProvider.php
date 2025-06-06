@@ -2,11 +2,13 @@
 
 namespace App\Providers;
 
-use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Cache\RateLimiting\Limit;
+use App\Models\Certificates\CertSubModule;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -34,6 +36,24 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
         });
+
+        try {
+            $subModules = CertSubModule::where('active', 1)
+                ->whereNotNull('route')
+                ->get();
+
+            Route::middleware(['web', 'auth'])
+                ->prefix('certificate/{dept_code}')
+                ->group(function () use ($subModules) {
+                    foreach ($subModules as $item) {
+                        $controller = 'App\Http\Controllers\Certificates\CertificateController@' . $item->controller;
+                        Route::get($item->route . '/{module_code}', $controller)
+                            ->name('certificate.' . $item->route);
+                    }
+                });
+        } catch (\Exception $e) {
+            Log::warning('Could not load dynamic submodules: ' . $e->getMessage());
+        }
     }
 
     /**

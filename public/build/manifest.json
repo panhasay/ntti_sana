@@ -2212,7 +2212,7 @@
     "src": "public/asset/NTTI/vendors/mdi/fonts/materialdesignicons-webfont.woff2"
   },
   "resources/css/app.css": {
-    "file": "css/ntti-app-e2e5d28e.css",
+    "file": "css/ntti-app-da8b223a.css",
     "isEntry": true,
     "src": "resources/css/app.css"
   },
