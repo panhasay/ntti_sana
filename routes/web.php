@@ -33,8 +33,10 @@ use App\Http\Controllers\General\DividedNewClassesController;
 use App\Http\Controllers\SystemSetup\SystemSettingController;
 use App\Http\Controllers\Notifications\NotificationController;
 use App\Http\Controllers\Report\ReportTotalScoreExamController;
+use App\Http\Controllers\Certificates\CertificateTranscriptCodeController;
 use App\Http\Controllers\Report\ReportFirstYearStudentRegistrationController;
 use App\Http\Controllers\Report\ReportListOfStudentClassAndSectionController;
+use App\Http\Controllers\Certificates\CertificateOfficialTranscriptController;
 
 Route::get('/clear-all', function () {
     Artisan::call('cache:clear');
@@ -287,59 +289,6 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
     });
 });
 
-Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static function () {
-    Route::controller(CertificateController::class)->group(function () {
-        Route::get('/dept-menu', 'index')->name('cert.dept_menu');
-        Route::get('/dept-menu/{dept_code}', 'showMenuModule')->where('dept_code', '[A-Z_]+')->name('cert.dept.list');
-
-        // $subModules = DB::table('cert_sub_module')->where('active', 1)->whereNotNull('route')->get();
-        // Route::prefix('{dept_code}')->group(function () use ($subModules) {
-        //     foreach ($subModules as $item) {
-        //         Route::get($item->route . '/{module_code}', $item->controller)
-        //             ->name('certificate.' . $item->route);
-        //     }
-        // });
-
-        Route::prefix('student')->group(function () {
-            Route::post('/bar', 'getStudentPieBarChartData');
-        });
-
-        Route::post('/level_shift_skill', 'showLevelShiftSkill');
-        Route::post('/card_view', 'showCardView');
-        Route::post('/card_view_list', 'showCardView');
-        Route::post('/print_card', 'printCardStudent');
-        Route::post('/print_card_revision', 'storePrintCardRevision');
-        Route::post('/card_view_info', 'showViewCardInformation');
-        Route::post('/upload_student_info', 'updateCardInformation');
-        Route::post('/disable_student_info', 'disableCardInformation');
-        Route::post('/show_change_date_print_card', 'showChangeDatePrintCard');
-        Route::post('/upload_zip_photo', 'uploadZip');
-        Route::post('/upload_multiple_photo', 'uploadMultiplePhoto');
-        Route::post('/card_due_date', 'StoreDueDateSession');
-        Route::post('/card_due_date_update', 'UpdateDueDateSession');
-        Route::post('/card_total_student', 'showCardTotalStudent');
-
-        // Route::get('/print_card', static function () {
-        //     return view('certificate/certificate_card_print_get');
-        // });
-
-        Route::get('/print_card_pdf', 'printCardStudentPdf');
-        Route::post('/card_due_expire', 'StoreDueDateExpireSession');
-        Route::put('/card_due_expire_update', 'updateDueDateExpireSession');
-        Route::post('/card_expire_show_level', 'showCardExpireLevel');
-        Route::get('/student_card/transaction', 'printCardStudentPdf');
-        Route::get('/D_IT/student_card/certificate/card-student-print', 'printListClassification');
-        Route::get('/D_EL/student_card/certificate/card-student-print', 'printListClassification');
-        Route::get('/D_CL/student_card/certificate/card-student-print', 'printListClassification');
-        Route::get('/D_IT/student_card/certificate/card-student-excel', 'ExcelListClassification');
-        Route::get('/D_EL/student_card/certificate/card-student-excel', 'ExcelListClassification');
-        Route::get('/D_CL/student_card/certificate/card-student-excel', 'ExcelListClassification');
-        Route::post('/student_card/expire/show', 'showExpireClass');
-    });
-});
-
-
-
 Route::group(['prefix' => 'admin-panel', 'middleware' => 'auth'], static function () {
     Route::controller(adminController::class)->group(function () {
         Route::get('/', 'index')->name('admin.ap');
@@ -398,4 +347,92 @@ Route::group(['prefix' => 'notification', 'middleware' => 'auth'], static functi
     Route::get('/send-notification/{user_id}', [NotificationController::class, 'sendNotification']);
     Route::get('/notify-user/{id}', [NotificationController::class, 'notifyUser']);
     Route::post('verify-token', [NotificationController::class, 'verifyToken']);
+});
+Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static function () {
+    Route::controller(CertificateController::class)->group(function () {
+        Route::get('/dept-menu', 'index')->name('cert.dept_menu');
+        Route::get('/dept-menu/{dept_code}', 'showMenuModule')->where('dept_code', '[A-Z_]+')->name('cert.dept.list');
+
+        Route::prefix('student')->group(function () {
+            Route::post('/bar', 'getStudentPieBarChartData');
+        });
+
+        Route::post('/level_shift_skill', 'showLevelShiftSkill');
+        Route::post('/card_view', 'showCardView');
+        Route::post('/card_view_list', 'showCardView');
+        Route::post('/print_card', 'printCardStudent');
+        Route::post('/print_card_revision', 'storePrintCardRevision');
+        Route::post('/card_view_info', 'showViewCardInformation');
+        Route::post('/upload_student_info', 'updateCardInformation');
+        Route::post('/disable_student_info', 'disableCardInformation');
+        Route::post('/show_change_date_print_card', 'showChangeDatePrintCard');
+        Route::post('/upload_zip_photo', 'uploadZip');
+        Route::post('/upload_multiple_photo', 'uploadMultiplePhoto');
+        Route::post('/card_due_date', 'StoreDueDateSession');
+        Route::post('/card_due_date_update', 'UpdateDueDateSession');
+        Route::post('/card_due_date_show', 'showDatePrintCardSession');
+        Route::post('/card_total_student', 'showCardTotalStudent');
+
+        Route::get('/print_card_pdf', 'printCardStudentPdf');
+        Route::post('/card_due_expire', 'StoreDueDateExpireSession');
+        Route::put('/card_due_expire_update', 'updateDueDateExpireSession');
+        Route::post('/card_expire_show_level', 'showCardExpireLevel');
+
+        Route::get('/student_card/transaction', 'printCardStudentPdf');
+
+        Route::get('/D_IT/student_card/certificate/card-student-print', 'printListClassification');
+        Route::get('/D_EL/student_card/certificate/card-student-print', 'printListClassification');
+        Route::get('/D_CL/student_card/certificate/card-student-print', 'printListClassification');
+
+        Route::get('/D_IT/student_card/certificate/card-student-excel', 'ExcelListClassification');
+        Route::get('/D_EL/student_card/certificate/card-student-excel', 'ExcelListClassification');
+        Route::get('/D_CL/student_card/certificate/card-student-excel', 'ExcelListClassification');
+
+        Route::get('/debug-print', static function () {
+            return view('certificate/transcript/certificate_official_transcript_02');
+        });
+
+
+        Route::post('/student_card/expire/show', 'showExpireClass');
+    });
+
+    Route::controller(CertificateOfficialTranscriptController::class)->group(function () {
+        Route::get('/generateTranscript', 'generateTranscript');
+        Route::post('/transcript/show', 'show');
+        Route::post('/transcript/show-class', 'showClass');
+        Route::get('/transcript/show-info/{key}', 'showInfo');
+        Route::get('/transcript/show-print/{key}', 'showPrint');
+        Route::get('/transcript/show-print-v2/{key}', 'showPrintV2');
+        Route::get('/transcript/show-print-v3/{key}', 'showPrintV3');
+        Route::post('/transcript/show-total-student', 'showTotalStudent');
+
+        Route::post('/transcript/store', 'store');
+
+        Route::get('/transcript/show-testing', static function () {
+            return view('certificate/table');
+        });
+        Route::get('/transcript/show-testing-01', static function () {
+            $view = view('certificate/transcript/transcript')->render();
+            return response()->json(['html' => $view]);
+        });
+
+        Route::get('/transcript/print/{key}', 'print');
+        // Route::get('/transcript/create-code', static function () {
+        //     $view = view('certificate/transcript/transcript-form-create-code')->render();
+        //     return $view;
+        // });
+
+
+        Route::get('/debug/print/{key}', 'generateOfficalTranscriptdomPDF');
+    });
+
+    Route::controller(CertificateTranscriptCodeController::class)->group(function () {
+        Route::get('/transcript/create-code', 'index');
+        Route::post('/transcript/create-code/show', 'show')->name('certificate.create.show');
+        Route::post('/transcript/create-code/create', 'store')->name('certificate.create.create');
+        Route::post('/transcript/create-code/show-first', 'showFirst')->name('certificate.create.show.first');
+        Route::post('/transcript/create-code/update', 'update')->name('certificate.create.update');
+        Route::post('/transcript/create-code/show-first-full', 'showFirstFull')->name('certificate.create.show-first-full');
+        Route::post('/transcript/create-code/update-inactive', 'updateInactive')->name('certificate.create.update-inactive');
+    });
 });

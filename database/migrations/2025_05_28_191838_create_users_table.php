@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('permission', 100);
             $table->decimal('phone', 50, 0);
             $table->string('fcm_token')->nullable();
+            $table->string('session_token')->nullable();
         });
     }
 

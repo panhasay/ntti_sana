@@ -1,5 +1,6 @@
-import {defineConfig} from "vite";
+import { defineConfig } from "vite";
 import laravel from "laravel-vite-plugin";
+import { fileURLToPath, URL } from "node:url";
 
 export default defineConfig({
     plugins: [
@@ -36,6 +37,11 @@ export default defineConfig({
                     return `js/ntti-app-[hash].js`;
                 },
             }
+        },
+    },
+    resolve: {
+        alias: {
+            "@public": fileURLToPath(new URL("./public", import.meta.url))
         },
     },
 });

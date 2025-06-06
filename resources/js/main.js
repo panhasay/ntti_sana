@@ -19,7 +19,6 @@ $.ajaxSetup({
 });
 async function handleDynamicImport(checkAuthRoute) {
     const importMap = {
-        "dash-stu-acc": () => import("./dashboard/dashboard-student"),
         "certificate.student_card": () => import("./certificate/certificate"),
         "admin.ap": () => import("./admin/admin"),
     };
