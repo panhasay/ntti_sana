@@ -47,7 +47,8 @@
                 {{ $title }}
             </a>
         </div>
-        <div class="title-department">
+        <div
+            style="text-align: center !important;padding: 15px 10px 21px 10px;font-size: 13px;font-family: Khmer OS Battambang !important;font-weight: 900;">
             <span>{{ $title }}</span>
         </div>
         {{ $slot }}
