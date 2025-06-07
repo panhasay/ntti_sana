@@ -218,6 +218,7 @@ class CertificateController extends Controller
             $student->count_revision = $count_revision;
             return $student;
         });
+
         return response()->json([
             'data' => $students->items(),
             'current_page' => $students->currentPage(),

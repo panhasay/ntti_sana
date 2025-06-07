@@ -643,7 +643,7 @@ function showCardViewList() {
                                 })
                                 .append(
                                     $("<i>").addClass(
-                                        "bi bi-three-dots-vertical"
+                                        "mdi mdi-dots-vertical"
                                     )
                                 )
                         )

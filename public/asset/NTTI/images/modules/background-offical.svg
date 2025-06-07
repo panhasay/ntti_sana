@@ -1,0 +1,12 @@
+<svg width="2480" height="3508" viewBox="0 0 2480 3508" xmlns="http://www.w3.org/2000/svg">
+    <!-- Light background -->
+    <rect width="100%" height="100%" fill="#F5F5F5" />
+
+    <!-- Khmer-style floral border (simplified example) -->
+    <path d="M50 50 Q70 20, 100 50 T200 150 T300 50 T400 150 T500 50" fill="none" stroke="#800080" stroke-width="2"/>
+    <!-- Add more paths for floral and curvilinear designs -->
+    <!-- Use bezier curves (C, Q) for smooth curves -->
+
+    <!-- Outer border -->
+    <rect x="10" y="10" width="2460" height="3488" fill="none" stroke="#808080" stroke-width="2"/>
+</svg>

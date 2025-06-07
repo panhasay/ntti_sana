@@ -446,7 +446,7 @@
                         <div class="dropdown">
                             <button type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" title="More Options"
                                 class="btn btn-outline-secondary btn-rounded btn-icon" style="width: 35px; height: 35px; margin-right: 5px">
-                                <i class="bi bi-three-dots-vertical"></i>
+                                <i class="mdi mdi-dots-vertical"></i>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <li>

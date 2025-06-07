@@ -664,26 +664,6 @@ class CertificateOfficialTranscriptController extends Controller
             'total_status_1' => $genderCounts->total_male_status_1 + $genderCounts->total_female_status_1,
         ];
     }
-
-    public function generateOfficalTranscriptPDF11()
-    {
-        $options = [
-            'format' => 'A4',
-            'margin_top' => 10,
-            'margin_bottom' => 10,
-        ];
-
-        $mPDFService = new mPDFService($options);
-
-        $data = [
-            'name' => 'John Doe',
-            'degree' => 'Bachelor of Information Technology',
-        ];
-
-        $mPDFService->loadView('certificate.certificate_official_transcript_mpdf_print', $data);
-
-        return $mPDFService->output('official_transcript.pdf');
-    }
     public function generateOfficalTranscriptPDF()
     {
         $html = view('certificate.certificate_official_transcript_mpdf_print')->render();
