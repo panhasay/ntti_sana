@@ -31,7 +31,7 @@ class Student extends Model
     public function convertDaysToDate($days)
     {
         $referenceDate = strtotime('1900-01-01');
-        $targetDate = $referenceDate + ($days * 86400); // 86400 seconds per day  
+        $targetDate = $referenceDate + ($days * 86400); // 86400 seconds per day
         return date('Y-m-d', $targetDate);
     }
 

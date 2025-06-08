@@ -1,6 +1,11 @@
 <?php
-class KhmerDateConverter {
-    public static function convertToKhmerDate($date) {
+
+namespace App\Service;
+
+class KhmerDateConverter
+{
+    public static function convertToKhmerDate($date)
+    {
         $ceYear = date('Y', strtotime($date));
         $khmerYear = $ceYear - 543;
 
@@ -9,51 +14,44 @@ class KhmerDateConverter {
 
         switch ($ceMonth) {
             case '01':
-                $khmerMonth = 'មករា'; // January
+                $khmerMonth = 'មករា';
                 break;
             case '02':
-                $khmerMonth = 'កម្ភៈ'; // February
+                $khmerMonth = 'កម្ភៈ';
                 break;
             case '03':
-                $khmerMonth = 'មិនា'; // March
+                $khmerMonth = 'មិនា';
                 break;
             case '04':
-                $khmerMonth = 'មេសា'; // April
+                $khmerMonth = 'មេសា';
                 break;
             case '05':
-                $khmerMonth = 'ឧសភា'; // May
+                $khmerMonth = 'ឧសភា';
                 break;
             case '06':
-                $khmerMonth = 'មិថុនា'; // June
+                $khmerMonth = 'មិថុនា';
                 break;
             case '07':
-                $khmerMonth = 'កក្កដា'; // July
+                $khmerMonth = 'កក្កដា';
                 break;
             case '08':
-                $khmerMonth = 'សីហា'; // August
+                $khmerMonth = 'សីហា';
                 break;
             case '09':
-                $khmerMonth = 'កញ្ញា'; // September
+                $khmerMonth = 'កញ្ញា';
                 break;
             case '10':
-                $khmerMonth = 'តុលា'; // October
+                $khmerMonth = 'តុលា';
                 break;
             case '11':
-                $khmerMonth = 'វិច្ឆិកា'; // November
+                $khmerMonth = 'វិច្ឆិកា';
                 break;
             case '12':
-                $khmerMonth = 'ធ្នូ'; // December
-                break;
-            default:
-                $khmerMonth = '';
+                $khmerMonth = 'ធ្នូ';
                 break;
         }
 
         $khmerDay = date('d', strtotime($date));
-
-        $khmerDate = $khmerDay . '-' . $khmerMonth . '-' . $khmerYear;
-
-        return $khmerDate;
+        return $khmerDay . '-' . $khmerMonth . '-' . $khmerYear;
     }
 }
-

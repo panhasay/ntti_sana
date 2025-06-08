@@ -6,6 +6,7 @@ use Illuminate\support\Facades\App;
 use App\Models\General\ExamSchedule;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Request;
 use App\Models\General\DividedNewClasses;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\adminController;
@@ -22,10 +23,10 @@ use App\Http\Controllers\General\AttendanceController;
 use App\Http\Controllers\General\StudentSanaController;
 use App\Http\Controllers\General\ExamScheduleController;
 use App\Http\Controllers\Report\ListOfStudentController;
+
 use App\Http\Controllers\General\AssingClassesController;
 
 use App\Http\Controllers\General\ClassScheduleController;
-
 use App\Http\Controllers\SystemSetup\DashboardController;
 use App\Http\Controllers\SystemSetup\DepartmentController;
 use App\Http\Controllers\Certificates\CertificateController;
@@ -435,4 +436,9 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
         Route::post('/transcript/create-code/show-first-full', 'showFirstFull')->name('certificate.create.show-first-full');
         Route::post('/transcript/create-code/update-inactive', 'updateInactive')->name('certificate.create.update-inactive');
     });
+});
+
+Route::post('/log-js-error', function (Request $request) {
+    $errorDetails = $request->all();
+    return response()->json(['status' => 'success']);
 });

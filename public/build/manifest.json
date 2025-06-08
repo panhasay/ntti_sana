@@ -2226,12 +2226,12 @@
       "resources/js/certificate/certificate.js",
       "resources/js/admin/admin.js"
     ],
-    "file": "js/ntti-app-793cf879.js",
+    "file": "js/ntti-app-122fdbcd.js",
     "isEntry": true,
     "src": "resources/js/app.js"
   },
   "resources/js/certificate/certificate.js": {
-    "file": "js/ntti-app-e0ccc6ef.js",
+    "file": "js/ntti-app-9398fd30.js",
     "imports": [
       "resources/js/app.js"
     ],

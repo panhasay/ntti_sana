@@ -23,7 +23,7 @@
 <div class="page-header flex-wrap">
   <div class="header-left">
     @if(isset($users->role) && $users->role == 'admin')
-      {{-- <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="BntCreateAssign" href="#"></i> <i class="mdi mdi-account-plus"></i> បន្ថែមថ្មី</i></a>  --}}
+      <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="BntCreateAssign" href="#"></i> <i class="mdi mdi-account-plus"></i> បន្ថែមថ្មី</i></a>
     @endif
         <button class="btn btn-success btn-icon-text btn-sm mb-2 mb-md-0 me-2 khmer_os_b" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="mdi mdi-signal"></i>លទ្ធិផលប្រឡង
@@ -110,7 +110,7 @@
         });
       });
     });
-  
+
     function prints(ctrl) {
       var url = 'departments/print';
       var data = '';
@@ -133,7 +133,7 @@
         error: function(xhr, ajaxOptions, thrownError) {}
       });
     }
-  
+
     function DownlaodExcel() {
       var url = '/student/downlaodexcel/';
       if ($('#search_data').val() == '') {
