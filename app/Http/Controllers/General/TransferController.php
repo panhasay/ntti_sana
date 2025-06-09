@@ -5,19 +5,24 @@ namespace App\Http\Controllers\General;
 use App\Http\Controllers\Controller;
 use App\Models\General\AssingClasses;
 use App\Models\General\Classes;
+use App\Models\General\HangOfStudent;
 use App\Models\General\Qualifications;
 use App\Models\General\StudentRegistration;
 use App\Models\General\StudyYears;
 use App\Models\General\Subjects;
 use App\Models\General\Teachers;
+use Carbon\Carbon;
 use App\Models\General\TransferHeader;
 use App\Models\General\TransferLine;
 use App\Models\Student\Student;
 use App\Models\SystemSetup\Department;
+use App\Models\General\VStudentLedgerEntry;
 use App\Service\service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class TransferController extends Controller
 {
@@ -38,22 +43,23 @@ class TransferController extends Controller
         $this->arrayJoin = ['10001', '10007', '10008'];
         $this->table_id = "10005";
     }
-    public function index(){
+    public function index()
+    {
         $page = $this->page;
         $user = Auth::user();
 
-        $records = StudentRegistration::withQueryPermission()
-                ->orderBy('class_code', 'desc')
-                ->orderByRaw("name_2 COLLATE utf8mb4_general_ci")
-                ->paginate(15);
+       $records = VStudentLedgerEntry::withQueryPermission() 
+        ->orderBy('class_code', 'desc')
+        // ->orderByRaw("name_2 COLLATE utf8mb4_general_ci")
+        ->paginate(15);
 
-        if (Auth::check()   ) {
-           return view('general.transfer', compact('records','page'));
+        if (Auth::check()) {
+            return view('general.transfer', compact('records', 'page'));
         } else {
             return redirect("login")->withSuccess('Opps! You do not have access');
         }
 
-        return view('general.transfer', compact('records','page'));	
+        return view('general.transfer', compact('records', 'page'));
     }
     public function transaction(request $request)
     {
@@ -93,7 +99,7 @@ class TransferController extends Controller
     {
         $code = $request->code;
         try {
-            $records = Skills::where('code',$code);
+            $records = Skills::where('code', $code);
             $records->delete();
             DB::commit();
             return response()->json(['status' => 'success', 'msg' => 'ទិន្ន័យត្រូវបាន លុប​!']);
@@ -107,7 +113,7 @@ class TransferController extends Controller
         $input = $request->all();
 
         $no =  $input['type'];
-        
+
         $records = TransferHeader::where('no',  $no)->first();
         try {
             if ($records) {
@@ -169,7 +175,7 @@ class TransferController extends Controller
         }
     }
 
-    public function Search (Request $request,$page)
+    public function Search(Request $request, $page)
     {
         dd("helo");
         $input = $request->all();
@@ -189,15 +195,15 @@ class TransferController extends Controller
                 }
                 $search_value = rtrim($search_value, " ");
                 // check page
-                if($page == 'student'){
-                    $menus = DB::table('student')->where('name','like', $search_value . "%")
-                                        ->orWhere('code', 'like', $search_value . "%")
-                                        ->orWhere('name_2', 'like', $search_value . "%")
-                                        ->where('class_code', '<>', null)->get();
+                if ($page == 'student') {
+                    $menus = DB::table('student')->where('name', 'like', $search_value . "%")
+                        ->orWhere('code', 'like', $search_value . "%")
+                        ->orWhere('name_2', 'like', $search_value . "%")
+                        ->where('class_code', '<>', null)->get();
                     $blade_file_record = 'student.student_list';
-                }else if($page == 'department'){
-                    $menus = DB::table('department')->where('department_name','like', $search_value . "%")
-                                        ->where('id', '<>', null)->get();
+                } else if ($page == 'department') {
+                    $menus = DB::table('department')->where('department_name', 'like', $search_value . "%")
+                        ->where('id', '<>', null)->get();
                     $blade_file_record = 'department.department_list';
                 }
 
@@ -209,37 +215,106 @@ class TransferController extends Controller
                         $menu->url = $menu->url . ($strings[0] == 'NEW' ? "type=cr" : "type=ed&code=" . $this->service->Encr_string($strings[count($strings) - 1]));
                     }
                 }
-            }else{
+            } else {
                 for ($i = 0; $i < count($strings); $i++) {
                     $search_value .= $strings[$i] . " ";
                 }
                 $search_value = rtrim($search_value, " ");
-                if($page == 'student'){
+                if ($page == 'student') {
                     $menus = DB::table('student')->where('name', 'like', $search_value . "%")
                         ->orWhere('code', 'like', $search_value . "%")
                         ->orWhere('name_2', 'like', $search_value . "%")
                         ->where('class_code', '<>', null)->paginate(1000);
                     $blade_file_record = 'student.student_list';
-                }else if($page == 'department'){
-                    $menus = DB::table('department')->where('department_name','like', $search_value . "%")
-                            ->where('id', '<>', null)->paginate(1000);
+                } else if ($page == 'department') {
+                    $menus = DB::table('department')->where('department_name', 'like', $search_value . "%")
+                        ->where('id', '<>', null)->paginate(1000);
                     $blade_file_record = 'department.department_list';
                 }
             }
-           
+
             if (count($menus) > 0) {
                 $records = $menus;
-            }else{
-                if($page == 'student'){
-                    $records = Student::where('department_code',$user->childs)->paginate(10);
-                }else if($page == 'department'){
+            } else {
+                if ($page == 'student') {
+                    $records = Student::where('department_code', $user->childs)->paginate(10);
+                } else if ($page == 'department') {
                     $records = Department::paginate(15);
                 }
             }
-            $view = view($blade_file_record,compact('records'))->render();
-            return response()->json(['status' =>'success','view' =>$view]);
+            $view = view($blade_file_record, compact('records'))->render();
+            return response()->json(['status' => 'success', 'view' => $view]);
         }
         return 'none';
     }
-    
+
+    public function GetStudentHangOfStudy(Request $request)
+    {
+        $data = $request->all();
+        try {
+
+            if (!isset($data['code']) || empty($data['code'])) {
+                return response()->json(['status' => 'error', 'msg' => 'Field request form server!']);
+            }
+
+            $records = StudentRegistration::where('code', $data['code'])->first();
+            return response()->json(['status' => 'success', 'records' => $records]);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+    // use App\Models\HangOfStudent;
+    // use Illuminate\Support\Facades\File;
+    // use Illuminate\Support\Str;
+    // use Carbon\Carbon;
+
+    public function SubmitStudentRequestHangOfStudy(Request $request)
+    {
+        try {
+            $request->validate([
+                'code' => 'required',
+                'hang_of_study' => 'required',
+                'from_date' => 'required|date',
+                'file_name' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            ]);
+
+            // ✅ Check if student code already exists
+            $existing = HangOfStudent::where('student_code', $request->code)->first();
+            if ($existing) {
+                return response()->json([
+                    'status' => 'error',
+                    'msg' => 'សិស្សមានសំណើរម្ដងរួចហើយ។' // "Student has already submitted a request."
+                ]);
+            }
+
+            $records = new HangOfStudent();
+            $records->student_code = $request->code;
+            $records->hang_of_study = $request->hang_of_study;
+            $records->from_date = Carbon::parse($request->from_date)->format('Y-m-d');
+
+            // ✅ Handle file upload
+            if ($request->hasFile('file_name')) {
+                $file = $request->file('file_name');
+                $filename = Str::random(20) . '.' . $file->getClientOriginalExtension();
+
+                $upload_path = public_path('uploads/hang_of_study');
+                if (!File::exists($upload_path)) {
+                    File::makeDirectory($upload_path, 0777, true);
+                }
+
+                $file->move($upload_path, $filename);
+                $records->image_reference = url('uploads/hang_of_study/' . $filename);
+            }
+
+            $records->save();
+
+            return response()->json(['status' => 'success', 'records' => $records]);
+        } catch (\Exception $ex) {
+            \DB::rollBack();
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
 }

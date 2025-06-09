@@ -142,10 +142,7 @@ class SystemSettingController extends Controller
                     if (!empty($updated_query)) {
                         $total_records = $total_records->whereRaw($updated_query);
                     }
-
                     $total_records = $total_records->get();
-
-
                     $blade_file_record = 'general.divided_new_classes_lists';
                     break;
                 case 'warehouses':

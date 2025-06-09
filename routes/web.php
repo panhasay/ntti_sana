@@ -355,6 +355,8 @@ Route::group(['prefix' => 'transfer'], function (){
     Route::post('/update', [TransferController::class, 'update']);
     Route::post('/store', [TransferController::class, 'store']);
     Route::POST ('/transfer-delete', [TransferController::class, 'delete']);
+    Route::get ('/get-student/-hang_of_study', [TransferController::class, 'GetStudentHangOfStudy']);
+    Route::POST ('/submit-student-request-hang-of-study', [TransferController::class, 'SubmitStudentRequestHangOfStudy']);
 })->middleware('auth');
 
 Route::group(['perfix' => 'report_list_of_student_class_and_section'], function (){
