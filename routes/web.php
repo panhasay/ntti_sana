@@ -15,6 +15,7 @@ use App\Http\Controllers\General\SkillsController;
 use App\Http\Controllers\General\ClassesController;
 use App\Http\Controllers\General\StudnetController;
 use App\Http\Controllers\General\TeacherController;
+use App\Http\Controllers\Certificates\Pdf\Customize;
 use App\Http\Controllers\General\SubjectsController;
 use App\Http\Controllers\General\TransferController;
 use App\Http\Controllers\SystemSetup\TableController;
@@ -22,10 +23,10 @@ use App\Http\Controllers\SystemSetup\UsersController;
 use App\Http\Controllers\General\AttendanceController;
 use App\Http\Controllers\General\StudentSanaController;
 use App\Http\Controllers\General\ExamScheduleController;
+
 use App\Http\Controllers\Report\ListOfStudentController;
 
 use App\Http\Controllers\General\AssingClassesController;
-
 use App\Http\Controllers\General\ClassScheduleController;
 use App\Http\Controllers\SystemSetup\DashboardController;
 use App\Http\Controllers\SystemSetup\DepartmentController;
@@ -442,3 +443,4 @@ Route::post('/log-js-error', function (Request $request) {
     $errorDetails = $request->all();
     return response()->json(['status' => 'success']);
 });
+Route::get('/pdf/custom', [Customize::class, 'downloadPdf'])->name('pdf.custom');

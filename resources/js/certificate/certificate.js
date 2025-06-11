@@ -572,7 +572,7 @@ function showCardViewList() {
                         <div class="modal fade" id="imageModal-${item.code}" tabindex="-1" aria-labelledby="imageModalLabel-${item.code}" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
-                                    <div class="modal-header">
+                                    <div class="modal-header bg-m-header">
                                         <h5 class="modal-title" id="imageModalLabel-${item.code}">Student Photo</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>

@@ -12,5 +12,6 @@ class DatabaseSeeder extends Seeder
         $this->call(CertMainModuleSeeder::class);
         $this->call(CertSubModuleSeeder::class);
         $this->call(CertStudentOfficialTranscriptCodeSeeder::class);
+        $this->call(QualificationSeeder::class);
     }
 }

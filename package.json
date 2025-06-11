@@ -10,6 +10,10 @@
         "vite": "^4.5.5"
     },
     "dependencies": {
-        "firebase": "^11.8.1"
+        "browsers": "^1.0.2",
+        "chrome": "^0.1.0",
+        "firebase": "^11.8.1",
+        "install": "^0.13.0",
+        "puppeteer": "^24.10.0"
     }
 }

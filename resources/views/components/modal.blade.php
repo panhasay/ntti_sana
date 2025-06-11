@@ -6,7 +6,7 @@
         {{ $fullscreen ? 'modal-fullscreen' : '' }}"
         role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-m-header">
                 <h5 class="modal-title">{{ $title }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>

@@ -16,7 +16,7 @@ class Classes extends Model
 
     protected $primaryKey = 'code';
     protected $keyType = 'string'; // Specify the key type if necessary
-  
+
     protected $fillable = [
         '*',
     ];
@@ -39,7 +39,7 @@ class Classes extends Model
     {
         return $this->belongsTo(Teachers::class, 'teachers_code', 'code');
     }
-   
+
     public function study_years()
     {
         return $this->belongsTo(StudyYears::class, 'apply_year', 'code');
@@ -50,7 +50,7 @@ class Classes extends Model
     }
     public function qualification()
     {
-        return $this->belongsTo(Qualifications::class, 'qualification', 'code');
+        return $this->belongsTo(Qualifications::class, 'level', 'code');
     }
    public function scopeWithQueryPermissionTeacher($query)
     {
