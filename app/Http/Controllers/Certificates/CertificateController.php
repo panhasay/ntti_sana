@@ -39,6 +39,7 @@ use App\Http\Controllers\Certificates\CertificateOfficialTranscriptController;
 class CertificateController extends Controller
 {
     protected $tranController;
+    protected $provisionalController;
     protected $services;
     public $page_id;
     public $page;
@@ -52,6 +53,7 @@ class CertificateController extends Controller
     {
         $this->services = new Service();
         $this->tranController = new CertificateOfficialTranscriptController();
+        $this->provisionalController = new CertificateProvisionalController();
 
         $this->page_id = "10001";
         $this->page = "certificate";
@@ -70,39 +72,29 @@ class CertificateController extends Controller
 
         return view('certificate/certificate_department_menu', compact('record_dept'));
     }
-    /**
-     * showMenuModule
-     *
-     * @param  mixed $dept_code
-     * @return void
-     */
-    public function showMenuModule($dept_code)
+
+    public function showModuleMenu()
     {
         $record_certificate = CertificateSubModule::where('active', 1)->get();
-        $record_dept = Department::where('code', $dept_code)->get();
 
-        return view('certificate/certificate_module_menu', compact('record_certificate', 'dept_code', 'record_dept'));
+        return view('certificate/certificate_module_menu', compact('record_certificate'));
     }
 
     public function StudentCard(Request $request)
     {
-        $dept_code = $request->dept_code;
         $module_code = $request->module_code;
 
         $record_dept = Department::where('is_active', 'Yes')->get();
         $record_shift = Sections::where('is_active', 'Yes')->get();
-        $arr_dept = Department::where('code', $dept_code)->get();
         $arr_module = CertificateSubModule::where('code', $module_code)->get();
 
         $record_class = Classes::select('code', 'name')
             ->distinct()
             ->get();
 
-        $record_level = Qualifications::whereIn('name', ['Bachelor Degree', 'Associate Degree'])->get();
+        $record_level = Qualifications::whereNotNull('name_3')->get();
 
-        $record_skill = Skills::whereHas('classes', function ($query) use ($dept_code) {
-            $query->whereNotNull('department_code');
-        })->distinct()->get();
+        $record_skill = Skills::whereHas('classes')->get();
 
         $sessionYear = SessionYear::where('is_active', 'yes')
             ->orderBy('code', 'desc')
@@ -113,9 +105,7 @@ class CertificateController extends Controller
             'record_class',
             'record_dept',
             'record_shift',
-            'dept_code',
             'module_code',
-            'arr_dept',
             'arr_module',
             'record_level',
             'record_skill',
@@ -129,6 +119,16 @@ class CertificateController extends Controller
     public function OfficialTranscript(Request $request)
     {
         return $this->tranController->index($request);
+    }
+
+    public function permissionCertificate(Request $request)
+    {
+        return $this->tranController->index($request);
+    }
+
+    public function ProvisionalCertificate(Request $request)
+    {
+        return $this->provisionalController->index($request);
     }
 
     function getEducationLevelValue($level)

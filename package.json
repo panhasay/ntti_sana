@@ -5,15 +5,16 @@
         "build": "vite build"
     },
     "devDependencies": {
-        "axios": "^1.1.2",
-        "laravel-vite-plugin": "^0.7.8",
-        "vite": "^4.5.5"
+        "axios": "^1.9.0",
+        "laravel-vite-plugin": "^1.3.0",
+        "vite": "^6.3.5"
     },
     "dependencies": {
-        "browsers": "^1.0.2",
+        "any-promise": "^1.3.0",
+        "browsers": "^0.4.9",
         "chrome": "^0.1.0",
-        "firebase": "^11.8.1",
+        "firebase": "^11.9.1",
         "install": "^0.13.0",
-        "puppeteer": "^24.10.0"
+        "puppeteer": "^24.10.1"
     }
 }

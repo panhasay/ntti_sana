@@ -43,7 +43,7 @@ class RouteServiceProvider extends ServiceProvider
                 ->get();
 
             Route::middleware(['web', 'auth'])
-                ->prefix('certificate/{dept_code}')
+                ->prefix('certificate')
                 ->group(function () use ($subModules) {
                     foreach ($subModules as $item) {
                         $controller = 'App\Http\Controllers\Certificates\CertificateController@' . $item->controller;

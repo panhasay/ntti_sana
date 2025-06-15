@@ -24,7 +24,7 @@
 </style>
 <div class="page-head page-head-custom">
     <div class="row">
-        <div class="col-md-3 col-sm-5 col-8">
+        <div class="col-md-4 col-sm-5 col-8">
             <div class="page-title page-title-custom">
                 <div class="title-page header-right">
                     <i class="mdi mdi-format-list-bulleted"></i>
@@ -33,7 +33,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-9 col-sm-7 col-4 justify-content-end">
+        <div class="col-md-8 col-sm-7 col-4 justify-content-end">
             <nav aria-label="breadcrumb">
                 <div class="page-title page-title-custom title-page">
                     <!-- Desktop Breadcrumbs -->

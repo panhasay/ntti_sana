@@ -28,6 +28,7 @@ use App\Http\Controllers\Report\ListOfStudentController;
 
 use App\Http\Controllers\General\AssingClassesController;
 use App\Http\Controllers\General\ClassScheduleController;
+use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\SystemSetup\DashboardController;
 use App\Http\Controllers\SystemSetup\DepartmentController;
 use App\Http\Controllers\Certificates\CertificateController;
@@ -353,7 +354,8 @@ Route::group(['prefix' => 'notification', 'middleware' => 'auth'], static functi
 Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static function () {
     Route::controller(CertificateController::class)->group(function () {
         Route::get('/dept-menu', 'index')->name('cert.dept_menu');
-        Route::get('/dept-menu/{dept_code}', 'showMenuModule')->where('dept_code', '[A-Z_]+')->name('cert.dept.list');
+        Route::get('/module-menu', 'showModuleMenu')->name('cert.module_menu');
+        Route::get('/dept-menu/{dept_code}', 'showModuleMenu')->where('dept_code', '[A-Z_]+')->name('cert.dept.list');
 
         Route::prefix('student')->group(function () {
             Route::post('/bar', 'getStudentPieBarChartData');
@@ -429,7 +431,7 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
     });
 
     Route::controller(CertificateTranscriptCodeController::class)->group(function () {
-        Route::get('/transcript/create-code', 'index');
+        Route::get('/transcript/{module_code}/create-code', 'index');
         Route::post('/transcript/create-code/show', 'show')->name('certificate.create.show');
         Route::post('/transcript/create-code/create', 'store')->name('certificate.create.create');
         Route::post('/transcript/create-code/show-first', 'showFirst')->name('certificate.create.show.first');
@@ -444,3 +446,6 @@ Route::post('/log-js-error', function (Request $request) {
     return response()->json(['status' => 'success']);
 });
 Route::get('/pdf/custom', [Customize::class, 'downloadPdf'])->name('pdf.custom');
+
+Route::get('/permissions/create', [PermissionController::class, 'create'])->name('permissions.create');
+Route::post('/permissions', [PermissionController::class, 'store'])->name('permissions.store');

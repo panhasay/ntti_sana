@@ -12,16 +12,22 @@
 @extends('app_layout.app_layout')
 
 @section('content')
-    <x-breadcrumbs :array="[
+    {{-- <x-breadcrumbs :array="[
         ['route' => request()->fullUrl(), 'title' => request()->get('module') . ':បង្កើតលេខកូដ'],
-        ['route' => 'certificate/dept-menu/' . request()->get('dept_code'), 'title' => 'ត្រួតពិនិត្យលិខិតបញ្ជាក់'],
-        ['route' => 'certificate/dept-menu', 'title' => request()->get('dept_n')],
-        ['route' => 'department-menu', 'title' => 'ប្រព័ន្ឋគ្រប់គ្រងលិខិតបញ្ជាក់'],
-    ]" />
+        ['route' => 'certificate/module-menu', 'title' => 'ត្រួតពិនិត្យលិខិតបញ្ជាក់'],
+        ['route' => 'department-menu', 'title' => 'ប្រព័ន្ឋគ្រប់គ្រងលិខិតបញ្ជាក់']
+    ]" /> --}}
 
     <div class="row">
         <div>
             <div class="card card-body">
+                <div id="validation-errors" class="alert alert-danger d-none">
+                    <div class="d-flex align-items-center">
+                        <i class="mdi mdi-information-outline me-2"></i>
+                        <strong>Ensure that these requirements are met:</strong>
+                    </div>
+                    <ul class="mb-0 mt-2" id="error-list"></ul>
+                </div>
                 <div class="row">
                     <div class="col-md-12">
                         <form id="formCreateCode">
@@ -150,8 +156,8 @@
                         <div class="col-sm-3">
                             <span class="form-label">ជំនាញ</span>
                             <div class="input-group">
-                                <select class="select2-sch-modal" id="sch_uskill" name="sch_uskill" style="width: 100%"
-                                    placeholder="ជ្រើសរើសជំនាញទាំងអស់">
+                                <select class="select2-sch-modal" id="sch_uskill" name="sch_uskill"
+                                    style="width: 100%" placeholder="ជ្រើសរើសជំនាញទាំងអស់">
                                     <option value="">ជ្រើសរើសជំនាញ</option>
                                     @foreach ($skills as $item)
                                         <option value="{{ $item->code }}">{{ $item->name_2 }} :
@@ -300,7 +306,7 @@
                 $tbody.html(html);
             }
 
-            $('#btn_save').on('click', function(e) {
+            $('#btn_save11').on('click', function(e) {
                 e.preventDefault();
                 var formData = new FormData($('#formCreateCode')[0]);
                 $.ajax({
@@ -341,6 +347,56 @@
                                         'border border-danger');
                                 }
                                 $(`.${field}-error`).text(messages);
+                            });
+                        } else {
+                            notyf.error('An error occurred!');
+                        }
+                    }
+                });
+            });
+            $('#btn_save').on('click', function(e) {
+                e.preventDefault();
+                var formData = new FormData($('#formCreateCode')[0]);
+                $.ajax({
+                    url: '/certificate/transcript/create-code/create',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        notyf.success('Data saved successfully!');
+                        $('#formCreateCode')[0].reset();
+                        $('#validation-errors').addClass('d-none');
+                        $('#error-list').empty();
+
+                        $sch_level.val('');
+                        $sch_level.select2();
+                        $sch_skill.val('');
+                        $sch_skill.select2();
+                        show();
+                    },
+                    error: function(xhr) {
+                        $('.error').text('');
+                        if (xhr.status === 422) {
+                            $('.is-invalid').removeClass('is-invalid');
+                            $('.select2-selection').removeClass('border border-danger');
+                            $('.invalid-feedback').remove();
+
+                            $('#validation-errors').removeClass('d-none');
+                            $('#error-list').empty(); // Clear any old errors
+
+                            $.each(xhr.responseJSON.errors, function(field, messages) {
+                                let input = $('[name="' + field + '"]');
+                                input.addClass('is-invalid');
+                                if (input.hasClass('select2-search')) {
+                                    input.next('.select2-container').find(
+                                        '.select2-selection').addClass(
+                                        'border border-danger');
+                                }
+                                $('#error-list').append('<li>' + messages + '</li>');
                             });
                         } else {
                             notyf.error('An error occurred!');

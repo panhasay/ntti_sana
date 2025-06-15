@@ -16,8 +16,7 @@
 @section('content')
     <x-breadcrumbs :array="[
         ['route' => request()->path(), 'title' => $arr_module[0]->name_kh],
-        ['route' => 'certificate/dept-menu/' . $arr_dept[0]->code, 'title' => 'ត្រួតពិនិត្យលិខិតបញ្ជាក់'],
-        ['route' => 'certificate/dept-menu', 'title' => $arr_dept[0]->name_2],
+        ['route' => 'certificate/module-menu', 'title' => 'ត្រួតពិនិត្យលិខិតបញ្ជាក់'],
         ['route' => 'department-menu', 'title' => 'ប្រព័ន្ឋគ្រប់គ្រងលិខិតបញ្ជាក់'],
     ]" />
 
@@ -46,8 +45,7 @@
                                             placeholder="សូមជ្រើសរើសដេប៉ាតឺម៉ង់">
                                             <option value="all">ជ្រើសរើសដេប៉ាតឺម៉ង់ទាំងអស់</option>
                                             @foreach ($record_dept as $item)
-                                                <option value="{{ $item->code }}"
-                                                    {{ $arr_dept[0]->code == $item->code ? 'selected' : '' }}>
+                                                <option value="{{ $item->code }}">
                                                     {{ $item->name_2 }}
                                                 </option>
                                             @endforeach
@@ -73,7 +71,7 @@
                                             style="width: 100%">
                                             <option value="all">ជ្រើសរើសកម្រិតទាំងអស់</option>
                                             @foreach ($record_level as $item)
-                                                <option value="{{ $item->level }}">{{ $item->level }}</option>
+                                                <option value="{{ $item->code }}">{{ $item->name_3 }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -162,8 +160,8 @@
         <div class="row">
             <div class="d-flex justify-content-between mb-1">
                 <div class="d-flex gap-1" role="group" aria-label="Table Actions">
-                    <button type="button"
-                        class="btn btn-success btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="btn_open_create_code_transcript">បង្កើតលេខកូដ</button>
+                    <button type="button" class="btn btn-success btn-icon-text btn-sm mb-2 mb-md-0 me-2"
+                        id="btn_open_create_code_transcript">បង្កើតលេខកូដ</button>
                     <button type="button" class="btn btn-secondary dropdown-toggle py-2 px-3 fs-6 hidden"
                         data-bs-toggle="dropdown" aria-expanded="false" hidden>
                         Export
@@ -709,7 +707,9 @@
 
             $("body").on("click", "#btn_open_create_code_transcript", function(e) {
                 e.preventDefault();
-                window.open('/certificate/transcript/create-code?dept_code={{ $arr_dept[0]->code }}&dept_n={{ $arr_dept[0]->name_2 }}&module={{ $arr_module[0]->name_kh }}', '_blank');
+                window.open(
+                    '/certificate/transcript/{{ $module_code }}/create-code?module={{ $arr_module[0]->name_kh }}',
+                    '_blank');
             });
         });
     </script>

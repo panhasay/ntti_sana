@@ -19,6 +19,7 @@ use App\Models\CertificateSubModule;
 use Illuminate\Support\Facades\View;
 use App\Models\General\AssingClasses;
 use Illuminate\Support\Facades\Crypt;
+use App\Models\General\Qualifications;
 use App\Models\SystemSetup\Department;
 use Illuminate\Support\Facades\Response;
 use KhmerPdf\LaravelKhPdf\Facades\PdfKh;
@@ -33,27 +34,20 @@ class CertificateOfficialTranscriptController extends Controller
 
     public function index(Request $request)
     {
-        $dept_code = $request->dept_code;
         $module_code = $request->module_code;
 
         $record_dept = Department::where('is_active', 'Yes')->get();
         $record_shift = Sections::where('is_active', 'Yes')->get();
-        $arr_dept = Department::where('code', $dept_code)->get();
+        $arr_dept = Department::get();
         $arr_module = CertificateSubModule::where('code', $module_code)->get();
 
         $record_class = Classes::select('code', 'name')
-            ->where('department_code', $dept_code)
             ->distinct()
             ->get();
 
-        $record_level = Classes::whereNotNull('department_code')
-            ->select('level')
-            ->distinct('level')
-            ->get();
+        $record_level = Qualifications::whereNotNull('name_3')->get();
 
-        $record_skill = Skills::whereHas('classes', function ($query) use ($dept_code) {
-            $query->whereNotNull('department_code');
-        })->distinct()->get();
+        $record_skill = Skills::whereHas('classes')->get();
 
         $sessionYear = SessionYear::where('is_active', 'yes')
             ->orderBy('code', 'desc')
@@ -63,7 +57,6 @@ class CertificateOfficialTranscriptController extends Controller
             'record_class'  => $record_class,
             'record_dept'   => $record_dept,
             'record_shift'  => $record_shift,
-            'dept_code'     => $dept_code,
             'module_code'   => $module_code,
             'arr_dept'      => $arr_dept,
             'arr_module'    => $arr_module,

@@ -14,6 +14,25 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
         User::updateOrCreate(
+            ['email' => 'admin@gmail.com'], // Search criteria
+            [
+                'pageination' => 1,
+                'name' => 'Admin User',
+                'email_verified_at' => now(),
+                'password' => Hash::make('admin'),
+                'remember_token' => Str::random(10),
+                'user_code' => 'ADM001',
+                'user_type' => 'admin',
+                'role' => 'admin',
+                'permission' => 'full',
+                'phone' => 1234567890,
+                'fcm_token' => Str::random(64),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+
+        User::updateOrCreate(
             ['email' => 'developer251121@gmail.com'], // Search criteria
             [
                 'pageination' => 1,

@@ -172,13 +172,11 @@
 </style>
 
 
-
 @extends('app_layout.app_layout')
 @section('content')
     <x-breadcrumbs :array="[
         ['route' => request()->path(), 'title' => $arr_module[0]->name_kh],
-        ['route' => 'certificate/dept-menu/' . $arr_dept[0]->code, 'title' => 'ត្រួតពិនិត្យលិខិតបញ្ជាក់'],
-        ['route' => 'certificate/dept-menu', 'title' => $arr_dept[0]->name_2],
+        ['route' => 'certificate/module-menu', 'title' => 'ត្រួតពិនិត្យលិខិតបញ្ជាក់'],
         ['route' => 'department-menu', 'title' => 'ប្រព័ន្ឋគ្រប់គ្រងលិខិតបញ្ជាក់'],
     ]" />
     <input type="hidden" name="session_code" id="session_code" value="{{ $sessionYear->code }}">
@@ -1060,10 +1058,6 @@
             </div>
         </div>
         <!-- Modal -->
-        <script>
-            const dept_code = @json(request()->route('dept_code'), JSON_THROW_ON_ERROR);
-            // var dept_code = {{ $arr_dept[0]->code }};
-        </script>
 
         <script>
             const dropzone = document.getElementById('dropzone');
