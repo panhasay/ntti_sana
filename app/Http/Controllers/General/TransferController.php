@@ -48,10 +48,18 @@ class TransferController extends Controller
         $page = $this->page;
         $user = Auth::user();
 
-       $records = VStudentLedgerEntry::withQueryPermission() 
-        ->orderBy('class_code', 'desc')
-        // ->orderByRaw("name_2 COLLATE utf8mb4_general_ci")
+      $records = VStudentLedgerEntry::withQueryPermission()
+
+        ->select('student_code' , 'class_code', 'skills_code', 'qualification', 'sections_code', 'years', DB::raw('MAX(semester) as semester'))
+        ->groupBy('student_code', 'class_code', 'skills_code', 'qualification', 'sections_code', 'years')
+        ->orderBy('student_code', 'desc')
         ->paginate(15);
+
+
+    // ->orderBy('student_code', 'desc')
+    // ->groupBy('student_code', 'class_code', 'sections_code', 'department_code', 'skills_code', 'semester', 'years')
+    // ->select('student_code', 'class_code', 'sections_code', 'department_code', 'skills_code', 'semester', 'years')
+    // ->paginate(15);
 
         if (Auth::check()) {
             return view('general.transfer', compact('records', 'page'));
@@ -285,16 +293,27 @@ class TransferController extends Controller
             if ($existing) {
                 return response()->json([
                     'status' => 'error',
-                    'msg' => 'សិស្សមានសំណើរម្ដងរួចហើយ។' // "Student has already submitted a request."
+                    'msg' => 'សិស្សមានសំណើរម្ដងរួចហើយ។' 
                 ]);
             }
+
+            $student = VStudentLedgerEntry::withQueryPermission()
+                ->select('student_code' , 'class_code', 'skills_code', 'qualification', 'sections_code', 'years', DB::raw('MAX(semester) as semester'))
+                ->groupBy('student_code', 'class_code', 'skills_code', 'qualification', 'sections_code', 'years')
+                ->orderBy('student_code', 'desc')
+                ->first();
+
 
             $records = new HangOfStudent();
             $records->student_code = $request->code;
             $records->hang_of_study = $request->hang_of_study;
+
+            $records->years = $student->years;
+            $records->semester = $student->semester;
+            $records->class_code = $student->class_code;
+            $records->type = "Hang Of Study";
             $records->from_date = Carbon::parse($request->from_date)->format('Y-m-d');
 
-            // ✅ Handle file upload
             if ($request->hasFile('file_name')) {
                 $file = $request->file('file_name');
                 $filename = Str::random(20) . '.' . $file->getClientOriginalExtension();

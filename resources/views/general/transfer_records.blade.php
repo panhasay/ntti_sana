@@ -3,13 +3,13 @@
     <?php
         $hang_of_student = App\Models\General\HangOfStudent::where('student_code', $record->student_code)->first();
     ?>
-    <tr id="row{{$record->student_code ?? ''}}" class="{{ $hang_of_student->student_code ?? '' == $record->student_code ? 'bg-danger text-white' : '' }}">
+    <tr id="row{{$record->student_code ?? ''}}" class="{{ $hang_of_student->student_code ?? '' == $record->student_code ? 'bg-warning text-white' : '' }}">
         <td class="">
             <div class="btn-group">
                 <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">ស្នើរសុំ</button>
                 <div class="dropdown-menu" style="">
-                <a class="dropdown-item" data-type="transfer" href="{{'/transfer/transaction?type=ed&code='.\App\Service\service::Encr_string($record->code ?? '') }}">ប្ដូរក្រុម/ប្ដូរវេនសិក្សា</a>
-                <a class="dropdown-item" id="hang_of_study" data-code="{{ $record->code ?? '' }}" data-type="hang_of_study" href="javascript:;">ព្យួរកាសិក្សា</a>
+                <a class="dropdown-item" data-type="transfer" data-code="{{ $record->student_code ?? '' }}" id="transfer" href="javascript:;">ប្ដូរក្រុម/ប្ដូរវេនសិក្សា</a>
+                <a class="dropdown-item" id="hang_of_study" data-code="{{ $record->student_code ?? '' }}" data-type="hang_of_study" href="javascript:;">ព្យួរកាសិក្សា</a>
                 <a class="dropdown-item">ឈប់ </a>
                 </div>
             </div>
@@ -30,5 +30,6 @@
         <td class="">{{ $record->qualification ?? '' }}</td>
         <td class="">{{ $record->section->name_2 ?? '' }}</td>
         <td class="">{{ $record->semester ?? '' }}</td>
+        <td class="">{{ $record->years ?? '' }}</td>
     </tr>
 @endforeach

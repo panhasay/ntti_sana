@@ -23,6 +23,7 @@ use App\Http\Controllers\SystemSetup\UsersController;
 use App\Models\General\DividedNewClasses;
 use GuzzleHttp\Middleware;
 use Illuminate\support\Facades\App;
+use App\Http\Controllers\Report\ReportListTableStudentOfYearController;
 
 use App\Http\Controllers\General\ScoreController;
 
@@ -385,7 +386,10 @@ Route::group(['prefix' => 'report-total-score'], function (){
 Route::get('/score', [ScoreController::class, 'index']);
 
 
-
-
-
+Route::group(['perfix' => 'report_list_table_student_of_years'], function (){
+    Route::get('report_list_table_student_of_years', [ReportListTableStudentOfYearController::class, 'index'])->name('index');
+    Route::get('reports-list-of-student-priview', [ReportListTableStudentOfYearController::class, 'Priview'])->name('Priview');
+    Route::get('reports-list-of-student-print', [ReportListTableStudentOfYearController::class, 'Print'])->name('Print');
+    Route::get('reports-list-of-student-print/export/', [ReportListTableStudentOfYearController::class, 'export']);
+})->middleware('auth');
 

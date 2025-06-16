@@ -40,4 +40,16 @@ class ApiController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
+
+     public function GetAllStudent(Request $request)
+    {
+        $data = $request->all();
+        try {
+                $records = Student::get();
+
+            return response()->json(['records' => $records], 200);
+        } catch (\Exception $ex) {
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
 }
