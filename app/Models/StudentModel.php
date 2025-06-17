@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\SystemSetup\Department;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Request;
+use App\Models\Certificates\CertStudentStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class StudentModel extends Model
@@ -42,6 +43,10 @@ class StudentModel extends Model
         return $this->hasMany(Picture::class, 'code', 'code');
     }
 
+    public function certStatus()
+    {
+        return $this->hasOne(CertStudentStatus::class, 'stu_code', 'code');
+    }
 
     public static function getFilteredStudents11($dept_code, $class_code, $search, $rows_per_page)
     {

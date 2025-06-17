@@ -115,9 +115,19 @@
         <div class="row">
             <div class="control-table table-responsive custom-data-table-wrapper2">
                 <div class="col-md-12 mt-0">
+                    <div class="d-flex justify-content-between mb-1">
+                        <div class="d-flex gap-1" role="group" aria-label="Table Actions">
+                            <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="btn_print_multiple">
+                                <i class="mdi mdi-printer pl-2"></i> បោះពុម្ភ</a>
+                        </div>
+                    </div>
                     <table class="table table-striped" id="tbl_card_stu_list">
                         <thead>
                             <tr class="general-data">
+                                <th>
+                                    <input class="form-check-input" type="checkbox" id="checkAll"
+                                        style="transform: scale(1.5);">
+                                </th>
                                 <th>ល.រ</th>
                                 <th>អត្តលេខ</th>
                                 <th>គោត្តនាម និងនាម</th>
@@ -138,6 +148,22 @@
         </div>
         <div id="pagination_list" class="mt-3 mb-5"></div>
     </div>
+
+    <x-modal id="modal_add_transcript" title="បង្កើតលេខកូដ">
+        <input type="hidden" id="hidden_stu_code" name="stu_code">
+        <input type="hidden" id="hidden_dept_code" name="dept_code">
+        <input type="hidden" id="hidden_class_code" name="class_code">
+        <h4 class="text-center p-4">តើអ្នកចង់បង្កើតលេខកូដសញ្ញាបត្រសម្រាប់គាត់ដែរឬទេ?</h4>
+        <x-slot name="footer">
+            <button type="button" class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2" data-bs-dismiss="modal">
+                <i class="mdi mdi-close-circle-outline"></i> បោះបង់
+            </button>
+            <button type="button" class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2"
+                id="btn_add_transcript">
+                <i class="mdi mdi-content-save"></i> យល់ព្រម
+            </button>
+        </x-slot>
+    </x-modal>
 @endsection
 
 @push('scripts')
@@ -196,7 +222,7 @@
                 }
 
                 $.ajax({
-                    url: "{{ route('provisional.show') }}",
+                    url: "{{ route('student-status.show') }}",
                     type: "POST",
                     contentType: "application/json",
                     data: JSON.stringify(requestData),
@@ -227,7 +253,11 @@
                             `/uploads/student/${item.stu_photo}`;
 
                         html += `<tr>`;
-                        html += `<td height="40">${index + 1 + (currentPage - 1) * rowsPerPage}</td>`;
+                        html += `<td height="40">
+                            <input class="form-check-input row-checkbox" type="checkbox" style="transform: scale(1.5);" data-student-id="${item.code}"
+                        </td>`;
+
+                        html += `<td >${index + 1 + (currentPage - 1) * rowsPerPage}</td>`;
                         html +=
                             `<td><div class="hover-photo"><img src="${photo}" alt="Student Photo"> ${item.code}</div></td>`;
                         html += `<td>${item.name_2}</td>`;
@@ -275,10 +305,131 @@
             $("body").on("click", "#btn_modal_transcript", function(e) {
                 e.preventDefault();
                 const key = $(this).data("keyword");
-                const url = "{{ route('provisional.print', ':key') }}".replace(':key', key);
+                const url = "{{ route('student-status.print', ':key') }}".replace(':key', key);
                 window.open(url, '_blank');
             });
+            $("body").on("click", "#btn_modal_add_transcript", function(e) {
+                const stu_code = $(this).data("stu_code");
+                const dept_code = $(this).data("dept_code");
+                const class_code = $(this).data("class_code");
+                $("#hidden_stu_code").val(stu_code);
+                $("#hidden_dept_code").val(dept_code);
+                $("#hidden_class_code").val(class_code);
 
+                $("#modal_add_transcript").modal("show");
+            });
+            $("#btn_add_transcript").on("click", function() {
+                $loader.fadeIn();
+                const stu_code = $("#hidden_stu_code").val();
+                const dept_code = $("#hidden_dept_code").val();
+                const class_code = $("#hidden_class_code").val();
+                const requestData = {
+                    stu_code,
+                    dept_code,
+                    class_code,
+                };
+                $.ajax({
+                    url: "{{ route('student-status.create') }}",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(requestData),
+                    success: function(data) {
+                        if (data.status == 200) {
+                            cache = {};
+                            notyf.success(data.message);
+                            $("#modal_add_transcript .btn-close").trigger(
+                                "click"
+                            );
+                            show();
+                        } else {
+                            notyf.error(data.message);
+                        }
+
+                        setTimeout(function() {
+                            show();
+                            $loader.fadeOut();
+                        }, 500);
+                    },
+                    error: function(xhr, status, error) {
+                        notyf.error(error);
+                    },
+                });
+            });
+
+            $('#checkAll').on('change', function() {
+                $('.row-checkbox').prop('checked', this.checked);
+            });
+
+            $(document).on('change', '.row-checkbox', function() {
+                if (!this.checked) {
+                    $('#checkAll').prop('checked', false);
+                } else if ($('.row-checkbox:checked').length === $('.row-checkbox').length) {
+                    $('#checkAll').prop('checked', true);
+                }
+            });
+
+            function getSelectedStudentIds() {
+                return $('.row-checkbox:checked').map(function() {
+                    return $(this).data('student-id');
+                }).get();
+            }
+
+            $("body").on("click", "#btn_print_multiple", function(e) {
+                e.preventDefault();
+                $loader.fadeIn();
+
+                const selectedIds = getSelectedStudentIds();
+
+                if (selectedIds.length === 0) {
+                    notyf.error("សូមជ្រើសរើសសិស្សយ៉ាងហោចណាស់ម្នាក់!");
+                    return;
+                }
+
+                const requestData = {
+                    student_ids: selectedIds
+                };
+
+                $.ajax({
+                    url: "{{ route('student-status.print-multilple') }}",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(requestData),
+                    success: function(data) {
+                        const printWindow = window.open(data.url, '_blank');
+                        if (printWindow) {
+                            printWindow.onload = () => {
+                                // Add slight delay to ensure content is fully loaded
+                                setTimeout(() => {
+                                    try {
+                                        printWindow.focus();
+                                        printWindow.print();
+                                    } catch (error) {
+                                        console.error("Print error:", error);
+                                        notyf.error(
+                                            "Failed to initiate print. Please try again."
+                                        );
+                                    }
+                                }, 500);
+                            };
+
+                            // Handle cases where onload might not fire (e.g., cross-origin restrictions)
+                            printWindow.addEventListener('error', () => {
+                                notyf.error("Failed to load the print content.");
+                            });
+                        } else {
+                            notyf.error("Please allow pop-ups to print this content.");
+                        }
+
+                        setTimeout(function() {
+                            currentPageList = 1;
+                            $loader.fadeOut();
+                        }, 500);
+                    },
+                    error: function(xhr, status, error) {
+                        notyf.error(xhr.statusText);
+                    },
+                });
+            });
 
             show();
         });

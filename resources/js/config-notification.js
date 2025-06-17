@@ -19,19 +19,21 @@ export function getCsrfToken() {
 }
 
 export function sendTokenToServer(token) {
-    fetch("/notification/save-token", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": getCsrfToken(),
-        },
-        body: JSON.stringify({
-            token: token,
-            user_id: window.authUserID,
-        }),
-    }).then(r => {
-        // Optional: Handle response
-    });
+    // fetch("/notification/save-token", {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //         "X-CSRF-TOKEN": getCsrfToken(),
+    //     },
+    //     body: JSON.stringify({
+    //         token: token,
+    //         user_id: window.authUserID,
+    //     }),
+    // }).then(r => {
+    //     // Optional: Handle response
+    // });
+
+    return true;
 }
 
 const firebaseConfig = {

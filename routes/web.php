@@ -36,7 +36,10 @@ use App\Http\Controllers\General\DividedNewClassesController;
 use App\Http\Controllers\SystemSetup\SystemSettingController;
 use App\Http\Controllers\Notifications\NotificationController;
 use App\Http\Controllers\Report\ReportTotalScoreExamController;
+use App\Http\Controllers\Certificates\CertificateProvisionalController;
+use App\Http\Controllers\Certificates\CertificateStudentStatusController;
 use App\Http\Controllers\Certificates\CertificateTranscriptCodeController;
+use App\Http\Controllers\Certificates\CertificateProvisionalCodeController;
 use App\Http\Controllers\Report\ReportFirstYearStudentRegistrationController;
 use App\Http\Controllers\Report\ReportListOfStudentClassAndSectionController;
 use App\Http\Controllers\Certificates\CertificateOfficialTranscriptController;
@@ -438,6 +441,18 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
         Route::post('/transcript/create-code/update', 'update')->name('certificate.create.update');
         Route::post('/transcript/create-code/show-first-full', 'showFirstFull')->name('certificate.create.show-first-full');
         Route::post('/transcript/create-code/update-inactive', 'updateInactive')->name('certificate.create.update-inactive');
+    });
+
+    Route::controller(CertificateProvisionalController::class)->group(function () {
+        Route::post('/provisional/show', 'show')->name('provisional.show');
+        Route::get('/provisional/show-print/{key}', 'showPrint')->name('provisional.print');
+    });
+
+    Route::controller(CertificateStudentStatusController::class)->group(function () {
+        Route::post('/student-status/show', 'show')->name('student-status.show');
+        Route::get('/student-status/show-print/{key}', 'showPrint')->name('student-status.print');
+        Route::post('/student-status/create', 'store')->name('student-status.create');
+        Route::post('/student-status/print-multilple', 'printMultilple')->name('student-status.print-multilple');
     });
 });
 

@@ -40,6 +40,7 @@ class CertificateController extends Controller
 {
     protected $tranController;
     protected $provisionalController;
+    protected $studentStatusController;
     protected $services;
     public $page_id;
     public $page;
@@ -54,6 +55,7 @@ class CertificateController extends Controller
         $this->services = new Service();
         $this->tranController = new CertificateOfficialTranscriptController();
         $this->provisionalController = new CertificateProvisionalController();
+        $this->studentStatusController = new CertificateStudentStatusController();
 
         $this->page_id = "10001";
         $this->page = "certificate";
@@ -129,6 +131,11 @@ class CertificateController extends Controller
     public function ProvisionalCertificate(Request $request)
     {
         return $this->provisionalController->index($request);
+    }
+
+    public function StudentStatusCertificate(Request $request)
+    {
+        return $this->studentStatusController->index($request);
     }
 
     function getEducationLevelValue($level)

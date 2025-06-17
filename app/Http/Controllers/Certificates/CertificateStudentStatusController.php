@@ -10,17 +10,17 @@ use App\Models\General\Skills;
 use App\Models\General\Classes;
 use App\Models\General\Sections;
 use Illuminate\Support\Facades\DB;
-use App\Models\General\SessionYear;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
 use App\Models\CertificateSubModule;
+use Illuminate\Support\Facades\File;
 use App\Models\General\AssingClasses;
 use App\Models\General\Qualifications;
 use App\Models\SystemSetup\Department;
-use App\Models\Certificates\CertStudentProvisional;
+use App\Models\Certificates\CertStudentStatus;
 use App\Models\Certificates\CertStudentOfficialTranscriptCode;
 
-class CertificateProvisionalController extends Controller
+class CertificateStudentStatusController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,7 +41,7 @@ class CertificateProvisionalController extends Controller
 
         $record_skill = Skills::whereHas('classes')->get();
 
-        return view('certificate.provisional.provisional', [
+        return view('certificate.student_status.student_status', [
             'record_class'  => $record_class,
             'record_dept'   => $record_dept,
             'record_shift'  => $record_shift,
@@ -60,12 +60,60 @@ class CertificateProvisionalController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'stu_code' => 'required|string|max:50',
+            'class_code' => 'required|string|max:50',
+        ]);
+
+        $validated['stu_code'] = $request->stu_code;
+        $validated['status'] = 1;
+
+        $year = substr((string) Carbon::now()->year, -2);
+        $lastRecord = CertStudentStatus::whereNotNull('reference_code')
+            ->latest('id')
+            ->first();
+        if ($lastRecord && preg_match('/^\d{5}/', $lastRecord->reference_code, $matches)) {
+            $lastNumber = (int) $matches[0];
+        } else {
+            $lastNumber = 0;
+        }
+
+        $record_class = Classes::whereNotNull('code')
+            ->where('code', $request->class_code ?? 0)
+            ->first();
+        $qualification_code = $record_class->level;
+        $skills_code = $record_class->skills_code;
+
+        $record_offical_code = CertStudentOfficialTranscriptCode::where('active', 1)
+            ->where('qualification_code', $qualification_code)
+            ->where('skills_code', $skills_code)
+            ->first();
+
+        $code = $record_offical_code->code;
+
+        $newNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
+        $newReferenceCode = "{$newNumber}/{$year} វ.ជ.ប.ប";
+        $validated['off_code'] = $code;
+        $validated['reference_code'] = $newReferenceCode;
+        $validated['print_date'] = now();
+
+        $existingRecord = CertStudentStatus::where('stu_code', $request->stu_code)
+            ->where('class_code', $request->class_code)
+            ->where('status', 1)
+            ->first();
+        if ($existingRecord) {
+            $record = '';
+            $status = 404;
+            $message = "ទិន្នន័យមានរួចរាល់ {$request->stu_code}!";
+        } else {
+            $record = CertStudentStatus::create($validated);
+            $status = 200;
+            $message = "បង្កើតលេខកូដសញ្ញាបត្រជោគជ័យ {$request->stu_code}!";
+        }
+
+        return response()->json(['status' => $status, 'data' => $message, 'message' => $message]);
     }
 
     /**
@@ -151,7 +199,7 @@ class CertificateProvisionalController extends Controller
                 ->first();
             $student->record_assign_no = $record_assign_no;
 
-            $record_print = CertStudentProvisional::where('stu_code', $student->code)
+            $record_print = CertStudentStatus::where('stu_code', $student->code)
                 ->where('class_code', $student->class_code)
                 ->orderByDesc('id')
                 ->first();
@@ -175,7 +223,7 @@ class CertificateProvisionalController extends Controller
 
         $stu_code = secured_decrypt($key);
 
-        $record = CertStudentProvisional::where('stu_code', $stu_code)->orderBy('id', 'desc')->first();
+        $record = CertStudentStatus::where('stu_code', $stu_code)->orderBy('id', 'desc')->first();
         $records_info = StudentModel::where('code', $stu_code)
             ->select('name', 'name_2', 'code', 'gender', 'date_of_birth', 'qualification')
             ->orderBy('id', 'desc')
@@ -218,13 +266,13 @@ class CertificateProvisionalController extends Controller
 
 
 
-        $record_print = CertStudentProvisional::where('stu_code', $stu_code)
+        $record_print = CertStudentStatus::where('stu_code', $stu_code)
             ->select('print_date')
             ->orderByDesc('id')
             ->first();
         $groupedSubjects = $subjects->groupBy(['years', 'semester']);
 
-        $html = view('certificate.provisional.print', [
+        $html = view('certificate.student_status.print', [
             'stu_code'  => $stu_code,
             'record'  => $record ?? [],
             'records_info'  => $records_info,
@@ -249,6 +297,42 @@ class CertificateProvisionalController extends Controller
         }, 200, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
+    }
+
+    public function printMultilple(Request $request)
+    {
+        $key = $request->student_ids;
+        $record_students = StudentModel::with(['certStatus'])
+            ->whereIn('code', $key)
+            ->get();
+        $html = view('certificate.student_status.print-multilple', [
+            'record_students'  => $record_students,
+        ])->render();
+
+        $filePath = storage_path('app/public/print/output.pdf');
+        $filename = 'YTM-' . Carbon::now()->format('Y-m-d') . '-' . Str::random(8) . '.pdf';
+
+        Browsershot::html($html)
+            ->setChromePath('C:\Users\DEV-404\.cache\puppeteer\chrome\win64-137.0.7151.55\chrome-win64\chrome.exe')
+            ->setCustomTempPath(storage_path('app/private/livewire-tmp'))
+            ->format('A4')
+            ->margins(10, 5, 15, 5)
+            ->landscape(false)
+            ->showBackground()
+            ->savePdf($filePath);
+        // return response()->stream(function () use ($filePath) {
+        //     readfile($filePath);
+        //     unlink($filePath);
+        // }, 200, [
+        //     'Content-Type' => 'application/pdf',
+        //     'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        // ]);
+
+        $url = "/storage/print/output.pdf";
+
+        return response()->json([
+            'url' => $url,
         ]);
     }
 

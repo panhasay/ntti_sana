@@ -12,11 +12,11 @@
 @extends('app_layout.app_layout')
 
 @section('content')
-    {{-- <x-breadcrumbs :array="[
+    <x-breadcrumbs :array="[
         ['route' => request()->fullUrl(), 'title' => request()->get('module') . ':បង្កើតលេខកូដ'],
         ['route' => 'certificate/module-menu', 'title' => 'ត្រួតពិនិត្យលិខិតបញ្ជាក់'],
-        ['route' => 'department-menu', 'title' => 'ប្រព័ន្ឋគ្រប់គ្រងលិខិតបញ្ជាក់']
-    ]" /> --}}
+        ['route' => 'department-menu', 'title' => 'ប្រព័ន្ឋគ្រប់គ្រងលិខិតបញ្ជាក់'],
+    ]" />
 
     <div class="row">
         <div>
