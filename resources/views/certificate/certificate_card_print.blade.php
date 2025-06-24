@@ -252,11 +252,6 @@ use Illuminate\Support\Str;
         font-size: 12px;
         color: #d9534f;
         margin: 0;
-        font-family: "Khmer OS Battambang" !important;
-    }
-
-    .card-body .card-personal {
-        font-family: 'Khmer OS Muol Light', sans-serif;
     }
 
     .ribbon-corner {
@@ -386,8 +381,8 @@ use Illuminate\Support\Str;
         <span>វិទ្យាស្ថានជាតិបណ្តុះបណ្តាលបច្ចេកទេស</span>
     </div>
     <div class="card-body">
-        <span class="card-personal">បណ្ណសម្គាល់ខ្លួននិស្សិត</span>
-        <span style="font-weight: bold !important;padding-top:10px !important">STUDENT IDENTIFICATION CARD</span>
+        <span class="card-personal" style="font-family: 'Khmer OS Muol Light' !important;font-weight: bold !important;">បណ្ណសម្គាល់ខ្លួននិស្សិត</span>
+        <span style="font-family: 'Khmer OS Muol Light' !important;font-weight: bold !important;padding-top:10px !important">STUDENT IDENTIFICATION CARD</span>
     </div>
     <div class="footer">
         <span>មហាវិថីសហព័ន្ធរុស្សី សង្កាត់ទឹកថ្លា ខណ្ឌសែនសុខ រាជធានីភ្នំពេញ</span>
