@@ -34,9 +34,12 @@ class CertStudentStatus extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            if (!$model->exists) {
+            if (!$model->exists && $model->isCheck === 'print') {
                 $model->print_by = Auth::id() ?? 0;
                 $model->print_by_date = now();
+            } else {
+                $model->print_by = null;
+                $model->print_by_date = null;
             }
         });
     }

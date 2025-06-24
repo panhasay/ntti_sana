@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
 use App\Models\CertificateSubModule;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use App\Models\General\AssingClasses;
 use App\Models\General\Qualifications;
@@ -111,6 +112,99 @@ class CertificateStudentStatusController extends Controller
             $record = CertStudentStatus::create($validated);
             $status = 200;
             $message = "បង្កើតលេខកូដសញ្ញាបត្រជោគជ័យ {$request->stu_code}!";
+        }
+
+        return response()->json(['status' => $status, 'data' => $message, 'message' => $message]);
+    }
+    public function generateCode(Request $request)
+    {
+        $validated = $request->validate([
+            'stu_code' => 'required|string|max:50',
+            'class_code' => 'required|string|max:50',
+        ]);
+
+        $validated['stu_code'] = $request->stu_code;
+        $validated['status'] = 0;
+        $validated['isCheck'] = 'generateCode';
+
+        $year = substr((string) Carbon::now()->year, -2);
+        $lastRecord = CertStudentStatus::whereNotNull('reference_code')
+            ->latest('id')
+            ->first();
+        if ($lastRecord && preg_match('/^\d{5}/', $lastRecord->reference_code, $matches)) {
+            $lastNumber = (int) $matches[0];
+        } else {
+            $lastNumber = 0;
+        }
+
+        $record_class = Classes::whereNotNull('code')
+            ->where('code', $request->class_code ?? 0)
+            ->first();
+        $qualification_code = $record_class->level;
+        $skills_code = $record_class->skills_code;
+
+        $record_offical_code = CertStudentOfficialTranscriptCode::where('active', 1)
+            ->where('qualification_code', $qualification_code)
+            ->where('skills_code', $skills_code)
+            ->first();
+
+        $code = $record_offical_code->code;
+
+        $newNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
+        $newReferenceCode = "{$newNumber}/{$year} វ.ជ.ប.ប";
+        $validated['off_code'] = $code;
+        $validated['reference_code'] = $newReferenceCode;
+
+        $existingRecord = CertStudentStatus::where('stu_code', $request->stu_code)
+            ->where('class_code', $request->class_code)
+            ->where('status', 0)
+            ->first();
+        if ($existingRecord) {
+            $record = '';
+            $status = 404;
+            $message = "ទិន្នន័យមានរួចរាល់ {$request->stu_code}!";
+        } else {
+            $record = CertStudentStatus::create($validated);
+            $status = 200;
+            $message = "បង្កើតលេខកូដសញ្ញាបត្រជោគជ័យ {$request->stu_code}!";
+        }
+
+        return response()->json(['status' => $status, 'data' => $message, 'message' => $message]);
+    }
+    public function isCheck(Request $request)
+    {
+        $validated = $request->validate([
+            'stu_code' => 'required|string|max:50',
+            'class_code' => 'required|string|max:50',
+        ]);
+
+        $validated['stu_code'] = $request->stu_code;
+        $validated['status'] = 1;
+        $validated['isCheck'] = 'print';
+
+        $record_class = Classes::whereNotNull('code')
+            ->where('code', $request->class_code ?? 0)
+            ->first();
+
+        $existingRecord = CertStudentStatus::where('stu_code', $request->stu_code)
+            ->where('class_code', $request->class_code)
+            ->whereNotNull('print_date')
+            ->first();
+        if ($existingRecord) {
+            $record = '';
+            $status = 404;
+            $message = "ទិន្នន័យមានរួចរាល់ {$request->stu_code}!";
+        } else {
+            $record = CertStudentStatus::updateOrCreate(
+                ['stu_code' => $request->stu_code],
+                [
+                    'print_by' => Auth::id() ?? 0,
+                    'print_by_date' => now(),
+                    'status' => 1,
+                ]
+            );
+            $status = 200;
+            $message = "បង្កើតលេខកូដសញ្ញាបត្រជោគជ័យ {$record->stu_code}!";
         }
 
         return response()->json(['status' => $status, 'data' => $message, 'message' => $message]);
@@ -300,40 +394,35 @@ class CertificateStudentStatusController extends Controller
         ]);
     }
 
-    public function printMultilple(Request $request)
+    public function printMultilple($array)
     {
-        $key = $request->student_ids;
-        $record_students = StudentModel::with(['certStatus'])
+        $key = explode(',', $array);
+
+        if (empty($key)) {
+            abort(400, 'No students selected.');
+        }
+
+        $record_students = StudentModel::with(['certStatus', 'assignClassLine.assignClass.level', 'assignClassLine.assignClass.class', 'assignClassLine.assignClass.sessionYear'])
             ->whereIn('code', $key)
             ->get();
+        //dd($record_students);
         $html = view('certificate.student_status.print-multilple', [
             'record_students'  => $record_students,
         ])->render();
 
-        $filePath = storage_path('app/public/print/output.pdf');
-        $filename = 'YTM-' . Carbon::now()->format('Y-m-d') . '-' . Str::random(8) . '.pdf';
+        $filename = 'NTTI-' . Carbon::now()->format('Y-m-d') . '-' . Str::random(8) . '.pdf';
 
-        Browsershot::html($html)
-            ->setChromePath('C:\Users\DEV-404\.cache\puppeteer\chrome\win64-137.0.7151.55\chrome-win64\chrome.exe')
-            ->setCustomTempPath(storage_path('app/private/livewire-tmp'))
+        $pdf = Browsershot::html($html)
+            ->setChromePath(env('SPATIE_BROWSER'))
+            ->setCustomTempPath(storage_path(env('SPATIE_TMP')))
             ->format('A4')
             ->margins(10, 5, 15, 5)
             ->landscape(false)
-            ->showBackground()
-            ->savePdf($filePath);
-        // return response()->stream(function () use ($filePath) {
-        //     readfile($filePath);
-        //     unlink($filePath);
-        // }, 200, [
-        //     'Content-Type' => 'application/pdf',
-        //     'Content-Disposition' => 'inline; filename="' . $filename . '"',
-        // ]);
+            ->pdf();
 
-        $url = "/storage/print/output.pdf";
-
-        return response()->json([
-            'url' => $url,
-        ]);
+        return response($pdf)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename=' . $filename);
     }
 
     /**

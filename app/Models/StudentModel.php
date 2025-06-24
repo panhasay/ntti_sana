@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
-use App\Models\General\Skills;
 use App\Models\General\Classes;
 use App\Models\General\Picture;
 use Illuminate\Support\Facades\DB;
+use App\Models\General\AssingClasses;
 use App\Models\SystemSetup\Department;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Request;
 use App\Models\Certificates\CertStudentStatus;
+use App\Models\General\AssingClassesStudentLine;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class StudentModel extends Model
@@ -46,6 +47,11 @@ class StudentModel extends Model
     public function certStatus()
     {
         return $this->hasOne(CertStudentStatus::class, 'stu_code', 'code');
+    }
+
+    public function assignClassLine()
+    {
+        return $this->hasOne(AssingClassesStudentLine::class, 'student_code', 'code');
     }
 
     public static function getFilteredStudents11($dept_code, $class_code, $search, $rows_per_page)

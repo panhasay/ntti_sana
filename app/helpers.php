@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 use Carbon\Carbon;
 
@@ -33,7 +33,7 @@ if (!function_exists('removeQueryParams')) {
         $parsedUrl = parse_url($url);
 
         return isset($parsedUrl['path']) ? ltrim($parsedUrl['path'], '/') : '';
-   }
+    }
 }
 
 if (!function_exists('route_js')) {
@@ -105,6 +105,68 @@ if (!function_exists('formatDateToKhmer')) {
     }
 }
 
+if (!function_exists('synoeunDateFormateKhmer')) {
+    function synoeunDateFormateKhmer($date = null, $language = 'kh'): string
+    {
+        $date = $date ?? now();
+
+        $carbonDate = Carbon::parse($date);
+
+        $khmerMonths = [
+            'មករា',
+            'កុម្ភៈ',
+            'មិនា',
+            'មេសា',
+            'ឧសភា',
+            'មិថុនា',
+            'កក្កដា',
+            'សីហា',
+            'កញ្ញា',
+            'តុលា',
+            'វិច្ឆិកា',
+            'ធ្នូ'
+        ];
+
+        $khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+
+        $englishMonths = [
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December'
+        ];
+
+        if ($language === 'kh') {
+            // Ensure day is two digits before converting to Khmer numerals
+            $day = str_pad($carbonDate->day, 2, '0', STR_PAD_LEFT);
+            $dayKhmer = str_replace(range(0, 9), $khmerNumbers, $day);
+
+            // Convert year to Khmer numerals
+            $yearKhmer = str_replace(range(0, 9), $khmerNumbers, $carbonDate->year);
+
+            // Get Khmer month name
+            $monthKhmer = $khmerMonths[$carbonDate->month - 1];
+
+            return "ថ្ងៃទី{$dayKhmer} ខែ{$monthKhmer} ឆ្នាំ{$yearKhmer}";
+        } elseif ($language === 'en') {
+            $day = $carbonDate->day;
+            $month = $englishMonths[$carbonDate->month - 1];
+            $year = $carbonDate->year;
+
+            return "{$day}, {$month}, {$year}";
+        } else {
+            throw new InvalidArgumentException("Unsupported language: {$language}");
+        }
+    }
+}
 
 if (!function_exists('KhmerLunarCalendar')) {
     function KhmerLunarCalendar()
@@ -113,7 +175,7 @@ if (!function_exists('KhmerLunarCalendar')) {
         $currentDate = Carbon::now();
         $formattedDate = $currentDate->translatedFormat('l d F Y');
         return $formattedDate;
-   }
+    }
 }
 
 
@@ -242,4 +304,82 @@ if (!function_exists('secured_decrypt')) {
         }
     }
 }
- 
+
+if (!function_exists('ordinalSup')) {
+    function ordinalSup($number, $lang = 'en')
+    {
+        // Convert number with leading zero
+        $formatted = str_pad($number, 2, '0', STR_PAD_LEFT);
+
+        // Optional: Khmer digit map
+        $khmerDigits = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+
+        // Convert formatted number to Khmer if needed
+        if ($lang === 'kh') {
+            $formatted = collect(str_split($formatted))
+                ->map(fn($digit) => $khmerDigits[$digit])
+                ->implode('');
+        }
+
+        // Determine ordinal suffix (always in English unless localized)
+        $suffixes = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
+        $suffix = 'th';
+
+        if (($number % 100) < 11 || ($number % 100) > 13) {
+            $suffix = $suffixes[$number % 10];
+        }
+
+        if ($lang == 'en') {
+            $sup = '<sup>' . $suffix . '</sup>';
+        } else {
+            $sup = '';
+        }
+
+        return $formatted . $sup;
+    }
+}
+
+if (!function_exists('leadingZero')) {
+    function leadingZero($number, $lang = 'en')
+    {
+        $formatted = str_pad($number, 2, '0', STR_PAD_LEFT); // adds leading zero
+        $khmerDigits = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+        if ($lang === 'kh') {
+            $formatted = collect(str_split($formatted))
+                ->map(fn($digit) => $khmerDigits[$digit])
+                ->implode('');
+        }
+        return $formatted;
+    }
+}
+
+if (!function_exists('extractAcademicYear')) {
+    function extractAcademicYear($text, $lang = 'en')
+    {
+        // Match the first YYYY-YYYY pattern
+        if (preg_match('/\d{4}-\d{4}/', $text, $matches)) {
+            $yearRange = $matches[0];
+
+            if ($lang === 'kh') {
+                // Map to Khmer digits
+                $khmerDigits = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+                $yearRange = strtr($yearRange, [
+                    '0' => $khmerDigits[0],
+                    '1' => $khmerDigits[1],
+                    '2' => $khmerDigits[2],
+                    '3' => $khmerDigits[3],
+                    '4' => $khmerDigits[4],
+                    '5' => $khmerDigits[5],
+                    '6' => $khmerDigits[6],
+                    '7' => $khmerDigits[7],
+                    '8' => $khmerDigits[8],
+                    '9' => $khmerDigits[9],
+                ]);
+            }
+
+            return $yearRange;
+        }
+
+        return null; // Or original text
+    }
+}

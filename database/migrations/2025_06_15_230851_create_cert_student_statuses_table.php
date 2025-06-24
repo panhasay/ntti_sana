@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('class_code');
             $table->string('reference_code');
             $table->timestamp('print_date')->nullable(); // allow null
-            $table->unsignedBigInteger('print_by');
+            $table->integer('print_by')->nullable();
             $table->timestamp('print_by_date')->nullable(); // allow null
             $table->tinyInteger('status')->default(1);
             $table->timestamps();

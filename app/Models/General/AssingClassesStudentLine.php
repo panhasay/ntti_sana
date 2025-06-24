@@ -15,7 +15,7 @@ class AssingClassesStudentLine extends Model
 
     protected $primaryKey = 'id';
     protected $keyType = 'string'; // Specify the key type if necessary
-  
+
     protected $fillable = [
         '*',
     ];
@@ -27,5 +27,10 @@ class AssingClassesStudentLine extends Model
     public function subject()
     {
         return $this->belongsTo(Subjects::class, 'subjects_code', 'code');
+    }
+
+    public function assignClass()
+    {
+        return $this->hasOne(AssingClasses::class, 'assing_no', 'assing_line_no');
     }
 }

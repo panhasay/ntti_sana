@@ -13,13 +13,13 @@ class AssingClasses extends Model
     use HasFactory;
 
     protected $table = 'assing_classes';
-    
+
     // protected $primaryKey = 'code';
     // protected $foreignKey = 'code'; // Corrected property name
 
     protected $primaryKey = 'id';
-    protected $keyType = 'string'; 
-  
+    protected $keyType = 'string';
+
     protected $fillable = [
         '*',
     ];
@@ -46,6 +46,21 @@ class AssingClasses extends Model
     public function subject()
     {
         return $this->belongsTo(Subjects::class, 'subjects_code', 'code');
+    }
+
+    public function level()
+    {
+        return $this->hasOne(Qualifications::class, 'code', 'qualification');
+    }
+
+    public function class()
+    {
+        return $this->hasOne(Classes::class, 'code', 'class_code');
+    }
+
+    public function sessionYear()
+    {
+        return $this->hasOne(SessionYear::class, 'code', 'session_year_code');
     }
 
     public function scopeWhitQueryPermissionTeacher($query)

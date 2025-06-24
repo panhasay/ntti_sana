@@ -452,7 +452,9 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
         Route::post('/student-status/show', 'show')->name('student-status.show');
         Route::get('/student-status/show-print/{key}', 'showPrint')->name('student-status.print');
         Route::post('/student-status/create', 'store')->name('student-status.create');
-        Route::post('/student-status/print-multilple', 'printMultilple')->name('student-status.print-multilple');
+        Route::post('/student-status/generate-code', 'generateCode')->name('student-status.generate-code');
+        Route::post('/student-status/is-check', 'isCheck')->name('student-status.is-check');
+        Route::get('/student-status/print-multilple/{array}', 'printMultilple')->name('student-status.print-multilple');
     });
 });
 

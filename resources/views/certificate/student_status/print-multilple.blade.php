@@ -17,9 +17,7 @@
     <style>
         .page-break {
             page-break-before: always;
-            /* or 'after' or 'avoid' */
             break-before: page;
-            /* modern alternative */
         }
 
         .moul-regular {
@@ -54,7 +52,6 @@
 </head>
 
 <body class="bg-white text-gray-900">
-
     @foreach ($record_students as $record)
         <div class="mx-auto relative page-break">
             <div class="flex justify-between items-start w-full max-w-5xl mx-auto">
@@ -157,11 +154,17 @@
                     <!-- English Column -->
                     <div>
                         <p class="time-roman-regular">
-                            Is the 01 year, semester 02 student of <span class="font-semibold">Diploma</span> level at
+                            Is the {!! ordinalSup($record->assignClassLine?->assignClass->years ?? 0) !!} year, semester {!! leadingZero($record->assignClassLine?->assignClass->semester ?? 0) !!}
+                            student of <span
+                                class="font-semibold">{{ $record->assignClassLine?->assignClass->level->name ?? 'N/A' }}</span>
+                            level at
                             the
                             <span class="font-semibold">National Technical Trainning Institute</span>
-                            in the academic year 2024-2025 in the field of <span class="font-semibold">Information
-                                Technology</span>... Group<span class="font-semibold">IT07B</span>...
+                            in the academic year
+                            {{ extractAcademicYear($record->assignClassLine?->assignClass->sessionYear->name ?? 'N/A') }}
+                            in the field of <span class="font-semibold">Information
+                                Technology</span>... Group<span class="font-semibold">
+                                {{ $record->assignClassLine?->assignClass->class->name ?? 'N/A' }}</span>...
                         </p>
                         <p class="mt-10">
                             This certificate is issued to the bearer for any offical purpose it my serve.
@@ -171,45 +174,48 @@
                     <!-- Khmer Column -->
                     <div class="battambang-regular leading-loose">
                         <p>
-                            ជានិស្សិតឆ្នាំទី<span class="font-semibold moul-regular">០១</span> ឆមាសទី<span
-                                class="font-semibold moul-regular">០២</span> ថ្នាក់<span
-                                class="font-semibold moul-regular">បរិញ្ញាបត្រជាន់ខ្ពស់</span>
-                            ក្រុម<span class="font-semibold">IT07B</span> មុខជំនាញ <span
-                                class="font-semibold moul-regular">ព័ត៏មានវិទ្យា</span>
-                            នៅវិទ្យាស្ថានជាតិបណ្តុះបណ្តាលបច្ចេកទេស​ ក្នុងឆ្នាំសិក្សា ២០២៤-២០២៥ ពិតប្រាកដមែន។
+                            ជានិស្សិតឆ្នាំទី<span class="font-semibold moul-regular">{!! ordinalSup($record->assignClassLine?->assignClass->years ?? 0, 'kh') !!}</span>
+                            ឆមាសទី<span class="font-semibold moul-regular">{!! leadingZero($record->assignClassLine?->assignClass->semester ?? 0, 'kh') !!}</span> ថ្នាក់<span
+                                class="font-semibold moul-regular">{{ $record->assignClassLine?->assignClass->level->name_3 ?? 'N/A' }}</span>
+                            ក្រុម<span
+                                class="font-semibold">{{ $record->assignClassLine?->assignClass->class->name ?? 'N/A' }}</span>
+                            មុខជំនាញ <span class="font-semibold moul-regular">ព័ត៏មានវិទ្យា</span>
+                            នៅវិទ្យាស្ថានជាតិបណ្តុះបណ្តាលបច្ចេកទេស​ ក្នុងឆ្នាំសិក្សា
+                            {{ extractAcademicYear($record->assignClassLine?->assignClass->sessionYear->name ?? 'N/A', 'kh') }}
+                            ពិតប្រាកដមែន។
                         </p>
                         <p class="mt-3">
                             លិខិតនេះបានចេញឱ្យសាមីខ្លួនយកទៅប្រើប្រាស់តាមការដែលអាចប្រើបាន។
                         </p>
                     </div>
                 </div>
-
             </div>
+            <div class="flex items-center text-center justify-between max-w-5xl mx-auto mt-1 pr-6">
+                <!-- Image on the left -->
+                <img class="h-[176px] object-cover pl-15"
+                    src="https://ntti_sana.coding.kh/uploads/student/ntti_800598_20250622_685822c9c3881.JPG"
+                    alt="image description">
 
-
-            <!-- Footer (Signature area) -->
-            {{-- <div class="mt-20 text-right">
-            <p class="font-semibold">Phnom Penh, .................</p>
-            <p class="mt-10 font-bold">Director</p>
-        </div> --}}
-            <div class="flex justify-end mt-8 text-sm leading-relaxed text-center max-w-5xl mx-auto pr-6">
-                <div>
+                <!-- Text on the right -->
+                <div class="text-sm leading-relaxed battambang-regular ml-4">
                     <!-- Khmer Date (first line) -->
-                    <p class="battambang-regular">ធ្វើនៅថ្ងៃទី ១៦ ខែតុលា ឆ្នាំ ២០២៤</p>
+                    <p class="battambang-regular">
+                        {{ App\Http\Controllers\Certificates\CertificateController::getKhmerDateCardStudent(\Carbon\Carbon::parse($record->certStatus?->print_date)) }}
+                    </p>
 
                     <!-- Khmer Date with location -->
-                    <p class="battambang-regular">ទីក្រុងភ្នំពេញ ថ្ងៃទី ១៦ ខែតុលា ឆ្នាំ ២០២៤</p>
+                    <p class="battambang-regular">ជនីភ្នំពេភ្នំពេញ,
+                        {{ synoeunDateFormateKhmer($record->certStatus?->print_date ?? now(), 'kh') }}</p>
 
                     <!-- English Date -->
-                    <p class="mt-1 italic">Phnom Penh, <span class="font-semibold">October 16, 2024</span></p>
+                    <p>Phnom Penh, <span
+                            class="font-semibold">{{ synoeunDateFormateKhmer($record->certStatus?->print_date ?? now(), 'en') }}</span>
+                    </p>
 
                     <!-- Signature title -->
                     <p class="mt-6 font-bold moul-regular">នាយកវិទ្យាស្ថាន</p>
                 </div>
             </div>
-
-
-
         </div>
     @endforeach
 </body>
