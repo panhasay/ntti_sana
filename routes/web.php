@@ -387,13 +387,13 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
 
         Route::get('/student_card/transaction', 'printCardStudentPdf');
 
-        Route::get('/D_IT/student_card/certificate/card-student-print', 'printListClassification');
-        Route::get('/D_EL/student_card/certificate/card-student-print', 'printListClassification');
-        Route::get('/D_CL/student_card/certificate/card-student-print', 'printListClassification');
+        Route::get('/student_card/certificate/card-student-print', 'printListClassification');
+        Route::get('/student_card/certificate/card-student-print', 'printListClassification');
+        Route::get('/student_card/certificate/card-student-print', 'printListClassification');
 
-        Route::get('/D_IT/student_card/certificate/card-student-excel', 'ExcelListClassification');
-        Route::get('/D_EL/student_card/certificate/card-student-excel', 'ExcelListClassification');
-        Route::get('/D_CL/student_card/certificate/card-student-excel', 'ExcelListClassification');
+        Route::get('/student_card/certificate/card-student-excel', 'ExcelListClassification');
+        Route::get('/student_card/certificate/card-student-excel', 'ExcelListClassification');
+        Route::get('/student_card/certificate/card-student-excel', 'ExcelListClassification');
 
         Route::get('/debug-print', static function () {
             return view('certificate/transcript/certificate_official_transcript_02');

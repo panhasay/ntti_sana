@@ -108,10 +108,10 @@
 <div {{ $attributes->merge(['class' => 'col-lg-2 col-md-2 col-sm-12']) }}>
     <div class="ntti-effect-9">
         <div class="effect-img position-relative">
-            <img src="{{ $img }}" alt="{{ $title }}" class="img-fluid">
+            <a href="{{ $url }}"> <img src="{{ $img }}" alt="{{ $title }}" class="img-fluid"></a>
         </div>
         <div
-            style="text-align: center !important;padding: 15px 10px 21px 10px;font-size: 13px;font-family: Khmer OS Battambang !important;font-weight: 900;">
+            style="text-align: center !important;padding: 15px 5px 2px 5px;font-size: 13px;font-family: Khmer OS Battambang !important;font-weight: 900;">
             <span>{{ $title }}</span>
         </div>
         {{ $slot }}

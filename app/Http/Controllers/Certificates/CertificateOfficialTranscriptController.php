@@ -206,7 +206,7 @@ class CertificateOfficialTranscriptController extends Controller
         $skills_code = $request->input('skills_code');
 
         $search = $request->input('search');
-        $rows_per_page = $request->input('rows_per_page', 50);
+        $rows_per_page = $request->input('rows_per_page', 20);
 
         $students = StudentModel::query()
             ->select([
@@ -423,6 +423,9 @@ class CertificateOfficialTranscriptController extends Controller
             'margin_right' => 10,
             'margin_top' => 15,
             'margin_bottom' => 15,
+            'defaultBodyCSS' => [
+                'background' => 'none',
+            ],
         ]);
 
         return $pdf->stream('ntti-offical-transcript.pdf');

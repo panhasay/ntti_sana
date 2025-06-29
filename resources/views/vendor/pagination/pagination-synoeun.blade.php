@@ -9,17 +9,19 @@
                     <i class="mdi mdi-refresh"></i>
                 </button>
                 <select class="form-control d-inline-block w-auto rows_per_page">
-                    <option value="50" data-per-page="{{ $paginator->perPage() }}"
-                        {{ $paginator->perPage() == 50 ? 'selected' : '' }}>50</option>
-                    <option value="100" data-per-page="{{ $paginator->perPage() }}"
-                        {{ $paginator->perPage() == 100 ? 'selected' : '' }}>100</option>
-                    <option value="150" data-per-page="{{ $paginator->perPage() }}"
-                        {{ $paginator->perPage() == 150 ? 'selected' : '' }}>150</option>
-                    <option value="200" data-per-page="{{ $paginator->perPage() }}"
-                        {{ $paginator->perPage() == 200 ? 'selected' : '' }}>200</option>
+                    @php
+                        $number = $paginator->perPage() ?? 20;
+                    @endphp
+                    @for ($i = 1; $i <= 10; $i++)
+                        @php $value = $i * $number; @endphp
+                        <option value="{{ $value }}" data-per-page="{{ $number }}"
+                            {{ $number == $value ? 'selected' : '' }}>
+                            {{ $value }}
+                        </option>
+                    @endfor
                 </select>
-                Showing {{ ($paginator->currentPage() - 1) * $paginator->perPage() + 1 }}
-                to {{ $paginator->perPage() }}
+                Showing {{ ($paginator->currentPage() - 1) * $number + 1 }}
+                to {{ $number }}
                 of {{ $paginator->total() }} Total
             </div>
         </div>

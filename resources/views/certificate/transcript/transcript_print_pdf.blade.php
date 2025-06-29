@@ -6,9 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Official Transcript</title>
     <style>
-        @page {
+        /* @page {
             background: url('asset/NTTI/images/modules/ntti-bg-offical-transcript.svg') no-repeat center center;
             background-size: cover;
+        } */
+        body {
+            background: none !important;
         }
 
         header {

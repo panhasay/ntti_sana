@@ -378,12 +378,15 @@ class CertificateStudentStatusController extends Controller
         $filePath = storage_path('app/public/print/output.pdf');
         $filename = 'YTM-' . Carbon::now()->format('Y-m-d') . '-' . Str::random(8) . '.pdf';
         Browsershot::html($html)
-            ->setChromePath('C:\Users\DEV-404\.cache\puppeteer\chrome\win64-137.0.7151.55\chrome-win64\chrome.exe')
+            ->setChromePath(env('SPATIE_BROWSER'))
             ->setCustomTempPath(storage_path('app/private/livewire-tmp'))
             ->format('A4')
             ->margins(10, 5, 15, 5)
             ->landscape(false)
-            ->showBackground()
+            ->showBackground(false)
+            ->noSandbox()
+            ->waitUntilNetworkIdle()
+            ->setOption('args', ['--disable-gpu'])
             ->savePdf($filePath);
         return response()->stream(function () use ($filePath) {
             readfile($filePath);
@@ -418,6 +421,9 @@ class CertificateStudentStatusController extends Controller
             ->format('A4')
             ->margins(10, 5, 15, 5)
             ->landscape(false)
+            ->noSandbox()
+            ->waitUntilNetworkIdle()
+            ->setOption('args', ['--disable-gpu'])
             ->pdf();
 
         return response($pdf)

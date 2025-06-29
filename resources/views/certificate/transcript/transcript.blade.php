@@ -22,9 +22,9 @@
 
     <div class="row">
         <div class="page-header flex-wrap" style="border-bottom: 0px solid #dfdcdc;">
-            <div class="header-left p-3">
+            <div class="header-left">
             </div>
-            <div class="d-grid d-md-flex justify-content-md-end p-3">
+            <div class="d-grid d-md-flex justify-content-md-end">
                 <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" data-toggle="collapse"
                     href="#collapse_search" role="button" aria-expanded="false" aria-controls="collapseExample"
                     name="btn_filter" id="btn_filter">
@@ -114,7 +114,7 @@
 
     <div class="row">
         <div class="col-md-12">
-            <div class="row g-3">
+            <div class="row">
                 <div class="col-md-2">
                     <div class="info-box bg-b-green-yellow" style="font-family:'Khmer OS Battambang'">
                         <span class="info-box-icon"><span class="mdi mdi-account-multiple"></span></span>
@@ -323,7 +323,7 @@
                     skills_code: $sch_skill.val(),
                     search: $sch_info_student.val(),
                     page: currentPageList,
-                    rows_per_page: parseInt($("#pagination_list .rows_per_page").val() ?? 50),
+                    rows_per_page: parseInt($("#pagination_list .rows_per_page").val() ?? 20),
                 };
 
                 const cacheKey = JSON.stringify(requestData);
@@ -449,13 +449,13 @@
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <li>
                                     <a class="dropdown-item" href="javascript:void(0)" name="btn_modal_transcript" id="btn_modal_transcript" data-keyword="${item.keyword}"><i class="mdi mdi-printer btn-icon-append"></i>
-                                        បោះពុម្ភទម្រង់ទី ១</a>
+                                        បោះពុម្ភ</a>
                                 </li>
-                                <li>
+                                <li hidden>
                                     <a class="dropdown-item" href="javascript:void(0)" name="btn_modal_v2_transcript" id="btn_modal_v2_transcript" data-keyword="${item.keyword}"><i class="mdi mdi-printer btn-icon-append"></i>
                                         បោះពុម្ភទម្រង់ទី ២</a>
                                 </li>
-                                <li>
+                                <li hidden>
                                     <a class="dropdown-item" href="javascript:void(0);" name="btn_view_info" id="btn_view_info" data-keyword="${item.keyword}" onclick="window.open('/certificate/transcript/show-info/${item.keyword}', '_blank')" title="មើល" ><i class="mdi mdi-account-search"></i> មើល</a>
                                 </li>
                                 <li>
