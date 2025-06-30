@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\General\Picture;
 use App\Models\General\Teachers;
 use App\Models\Student\Student;
+use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,10 +32,12 @@ class UsersController extends Controller
         $this->prefix = "users";
         $this->arrayJoin = ['10001', '10007', '10008'];
         $this->table_id = "10005";
+        $page_title = $this->page;
     }
     public function index()
     {
         $records = User::paginate(10);
+        $page_title = $this->page;
         return view('system_setup.users', compact('records', 'page_title'));
     }
     public function Profile()
@@ -54,16 +57,17 @@ class UsersController extends Controller
         $type = $data['type'];
         $page = ucwords(str_replace("_", " ", $this->page));
         $page_url = $this->page;
-        $records = null;
-        $category_record = DB::table('categories')->get();
-        $class_record = DB::table('classes')->get();
+        $type = "ed";
+        $records = "";
+        $department = DB::table('department')->where('is_active', 'yes')->get();
+
         try {
-            $params = ['records', 'class_record', 'category_record', 'type'];
-            if ($type == 'cr') return view('department.department_card', compact($params));
+            $params = ['records', 'type', 'page', 'page_url', 'department'];
+            if ($type == 'cr') return view('system_setup.users_card', compact($params));
             if (isset($_GET['code'])) {
-                $records = DB::table('department')->where('id', $this->services->Decr_string($_GET['code']))->first();
+                $records = DB::table('users')->where('id', $this->services->Decr_string($_GET['code']))->first();
             }
-            return view('department.department_card', compact($params));
+            return view('system_setup.users_card', compact($params));
         } catch (\Exception $ex) {
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
@@ -87,7 +91,7 @@ class UsersController extends Controller
     {
         $data = $request->all();
 
-        DB::beginTransaction(); 
+        DB::beginTransaction();
 
         try {
             if (empty($data['password'])) {
@@ -112,9 +116,9 @@ class UsersController extends Controller
             $user->password = Hash::make($data['new_value']);
             $user->save();
 
-            $this->services->telegramSendChangeUserPassword($user, $value,$password);
+            $this->services->telegramSendChangeUserPassword($user, $value, $password);
 
-            DB::commit(); 
+            DB::commit();
 
             return response()->json(['status' => 'success', 'msg' => 'ពាក្យសម្ងាត់បាន Update រូចរាល់']);
         } catch (\Exception $ex) {
@@ -125,39 +129,59 @@ class UsersController extends Controller
         }
     }
 
-    public function update(Request $request)
+    public function store(Request $request)
     {
-        $input = $request->all();
-        $id = $input['type'];
-        try {
-            $records = User::find($id);
-            if ($records) {
-                $records->department_name = $request->department_name;
-                $records->is_active = $request->is_active;
-                $records->update();
-            }
-            return response()->json(['status' => 'success', 'msg' => 'Data Update Success !', '$records' => $records]);
-        } catch (\Exception $ex) {
-            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
-            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        // 1. Validate the request
+        // dd($request->all());
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|email',
+            'department_code' => 'required',
+            'role' => 'required',
+        ], [
+            'name.required' => 'សូមបំពេញឈ្មោះ',
+            'email.required' => 'សូមបំពេញអ៊ីមែល',
+            'email.email' => 'អ៊ីមែលមិនត្រឹមត្រូវទេ',
+            'department_code.required' => 'សូមជ្រើសរើសនាយកដ្ឋាន',
+            'role.required' => 'សូមជ្រើសរើសតួនាទី',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'msg' => $validator->errors()->first(),
+            ]);
         }
-    }
-    public function store(request $request)
-    {
-        $input = $request->all();
-        $records = new User();
-        if (!$input['department_name']) {
-            return response()->json(['status' => 'error', 'msg' => 'Field request form server!']);
+
+        // 2. Use try-catch to handle exceptions
+        $exit = user::where('email', $request->email)->first();
+        if ($exit) {
+            return response()->json([
+                'status' => 'error',
+                'msg' => 'អ៊ីមែលនេះត្រូវបានប្រើរួចហើយ។ សូមប្រើអ៊ីមែលផ្សេងទៀត។'
+            ]);
         }
         try {
-            $records->department_name = $request->department_name;
-            $records->is_active = $request->is_active;
+            $records = new User();
+            $records->name = $request->name;
+            $records->email = $request->email;
+            $records->department_code = $request->department_code;
+            $records->role = $request->role;
+            $records->password = Hash::make('123456');
+
             $records->save();
-            return response()->json(['store' => 'yes', 'msg' => 'Records Add Succesfully !!']);
+
+            return response()->json([
+                'store' => 'yes',
+                'msg' => 'អ្នកប្រើប្រាស់បានបង្កើតដោយជោគជ័យ',
+            ]);
         } catch (\Exception $ex) {
-            DB::rollBack();
+            DB::rollBack(); // Only call this if you've started a transaction
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
-            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+            return response()->json([
+                'status' => 'warning',
+                'msg' => $ex->getMessage()
+            ]);
         }
     }
 
@@ -224,5 +248,79 @@ class UsersController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
+
+    public function update(Request $request)
+{
+    // 1. Validate the request
+    $validator = Validator::make($request->all(), [
+        'name' => 'required',
+        'email' => 'required|email',
+        'department_code' => 'required',
+        'role' => 'required',
+    ], [
+        'name.required' => 'សូមបំពេញឈ្មោះ',
+        'email.required' => 'សូមបំពេញអ៊ីមែល',
+        'email.email' => 'អ៊ីមែលមិនត្រឹមត្រូវទេ',
+        'department_code.required' => 'សូមជ្រើសរើសនាយកដ្ឋាន',
+        'role.required' => 'សូមជ្រើសរើសតួនាទី',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'status' => 'error',
+            'msg' => $validator->errors()->first(),
+        ]);
+    }
+
+    // 2. Get the record being updated
+    $records = User::where('email', $request->email)->first();
+
+    if (!$records) {
+        return response()->json([
+            'status' => 'error',
+            'msg' => 'រកមិនឃើញអ្នកប្រើប្រាស់នោះទេ!',
+        ]);
+    }
+
+    try {
+        // ✅ Check if current authenticated user is the one being updated
+        $currentUser = Auth::user();
+        $isSelfUpdate = $currentUser && $currentUser->id === $records->id;
+
+        // ✅ Check if email is changed
+        $emailChanged = $records->email !== $request->email;
+
+        // 3. Update fields
+        $records->name = $request->name;
+        $records->email = $request->email;
+        $records->department_code = $request->department_code;
+        $records->role = $request->role;
+        $records->password = Hash::make('123456'); // Only if you want to reset password
+        $records->update();
+
+        // ✅ If the user updated their own email → logout
+        if ($isSelfUpdate && $emailChanged) {
+            Auth::logout();
+            return response()->json([
+                'status' => 'logout',
+                'msg' => 'អ៊ីមែលត្រូវបានផ្លាស់ប្តូរ។ សូមចូលឡើងវិញ។',
+                'redirect' => route('login') // redirect URL to login
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'store' => 'no',
+            'msg' => 'អ្នកប្រើប្រាស់បានកែប្រែដោយជោគជ័យ',
+        ]);
+    } catch (\Exception $ex) {
+        DB::rollBack(); // Only call this if you're inside a transaction
+        $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+        return response()->json([
+            'status' => 'warning',
+            'msg' => $ex->getMessage()
+        ]);
+    }
+}
 
 }

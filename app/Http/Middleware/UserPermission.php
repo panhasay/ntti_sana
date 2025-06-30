@@ -21,6 +21,8 @@ class UserPermission
             return redirect('/user-dont-have-permission');
         }else if ($user->role ==  'teachers'){
             return redirect('/teacher-dashboard');
+        }else if ($user->role ==  'student'){
+            return redirect('/dahhboard-student-account');
         }
         return $next($request);
     }

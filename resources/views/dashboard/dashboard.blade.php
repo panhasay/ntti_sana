@@ -688,7 +688,7 @@
                                                 <a href="{{ url('skills') }}">
                                                     <i class="fa fa-ticket"></i>
                                                     <span class="count-numbers">
-                                                       {{ \App\Service\Service::convertToKhmerNumber($total_skill ?? '') }}
+                                                        {{ \App\Service\Service::convertToKhmerNumber($total_skill ?? '') }}
                                                     </span>
                                                     <span class="count-name">ជំនាញ</span>
                                                 </a>
@@ -700,7 +700,7 @@
                                                 <a href="{{ url('/classes') }}">
                                                     <i class="fa fa-home"></i>
                                                     <span class="count-numbers">
-                                                         {{ \App\Service\Service::convertToKhmerNumber($total_class ?? '') }}
+                                                        {{ \App\Service\Service::convertToKhmerNumber($total_class ?? '') }}
                                                     </span>
                                                     <span class="count-name">ថ្នាក់</span>
                                                 </a>
@@ -712,7 +712,7 @@
                                                 <a href="{{ url('/student/registration') }}">
                                                     <i class="fa fa-users"></i>
                                                     <span class="count-numbers">
-                                                         {{ \App\Service\Service::convertToKhmerNumber($total_students ?? '') }}
+                                                        {{ \App\Service\Service::convertToKhmerNumber($total_students ?? '') }}
                                                     </span>
                                                     <span class="count-name">សិស្សសរុប</span>
                                                 </a>
@@ -722,101 +722,86 @@
                                 </div>
                             </div>
                             <br><br>
-                            <!--Department civel -->
-
+                            <!--Department list table -->
                             <div class="row p-2 border">
                                 <div class="col-4">
                                     <div class="table-responsive custom-data-table-wrapper2">
                                         <table class="table table-bordered custom-data-table">
                                             <thead class="text-nowrap">
                                                 <tr>
-                                                    <td class="bold" scope="col">
-                                                        ល.រ
-                                                    </td>
-                                                    <td widht="5px" class="bold" scope="col">ជំនាញ</td>
-                                                    <td class="bold text-right" scope="col">និស្សិតស្រី</td>
-                                                    <td class="bold text-right" scope="col">និស្សិតប្រុស</td>
-                                                    <td class="bold text-right" scope="col">និស្សិតសរុប</td>
+                                                    <td class="text-center bold" scope="col">ល.រ</td>
+                                                    <td width="5px" class="bold" scope="col">ជំនាញ</td>
+                                                    <td class="bold text-right" scope="col">ស្រី</td>
+                                                    <td class="bold text-right" scope="col">សរុប</td>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @foreach ($results as $index => $result)
                                                     <tr>
-                                                        <th class="text-center">{{ $index + 1 }} &nbsp;&nbsp;&nbsp;</th>
+                                                        <th class="text-center">{{ $index + 1 }}</th>
                                                         <td>{{ $result->name_2 }}</td>
                                                         <td class="text-right">{{ $result->total_f }}</td>
-                                                        <td class="text-right">{{ $result->total_m }}</td>
                                                         <td class="text-right">{{ $result->total_students }}</td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
-
                                         </table>
                                     </div>
                                 </div>
+
                                 <div class="col-4">
                                     <div class="table-responsive custom-data-table-wrapper2">
                                         <table class="table table-bordered custom-data-table">
                                             <thead class="text-nowrap">
                                                 <tr>
-                                                    <td class="bold" scope="col">
-                                                        ល.រ
-                                                    </td>
-                                                    <td widht="5px" class="bold" scope="col">ឆ្នាំសិក្សា</td>
-                                                    <td class="bold text-right" scope="col">និស្សិតស្រី</td>
-                                                    <td class="bold text-right" scope="col">និស្សិតប្រុស</td>
-                                                    <td class="bold text-right" scope="col">និស្សិតសរុប</td>
+                                                    <td class="text-center bold" scope="col">ល.រ</td>
+                                                    <td width="5px" class="bold" scope="col">ឆ្នាំសិក្សា</td>
+                                                    <td class="bold text-right" scope="col">ស្រី</td>
+                                                    <td class="bold text-right" scope="col">សរុប</td>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @foreach ($total_students_year as $index => $year)
                                                     <tr>
-                                                        <th class="text-center">{{ $index + 1 }} &nbsp;&nbsp;&nbsp;</th>
-                                                        <td>ឆ្នាំសិក្សា {{ $year->year_code }}</td>
+                                                        <th class="text-center">{{ $index + 1 }}</th>
+                                                        <td>{{ $year->year_code }}</td>
                                                         <td class="text-right">{{ $year->total_female_students }}</td>
-                                                        <td class="text-right">{{ $year->total_male_students }}</td>
                                                         <td class="text-right">{{ $year->total_students }}</td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
-
                                         </table>
                                     </div>
                                 </div>
+
                                 <div class="col-4">
                                     <div class="table-responsive custom-data-table-wrapper2">
                                         <table class="table table-bordered custom-data-table">
                                             <thead class="text-nowrap">
                                                 <tr>
-                                                    <td class="bold" scope="col">
-                                                        ល.រ
-                                                    </td>
-                                                    <td widht="5px" class="bold" scope="col">ដេប៉ាតឺម៉ង់</td>
-                                                    <td class="bold text-right" scope="col">និស្សិតស្រី</td>
-                                                    <td class="bold text-right" scope="col">និស្សិតប្រុស</td>
-                                                    <td class="bold text-right" scope="col">និស្សិតសរុប</td>
+                                                    <td class="text-center bold" scope="col">ល.រ</td>
+                                                    <td width="5px" class="bold" scope="col">ដេប៉ាតឺម៉ង់</td>
+                                                    <td class="bold text-right" scope="col">ស្រី</td>
+                                                    <td class="bold text-right" scope="col">សរុប</td>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach ($total_departments as $index => $department)
-                                                    <tr>
-                                                        <th class="text-center">{{ $index + 1 }} &nbsp;&nbsp;&nbsp;
-                                                        </th>
-                                                        <td>{{ $department->department_name }}</td>
-                                                        <td class="text-right">{{ $department->total_female_students }}
-                                                        </td>
-                                                        <td class="text-right">{{ $department->total_male_students }}</td>
-                                                        <td class="text-right">{{ $department->total_students }}</td>
-                                                    </tr>
+                                                @php $deptIndex = 1; @endphp
+                                                @foreach ($total_departments as $department)
+                                                    @if ($department->total_students > 0)
+                                                        <tr>
+                                                            <th class="text-center">{{ $deptIndex++ }}</th>
+                                                            <td>{{ $department->department_name }}</td>
+                                                            <td class="text-right">{{ $department->total_female_students }}</td>
+                                                            <td class="text-right">{{ $department->total_students }}</td>
+                                                        </tr>
+                                                    @endif
                                                 @endforeach
                                             </tbody>
-
                                         </table>
                                     </div>
                                 </div>
                             </div>
-
-                            <br><br>
                             <!--- Department It --->
                             <div class="row">
                                 <div class="col-md-4 border">
@@ -832,6 +817,11 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <br><br>
+                            
+                             <!--- Chart Province --->
+                            <br><br>
                             <div class="ColumnChart mt-2">
                                 <div class="row align-items-start">
                                     <div class="col-8 border p-3">
@@ -843,9 +833,7 @@
                         </div>
 
                         <div class="tab-pane fade" id="info-schools" role="tabpanel" aria-labelledby="info-schools-tab">
-
                             {{-- ព័ត៍មាន វិទ្យាស្ថាន --}}
-
                             <div class="container-fluid py-4">
                                 <!-- Hero Banner -->
                                 <div class="hero-banner">
@@ -1281,9 +1269,7 @@
                                     </div>
                                 </div>
                             </div>
-
                             {{-- end ព័ត៍មាន វិទ្យាស្ថាន --}}
-
                         </div>
                     </div>
                 </div>
@@ -1321,24 +1307,34 @@
         google.charts.setOnLoadCallback(drawChartStudentBySkill);
 
         function drawChartStudentBySkill() {
-            // Prepare the data for Google Charts
             var data = google.visualization.arrayToDataTable([
-                ['Skill', 'Total Students'],
-
+                ['Skill', 'និស្សិតសរុប', { role: 'style' }],
+                @php
+                    $colors = ['#4285F4', '#EA4335', '#FBBC05', '#34A853', '#9C27B0', '#F44336', '#00BCD4', '#FF9800', '#8BC34A', '#607D8B'];
+                    $i = 0;
+                @endphp
                 @foreach ($results as $result)
-                    ['{{ $result->name_2 }}', {{ $result->total_students }}],
+                    ['{{ $result->name_2 }}', {{ $result->total_students }}, '{{ $colors[$i++ % count($colors)] }}'],
                 @endforeach
             ]);
 
-            // Chart options
             var options = {
-                fontSize: 14, // Set font size
+                fontSize: 14,
                 title: 'សិស្សសរុបតាមជំនាញ',
-                pieHole: 0.4,
+                width: 500,
+                height: 400,
+                fontFamily: 'Khmer OS Battambang',
+                bar: { groupWidth: "60%" },
+                legend: { position: "none" },
+                annotations: {
+                    textStyle: {
+                        fontSize: 12,
+                        color: '#000'
+                    }
+                },
             };
 
-            // Create the pie chart
-            var chart = new google.visualization.PieChart(document.getElementById('records_student_by_skills'));
+            var chart = new google.visualization.ColumnChart(document.getElementById('records_student_by_skills'));
             chart.draw(data, options);
         }
         google.charts.load("current", {
@@ -1348,19 +1344,33 @@
 
         function drawCharts() {
             var data = google.visualization.arrayToDataTable([
-                ['Task', 'Hours per Day'],
+                ['Year', 'និស្សិតសរុប', { role: 'style' }],
+                @php
+                    $colors = ['#4285F4', '#EA4335', '#FBBC05', '#34A853', '#9C27B0', '#F44336', '#00BCD4', '#FF9800', '#8BC34A', '#607D8B'];
+                    $i = 0;
+                @endphp
                 @foreach ($data as $item)
-                    ['{{ $item->label }}', {{ $item->total_students }}],
+                    ['{{ $item->label }}', {{ $item->total_students }}, '{{ $colors[$i++ % count($colors)] }}'],
                 @endforeach
             ]);
 
             var options = {
-                fontSize: 14, // Set font size
-                title: 'ចំនួននិស្សិតសរុប តាមឆ្នាំសិស្សា',
-                pieHole: 0.4,
+                fontSize: 14,
+                title: 'ចំនួននិស្សិតសរុប តាមឆ្នាំសិក្សា',
+                width: 500,
+                height: 400,
+                fontFamily: 'Khmer OS Battambang',
+                bar: { groupWidth: "60%" },
+                legend: { position: "none" },
+                annotations: {
+                    textStyle: {
+                        fontSize: 12,
+                        color: '#000'
+                    }
+                },
             };
 
-            var chart = new google.visualization.PieChart(document.getElementById('student_by_year'));
+            var chart = new google.visualization.ColumnChart(document.getElementById('student_by_year'));
             chart.draw(data, options);
         }
         google.charts.load("current", {
@@ -1370,23 +1380,39 @@
 
         function drawChart() {
             var data = google.visualization.arrayToDataTable([
-                ['Task', 'Hours per Day'],
+                ['Department', 'និស្សិតសរុប', { role: 'style' }],
+                @php
+                    $colors = ['#4285F4', '#EA4335', '#FBBC05', '#34A853', '#9C27B0', '#F44336', '#00BCD4', '#FF9800', '#8BC34A', '#607D8B'];
+                    $i = 0;
+                @endphp
                 @foreach ($total_departments as $result)
-                    ['{{ $result->department_name }} សិស្សសរុប {{ $result->total_students }}',
-                        {{ $result->total_students }}
-                    ],
+                    ['{{ $result->department_name }} សរុប {{ $result->total_students }}', {{ $result->total_students }}, '{{ $colors[$i++ % count($colors)] }}'],
                 @endforeach
             ]);
 
             var options = {
-                fontSize: 14, // Set font size
+                fontSize: 14,
                 title: 'ចំនួននិស្សិតសរុប ដេប៉ាតឺម៉ង់',
-                is3D: true,
+                width: 500,
+                height: 400,
+                fontFamily: 'Khmer OS Battambang',
+                bar: { groupWidth: "60%" },
+                legend: { position: "none" },
+                annotations: {
+                    textStyle: {
+                        fontSize: 12,
+                        color: '#000'
+                    }
+                },
             };
 
-            var chart = new google.visualization.PieChart(document.getElementById('student_by_class'));
+            var chart = new google.visualization.ColumnChart(document.getElementById('student_by_class'));
             chart.draw(data, options);
         }
+        google.charts.load("current", {
+            packages: ["corechart"]
+        });
+        google.charts.setOnLoadCallback(drawChart);
         $(document).ready(function() {
             $(document).on('click', '#prints', function() {
                 $(".modal-confirmation-text").html('Do you want to Print?');
@@ -2052,7 +2078,7 @@
         function autoSlide() {
             slideTimer = setTimeout(() => {
                 changeSlide(1);
-            }, 5000); 
+            }, 5000);
         }
 
         document.addEventListener('DOMContentLoaded', function() {

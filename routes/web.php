@@ -1,41 +1,38 @@
 <?php
-
-use App\Http\Controllers\Admin\adminController;
-use App\Http\Controllers\General\ClassesController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\General\AssingClassesController;
-use App\Http\Controllers\General\AttendanceController;
-use App\Http\Controllers\General\ClassScheduleController;
-use App\Http\Controllers\General\DividedNewClassesController;
-use App\Http\Controllers\General\ExamScheduleController;
-use App\Http\Controllers\General\SkillsController;
-use App\Http\Controllers\Report\ListOfStudentController;
-use App\Http\Controllers\General\StudnetController;
-use App\Http\Controllers\General\SubjectsController;
-use App\Http\Controllers\General\TeacherController;
-use App\Http\Controllers\Report\ReportFirstYearStudentRegistrationController;
-use App\Http\Controllers\SystemSetup\DashboardController;
-use App\Http\Controllers\SystemSetup\DepartmentController;
-use App\Http\Controllers\SystemSetup\SystemSettingController;
-use App\Http\Controllers\SystemSetup\TableController;
-use App\Http\Controllers\SystemSetup\UsersController;
-use App\Models\General\DividedNewClasses;
-use GuzzleHttp\Middleware;
-use Illuminate\support\Facades\App;
-use App\Http\Controllers\Report\ReportListTableStudentOfYearController;
-
-use App\Http\Controllers\General\ScoreController;
-
-use App\Models\General\ExamSchedule;
-use App\Http\Controllers\Certificates\CertificateController;
-use App\Http\Controllers\General\StudentSanaController;
-use App\Http\Controllers\General\TransferController;
+    use App\Http\Controllers\Admin\adminController;
+    use App\Http\Controllers\General\ClassesController;
+    use Illuminate\Support\Facades\Route;
+    use App\Http\Controllers\Auth\AuthController;
+    use App\Http\Controllers\General\AssingClassesController;
+    use App\Http\Controllers\General\AttendanceController;
+    use App\Http\Controllers\General\ClassScheduleController;
+    use App\Http\Controllers\General\DividedNewClassesController;
+    use App\Http\Controllers\General\ExamScheduleController;
+    use App\Http\Controllers\General\SkillsController;
+    use App\Http\Controllers\Report\ListOfStudentController;
+    use App\Http\Controllers\General\StudnetController;
+    use App\Http\Controllers\General\SubjectsController;
+    use App\Http\Controllers\General\TeacherController;
+    use App\Http\Controllers\Report\ReportFirstYearStudentRegistrationController;
+    use App\Http\Controllers\SystemSetup\DashboardController;
+    use App\Http\Controllers\SystemSetup\DepartmentController;
+    use App\Http\Controllers\SystemSetup\SystemSettingController;
+    use App\Http\Controllers\SystemSetup\TableController;
+    use App\Http\Controllers\SystemSetup\UsersController;
+    use App\Models\General\DividedNewClasses;
+    use GuzzleHttp\Middleware;
+    use Illuminate\support\Facades\App;
+    use App\Http\Controllers\Report\ReportListTableStudentOfYearController;
+    use App\Http\Controllers\General\ScoreController;
+    use App\Models\General\ExamSchedule;
+    use App\Http\Controllers\Certificates\CertificateController;
+    use App\Http\Controllers\General\SectionsController;
+    use App\Http\Controllers\General\StudentSanaController;
+    use App\Http\Controllers\General\TransferController;
 use App\Http\Controllers\Report\ReportListOfStudentClassAndSectionController;
 use App\Http\Controllers\Report\ReportTotalScoreExamController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
-
 Route::get('/clear-all', function() {
     Artisan::call('cache:clear');    
     Artisan::call('config:clear');   
@@ -76,7 +73,8 @@ Route::get('/greeting/{locale}', function (string $locale) {
    
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
     Route::group(['perfix' => 'department', 'middleware' => 'user_permission'], function (){
-    Route::get('/department-menu', [AuthController::class, 'departmentMenu']);
+    // Route::get('/department-menu', [AuthController::class, 'departmentMenu']);
+    Route::get('/department-menu', [AuthController::class, 'departmentMenu'])->middleware('user_permission');
    
 });
 Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('forgot.password');
@@ -99,7 +97,6 @@ Route::group(['perfix' => 'student'], function (){
     Route::get('/student/getImage',[StudnetController::class,'GetImage']);
     Route::Post('/student/uploadimage',[StudnetController::class,'UploadImage']);
     Route::Post('/student/delete-image',[StudnetController::class,'DeleteImage']);
-
     Route::get('/students/list', [StudnetController::class, 'getStudents'])->name('students.list');
 })->middleware('auth');
 
@@ -136,6 +133,7 @@ Route::group(['perfix' => 'dashboard'], function (){
     Route::get('dahhboard-student-print', [DashboardController::class, 'Print'])->name('Print');
     Route::get('teacher-dashboard', [DashboardController::class, 'TeacherDashboard'])->name('TeacherDashboard');
     Route::get('teacher-management-class', [DashboardController::class, 'TeacherMmanagementClass'])->name('TeacherMmanagementClass');
+    Route::get('dahhboard-student-account', [DashboardController::class, 'StudentUserAccount'])->name('StudentUserAccount');
 });
 Route::get('dsa', [DashboardController::class, 'StudentUserAccount'])->name('StudentUserAccount');
 Route::group(['perfix' => 'department' ,  'middleware' => 'permission'], function (){
@@ -153,6 +151,9 @@ Route::group(['perfix' => 'Users'], function (){
     Route::get('profile/reset-password', [UsersController::class, 'ResetPassword'])->name('ResetPassword');
     Route::GET('profile/update-information', [UsersController::class, 'UpdateProfile'])->name('UpdateProfile');
     Route::POST('profile/upload-img', [UsersController::class, 'UploadImages'])->name('UploadImages');
+    Route::GEt('users/transaction', [UsersController::class, 'transaction'])->name('transaction');
+    Route::post('users/update', [UsersController::class, 'update'])->name('update');
+    Route::post('users/store', [UsersController::class, 'store'])->name('store');
 })->middleware('auth');
 
 Route::group(['perfix' => 'table'], function (){
@@ -393,3 +394,10 @@ Route::group(['perfix' => 'report_list_table_student_of_years'], function (){
     Route::get('reports-list-of-student-print/export/', [ReportListTableStudentOfYearController::class, 'export']);
 })->middleware('auth');
 
+Route::group(['prefix' => 'sections'], function () {
+    Route::get('/', [SectionsController::class, 'index']);
+    Route::get('/transaction', [SectionsController::class, 'transaction']);
+    Route::post('/update', [SectionsController::class, 'update']);
+    Route::post('/store', [SectionsController::class, 'store']);
+    Route::post('/delete', [SectionsController::class, 'delete']);
+})->middleware('auth');
