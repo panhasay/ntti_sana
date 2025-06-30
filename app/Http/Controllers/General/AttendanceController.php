@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
 use PDF;
 
 class AttendanceController extends Controller
@@ -51,12 +52,14 @@ class AttendanceController extends Controller
     private function getCurrentSection() {
         $currentHour = (int) now()->format('H');
         
-        if ($currentHour >= 6 && $currentHour <= 13) {
+        if ($currentHour >= 6 && $currentHour < 13) {
             return 'Morning';
-        } else if ($currentHour > 13 && $currentHour < 17) {
+        } else if ($currentHour >= 13 && $currentHour < 18) {
             return 'Evening';
-        } else {
+        } else if ($currentHour >= 18 && $currentHour < 21) {
             return 'Night';
+        } else {
+            return 'Night'; // Or return 'None' if you want to handle outside these ranges differently
         }
     }
 
@@ -81,8 +84,63 @@ class AttendanceController extends Controller
 
     public function index(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect("login")->withSuccess('Opps! You do not have access');
+        }
+
+        $holidays = $this->getKhmerHolidays();
+        $dateStrings = collect($holidays['items'])->pluck('start.date')->toArray();
+        
+        // Create a mapping of dates to holiday names for tooltips
+        $holidayNames = collect($holidays['items'])->mapWithKeys(function ($item) {
+            $date = $item['start']['date'];
+            $name = $item['summary'] ?? 'Holiday';
+            return [$date => $name];
+        })->toArray();
+
+        // return response()->json([
+        //     'holidays' => $holidays,
+        //     'dateStrings' => $dateStrings
+        // ]);
+        
+
+
+
         $classCode = $request->query('class_code');
-        $selectedDate = $request->query('date') ? Carbon::parse($request->query('date')) : Carbon::now();
+        $dateString = $request->query('date');
+        if ($dateString) {
+            $dateObj = \DateTime::createFromFormat('Y-m-d', $dateString);
+            $isValidDate = $dateObj && $dateObj->format('Y-m-d') === $dateString;
+            if (!$isValidDate) {
+                $today = Carbon::now()->format('Y-m-d');
+                $params = $request->all();
+                $params['date'] = $today;
+                return redirect()->to(url('attendance/dashboards-attendance') . '?' . http_build_query($params))
+                    ->with('warning', 'ថ្ងៃដែលបានជ្រើសមិនត្រឹមត្រូវ។ ប្រព័ន្ធបានកំណត់ទៅថ្ងៃបច្ចុប្បន្នវិញ។');
+            }
+            $selectedDate = Carbon::parse($dateString);
+        } else {
+            $selectedDate = Carbon::now();
+        }
+
+        // ទប់ស្កាត់ថ្ងៃឈប់សម្រាក
+        if (in_array($selectedDate->format('Y-m-d'), $dateStrings)) {
+            $today = Carbon::now()->format('Y-m-d');
+            $params = $request->all();
+            $params['date'] = $today;
+            return redirect()->to(url('attendance/dashboards-attendance') . '?' . http_build_query($params))
+                ->with('warning', 'មិនអាចជ្រើសរើសថ្ងៃឈប់សម្រាកបានទេ។ ប្រព័ន្ធបានកំណត់ទៅថ្ងៃបច្ចុប្បន្នវិញ។');
+        }
+
+        // ទប់ស្កាត់ថ្ងៃអាទិត្យ
+        if ($selectedDate->isSunday()) {
+            $today = Carbon::now()->format('Y-m-d');
+            $params = $request->all();
+            $params['date'] = $today;
+            return redirect()->to(url('attendance/dashboards-attendance') . '?' . http_build_query($params))
+                ->with('warning', 'មិនអាចជ្រើសរើសថ្ងៃអាទិត្យបានទេ។ ប្រព័ន្ធបានកំណត់ទៅថ្ងៃបច្ចុប្បន្នវិញ។');
+        }
+
         $selectedDepartment = $request->query('department', 'All Departments');
         
         // Set default section based on current time if not specified in request
@@ -113,7 +171,7 @@ class AttendanceController extends Controller
                     ->with(['teacher', 'subject', 'department'])
                     ->when($selectedDepartment !== 'All Departments', function ($query) use ($selectedDepartment) {
                         $query->whereHas('department', function($q) use ($selectedDepartment) {
-                            $q->where('name', $selectedDepartment);
+                            $q->where('name_2', $selectedDepartment);
                         });
                     })
                     ->get()
@@ -133,7 +191,8 @@ class AttendanceController extends Controller
                     $sectionName = $this->extractSectionName($assignment->section);
                     
                     $scheduleItems->push([
-                        'teacher' => $assignment->teacher->name_2 ?? '',
+                        'teacher' => $assignment->teacher->name ?? '',
+                        'teacher_2' => $assignment->teacher->name_2 ?? '',
                         'subject' => $assignment->subject->name ?? '',
                         'time' => $assignment->start_time . ' - ' . $assignment->end_time,
                         'room' => $assignment->room,
@@ -157,10 +216,9 @@ class AttendanceController extends Controller
             ->values();
 
         // Get list of departments
-        $departments = Department::pluck('name')->toArray();
-        array_unshift($departments, 'All Departments');
+        $departments = Department::pluck('name_2')->toArray();
 
-        return view('dashboard.dashboard_attendance_student', compact('schedules', 'selectedDate', 'selectedDepartment', 'selectedSection', 'departments'));
+        return view('dashboard.dashboard_attendance_student', compact('schedules', 'selectedDate', 'selectedDepartment', 'selectedSection', 'departments' , 'holidays', 'dateStrings', 'holidayNames'));
     }
    
     public function SumbitDocumentByDate(Request $request)
@@ -242,4 +300,32 @@ class AttendanceController extends Controller
         ]);
     }
 }
+
+
+    public function getKhmerHolidays()
+    {
+        $year = Carbon::now()->year;
+
+        $start = Carbon::createFromDate($year, 1, 1)->toIso8601String();
+        $end = Carbon::createFromDate($year, 12, 31)->toIso8601String();
+
+        $apiKey = 'AIzaSyBAfyblJkSCHQ0NbhtHgMZAVvYDxs0tO-o';
+        $calendarId = 'en.kh%23holiday@group.v.calendar.google.com';
+
+        $url = "https://www.googleapis.com/calendar/v3/calendars/{$calendarId}/events";
+
+        $response = Http::get($url, [
+            'key' => $apiKey,
+            'timeMin' => $start,
+            'timeMax' => $end,
+            'orderBy' => 'startTime',
+            'singleEvents' => 'true'
+        ]);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        return ['error' => 'Unable to fetch holidays'];
+    }
 }
