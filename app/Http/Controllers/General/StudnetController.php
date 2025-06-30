@@ -96,7 +96,6 @@ class StudnetController extends Controller
 
         $student_code = Student::where('study_type', 'new student')->get();
        
-
         if($user->role == "teacherss"){
             $total_student_have_class = Student::select(
                 DB::raw('COUNT(name) AS total_count'),  

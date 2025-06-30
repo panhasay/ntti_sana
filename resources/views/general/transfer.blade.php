@@ -75,6 +75,7 @@
 
   </div>
 </div>
+
 @include('modals.modals_hang_of_study')
 @include('system.modal_comfrim_delet')
 @include('general.transfer_lists')
@@ -173,7 +174,7 @@
             success: function(response) {
                 if (response.status == 'success') {
                     $("#divHangOfStudy").modal('hide');
-                    $("#row" + code).addClass("bg-danger text-white"); 
+                    $("#row" + code).addClass("bg-warning text-white"); 
                 } else {
                     notyf.error(response.msg);
                 }
@@ -183,7 +184,6 @@
             }
         });
     });
-
 
     $(document).on('click', '#btnYes', function() {
       var code = $(this).attr('data-code');
@@ -202,6 +202,27 @@
         }
       });
     });
+
+
+    $(document).on('click', '#transfer', function() {
+      var code = $(this).attr('data-code');
+      alert(code);
+      $.ajax({
+        type: "GEt",
+        url: `/get-student-transfer`,
+        data: {
+          code: code
+        },
+        success: function(response) {
+          if (response.status == 'success') {
+            $("#divConfirmation").modal('hide');
+            $("#row" + code).remove();
+            notyf.success(response.msg);
+          }
+        }
+      });
+    });
+
   });
 
   function prints(ctrl) {

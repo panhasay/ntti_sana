@@ -7,12 +7,13 @@
       <div class="page-title page-title-custom">
         <div class="title-page">
           <a href="{{ url('skills') }}"><i class="mdi mdi-format-list-bulleted"></i></a>
+           &nbsp;&nbsp; <button type="button" id="BtnSave" class="btn btn-success float-left btn-sm mb-2 mb-md-0 me-2"><i class="mdi mdi-content-save"></i>  រក្សាទុក </button>
           @if($type == 'ed')
-            កែប្រែ, មុខវិជ្ជា {{ $records->name_2 ?? '' }}
+            កែប្រែ, មុខវិជ្ជា 
           @else
             បន្ថែមថ្មី
           @endif
-          &nbsp;&nbsp; <button type="button" id="BtnSave" class="btn btn-success"> save </button>
+         
         </div>
       </div>
     </div>

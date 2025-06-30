@@ -1,13 +1,4 @@
-<style>
-  .btn.btn-sm {
-    font-size: 11px;
-  }
-  .select2-container--default .select2-selection--single .select2-selection__rendered {
-    color: #444;
-    line-height: 28px;
-    margin-top: -7px;
-  }
-</style>
+
 @extends('app_layout.app_layout')
 @section('content')
 <div class="page-head page-head-custom">
@@ -16,7 +7,7 @@
       <div class="page-title page-title-custom">
         <div class="title-page">
           <i class="mdi mdi-format-list-bulleted"></i>
-          ដេប៉ាតឺម៉ង់ ឫ​ នាយកដ្ឋាន
+          វេន
         </div>
       </div>
     </div>
@@ -31,7 +22,7 @@
 </div>
 <div class="page-header flex-wrap">
   <div class="header-left">
-    <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="BntCreate" href="{{url('departments/transaction/?type=cr')}}"><i class="mdi mdi-account-plus"></i> បន្ថែបថ្មី</i></a>
+    <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="BntCreate" href="{{url('skills/transaction/?type=cr')}}"><i class="mdi mdi-account-plus"></i> បន្ថែមថ្មី</i></a>
     {{-- <button type="button" data-type="skill" onclick="prints()"
       class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2"> Print
       <i class="mdi mdi-printer btn-icon-append"></i>
@@ -56,24 +47,23 @@
       <div class="row">
         <div class="col-md-12">
           <div class="form-group row">
-            <div class="col-sm-2">
+            <div class="col-sm-3">
               <span class="labels">លេខកូដ</span>
               <input type="text" class="form-control form-control-sm" id="code" name="code" value=""
                 placeholder="លេខកូដ" aria-label="លេខកូដ">
             </div>
-            <div class="col-sm-2">
-              <span class="labels">ដេប៉ាតឺម៉ង់</span>
+            <div class="col-sm-3">
+              <span class="labels">ជំនាញ</span>
               <input type="text" class="form-control form-control-sm" id="name" name="name" value=""
-                placeholder="ដេប៉ាតឺម៉ង់" aria-label="ដេប៉ាតឺម៉ង់">
+                placeholder="ជំនាញ" aria-label="ជំនាញ">
             </div>
-            <div class="col-sm-2">
-              <span class="labels">Department</span>
+            <div class="col-sm-3">
+              <span class="labels">ជំនាញ ភាសាខ្មែរ</span>
               <input type="text" class="form-control form-control-sm" id="name_2" name="name_2" value=""
-                placeholder="Department" aria-label="Department">
+                placeholder="ជំនាញ ភាសាខ្មែរ" aria-label="ជំនាញ ភាសាខ្មែរ">
             </div>
           </div>
-          <button type="button" class="btn btn-primary text-white float-left btn-sm mb-2 mb-md-0 me-2" data-page="department" id="btn-adSearch"><i class="mdi mdi-account-search"></i> ស្វែងរក</button>
-          <button type="button" class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2" data-page="department" id="btnCleardata"><i class="mdi mdi-cloud-off-outline"></i> ជម្រះទិន្នន័យ</button>
+          <button type="button" class="btn btn-primary text-white" data-page="skills" id="btn-adSearch">Search</button>
         </div>
       </div>
     </form>
@@ -85,7 +75,7 @@
   </div>
 </div>
 @include('system.modal_comfrim_delet')
-@include('department.department_list')
+@include('general.sections_lists')
 @endsection
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
@@ -104,7 +94,7 @@
       var code = $(this).attr('data-code');
       $.ajax({
         type: "POST",
-        url: `/department-delete`,
+        url: `/skills-delete`,
         data: {
           code: code
         },

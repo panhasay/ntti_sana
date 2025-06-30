@@ -2212,8 +2212,9 @@
     "src": "public/asset/NTTI/vendors/mdi/fonts/materialdesignicons-webfont.woff2"
   },
   "resources/css/app.css": {
-    "file": "css/ntti-app-Cg88WCYt.css",
-    "src": "resources/css/app.css",
+
+    "file": "css/ntti-app-8e97d924.css",
+
     "isEntry": true,
     "names": [
       "app.css"

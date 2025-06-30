@@ -1,6 +1,5 @@
 <div class="modal fade" id="divHangOfStudy" tabindex="-1" aria-labelledby="modalHangOfStudyLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
-        <!-- XL for 1200px width -->
         <div class="modal-content">
             <div class="modal-header bg-m-header">
                 <h5 class="modal-title" id="modalHangOfStudyLabel">ស្នើរសុំ ព្យួរកាសិក្សា</h5>

@@ -219,8 +219,10 @@ class DashboardController extends Controller
         try {
             $data = $request->all();
 
-     
-            $records = Student::where('code', $request->code)->first();
+            $code = Auth::user()->user_code;
+            $records = Student::where('code', $code)->first();
+
+            // dd($records);
 
             $skills = DB::table('skills')->where('code', $records->skills_code ?? '')->first();
             $qualification = DB::table('qualification')->where('code', $records->qualification ?? '')->first();
