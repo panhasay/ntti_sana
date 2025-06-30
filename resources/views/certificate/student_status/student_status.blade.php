@@ -113,7 +113,7 @@
     </div>
     <div class="col-md-12 mt-2">
         <div class="row">
-            <div class="control-table table-responsive custom-data-table-wrapper2">
+            <div>
                 <div class="col-md-12 mt-0">
                     <div class="d-flex justify-content-between mb-1">
                         <div class="d-flex gap-1" role="group" aria-label="Table Actions">

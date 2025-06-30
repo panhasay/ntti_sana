@@ -160,17 +160,13 @@
         <div class="row">
             <div class="d-flex justify-content-between mb-1">
                 <div class="d-flex gap-1" role="group" aria-label="Table Actions">
+                    <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="btn_print_multiple">
+                        <i class="mdi mdi-printer pl-2"></i> បោះពុម្ភ</a>
+                    <a class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="btn_reset">
+                        <i class="mdi mdi-printer pl-2"></i> កំណត់ឡើងវិញ</a>
                     <button type="button" class="btn btn-success btn-icon-text btn-sm mb-2 mb-md-0 me-2"
-                        id="btn_open_create_code_transcript">បង្កើតលេខកូដ</button>
-                    <button type="button" class="btn btn-secondary dropdown-toggle py-2 px-3 fs-6 hidden"
-                        data-bs-toggle="dropdown" aria-expanded="false" hidden>
-                        Export
+                        id="btn_open_create_code_transcript">បង្កើតលេខកូដ
                     </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="javascript:void(0);">Export CSV</a></li>
-                        <li><a class="dropdown-item" href="javascript:void(0);">Export Excel</a></li>
-                    </ul>
-
                 </div>
 
                 <div class="ms-auto" hidden>
@@ -195,6 +191,10 @@
                     <table class="table table-striped" id="tbl_card_stu_list">
                         <thead>
                             <tr class="general-data">
+                                <th>
+                                    <input class="form-check-input" type="checkbox" id="checkAll"
+                                        style="transform: scale(1.5);">
+                                </th>
                                 <th>ល.រ</th>
                                 <th>អត្តលេខ</th>
                                 <th>គោត្តនាម និងនាម</th>
@@ -424,8 +424,13 @@
                             '/asset/NTTI/images/faces/default_User.jpg' :
                             `/uploads/student/${item.stu_photo}`;
 
+                        var isChecked = selectedStudentIds.includes(parseInt(item.code)) ? 'checked' : '';
+
                         html += `<tr>`;
-                        html += `<td height="40">${index + 1 + (currentPage - 1) * rowsPerPage}</td>`;
+                        html += `<td height="40">
+                            <input class="form-check-input row-checkbox" type="checkbox" style="transform: scale(1.5);" value="${item.code}" data-student-id="${item.code}" ${isChecked}>
+                        </td>`;
+                        html += `<td>${index + 1 + (currentPage - 1) * rowsPerPage}</td>`;
                         html +=
                             `<td><div class="hover-photo"><img src="${photo}" alt="Student Photo"> ${item.code}</div></td>`;
                         html += `<td>${item.name_2}</td>`;
@@ -448,7 +453,7 @@
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <li>
-                                    <a class="dropdown-item" href="javascript:void(0)" name="btn_modal_transcript" id="btn_modal_transcript" data-keyword="${item.keyword}"><i class="mdi mdi-printer btn-icon-append"></i>
+                                    <a class="dropdown-item" href="javascript:void(0)" name="btn_modal_transcript" id="btn_modal_transcript" data-keyword="${item.code}"><i class="mdi mdi-printer btn-icon-append"></i>
                                         បោះពុម្ភ</a>
                                 </li>
                                 <li hidden>
@@ -677,8 +682,18 @@
             });
             $("body").on("click", "#btn_modal_transcript", function(e) {
                 e.preventDefault();
+                let array = [];
                 const keyword = $(this).data("keyword");
-                window.open(`/certificate/transcript/show-print/${keyword}`, '_blank');
+                array.push(keyword);
+                const idParam = array.join(',');
+
+                const url = `/certificate/transcript/print-multilple/${idParam}`;
+                const printWindow = window.open(url, '_blank');
+
+                printWindow.onload = function() {
+                    printWindow.focus();
+                    printWindow.print();
+                };
             });
             $("body").on("click", "#btn_modal_v2_transcript", function(e) {
                 e.preventDefault();
@@ -710,6 +725,68 @@
                 window.open(
                     '/certificate/transcript/{{ $module_code }}/create-code?module={{ $arr_module[0]->name_kh }}',
                     '_blank');
+            });
+
+            let selectedStudentIds = [];
+            $("#btn_reset").on("click", function() {
+                $loader.fadeIn();
+                selectedStudentIds = [];
+                $('#checkAll').prop('checked', false);
+                setTimeout(function() {
+                    show();
+                    $loader.fadeOut();
+                }, 500);
+            });
+
+            function updateSelectedStudentIds() {
+                $('.row-checkbox:checked').each(function() {
+                    let id = $(this).data('student-id');
+                    if (!selectedStudentIds.includes(id)) {
+                        selectedStudentIds.push(id);
+                    }
+                });
+                $('.row-checkbox:not(:checked)').each(function() {
+                    let id = $(this).data('student-id');
+                    selectedStudentIds = selectedStudentIds.filter(item => item !== id);
+                });
+            }
+
+            $('#checkAll').on('change', function() {
+                $('.row-checkbox').prop('checked', this.checked);
+                updateSelectedStudentIds()
+            });
+
+            $(document).on('change', '.row-checkbox', function() {
+                if (!this.checked) {
+                    $('#checkAll').prop('checked', false);
+                } else if ($('.row-checkbox:checked').length === $('.row-checkbox').length) {
+                    $('#checkAll').prop('checked', true);
+                }
+                updateSelectedStudentIds()
+            });
+
+            function getSelectedStudentIds() {
+                return $('.row-checkbox:checked').map(function() {
+                    return $(this).data('student-id');
+                }).get();
+            }
+
+            $("body").on("click", "#btn_print_multiple", function(e) {
+                e.preventDefault();
+
+                if (selectedStudentIds.length === 0) {
+                    notyf.error("សូមជ្រើសរើសសិស្សយ៉ាងហោចណាស់ម្នាក់!");
+                    return;
+                }
+                const idParam = selectedStudentIds.join(',');
+
+                const url = `/certificate/transcript/print-multilple/${idParam}`;
+                const printWindow = window.open(url, '_blank');
+
+                printWindow.onload = function() {
+                    printWindow.focus();
+                    printWindow.print();
+                };
             });
         });
     </script>

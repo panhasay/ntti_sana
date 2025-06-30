@@ -91,7 +91,12 @@ class CertificateStudentStatusController extends Controller
             ->where('qualification_code', $qualification_code)
             ->where('skills_code', $skills_code)
             ->first();
-
+        if (!$record_offical_code) {
+            $record = '';
+            $status = 404;
+            $message = "លេខកូដ Ref មិនត្រឹមត្រូវនៃ {$request->stu_code}!";
+            return response()->json(['status' => $status, 'data' => $message, 'message' => $message]);
+        }
         $code = $record_offical_code->code;
 
         $newNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);

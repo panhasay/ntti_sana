@@ -148,6 +148,15 @@
                                 <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">
                                     <a class="dropdown-item" href="{{ url('profile') }}">
                                         <i class="mdi mdi-account me-2 text-success"></i> Profile </a>
+
+                                    @can(['view:admin-panel'])
+                                        <!-- Only users with that permission will see this -->
+                                        <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
+                                            <i class="mdi mdi-security me-2 text-success"></i> Administration
+                                        </a>
+                                    @endcan
+
+
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="{{ route('logout') }}">
                                         <i class="mdi mdi-logout me-2 text-primary"></i> Signout </a>

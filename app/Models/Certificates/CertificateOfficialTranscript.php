@@ -2,7 +2,9 @@
 
 namespace App\Models\Certificates;
 
+use App\Models\General\Classes;
 use Illuminate\Support\Facades\Auth;
+use App\Models\General\Qualifications;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -27,6 +29,11 @@ class CertificateOfficialTranscript extends Model
         'print_by_date',
         'status',
     ];
+
+    public function class()
+    {
+        return $this->belongsTo(Classes::class, 'class_code', 'code');
+    }
 
     protected static function boot()
     {

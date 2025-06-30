@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Request;
 use App\Models\General\DividedNewClasses;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\adminController;
 use App\Http\Controllers\General\ScoreController;
 use App\Http\Controllers\General\SkillsController;
@@ -22,10 +23,10 @@ use App\Http\Controllers\SystemSetup\TableController;
 use App\Http\Controllers\SystemSetup\UsersController;
 use App\Http\Controllers\General\AttendanceController;
 use App\Http\Controllers\General\StudentSanaController;
+
 use App\Http\Controllers\General\ExamScheduleController;
 
 use App\Http\Controllers\Report\ListOfStudentController;
-
 use App\Http\Controllers\General\AssingClassesController;
 use App\Http\Controllers\General\ClassScheduleController;
 use App\Http\Controllers\Permission\PermissionController;
@@ -431,6 +432,7 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
 
 
         Route::get('/debug/print/{key}', 'generateOfficalTranscriptdomPDF');
+        Route::get('/transcript/print-multilple/{array}', 'printMultilple')->name('transcript.print-multilple');
     });
 
     Route::controller(CertificateTranscriptCodeController::class)->group(function () {
@@ -466,3 +468,17 @@ Route::get('/pdf/custom', [Customize::class, 'downloadPdf'])->name('pdf.custom')
 
 Route::get('/permissions/create', [PermissionController::class, 'create'])->name('permissions.create');
 Route::post('/permissions', [PermissionController::class, 'store'])->name('permissions.store');
+
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('dashboard');
+
+    Route::prefix('user')->name('user.')->group(function () {
+        Route::controller(UserController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/show', 'show')->name('show');
+        });
+    });
+});

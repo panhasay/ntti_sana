@@ -88,6 +88,13 @@ class CertificateOfficialTranscriptController extends Controller
         $record_class = Classes::whereNotNull('code')
             ->where('code', $request->class_code ?? 0)
             ->first();
+        if (!$record_class) {
+            $record = '';
+            $status = 404;
+            $message = "លេខកូដថ្នាក់មិនត្រឹមត្រូវនៃ {$request->stu_code}!";
+            return response()->json(['status' => $status, 'data' => $message, 'message' => $message]);
+        }
+
         $qualification_code = $record_class->level;
         $skills_code = $record_class->skills_code;
 
@@ -95,7 +102,12 @@ class CertificateOfficialTranscriptController extends Controller
             ->where('qualification_code', $qualification_code)
             ->where('skills_code', $skills_code)
             ->first();
-
+        if (!$record_offical_code) {
+            $record = '';
+            $status = 404;
+            $message = "លេខកូដ Ref មិនត្រឹមត្រូវនៃ {$request->stu_code}!";
+            return response()->json(['status' => $status, 'data' => $message, 'message' => $message]);
+        }
         $code = $record_offical_code->code;
 
         $newNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
@@ -741,5 +753,59 @@ class CertificateOfficialTranscriptController extends Controller
             ]);
 
         return $pdf->stream('document.pdf');
+    }
+
+    public function printMultilple($array)
+    {
+        $key = explode(',', $array);
+
+        if (empty($key)) {
+            abort(400, 'No students selected.');
+        }
+
+        $record_students = StudentModel::with(['certTranscript.class.qualification', 'assignClassLine.assignClass.level', 'assignClassLine.assignClass.class', 'assignClassLine.assignClass.sessionYear', 'assignClassLine.assignClass.class.skill', 'assignClassLine.assignClass.class.qualification'])
+            ->whereIn('code', $key)
+            ->get();
+        $record_students->transform(function ($student) {
+
+            $student->fullname = ($student->certTranscript?->class?->qualification?->name ?? 'N/A') . ' Of ' . ($student->certTranscript?->class?->skill?->name ?? 'N/A');
+            $subjects = DB::table('assing_classes_student_line as ass')
+                ->join('assing_classes as acl', 'acl.assing_no', '=', 'ass.assing_line_no')
+                ->join('subjects as su', 'su.code', '=', 'acl.subjects_code')
+                ->where('ass.student_code', $student->code)
+                ->select(
+                    'acl.years',
+                    'acl.semester',
+                    'su.name_2 as sub_kh',
+                    'su.name as sub_eng',
+                    DB::raw('(IFNULL(SUM(ass.final), 0) + IFNULL(SUM(ass.attendance), 0) + IFNULL(SUM(ass.assessment), 0) + IFNULL(SUM(ass.midterm), 0)) AS score')
+                )
+                ->groupBy('acl.assing_no', 'acl.years', 'acl.semester', 'su.name_2', 'su.name')
+                ->orderBy('acl.years', 'asc')
+                ->orderBy('acl.semester', 'asc')
+                ->get();
+
+            $student->groupedSubjects = $subjects->groupBy(['years', 'semester']);
+
+            return $student;
+        });
+
+        $html = view('certificate.transcript.transcript_print_multiple_pdf', [
+            'record_students'  => $record_students,
+        ])->render();
+        $pdf = PdfKh::loadHTML($html);
+        $pdf->addMPdfConfig([
+            'mode' => 'utf-8',
+            'format' => 'A4-P',
+            'margin_left' => 10,
+            'margin_right' => 10,
+            'margin_top' => 15,
+            'margin_bottom' => 15,
+            'defaultBodyCSS' => [
+                'background' => 'none',
+            ],
+        ]);
+
+        return $pdf->stream('ntti-offical-transcript.pdf');
     }
 }
