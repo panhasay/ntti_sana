@@ -52,7 +52,7 @@ class User extends Authenticatable
      *
      * @var array<string, string>
      */
-     protected $casts = [
+    protected $casts = [
         'email_verified_at' => 'datetime',
         'phone' => 'decimal:0',
         'pageination' => 'decimal:0',
@@ -61,5 +61,16 @@ class User extends Authenticatable
     public function department()
     {
         return $this->belongsTo(Department::class, 'department_code', 'code');
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    // The user who last updated this user
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }

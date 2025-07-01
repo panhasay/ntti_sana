@@ -28,17 +28,18 @@ class UserController extends Controller
         $search = $request->search;
         $rows_per_page = $request->input('rows_per_page', 50);
 
-        $recordUser = User::when(strlen($search), function ($query, $search) {
-            $query->whereLike('name', "%$search%")
-                ->orWhereLike('username', "%$search%")
-                ->orWhereLike('email', "%$search%");
-        })->paginate($rows_per_page);
+        $recordUser = User::with(['creator', 'updater'])
+            ->when(strlen($search), function ($query, $search) {
+                $query->whereLike('name', "%$search%")
+                    ->orWhereLike('username', "%$search%")
+                    ->orWhereLike('email', "%$search%");
+            })
+            ->paginate($rows_per_page);
 
         $recordUser->getCollection()->transform(function ($user) {
             $user->roleArray = $user->getRoleNames();
             return $user;
         });
-
         return response()->json([
             'data' => $recordUser->items(),
             'current_page' => $recordUser->currentPage(),

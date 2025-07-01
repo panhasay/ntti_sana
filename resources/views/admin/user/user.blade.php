@@ -109,12 +109,22 @@
                             if (item.roleArray && item.roleArray.length > 0) {
                                 $.each(item.roleArray, function(i, role) {
                                     html +=
-                                        `<span class="bg-indigo-100 text-indigo-800 text-xs font-medium me-2 px-1.5 py-0.5 rounded-sm border border-indigo-400">${role}</span>`;
+                                        `<span class="badge text-dark bg-light border border-primary border-opacity-50 rounded-pill me-2 px-2 py-1 small">
+                                        ${role}
+                                        </span>
+                                        `;
                                 });
                             } else {
                                 html += `<p>-</p>`;
                             }
                             html += `</td>`;
+
+                            html += `
+                            <td>
+                                <span class="badge text-white ${item.active == 1 ? 'bg-success' : 'bg-danger'} rounded-pill me-2 px-2 py-1 small">
+                                ${item.active == 1 ? 'Active' : 'Inactive'}
+                                </span>
+                            </td>`;
 
                             html += `</tr>`;
                         });
