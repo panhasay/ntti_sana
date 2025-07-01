@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Service;
 
 use App\Models\General\Classes;
@@ -16,8 +17,10 @@ use DateTimeZone;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\CssSelector\Node\FunctionNode;
 
-class service{
-    public function telegram($exception,$page,$line) {
+class service
+{
+    public function telegram($exception, $page, $line)
+    {
         $text = " ";
         $bot_api = "https://api.telegram.org";
 
@@ -25,9 +28,9 @@ class service{
         $telegram_token = "6554895672:AAHK0heN3rKeo0nIJB8ovW4MgNq9_09XS1o";
 
         $apiUri = sprintf('%s/bot%s/%s', $bot_api, $telegram_token, 'sendMessage');
-        $text .= "Error Line Number: ".$line;
-        $text .= "\nFrom User : " .Auth::user()->email ?? '';
-        $text .= "\nFrom Url : ".request()->path();
+        $text .= "Error Line Number: " . $line;
+        $text .= "\nFrom User : " . Auth::user()->email ?? '';
+        $text .= "\nFrom Url : " . request()->path();
         $text .= "\nFrom Page : {$page}";
         $text .= "\nError Message: {$exception}";
         $params = [
@@ -48,14 +51,14 @@ class service{
         curl_close($ch);
         return $result;
     }
-    public function telegramSendChangeUserPassword($user, $newPassword, $oldPassword) 
+    public function telegramSendChangeUserPassword($user, $newPassword, $oldPassword)
     {
         $botApi = "https://api.telegram.org";
-        $telegramId = "-4557828405"; // Replace with your actual chat ID
-        $telegramToken = "7286298295:AAE5VeNDbrjXIPF2mJNlZMpXa1MhojXHvnQ"; // Replace with your actual bot token
-    
+        $telegramId = "-4557828405"; 
+        $telegramToken = "7286298295:AAE5VeNDbrjXIPF2mJNlZMpXa1MhojXHvnQ";
+
         $apiUri = sprintf('%s/bot%s/sendMessage', $botApi, $telegramToken);
-    
+
         // Constructing the message text
         $text = "=== User Log NTTI Portal ===\n";
         $text .= "Log Type: Update Password\n";
@@ -65,18 +68,17 @@ class service{
         $text .= "New Password: " . ($newPassword ?? 'N/A') . "\n";
         $text .= "Role: " . ($user->role ?? 'N/A') . "\n";
         $text .= "By Department: " . ($user->department->name_2 ?? 'N/A');
-    
-        // Setting the request parameters
+
         $params = [
             'chat_id' => $telegramId,
             'text' => $text
         ];
-    
+
         // Setting headers
         $headers = [
             'Content-Type: application/json'
         ];
-    
+
         // Initialize cURL session
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $apiUri);
@@ -85,7 +87,7 @@ class service{
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
-    
+
         // Execute cURL request and handle response
         $result = curl_exec($ch);
         if (curl_errno($ch)) {
@@ -93,27 +95,28 @@ class service{
             $result = json_encode(['error' => curl_error($ch)]);
         }
         curl_close($ch);
-    
+
         return $result;
     }
-    public function telegramSendUserLog($email,$role, $department, $ip, $userAgent, $city, $type, $user_name) {
+    public function telegramSendUserLog($email, $role, $department, $ip, $userAgent, $city, $type, $user_name)
+    {
         $text = " ";
         $bot_api = "https://api.telegram.org";
 
         $telegram_id = "-4557828405";
         $telegram_token = "7286298295:AAE5VeNDbrjXIPF2mJNlZMpXa1MhojXHvnQ";
-        
+
         $apiUri = sprintf('%s/bot%s/%s', $bot_api, $telegram_token, 'sendMessage');
-        $text .= "\n" ."=== User Log NTTI Portal===";
-        $text .= "\nLog Type : " .$type ?? '';
-        $text .= "\nName : " .$user_name ?? '';
-        $text .= "\nUser : " .$email ?? '';
-        $text .= "\nUrl : ".request()->path();
-        $text .= "\nRole : ".$role;
-        $text .= "\nBy Department : ".$department ?? '';
-        $text .= "\nBy Ip : ".$ip ?? '';
-        $text .= "\nBy Ip : ".$userAgent ?? '';
-        $text .= "\nBy Address : ".$city ?? ''; 
+        $text .= "\n" . "=== User Log NTTI Portal===";
+        $text .= "\nLog Type : " . $type ?? '';
+        $text .= "\nName : " . $user_name ?? '';
+        $text .= "\nUser : " . $email ?? '';
+        $text .= "\nUrl : " . request()->path();
+        $text .= "\nRole : " . $role;
+        $text .= "\nBy Department : " . $department ?? '';
+        $text .= "\nBy Ip : " . $ip ?? '';
+        $text .= "\nBy Ip : " . $userAgent ?? '';
+        $text .= "\nBy Address : " . $city ?? '';
         $params = [
             'chat_id' => $telegram_id,
             'text' => $text
@@ -132,37 +135,38 @@ class service{
         curl_close($ch);
         return $result;
     }
-    public function telegramSendDeleteStudent($records, $type) {
+    public function telegramSendDeleteStudent($records, $type)
+    {
         // Define the API URL and Telegram details
         $bot_api = "https://api.telegram.org";
         $telegram_id = "-4557828405"; // Replace with your Telegram group/channel/chat ID
         $telegram_token = "7286298295:AAE5VeNDbrjXIPF2mJNlZMpXa1MhojXHvnQ"; // Replace with your bot token
-        
+
         // Fetch student data
         $data = Student::where('code', '=', $records->code)->first();
         $user = Auth::user();
-    
+
         if (!$data) {
             return "No student found for the given code.";
         }
 
         // Start building the message
         $text = "=== User Log NTTI Portal ===";
-        $text .= "\nType : " .$type ?? '';
-        $text .= "\nEmail : " .$user->email ?? '';
-        $text .= "\nName : " .$user->name ?? '';
-    
+        $text .= "\nType : " . $type ?? '';
+        $text .= "\nEmail : " . $user->email ?? '';
+        $text .= "\nName : " . $user->name ?? '';
+
         foreach ($data->toArray() as $key => $value) {
             $text .= "\n" . ucfirst(str_replace('_', ' ', $key)) . " : " . ($value ?? '');
         }
-    
+
         // Prepare the API endpoint and payload
         $apiUri = sprintf('%s/bot%s/%s', $bot_api, $telegram_token, 'sendMessage');
         $params = [
             'chat_id' => $telegram_id,
             'text'    => $text
         ];
-    
+
         // Send request using cURL
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $apiUri);
@@ -171,29 +175,31 @@ class service{
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
-    
+
         // Execute the request
         $result = curl_exec($ch);
-    
+
         // Check for errors
         if (curl_errno($ch)) {
             $error = curl_error($ch);
             curl_close($ch);
             return "cURL Error: $error";
         }
-    
+
         curl_close($ch);
-    
+
         return $result;
     }
-    
-    public static function Encr_string($string,$param='AES-128-ECB',$password = 'per_hast_Cehck'){
-        $encrypted_string=openssl_encrypt($string,'AES-128-ECB',"per_hast_Cehck");
+
+    public static function Encr_string($string, $param = 'AES-128-ECB', $password = 'per_hast_Cehck')
+    {
+        $encrypted_string = openssl_encrypt($string, 'AES-128-ECB', "per_hast_Cehck");
         return $encrypted_string;
     }
-    public static function Decr_string($string,$param='AES-128-ECB',$password = 'per_hast_Cehck'){
-        $table_id_2 = str_replace(' ','+',$string);
-        $decrypted_string=openssl_decrypt($table_id_2,'AES-128-ECB',"per_hast_Cehck");
+    public static function Decr_string($string, $param = 'AES-128-ECB', $password = 'per_hast_Cehck')
+    {
+        $table_id_2 = str_replace(' ', '+', $string);
+        $decrypted_string = openssl_decrypt($table_id_2, 'AES-128-ECB', "per_hast_Cehck");
         return $decrypted_string;
     }
     public static function encrypt($string, $key = 5)
@@ -220,27 +226,28 @@ class service{
         // return $result;
         return base64_decode($string);
     }
-    public static function getField($table_id){
-        $record = TableField::where('table_id',$table_id)
-            ->where('email',Auth::user()->email)
-            ->where('hide','<>','yes')
+    public static function getField($table_id)
+    {
+        $record = TableField::where('table_id', $table_id)
+            ->where('email', Auth::user()->email)
+            ->where('hide', '<>', 'yes')
             ->get();
         return $record;
     }
-    public static function getFieldCustom($table_id){
-        $record = TableField::where('table_id',$table_id)
-            ->where('email',Auth::user()->email)
+    public static function getFieldCustom($table_id)
+    {
+        $record = TableField::where('table_id', $table_id)
+            ->where('email', Auth::user()->email)
             ->get();
         return $record;
     }
-    public static function exportExcell ($request,$page_id){
-        
-    }
+    public static function exportExcell($request, $page_id) {}
     // param $table_id as array
-    public static function getFieldJoin ($table_id){
-        $record = TableField::whereIn('table_id',$table_id)
-            ->where('email',Auth::user()->email)
-            ->where('hide','<>','yes')
+    public static function getFieldJoin($table_id)
+    {
+        $record = TableField::whereIn('table_id', $table_id)
+            ->where('email', Auth::user()->email)
+            ->where('hide', '<>', 'yes')
             ->get();
         return $record;
     }
@@ -255,7 +262,8 @@ class service{
     // return $creterial;
     // }
 
-    public static function extractQuery($data) {
+    public static function extractQuery($data)
+    {
         $creterial = '1=1 AND ';
         foreach ($data as $key => $value) {
             if ($value != "") {
@@ -276,24 +284,27 @@ class service{
     //     return $creterial;
     // }
 
-    public static function extractQueryRaw($data){
-        $creterial= '1=1 and ';
-        foreach($data as $key => $value){
-             if($value != ""){
-                $creterial .=  $key."="."'".$value."' and ";
-             }
+    public static function extractQueryRaw($data)
+    {
+        $creterial = '1=1 and ';
+        foreach ($data as $key => $value) {
+            if ($value != "") {
+                $creterial .=  $key . "=" . "'" . $value . "' and ";
+            }
         }
-        $creterial.='1=1';
-    return $creterial;
+        $creterial .= '1=1';
+        return $creterial;
     }
-    public static function HasColumn($table,$column){
-        if(Schema::hasColumn($table, $column)){
+    public static function HasColumn($table, $column)
+    {
+        if (Schema::hasColumn($table, $column)) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
-    public static function convertToKhmerDate($date) {
+    public static function convertToKhmerDate($date)
+    {
         $ceYear = date('Y', strtotime($date));
         $khmerYear = $ceYear;
         $ceMonth = date('m', strtotime($date));
@@ -343,47 +354,53 @@ class service{
 
         $khmerDay = date('d', strtotime($date));
 
-        $khmerDate = $khmerDay . '-' . $khmerMonth . '-'. 'ឆ្នាំ' . $khmerYear;
+        $khmerDate = $khmerDay . '-' . $khmerMonth . '-' . 'ឆ្នាំ' . $khmerYear;
 
         return $khmerDate;
     }
-    public static function DateYearKH($date) {
-        // Define the Khmer months
-        $khmerMonths = [
-            '01' => 'មករា',
-            '02' => 'កុម្ភៈ',
-            '03' => 'មីនា',
-            '04' => 'មេសា',
-            '05' => 'ឧសភា',
-            '06' => 'មិថុនា',
-            '07' => 'កក្កដា',
-            '08' => 'សីហា',
-            '09' => 'កញ្ញា',
-            '10' => 'តុលា',
-            '11' => 'វិច្ឆិកា',
-            '12' => 'ធ្នូ',
-        ];
-    
-        // Convert the date to a Carbon instance
-        $carbonDate = \Carbon\Carbon::createFromFormat('Y-m-d', $date);
-    
-        // Extract the day, month, and year
-        $day = $carbonDate->format('d');
-        $month = $carbonDate->format('m');
-        $year = $carbonDate->format('Y');
-    
-        // Convert to Khmer numerals
-        $toKhmerNumerals = function ($number) {
-            $khmerDigits = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
-            return str_replace(range(0, 9), $khmerDigits, $number);
-        };
-    
-        // Build the Khmer date format
-        $khmerDate = $toKhmerNumerals($day) . ' ' . $khmerMonths[$month] . ' ' . $toKhmerNumerals($year);
-    
-        return $khmerDate;
+
+
+
+    public static function DateYearKH($date)
+    {
+        if (empty($date) || !\Carbon\Carbon::hasFormat($date, 'Y-m-d')) {
+            return '-';
+        }
+
+        try {
+            $khmerMonths = [
+                '01' => 'មករា',
+                '02' => 'កុម្ភៈ',
+                '03' => 'មីនា',
+                '04' => 'មេសា',
+                '05' => 'ឧសភា',
+                '06' => 'មិថុនា',
+                '07' => 'កក្កដា',
+                '08' => 'សីហា',
+                '09' => 'កញ្ញា',
+                '10' => 'តុលា',
+                '11' => 'វិច្ឆិកា',
+                '12' => 'ធ្នូ',
+            ];
+
+            $carbonDate = \Carbon\Carbon::createFromFormat('Y-m-d', $date);
+
+            $day = $carbonDate->format('d');
+            $month = $carbonDate->format('m');
+            $year = $carbonDate->format('Y');
+
+            $toKhmerNumerals = function ($number) {
+                $khmerDigits = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+                return str_replace(range(0, 9), $khmerDigits, $number);
+            };
+
+            return $toKhmerNumerals($day) . ' ' . $khmerMonths[$month] . ' ' . $toKhmerNumerals($year);
+        } catch (\Exception $e) {
+            return '';
+        }
     }
-    
+
+
     public static function calculateDateDifference($postingDate)
     {
         $currentDate = Carbon::now()->toDateString();
@@ -406,7 +423,7 @@ class service{
         $seconds = self::convertToKhmerNumerals(str_pad($now->format('s'), 2, '0', STR_PAD_LEFT));
         $formattedTime = "{$hours}:{$minutes}:{$seconds}";
         $prefix = self::getKhmerDatePrefix($now);
-        
+
         return "{$prefix} {$dayOfMonth} ខែ{$month} ឆ្នាំ{$year}";
     }
 
@@ -418,7 +435,7 @@ class service{
 
         // Convert Gregorian year to Buddhist year
         $buddhistYear = self::convertToKhmerNumerals((int) $date->format('Y') + 543);
-        
+
         // Calculate lunar date based on a reference date
         $referenceDate = new DateTime('2024-01-07');
         $interval = $date->diff($referenceDate);
@@ -452,9 +469,15 @@ class service{
     {
         $khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
         return strtr($number, [
-            '0' => $khmerNumbers[0], '1' => $khmerNumbers[1], '2' => $khmerNumbers[2],
-            '3' => $khmerNumbers[3], '4' => $khmerNumbers[4], '5' => $khmerNumbers[5],
-            '6' => $khmerNumbers[6], '7' => $khmerNumbers[7], '8' => $khmerNumbers[8],
+            '0' => $khmerNumbers[0],
+            '1' => $khmerNumbers[1],
+            '2' => $khmerNumbers[2],
+            '3' => $khmerNumbers[3],
+            '4' => $khmerNumbers[4],
+            '5' => $khmerNumbers[5],
+            '6' => $khmerNumbers[6],
+            '7' => $khmerNumbers[7],
+            '8' => $khmerNumbers[8],
             '9' => $khmerNumbers[9],
         ]);
     }
@@ -462,17 +485,18 @@ class service{
     {
         $khmerDigits = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
         $englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-        
+
         return str_replace($khmerDigits, $englishDigits, $khmerNumber);
     }
     // end  format day khmer 
-    public static function DateFormartKhmer($date) {
+    public static function DateFormartKhmer($date)
+    {
         // Define Khmer numerals
         $khmerNumbers = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
-    
+
         // Convert the input date to a DateTime object
         $dateTime = DateTime::createFromFormat('Y-m-d', $date);
-    
+
         // Check if the date conversion was successful
         if (!$dateTime) {
             // Return a meaningful error message or handle the invalid input
@@ -481,15 +505,16 @@ class service{
 
         // Format the date as dd.mm.yyyy
         $formattedDate = $dateTime->format('d.m.Y');
-    
+
         // Replace English numbers with Khmer numbers
         $khmerDate = str_replace(range(0, 9), $khmerNumbers, $formattedDate);
-    
+
         return $khmerDate;
     }
 
-    public static function GetDateIndexOption($data) {
-        
+    public static function GetDateIndexOption($data)
+    {
+
         $sections = DB::table('sections')->get();
         $department = Department::get();
         $skills = DB::table('skills')->get();
@@ -500,14 +525,12 @@ class service{
         return compact('sections', 'department', 'skills', 'qualifications', 'classs', 'teachers');
     }
 
-    public static function CheckLogin($data) {
-        
-        if(!Auth::check()){
+    public static function CheckLogin($data)
+    {
+
+        if (!Auth::check()) {
             return redirect("login")->withSuccess('Opps! You do not have access');
-        }  
+        }
         return;
     }
-    
 }
-
-?>

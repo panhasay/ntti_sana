@@ -174,6 +174,10 @@ class SystemSettingController extends Controller
                         ->paginate(10000);
                     $blade_file_record = 'general.assing_classes_lists';
                     break;
+                case 'Certificate-Degree':
+                    $records = Student::whereRaw($extract_query)->paginate(100);
+                    $blade_file_record = 'certificate.certificate_degree_lists';
+                    break;
                 default:
                     break;
             }
@@ -240,13 +244,13 @@ class SystemSettingController extends Controller
                         ->where('code', '<>', null)->get();
                     $blade_file_record = 'general.teachers_lists';
                 } else if ($page == 'student_registration') {
-                        $menus = DB::table('student')
-                            ->where(function ($query) use ($search_value) {
-                                $query->where('name_2', 'like', $search_value . "%")
-                                    ->orWhere('name', 'like', $search_value . "%");
-                            })
-                            ->whereNotNull('class_code') // Ensures class_code is not null
-                            ->get();
+                    $menus = DB::table('student')
+                        ->where(function ($query) use ($search_value) {
+                            $query->where('name_2', 'like', $search_value . "%")
+                                ->orWhere('name', 'like', $search_value . "%");
+                        })
+                        ->whereNotNull('class_code') // Ensures class_code is not null
+                        ->get();
                     $blade_file_record = 'general.student_register_lists';
                 } else if ($page == 'class-new') {
                     $menus = Classes::where('name', 'like', $search_value . "%")
@@ -267,15 +271,15 @@ class SystemSettingController extends Controller
                     $blade_file_record = 'general.student_scholarship_lists';
                 } else if ($page == 'class-schedule') {
                     $menus = ClassSchedule::where('class_code', 'like', '%' . $search_value . '%')
-                            ->orWhere('skills_code', 'like', $search_value . '%')
-                            ->get();
+                        ->orWhere('skills_code', 'like', $search_value . '%')
+                        ->get();
                     $blade_file_record = 'general.class_schedule_lists';
                 } else if ($page == 'assign-classes') {
                     $menus = AssingClasses::where('class_code', 'like', '%' . $search_value . '%')
-                            ->orWhere('skills_code', 'like', $search_value . '%')
-                            ->get();
+                        ->orWhere('skills_code', 'like', $search_value . '%')
+                        ->get();
                     $blade_file_record = 'general.class_schedule_lists';
-                } 
+                }
 
                 if (count($menus) > 0) {
                     foreach ($menus as $menu) {
@@ -357,11 +361,11 @@ class SystemSettingController extends Controller
                 } else if ($page == 'class-schedule') {
                     $menus = DB::table('class_schedule')->where('class_code', 'like', '%' . $search_value . '%')
                         ->orWhere('skills_code', 'like', $search_value . '%')->paginate(1000);
-                        $blade_file_record = 'general.class_schedule_lists';
+                    $blade_file_record = 'general.class_schedule_lists';
                 } else if ($page == 'assign-classes') {
-                    $menus = AssingClasses::with(['department', 'section', 'skill', 'teacher','subject' ])
-                    ->where('class_code', 'like', '%' . $search_value . '%')
-                    ->paginate(1000);
+                    $menus = AssingClasses::with(['department', 'section', 'skill', 'teacher', 'subject'])
+                        ->where('class_code', 'like', '%' . $search_value . '%')
+                        ->paginate(1000);
                     $blade_file_record = 'general.assing_classes_lists';
                 }
             }
@@ -390,7 +394,7 @@ class SystemSettingController extends Controller
                     $records = ClassSchedule::paginate(1000);
                 } else if ($page == 'assign-classes') {
                     $records = AssingClasses::paginate(1000);
-                } 
+                }
             }
             $view = view($blade_file_record, compact('records'))->render();
             return response()->json(['status' => 'success', 'view' => $view]);
@@ -500,6 +504,10 @@ class SystemSettingController extends Controller
                 case 'assign-classes':
                     $records = AssingClasses::paginate(20);
                     $blade_file_record = 'general.assing_classes_lists';
+                    break;
+                case 'Certificate-Degree':
+                    $records = Student::paginate(20);
+                    $blade_file_record = 'certificate.certificate_degree_lists';
                     break;
                 default:
                     break;

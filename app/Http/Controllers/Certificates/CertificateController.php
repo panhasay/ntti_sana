@@ -61,27 +61,33 @@ class CertificateController extends Controller
     public function index()
     {
         $record_dept = Department::where('is_active', 'Yes')->where('code', 'D_IT')->take('3')->get();
-
         return view('certificate/certificate_department_menu', compact('record_dept'));
     }
 
-    public function IndexPrintCertificates(){
-        $page = "Certificate-Degree";
-        $records = Student::paginate(20);
-        $data = $this->services->GetDateIndexOption(now()); 
-
-        return view('certificate.certificate_degree', array_merge($data, compact('records', 'page')));
-    }
-
-    public function CertificatesDegrePrints(Request $request){
+    public function CertificatesDegrePrints(Request $request, $class_code)
+    {
         $data = $request->all();
         $records = Student::where('code', $data['code'])->first();
+
+
+        $students = Student::where('class_code', $class_code)->get();
+
+        $data_id = [];
+
+        foreach ($students as $student) {
+            $data_id[] = $student->id;
+        }
+        $filtered_students = Student::whereIn('id', $data_id)
+            ->get();
         return view('certificate.certificate_degree_print', compact('records'));
     }
 
     public function CertificatesDegrePriview(Request $request)
     {
+
         $data = $request->all();
+        dd($data);
+
         $records = Student::where('code', $data['code'])->first();
 
         if (!$records) {
@@ -216,7 +222,7 @@ class CertificateController extends Controller
         $students = StudentModel::getFilteredStudents($dept_code, $class_code, $search, $rows_per_page);
 
         $students->transform(function ($student) {
-            
+
             $student->stu_photo = DB::table('picture')->where('code', $student->code)->orderByDesc('id')->value('picture_ori');
 
             $filePath = public_path('uploads/student/' . $student->stu_photo);
@@ -224,9 +230,9 @@ class CertificateController extends Controller
             $student->photo_status = $student->stu_photo && file_exists($filePath) ? true : false;
 
             $record_card_expire = CertStudentPrintCardExpireClass::where('class_code', $student->class_code)
-                        ->where('status', 1)
-                        ->orderBy('session_code', 'desc')
-                        ->first();
+                ->where('status', 1)
+                ->orderBy('session_code', 'desc')
+                ->first();
 
             $now = Carbon::now()->subYear();
 
@@ -248,7 +254,7 @@ class CertificateController extends Controller
             $count_revision = CertStudentPrintCardRevision::where('print_card_id', $student->id)
                 ->where('status', 1)
                 ->count();
-                
+
             $student->count_revision = $count_revision;
             return $student;
         });
@@ -1053,10 +1059,10 @@ class CertificateController extends Controller
         });
 
         $records = CertStudentPrintCardExpireClass::where('class_code', $data['data_class'])->first();
-// 
+        // 
         $qualification = Classes::where('code', $data['data_class'])->value('level');
         $results = $query->with(['class', 'createdBy:id,name', 'updatedBy:id,name'])->get();
-       
+
 
         return response()->json([
             'results' => $results,
@@ -1070,6 +1076,76 @@ class CertificateController extends Controller
         $data = $request->all();
 
         $records = CertStudentPrintCardSession::first();
-        return response()->json(['status' =>'success','records' =>$records]);
+        return response()->json(['status' => 'success', 'records' => $records]);
+    }
+
+
+    // public function preview_print($id)
+    // {
+    //     $students = Student::where('id', $id)->get();
+
+    //     $data_id = [];
+
+    //     foreach ($students as $student) {
+    //         $data_id[] = $student->id;
+    //     }
+
+    //     $filtered_students = Student::whereIn('id', $data_id)
+    //         ->get();
+    //     //    // Convert date_of_birth to Khmer date for each record
+
+    //     $student->date_year_kh = \App\Service\service::DateYearKH($student->date_of_birth);
+
+    //     // dd($student->date_year_kh = \App\Service\service::DateYearKH($student->date_of_birth));
+    //     // Pass the filtered students to the view
+    //     return view('certificate.formal_cerificate', compact('filtered_students','student'));
+    // }
+    public function IndexPrintCertificates()
+    {
+        $page = "Certificate-Degree";
+        $records = Student::paginate(20);
+
+        $records->getCollection()->transform(function ($record) {
+            $record->date_year_kh = \App\Service\service::DateYearKH($record->date_of_birth);
+            return $record;
+        });
+
+        $data = $this->services->GetDateIndexOption(now());
+        // Return to view
+        return view('certificate.certificate_degree', array_merge($data, compact('records', 'page')));
+    }
+    public function preview_print($id)
+    {
+        $students = Student::where('id', $id)->get();
+
+        $class_code = [];
+        foreach ($students as $student) {
+            $class_code = $student->class_code;
+            $student->date_year_kh = \App\Service\service::DateYearKH($student->date_of_birth);
+        }
+        $studentsMulti = Student::where('class_code', $class_code)->get();
+
+        $data_id = [];
+
+        foreach ($studentsMulti as $student) {
+            $data_id[] = $student->id;
+        }
+
+        $filtered_students = Student::whereIn('id', $data_id)
+            ->get();
+        return view('certificate.formal_cerificate', compact('students', 'filtered_students', 'class_code'));
+    }
+
+    public function previewPrintMulti(Request $request)
+    {
+        $ids = explode(',', $request->get('ids', ''));
+
+        $students = Student::whereIn('id', $ids)->get();
+
+        foreach ($students as $student) {
+            $student->date_year_kh = \App\Service\service::DateYearKH($student->date_of_birth);
+        }
+
+        return view('certificate.formal_cerificate', compact('students'));
     }
 }
