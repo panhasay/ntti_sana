@@ -21,7 +21,7 @@
                 </span>
             </span>
 
-            <div class="flex-1">
+            <div class="flex-1 w-auto">
                 <h3 class="text-base sm:text-lg font-semibold leading-none tracking-tight mb-1.5 khmer-font">
                     {{ $item['teacher_2'] ?? $item['teacher'] }} ({{ $item['teacher'] }})
                 </h3>
