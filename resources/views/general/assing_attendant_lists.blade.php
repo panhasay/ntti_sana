@@ -27,35 +27,27 @@
     </style>
 <body class="bg-gray-50 ">
     <div class=" p-2 space-y-2 md:space-y-6  ">
-        <!-- Header Controls -->
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1 sm:gap-2">
-                <input type="search" placeholder="ស្វែងរក..." class="w-full px-3 py-2 border rounded-lg min-w-[100px] max-w-[500px] " id="search-input" style="height: 38px !important;">
 
-                <button class="px-2 py-2 border rounded-lg flex items-center justify-center gap-2  min-w-[100px] max-w-[500px]" id="button-saveAttendant-Byday" style="height: 38px !important;">
-                    រក្សាទុក
-                </button>
-                <button class="px-2 py-2 border rounded-lg flex items-center justify-center gap-2 min-w-[100px] max-w-[500px] bg-green-100 hover:bg-green-200"
-                    id="button-checkAllPresent"
-                    data-modal-target="checkall-modal"
-                    data-modal-toggle="checkall-modal"
-                    style="height: 38px !important;">
-                    វត្តមានទាំងអស់
-                </button>
+        <nav class="flex items-center text-sm mb-4" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+                <li class="inline-flex items-center">
+                    <a href="/attendance/dashboards-attendance" class="inline-flex items-center text-gray-500 hover:text-blue-600">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="w-3 h-3 text-gray-400 mx-2" fill="currentColor" viewBox="0 0 20 20"><path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/></svg>
+                        <span class="text-gray-700 font-semibold">បញ្ជីវត្តមានសិស្ស</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
 
-            </div>
-            
-            <div id="alert-message" class="fixed top-0  right-0 p-4 mb-4 text-md text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
-                <span id="message" class="font-medium"></span>
-            </div>
-            
-            <div class="text-lg font-semibold">
-                កាលបរិច្ឆេទ: {{ isset($_GET['date']) ? $_GET['date'] : date('Y-m-d') }}
-            </div>
-            <input type="hidden" id="att-date" value="{{ request('date', date('Y-m-d')) }}">
-        </div>
+       
         <!-- Add Filter Panel -->
-        <div id="filter-panel" class="hidden mt-2 p-4 bg-white border rounded-lg ">
+        {{-- <div id="filter-panel" class=" mt-2 p-4 bg-white border rounded-lg ">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-sm font-medium mb-1">ថ្នាក់</label>
@@ -79,6 +71,53 @@
                         <option>អវត្តមាន</option>
                         <option>ច្បាប់</option>
                     </select>
+                </div>
+            </div>
+        </div> --}}
+
+        <!-- Class Information Card -->
+        <div class="bg-white rounded-xl border p-6 mb-6 shadow-sm">
+            <div class="flex justify-between text-lg font-semibold">
+                <h2 class="text-2xl font-bold mb-4">ព័ត៌មានថ្នាក់</h2>
+                កាលបរិច្ឆេទ: {{ isset($_GET['date']) ? $_GET['date'] : date('Y-m-d') }}
+           </div>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <div class="flex items-center">
+                    <div>
+                        <div class="text-xs text-gray-400 font-medium">ថ្នាក់</div>
+                        <div class="font-semibold text-black">{{ $header->class_code ?? '-' }}</div>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div>
+                        <div class="text-xs text-gray-400 font-medium">គ្រូបង្រៀន</div>
+                        <div class="font-semibold text-black">{{ $header->teacher->name_2 ?? '-' }}</div>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div>
+                        <div class="text-xs text-gray-400 font-medium">មុខវិជ្ជា</div>
+                        <div class="font-semibold text-black">{{ $header->subject->name ?? '-' }}</div>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div>
+                        <div class="text-xs text-gray-400 font-medium">ម៉ោងបង្រៀន</div>
+                        <div class="font-semibold text-black">{{ ($header->start_time ?? '') . ($header->end_time ? ' - ' . $header->end_time : '') }}</div>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div>
+                        <div class="text-xs text-gray-400 font-medium">បន្ទប់</div>
+                        <div class="font-semibold text-black">{{ $header->room ?? '-' }}</div>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div>
+                        <div class="text-xs text-gray-400 font-medium">វេន</div>
+                        <div class="font-semibold text-black">{{ $header->section->name_2 ?? '-' }}</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -124,14 +163,25 @@
             </div>
         </div>
 
+        <div class="flex items-center justify-between mt-4 mb-2">
+            <input type="search" placeholder="ស្វែងរក..." class="w-full px-3 py-2 border rounded-lg min-w-[100px] max-w-[200px] " id="search-input" style="height: 38px !important;">
+
+            <button class="px-2 py-2 border rounded-lg flex items-center justify-center gap-2 min-w-[100px] max-w-[500px] bg-green-100 hover:bg-green-200"
+                id="button-checkAllPresent"
+                data-modal-target="checkall-modal"
+                data-modal-toggle="checkall-modal"
+                style="height: 38px !important;">
+                វត្តមានទាំងអស់
+            </button>
+        </div>
         <!-- Table -->
         <div class="bg-white rounded-lg border w-full overflow-x-auto ">
             <table class="w-full text-sm md:text-lg ">
                 <thead>
                     <tr class="border-b">
-                        <th class="px-2 py-2 text-left whitespace-nowrap">
+                        {{-- <th class="px-2 py-2 text-left whitespace-nowrap">
                             <input type="checkbox" class="rounded border-gray-300">
-                        </th>
+                        </th> --}}
                         <th class="px-2 py-2 text-left whitespace-nowrap">អត្តលេខ</th>
                         <th class="px-2 py-2 text-left whitespace-nowrap  sm:table-cell cursor-pointer" data-sort="name_2">
                             <span class="flex items-center">
@@ -162,7 +212,7 @@
                     @forEach($records as $students)
                     @if($students->student && $students->student->code)
                     <tr class="border-b">
-                        <td class="px-2 py-2 text-center"><input type="checkbox" class="rounded border-gray-300"></td>
+                        {{-- <td class="px-2 py-2 text-center"><input type="checkbox" class="rounded border-gray-300"></td> --}}
                         <td class="px-2 py-2 text-xs sm:text-sm">{{$students->student->code}}</td>
                         <td class="px-2 py-2 text-xs sm:text-sm ">{{$students->student->name_2}}</td>
                         <td class="px-2 py-2 text-xs sm:text-sm hidden sm:table-cell">{{$students->student->name}}</td>
@@ -500,9 +550,9 @@
     const filterButton = document.getElementById('filter-button');
     const filterPanel = document.getElementById('filter-panel');
 
-    filterButton.addEventListener('click', function() {
-        filterPanel.classList.toggle('hidden');
-    });
+    // filterButton.addEventListener('click', function() {
+    //     filterPanel.classList.toggle('hidden');
+    // });
 
     function updateScoreStudent(score){
         const studentId = event.target.closest('tr').querySelector('.student-score').getAttribute('data-student-id');

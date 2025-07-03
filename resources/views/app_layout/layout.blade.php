@@ -232,7 +232,7 @@
 
 
     <main class="flex-1 w-full">
-        <div class="max-w-full md:max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-[83rem] mx-auto px-4 py-6 flex-1 w-full">
+        <div class="max-w-full md:max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-[83rem] mx-auto md:px-4 py-6 flex-1 w-full">
             @yield('content')
         </div>
     </main>
