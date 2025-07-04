@@ -128,13 +128,15 @@ Route::group(['perfix' => 'report-first-year-student-registration'], function ()
     Route::get('reports-list-of-student-print/export/', [ReportFirstYearStudentRegistrationController::class, 'export']);
 })->middleware('auth');
 
-Route::group(['perfix' => 'dashboard'], function (){
-    Route::get('dashboard', [DashboardController::class, 'index'])->name('index');
-    Route::get('dahhboard-student-print', [DashboardController::class, 'Print'])->name('Print');
-    Route::get('teacher-dashboard', [DashboardController::class, 'TeacherDashboard'])->name('TeacherDashboard');
-    Route::get('teacher-management-class', [DashboardController::class, 'TeacherMmanagementClass'])->name('TeacherMmanagementClass');
-    Route::get('dahhboard-student-account', [DashboardController::class, 'StudentUserAccount'])->name('StudentUserAccount');
-});
+    Route::group(['prefix' => 'dashboard','middleware' => 'user_permission'
+    ], function () {
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
+        Route::get('student-print', [DashboardController::class, 'Print'])->name('dashboard.print');
+        Route::get('teacher-dashboard', [DashboardController::class, 'TeacherDashboard'])->name('dashboard.teacherDashboard');
+        Route::get('teacher-management-class', [DashboardController::class, 'TeacherManagementClass'])->name('dashboard.teacherManagementClass');
+        Route::get('student-account', [DashboardController::class, 'StudentUserAccount'])->name('dashboard.studentAccount');
+    });
+
 Route::get('dsa', [DashboardController::class, 'StudentUserAccount'])->name('StudentUserAccount');
 Route::group(['perfix' => 'department' ,  'middleware' => 'permission'], function (){
     Route::get('department-setup', [DepartmentController::class, 'index'])->name('index');

@@ -29,6 +29,8 @@
         <th style="font-weight: 700" width="10">លទ្ធផងបាក់ឌុប</th>
         <th style="font-weight: 700" width="25">ថ្នាក់សិក្សា(សង្គម/វិទ្យាសាស្រ្ត)</th>
         <th style="font-weight: 700" width="15">លេខទូរស័ព្ទ</th>
+        <th style="font-weight: 700" width="15">អាណាព្យាបាល</th>
+        <th style="font-weight: 700" width="20">លេខទូរស័ព្ទ អាណាព្យាបាល</th>
         {{-- <th style="font-weight: 700" width="10">ក្រុម</th> --}}
         <th style="font-weight: 700" width="10">ជំនាញ</th>
         <th style="font-weight: 700" width="20">%អាហារូបករណ៏</th>
@@ -55,6 +57,8 @@
           </td>
           <td>{{ $record->bakdop_type ?? ''}}</td>
           <td>{{ $record->phone_student ?? ''}}</td>
+          <td>{{ $record->guardian_phone ?? ''}}</td>
+          <td>{{ $record->guardian_name ?? ''}}</td>
           {{-- <td>{{ $record->class_code  ?? ''}}</td> --}}
           <td>{{ $record->skills ?? ''}}</td>
           <td>{{ $record->scholarship ?? '' }}</td>

@@ -126,10 +126,13 @@ class StudnetController extends Controller
             ->whereNotNull('class_code')
             ->get();
 
-            // dd($total_student_have_class);  
-
-            $records = StudentRegistration::with(['session_year'])->where('study_type', 'new student')->orderBy('code', 'desc')->paginate(15);
+            $records = StudentRegistration::with(['session_year'])
+                ->whereRaw($this->services->getRrecordsByDepartment())
+                ->where('study_type', 'new student')
+                ->orderBy('code', 'desc')
+                ->paginate(15);
         }
+
         return view('general.student_register', compact('records', 'total_records', 'qualifications', 'skills', 'department', 'sections', 'sections', 'total_student_have_class', 'student_code'));
     }
     public function transaction(request $request)

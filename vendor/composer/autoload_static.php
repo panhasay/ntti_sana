@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit22833a5cac7f270a237d5ec0859decef
+class ComposerStaticInit6a57c4b69d4f36c66c0826879354ed13
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -349,13 +349,13 @@ class ComposerStaticInit22833a5cac7f270a237d5ec0859decef
         ),
         'Spatie\\LaravelIgnition\\' => 
         array (
-            0 => __DIR__ . '/..' . '/spatie/laravel-ignition/src',
-            1 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/laravel-ignition',
+            0 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/laravel-ignition',
+            1 => __DIR__ . '/..' . '/spatie/laravel-ignition/src',
         ),
         'Spatie\\Ignition\\' => 
         array (
-            0 => __DIR__ . '/..' . '/spatie/ignition/src',
-            1 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/ignition',
+            0 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/ignition',
+            1 => __DIR__ . '/..' . '/spatie/ignition/src',
         ),
         'Spatie\\FlareClient\\' => 
         array (
@@ -403,8 +403,8 @@ class ComposerStaticInit22833a5cac7f270a237d5ec0859decef
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-factory/src',
-            1 => __DIR__ . '/..' . '/psr/http-message/src',
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+            1 => __DIR__ . '/..' . '/psr/http-factory/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -659,6 +659,7 @@ class ComposerStaticInit22833a5cac7f270a237d5ec0859decef
         'App\\Http\\Controllers\\General\\DividedNewClassesController' => __DIR__ . '/../..' . '/app/Http/Controllers/General/DividedNewClassesController.php',
         'App\\Http\\Controllers\\General\\ExamScheduleController' => __DIR__ . '/../..' . '/app/Http/Controllers/General/ExamScheduleController.php',
         'App\\Http\\Controllers\\General\\ScoreController' => __DIR__ . '/../..' . '/app/Http/Controllers/General/ScoreController.php',
+        'App\\Http\\Controllers\\General\\SectionsController' => __DIR__ . '/../..' . '/app/Http/Controllers/General/SectionsController.php',
         'App\\Http\\Controllers\\General\\SkillsController' => __DIR__ . '/../..' . '/app/Http/Controllers/General/SkillsController.php',
         'App\\Http\\Controllers\\General\\StudentSanaController' => __DIR__ . '/../..' . '/app/Http/Controllers/General/StudentSanaController.php',
         'App\\Http\\Controllers\\General\\StudnetController' => __DIR__ . '/../..' . '/app/Http/Controllers/General/StudnetController.php',
@@ -670,6 +671,7 @@ class ComposerStaticInit22833a5cac7f270a237d5ec0859decef
         'App\\Http\\Controllers\\Report\\ListOfStudentController' => __DIR__ . '/../..' . '/app/Http/Controllers/Report/ListOfStudentController.php',
         'App\\Http\\Controllers\\Report\\ReportFirstYearStudentRegistrationController' => __DIR__ . '/../..' . '/app/Http/Controllers/Report/ReportFirstYearStudentRegistrationController.php',
         'App\\Http\\Controllers\\Report\\ReportListOfStudentClassAndSectionController' => __DIR__ . '/../..' . '/app/Http/Controllers/Report/ReportListOfStudentClassAndSectionController.php',
+        'App\\Http\\Controllers\\Report\\ReportListTableStudentOfYearController' => __DIR__ . '/../..' . '/app/Http/Controllers/Report/ReportListTableStudentOfYearController.php',
         'App\\Http\\Controllers\\Report\\ReportTotalScoreExamController' => __DIR__ . '/../..' . '/app/Http/Controllers/Report/ReportTotalScoreExamController.php',
         'App\\Http\\Controllers\\SystemSetup\\DashboardController' => __DIR__ . '/../..' . '/app/Http/Controllers/SystemSetup/DashboardController.php',
         'App\\Http\\Controllers\\SystemSetup\\DepartmentController' => __DIR__ . '/../..' . '/app/Http/Controllers/SystemSetup/DepartmentController.php',
@@ -8164,10 +8166,10 @@ class ComposerStaticInit22833a5cac7f270a237d5ec0859decef
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit22833a5cac7f270a237d5ec0859decef::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit22833a5cac7f270a237d5ec0859decef::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit22833a5cac7f270a237d5ec0859decef::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit22833a5cac7f270a237d5ec0859decef::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit6a57c4b69d4f36c66c0826879354ed13::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit6a57c4b69d4f36c66c0826879354ed13::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit6a57c4b69d4f36c66c0826879354ed13::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit6a57c4b69d4f36c66c0826879354ed13::$classMap;
 
         }, null, ClassLoader::class);
     }
