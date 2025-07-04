@@ -2212,13 +2212,9 @@
     "src": "public/asset/NTTI/vendors/mdi/fonts/materialdesignicons-webfont.woff2"
   },
   "resources/css/app.css": {
-
-    "file": "css/ntti-app-8e97d924.css",
-
-    "isEntry": true,
-    "names": [
-      "app.css"
-    ]
+    "file": "css/ntti-app-be0OMe_w.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
   },
   "resources/js/admin/admin.js": {
     "file": "js/ntti-app-ZxgXcoVB.js",
@@ -2227,7 +2223,7 @@
     "isDynamicEntry": true
   },
   "resources/js/app.js": {
-    "file": "js/ntti-app-Dt0E1Gcz.js",
+    "file": "js/ntti-app-7RrQqjKt.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -2237,7 +2233,7 @@
     ]
   },
   "resources/js/certificate/certificate.js": {
-    "file": "js/ntti-app-1XpZvNIX.js",
+    "file": "js/ntti-app-DrRsmoGI.js",
     "name": "certificate",
     "src": "resources/js/certificate/certificate.js",
     "isDynamicEntry": true,

@@ -29,6 +29,7 @@
     use App\Http\Controllers\General\SectionsController;
     use App\Http\Controllers\General\StudentSanaController;
     use App\Http\Controllers\General\TransferController;
+use App\Http\Controllers\Report\ReportAttendanceController;
 use App\Http\Controllers\Report\ReportListOfStudentClassAndSectionController;
 use App\Http\Controllers\Report\ReportTotalScoreExamController;
 use Illuminate\Support\Facades\DB;
@@ -366,6 +367,7 @@ Route::group(['perfix' => 'report_list_of_student_class_and_section'], function 
     Route::get('report_list_of_student_class_and_section-priview', [ReportListOfStudentClassAndSectionController::class, 'Priview'])->name('Priview');
     Route::get('report_list_of_student_class_and_section-print', [ReportListOfStudentClassAndSectionController::class, 'Print'])->name('Print');
     Route::get('reports-list-of-student-print/export/', [ReportListOfStudentClassAndSectionController::class, 'export']);
+    Route::get('report_attendance_student', [ReportAttendanceController::class, 'index']);
 })->middleware('auth');
 
 Route::group(['prefix' => 'student-sana'], function (){
