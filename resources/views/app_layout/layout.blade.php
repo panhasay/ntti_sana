@@ -55,7 +55,7 @@
       font-weight: 900;
       font-style: normal;
     }
-    .moul-regular {
+    .moul {
   font-family: "Moul", serif;
   font-weight: 400;
   font-style: normal;
@@ -237,7 +237,7 @@
         </div>
     </main>
 
-    <footer class="bg-[#2194ce] text-white py-4 mt-8">
+    <footer class="bg-[#2194ce] text-white py-4">
         <div class="container mx-auto px-4 text-center">
             <span class="block text-xs">
                 Copyright © 2024
