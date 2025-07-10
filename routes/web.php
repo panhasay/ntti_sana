@@ -403,3 +403,5 @@ Route::group(['prefix' => 'sections'], function () {
     Route::post('/store', [SectionsController::class, 'store']);
     Route::post('/delete', [SectionsController::class, 'delete']);
 })->middleware('auth');
+
+Route::get('/api/department/{code}/options', [\App\Http\Controllers\Report\ReportAttendanceController::class, 'getDepartmentOptions']);

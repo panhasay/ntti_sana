@@ -17,6 +17,7 @@
       <li><a href="{{ url('/report-first-year-student-registration') }}">ស្ថិតិសិស្សដាក់ពាក្យចុះឈ្មោះចូលរៀនឆ្នាំទី១</a></li><br>
       <li><a href="{{ url('/report_list_of_student_class_and_section') }}">របាយការណ៍និស្សិត ក្រុម និងវេនសិក្សា</a></li><br>
       <li><a href="{{ url('/report_list_table_student_of_years') }}">តារាងបញ្ជីក្រុមនិស្សិតបច្ចេកទេស​ និង បច្ចេកវិទ្យាតាមឆ្នាំសិក្សា</a></li>
+      <li><a href="{{ url('/report_attendance_student') }}">បញ្ជីសរុបអវត្តមាននិសិត្សប្រចាំខែ និងប្រចាំឆមាស</a></li>
   </ul>
 </div>
 @endsection
