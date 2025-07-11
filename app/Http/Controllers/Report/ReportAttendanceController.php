@@ -10,6 +10,7 @@ use App\Models\General\Subjects;
 use App\Models\General\Classes as ClassModel;
 use Illuminate\Support\Facades\DB;
 use App\Models\General\ClassSchedule;
+use App\Models\Student\Student;
 
 class ReportAttendanceController extends Controller
 {
@@ -29,23 +30,24 @@ class ReportAttendanceController extends Controller
         $selected_subject = $request->subject;
         $selected_class = $request->class;
 
-        // Only fetch attendance for selected class
         $results = [];
+        $months = [];
         if ($selected_class) {
-            // Fetch the class schedule to get the start_date
-            $classSchedule = ClassSchedule::where('class_code', $selected_class)
-                ->when($selected_semester, function($q) use ($selected_semester) {
-                    $q->where('semester', $selected_semester);
-                })
-                ->when($selected_year, function($q) use ($selected_year) {
-                    $q->where('years', $selected_year);
-                })
-                ->first();
+            // Get all students in the class
+            $students = Student::where('class_code', $selected_class)->get();
 
-            // Default to current month if not found
-            $startDate = $classSchedule ? $classSchedule->start_date : date('Y-m-01');
-            $start = \Carbon\Carbon::parse($startDate);
-            // Khmer month names
+            // Get all scores for this class (all assign_line_no)
+            $scores = \App\Models\General\student_score::with('student')
+                ->whereHas('student', function($q) use ($selected_class) {
+                    $q->where('class_code', $selected_class);
+                })
+                ->get();
+
+            // Build list of all months present in the data
+            $allMonths = $scores->map(function($score) {
+                return date('Y-m', strtotime($score->att_date));
+            })->unique()->sort()->values();
+
             $khmerMonths = [
                 '01' => 'មករា',
                 '02' => 'កម្ភៈ',
@@ -60,62 +62,50 @@ class ReportAttendanceController extends Controller
                 '11' => 'វិច្ឆិកា',
                 '12' => 'ធ្នូ',
             ];
-            $months = [];
-            for ($i = 0; $i < 5; $i++) {
-                $monthDate = $start->copy()->addMonths($i);
-                $monthKey = $monthDate->format('m');
-                $monthYear = $monthDate->format('Y');
-                $monthName = $khmerMonths[$monthKey] ?? $monthDate->format('F');
-                $startOfMonth = $monthDate->copy()->startOfMonth()->format('d');
-                $endOfMonth = $monthDate->copy()->endOfMonth()->format('d');
-                $months[$monthKey] = [
-                    'name' => $monthName,
-                    'start' => $startOfMonth,
-                    'end' => $endOfMonth,
-                    'year' => $monthYear,
+            foreach ($allMonths as $ym) {
+                [$year, $month] = explode('-', $ym);
+                $months[$ym] = [
+                    'name' => $khmerMonths[$month] ?? $month,
+                    'start' => '01',
+                    'end' => date('t', strtotime("$year-$month-01")),
+                    'year' => $year,
+                    'month' => $month,
                 ];
             }
 
-            $scores = student_score::with('student')
-                ->whereHas('student', function($q) use ($selected_class) {
-                    $q->where('class_code', $selected_class);
-                })
-                ->orderBy('assign_line_no')
-                ->orderBy('student_code')
-                ->get()
-                ->groupBy('assign_line_no');
+            // Group scores by student and month
+            $scoresByStudentMonth = [];
+            foreach ($scores as $score) {
+                $studentCode = $score->student_code;
+                $ym = date('Y-m', strtotime($score->att_date));
+                if (!isset($scoresByStudentMonth[$studentCode][$ym])) {
+                    $scoresByStudentMonth[$studentCode][$ym] = ['permission' => 0, 'absent' => 0];
+                }
+                if ($score->att_score == 0.5) {
+                    $scoresByStudentMonth[$studentCode][$ym]['permission']++;
+                } elseif ($score->att_score == 0) {
+                    $scoresByStudentMonth[$studentCode][$ym]['absent']++;
+                }
+            }
 
-            foreach ($scores as $assignLineNo => $groupedScores) {
-                $students = $groupedScores->groupBy('student_code');
-                $studentList = [];
-                foreach ($students as $studentCode => $studentScores) {
-                    $scoreCounts = $studentScores->pluck('att_score')->countBy();
-                    // Dynamic monthly attendance counts
-                    $monthly = [];
-                    foreach (array_keys($months) as $month) {
-                        $monthly[$month] = 0;
-                    }
-                    foreach ($studentScores as $score) {
-                        $month = date('m', strtotime($score->att_date));
-                        if (isset($monthly[$month])) {
-                            $monthly[$month]++;
-                        }
-                    }
-                    $studentList[] = [
-                        'student_code' => $studentCode,
-                        'student_name' => $studentScores->first()->student->name_2 ?? '',
-                        'scores' => $studentScores->pluck('att_score'),
-                        'score_count' => $scoreCounts,
-                        'monthly' => $monthly,
+            // Build results: one row per student
+            foreach ($students as $student) {
+                $studentCode = $student->code;
+                $monthly = [];
+                foreach (array_keys($months) as $ym) {
+                    $monthly[$ym] = [
+                        'permission' => $scoresByStudentMonth[$studentCode][$ym]['permission'] ?? 0,
+                        'absent' => $scoresByStudentMonth[$studentCode][$ym]['absent'] ?? 0,
                     ];
                 }
-                $classInfo = AssingClasses::where('assing_no', $assignLineNo)->first();
+                $total_permission = array_sum(array_column($monthly, 'permission'));
+                $total_absent = array_sum(array_column($monthly, 'absent'));
                 $results[] = [
-                    'assign_line_no' => $assignLineNo,
-                    'class_info' => $classInfo,
-                    'total_students' => count($students),
-                    'students' => $studentList,
-                    'months' => $months,
+                    'student_code' => $studentCode,
+                    'student_name' => $student->name_2 ?? '',
+                    'monthly' => $monthly,
+                    'total_permission' => $total_permission,
+                    'total_absent' => $total_absent,
                 ];
             }
         }
@@ -131,6 +121,7 @@ class ReportAttendanceController extends Controller
 
         return view('reports.report_attendance_student', [
             'results' => $results,
+            'months' => $months,
             'attendance_types' => [
                 ['value' => 2, 'label' => 'វត្តមាន'],    // Present
                 ['value' => 1, 'label' => 'យឺត'],        // Late

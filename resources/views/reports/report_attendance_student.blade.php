@@ -1,101 +1,104 @@
 @extends('app_layout.layout')
 @section('content')
 
-    <div class="px-4 rounded-lg mb-2 print-hidden">
-        <div class="flex justify-between items-center mb-4">
+<div class="px-4 mb-4 print:hidden battambang">
+    <div class="bg-gray-50 p-4 rounded-lg">
+        <!-- Flex container: Filters Left, Buttons Right -->
+        <div class="flex flex-col md:flex-row justify-between items-end gap-4">
+            
+            <!-- Filter form section (left) -->
+            <form method="GET" action="" class="w-full md:w-auto">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 items-end">
+                    <!-- Year -->
+                    <div>
+                        <label for="year" class="block mb-1 text-sm font-medium text-gray-900">ឆ្នាំសិក្សា</label>
+                        <select id="year" name="year"
+                            class="bg-white border border-gray-300 text-sm rounded-lg w-full h-10 px-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">ជ្រើសរើសឆ្នាំសិក្សា</option>
+                            @foreach ($years as $year)
+                                <option value="{{ $year->code }}" {{ ($filters['year'] ?? '') == $year->code ? 'selected' : '' }}>
+                                    {{ $year->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-        <form method="GET" action="" class="mb-6 bg-gray-50 p-4 rounded-lg">
-            <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end battambang">
-                <div>
-                    <label for="year" class="block mb-2 text-sm font-medium text-gray-900">ឆ្នាំសិក្សា</label>
-                    <select id="year"
-                        name="year"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1 h-10">
-                        <option value="">ជ្រើសរើសឆ្នាំសិក្សា</option>
-                        @foreach ($years as $year)
-                            <option value="{{ $year->code }}" {{ ($filters['year'] ?? '') == $year->code ? 'selected' : '' }}>
-                                {{ $year->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-  
-                <div>
-                    <label for="semester" class="block mb-2 text-sm font-medium text-gray-900">ឆមាស</label>
-                    <select id="semester"
-                        name="semester"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1 h-10">
-                        <option value="">ជ្រើសរើសឆមាស</option>
-                        @foreach ($semesters as $semester)
-                            <option value="{{ $semester }}" {{ ($filters['semester'] ?? '') == $semester ? 'selected' : '' }}>ឆាសទី {{ $semester }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                    <!-- Semester -->
+                    <div>
+                        <label for="semester" class="block mb-1 text-sm font-medium text-gray-900">ឆមាស</label>
+                        <select id="semester" name="semester"
+                            class="bg-white border border-gray-300 text-sm rounded-lg w-full h-10 px-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">ជ្រើសរើសឆមាស</option>
+                            @foreach ($semesters as $semester)
+                                <option value="{{ $semester }}" {{ ($filters['semester'] ?? '') == $semester ? 'selected' : '' }}>
+                                    ឆមាសទី {{ $semester }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                <div>
-                    <label for="department" class="block mb-2 text-sm font-medium text-gray-900">ដេប៉ាតឺម៉ង់</label>
-                    <select id="department"
-                        name="department"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1 h-10">
-                        <option value="">ជ្រើសរើសដេប៉ាតឺម៉ង់</option>
-                        @foreach ($departments as $department)
-                            <option value="{{ $department->code }}" {{ ($filters['department'] ?? '') == $department->code ? 'selected' : '' }}>
-                                {{ $department->name_2 }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+                    <!-- Department -->
+                    <div>
+                        <label for="department" class="block mb-1 text-sm font-medium text-gray-900">ដេប៉ាតឺម៉ង់</label>
+                        <select id="department" name="department"
+                            class="bg-white border border-gray-300 text-sm rounded-lg w-full h-10 px-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">ជ្រើសរើសដេប៉ាតឺម៉ង់</option>
+                            @foreach ($departments as $department)
+                                <option value="{{ $department->code }}" {{ ($filters['department'] ?? '') == $department->code ? 'selected' : '' }}>
+                                    {{ $department->name_2 }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                <div>
-                    <label for="subject" class="block mb-2 text-sm font-medium text-gray-900">មុខវិជ្ជា</label>
-                    <select id="subject"
-                        name="subject"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1 h-10">
-                        <option value="">ជ្រើសរើសមុខវិជ្ជា</option>
-                        @foreach ($subjects as $subject)
-                            <option value="{{ $subject->code }}" {{ ($filters['subject'] ?? '') == $subject->code ? 'selected' : '' }}>
-                                {{ $subject->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+                    <!-- Class -->
+                    <div>
+                        <label for="class" class="block mb-1 text-sm font-medium text-gray-900">ថ្នាក់</label>
+                        <select id="class" name="class"
+                            class="bg-white border border-gray-300 text-sm rounded-lg w-full h-10 px-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">ជ្រើសរើសថ្នាក់</option>
+                            @foreach ($classes as $class)
+                                <option value="{{ $class->code }}" {{ ($filters['class'] ?? '') == $class->code ? 'selected' : '' }}>
+                                    {{ $class->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                <div>
-                    <label for="class" class="block mb-2 text-sm font-medium text-gray-900">ថ្នាក់</label>
-                    <select id="class"
-                        name="class"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1 h-10">
-                        <option value="">ជ្រើសរើសថ្នាក់</option>
-                        @foreach ($classes as $class)
-                            <option value="{{ $class->code }}" {{ ($filters['class'] ?? '') == $class->code ? 'selected' : '' }}>
-                                {{ $class->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <!-- Search Button -->
+                    <div class="flex items-end h-full">
+                        <button type="submit"
+                            class="w-full h-10 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded hover:bg-indigo-700">
+                            ស្វែងរក
+                        </button>
+                    </div>
                 </div>
-               
-                
-              
-                <div>
-                    <button
-                        class="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 khmer-moul"
-                        type="submit">
-                        <span class=" material-icons mr-2">ស្រង់</span> 
-                    </button>
-                </div>
+            </form>
+
+            <!-- Buttons section (right) -->
+            <div class="flex gap-2">
+                <button onclick="window.print()" type="button"
+                    class="h-10 px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 shadow focus:outline-none focus:ring-2 focus:ring-green-400 flex items-center gap-2">
+                    Print
+                </button>
+                <button onclick="exportTableToExcel('attendance-table', 'attendance_report')" type="button"
+                    class="h-10 px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 shadow focus:outline-none focus:ring-2 focus:ring-blue-400 flex items-center gap-2">
+                    <!-- Download SVG icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+                    </svg>
+                    Export Excel
+                </button>
             </div>
-        </form>
-
-        <div class="flex justify-end gap-2 mb-4 print-hidden">
-            <button onclick="window.print()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Print</button>
-            <button onclick="exportTableToExcel('attendance-table', 'attendance_report')"
-                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Export Excel</button>
-        </div>
         </div>
     </div>
+</div>
 
-    
-    {{-- {{ dd($results[]) }} --}}
+
+
+
+
+    {{-- {{ dd($results) }} --}}
     <div id="print-area" class="bg-white p-12 rounded shadow">
         <div class="text-center mb-2 gap-2 flex flex-col items-center">
             <h3 class="moul text-md font-bold">បញ្ជីសរុបអវត្តមានប្រចាំឆមាសទី១ ឆ្នាំទី១</h3>
@@ -108,8 +111,8 @@
                     <tr>
                         <th class=" border border-black p-2" rowspan="2">ល.រ</th>
                         <th class=" border border-black p-2" rowspan="2">ឈ្មោះសិស្ស-នាម</th>
-                        @if(isset($results[0]['months']))
-                            @foreach($results[0]['months'] as $month)
+                        @if (isset($months))
+                            @foreach ($months as $month)
                                 <th class="border border-black p-2" colspan="2">
                                     ខែ {{ $month['name'] }}<br />
                                     ថ្ងៃទី{{ $month['start'] }} <br /> ដល់ថ្ងៃទី{{ $month['end'] }}
@@ -119,8 +122,8 @@
                         <th class=" border border-black p-2" colspan="2">សរុប</th>
                     </tr>
                     <tr>
-                        @if(isset($results[0]['months']))
-                            @foreach($results[0]['months'] as $monthKey => $month)
+                        @if (isset($months))
+                            @foreach ($months as $monthKey => $month)
                                 <th class="border border-black p-2">ឥ.ច</th>
                                 <th class="border border-black p-2">ម.ច</th>
                             @endforeach
@@ -131,20 +134,20 @@
                 </thead>
                 <tbody>
                     @if (count($results) > 0)
-                        @php
-                            $class = $results[0];
-                            $row = 1;
-                        @endphp
-                        @foreach ($class['students'] as $student)
-                            <tr>
-                                <td class="border border-black p-2">{{ $row++ }}</td>
+                        @foreach ($results as $student)
+                            @php
+                                $sum_absent = $student['total_absent'] + ($student['total_permission'] / 2);
+                                $highlight = $sum_absent > 4;
+                            @endphp
+                            <tr @if($highlight) class="bg-red-300" @endif>
+                                <td class="border border-black p-2">{{ $loop->iteration }}</td>
                                 <td class="border border-black p-2 text-left">{{ $student['student_name'] }}</td>
-                                @foreach($class['months'] as $monthKey => $month)
-                                    <td class="border border-black p-2">{{ $student['monthly'][$monthKey] }}</td>
-                                    <td class="border border-black p-2">-</td>
+                                @foreach ($months as $monthKey => $month)
+                                    <td class="border border-black p-2">{{ $student['monthly'][$monthKey]['absent'] }}</td>
+                                    <td class="border border-black p-2">{{ $student['monthly'][$monthKey]['permission'] }}</td>
                                 @endforeach
-                                <td class="border border-black p-2 bg-gray-200">{{ array_sum($student['monthly']) }}</td>
-                                <td class="border border-black p-2 bg-gray-200">-</td>
+                                <td class="border border-black p-2 {{ $highlight ? 'bg-red-300' : 'bg-gray-200' }}">{{ $student['total_permission'] }}</td>
+                                <td class="border border-black p-2 {{ $highlight ? 'bg-red-300' : 'bg-gray-200' }}">{{ $student['total_absent'] }}</td>
                             </tr>
                         @endforeach
                     @endif
@@ -177,29 +180,23 @@
         // Dynamic filter for subject and class by department
         document.addEventListener('DOMContentLoaded', function() {
             const departmentSelect = document.getElementById('department');
-            const subjectSelect = document.getElementById('subject');
             const classSelect = document.getElementById('class');
             if (departmentSelect) {
                 departmentSelect.addEventListener('change', function() {
                     const departmentCode = this.value;
                     if (!departmentCode) {
                         // Reset subjects and classes
-                        subjectSelect.innerHTML = '<option value="">ជ្រើសរើសមុខវិជ្ជា</option>';
                         classSelect.innerHTML = '<option value="">ជ្រើសរើសថ្នាក់</option>';
                         return;
                     }
                     fetch(`/api/department/${departmentCode}/options`)
                         .then(response => response.json())
                         .then(data => {
-                            // Update subjects
-                            subjectSelect.innerHTML = '<option value="">ជ្រើសរើសមុខវិជ្ជា</option>';
-                            data.subjects.forEach(function(subject) {
-                                subjectSelect.innerHTML += `<option value="${subject.code}">${subject.name}</option>`;
-                            });
                             // Update classes
                             classSelect.innerHTML = '<option value="">ជ្រើសរើសថ្នាក់</option>';
                             data.classes.forEach(function(cls) {
-                                classSelect.innerHTML += `<option value="${cls.code}">${cls.name}</option>`;
+                                classSelect.innerHTML +=
+                                    `<option value="${cls.code}">${cls.name}</option>`;
                             });
                         });
                 });
@@ -240,10 +237,10 @@
             #print-area td {
                 border: 1px solid #000 !important;
                 border-collapse: collapse !important;
-                
+
             }
 
-          
+
         }
     </style>
 
