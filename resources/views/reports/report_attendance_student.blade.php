@@ -3,94 +3,100 @@
 
 <div class="px-4 mb-4 print:hidden battambang">
     <div class="bg-gray-50 p-4 rounded-lg">
-        <!-- Flex container: Filters Left, Buttons Right -->
-        <div class="flex flex-col md:flex-row justify-between items-end gap-4">
-            
-            <!-- Filter form section (left) -->
-            <form method="GET" action="" class="w-full md:w-auto">
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 items-end">
-                    <!-- Year -->
-                    <div>
-                        <label for="year" class="block mb-1 text-sm font-medium text-gray-900">ឆ្នាំសិក្សា</label>
-                        <select id="year" name="year"
-                            class="bg-white border border-gray-300 text-sm rounded-lg w-full h-10 px-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">ជ្រើសរើសឆ្នាំសិក្សា</option>
-                            @foreach ($years as $year)
-                                <option value="{{ $year->code }}" {{ ($filters['year'] ?? '') == $year->code ? 'selected' : '' }}>
-                                    {{ $year->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <!-- Semester -->
-                    <div>
-                        <label for="semester" class="block mb-1 text-sm font-medium text-gray-900">ឆមាស</label>
-                        <select id="semester" name="semester"
-                            class="bg-white border border-gray-300 text-sm rounded-lg w-full h-10 px-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">ជ្រើសរើសឆមាស</option>
-                            @foreach ($semesters as $semester)
-                                <option value="{{ $semester }}" {{ ($filters['semester'] ?? '') == $semester ? 'selected' : '' }}>
-                                    ឆមាសទី {{ $semester }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <!-- Department -->
-                    <div>
-                        <label for="department" class="block mb-1 text-sm font-medium text-gray-900">ដេប៉ាតឺម៉ង់</label>
-                        <select id="department" name="department"
-                            class="bg-white border border-gray-300 text-sm rounded-lg w-full h-10 px-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">ជ្រើសរើសដេប៉ាតឺម៉ង់</option>
-                            @foreach ($departments as $department)
-                                <option value="{{ $department->code }}" {{ ($filters['department'] ?? '') == $department->code ? 'selected' : '' }}>
-                                    {{ $department->name_2 }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <!-- Class -->
-                    <div>
-                        <label for="class" class="block mb-1 text-sm font-medium text-gray-900">ថ្នាក់</label>
-                        <select id="class" name="class"
-                            class="bg-white border border-gray-300 text-sm rounded-lg w-full h-10 px-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">ជ្រើសរើសថ្នាក់</option>
-                            @foreach ($classes as $class)
-                                <option value="{{ $class->code }}" {{ ($filters['class'] ?? '') == $class->code ? 'selected' : '' }}>
-                                    {{ $class->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <!-- Search Button -->
-                    <div class="flex items-end h-full">
-                        <button type="submit"
-                            class="w-full h-10 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded hover:bg-indigo-700">
-                            ស្វែងរក
-                        </button>
-                    </div>
-                </div>
-            </form>
-
-            <!-- Buttons section (right) -->
-            <div class="flex gap-2">
-                <button onclick="window.print()" type="button"
-                    class="h-10 px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 shadow focus:outline-none focus:ring-2 focus:ring-green-400 flex items-center gap-2">
-                    Print
+        <!-- Flex container: Buttons Left, Filter Button Right -->
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 ">
+            <!-- Buttons section (left) -->
+            <div class="flex gap-2 w-full md:w-auto text-xs">
+                <!-- Preview Button -->
+                <button class=" py-1.5 flex items-center gap-1 border border-blue-600 text-blue-600 font-bold text-xs px-3  rounded hover:bg-blue-600 hover:text-white transition">
+                    Privew
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.478 0-8.268-2.943-9.542-7z"></path></svg>
                 </button>
-                <button onclick="exportTableToExcel('attendance-table', 'attendance_report')" type="button"
-                    class="h-10 px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 shadow focus:outline-none focus:ring-2 focus:ring-blue-400 flex items-center gap-2">
-                    <!-- Download SVG icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
-                    </svg>
-                    Export Excel
+
+                <!-- Print Button -->
+                <button onclick="window.print()" type="button"   class="flex items-center gap-2 border border-cyan-400 text-cyan-400 font-bold px-4 rounded hover:bg-cyan-400 hover:text-white transition">
+                    Print
+                    <svg  xmlns="http://www.w3.org/2000/svg"  width="16"  height="16"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-printer"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 17h2a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h2" /><path d="M17 9v-4a2 2 0 0 0 -2 -2h-6a2 2 0 0 0 -2 2v4" /><path d="M7 13m0 2a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2z" /></svg>
+                </button>
+
+                <!-- Excel Button -->
+                <button onclick="exportTableToExcel('attendance-table', 'attendance_report')" type="button" class="flex items-center gap-1 border border-green-400 text-green-400 font-bold px-4 rounded hover:bg-green-400 hover:text-white transition">
+                    Excel
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" /></svg>
+                </button>
+            </div>
+            <!-- Filter Button (right) -->
+            <div class="w-full md:w-auto flex justify-end">
+                <button id="toggle-filter-btn" type="button"
+                    class=" px-4 py-1.5 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 shadow focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                    Filter
                 </button>
             </div>
         </div>
+        <!-- Filter form section (hidden by default) -->
+        <form id="filter-form" method="GET" action="" class="w-full md:w-auto hidden">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 items-end">
+                <!-- Year -->
+                <div>
+                    <label for="year" class="block mb-1 text-sm font-medium text-gray-900">ឆ្នាំសិក្សា</label>
+                    <select id="year" name="year"
+                        class="bg-white border border-gray-300 text-sm rounded-lg w-full h-10 px-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">ជ្រើសរើសឆ្នាំសិក្សា</option>
+                        @foreach ($years as $year)
+                            <option value="{{ $year->code }}" {{ ($filters['year'] ?? '') == $year->code ? 'selected' : '' }}>
+                                {{ $year->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <!-- Semester -->
+                <div>
+                    <label for="semester" class="block mb-1 text-sm font-medium text-gray-900">ឆមាស</label>
+                    <select id="semester" name="semester"
+                        class="bg-white border border-gray-300 text-sm rounded-lg w-full h-10 px-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">ជ្រើសរើសឆមាស</option>
+                        @foreach ($semesters as $semester)
+                            <option value="{{ $semester }}" {{ ($filters['semester'] ?? '') == $semester ? 'selected' : '' }}>
+                                ឆមាសទី {{ $semester }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <!-- Department -->
+                <div>
+                    <label for="department" class="block mb-1 text-sm font-medium text-gray-900">ដេប៉ាតឺម៉ង់</label>
+                    <select id="department" name="department"
+                        class="bg-white border border-gray-300 text-sm rounded-lg w-full h-10 px-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">ជ្រើសរើសដេប៉ាតឺម៉ង់</option>
+                        @foreach ($departments as $department)
+                            <option value="{{ $department->code }}" {{ ($filters['department'] ?? '') == $department->code ? 'selected' : '' }}>
+                                {{ $department->name_2 }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <!-- Class -->
+                <div>
+                    <label for="class" class="block mb-1 text-sm font-medium text-gray-900">ថ្នាក់</label>
+                    <select id="class" name="class"
+                        class="bg-white border border-gray-300 text-sm rounded-lg w-full h-10 px-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">ជ្រើសរើសថ្នាក់</option>
+                        @foreach ($classes as $class)
+                            <option value="{{ $class->code }}" {{ ($filters['class'] ?? '') == $class->code ? 'selected' : '' }}>
+                                {{ $class->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <!-- Search Button -->
+                <div class="flex items-end h-full">
+                    <button type="submit"
+                        class="w-full h-10 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded hover:bg-indigo-700">
+                        ស្វែងរក
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -177,8 +183,15 @@
             }
         }
 
-        // Dynamic filter for subject and class by department
+        // Toggle filter form visibility
         document.addEventListener('DOMContentLoaded', function() {
+            const filterBtn = document.getElementById('toggle-filter-btn');
+            const filterForm = document.getElementById('filter-form');
+            filterBtn.addEventListener('click', function() {
+                filterForm.classList.toggle('hidden');
+            });
+
+            // Dynamic filter for subject and class by department
             const departmentSelect = document.getElementById('department');
             const classSelect = document.getElementById('class');
             if (departmentSelect) {

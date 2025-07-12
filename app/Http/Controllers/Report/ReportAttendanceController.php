@@ -30,24 +30,46 @@ class ReportAttendanceController extends Controller
         $selected_subject = $request->subject;
         $selected_class = $request->class;
 
-        $results = [];
+        // Get semester start date and session year code from class_schedule
+        $semester_start_date = null;
+        $class_schedule_year_code = null;
+        if ($selected_class && $selected_semester) {
+            $schedule = ClassSchedule::where('class_code', $selected_class)
+                ->where('semester', $selected_semester)
+                ->orderBy('start_date', 'asc')
+                ->first();
+            if ($schedule) {
+                $semester_start_date = $schedule->start_date;
+                $class_schedule_year_code = $schedule->session_year_code ?? null;
+            }
+        }
+
+        // Get start date for the next semester (for the same class)
+        $next_semester_start_date = null;
+        if ($selected_class && $selected_semester) {
+            $next_semester = $selected_semester + 1;
+            $next_schedule = ClassSchedule::where('class_code', $selected_class)
+                ->where('semester', $next_semester)
+                ->orderBy('start_date', 'asc')
+                ->first();
+            if ($next_schedule) {
+                $next_semester_start_date = $next_schedule->start_date;
+            }
+        }
+
+        // Determine the end date for the report
+        if ($next_semester_start_date) {
+            $report_end_date = \Carbon\Carbon::parse($next_semester_start_date)->subDay(); // The day before next semester starts
+        } else {
+            $report_end_date = now(); // Or use a fixed end date if you prefer
+        }
+
+        // Build all months from semester start to report end
         $months = [];
-        if ($selected_class) {
-            // Get all students in the class
-            $students = Student::where('class_code', $selected_class)->get();
-
-            // Get all scores for this class (all assign_line_no)
-            $scores = \App\Models\General\student_score::with('student')
-                ->whereHas('student', function($q) use ($selected_class) {
-                    $q->where('class_code', $selected_class);
-                })
-                ->get();
-
-            // Build list of all months present in the data
-            $allMonths = $scores->map(function($score) {
-                return date('Y-m', strtotime($score->att_date));
-            })->unique()->sort()->values();
-
+        if ($semester_start_date) {
+            $start = \Carbon\Carbon::parse($semester_start_date)->startOfMonth();
+            $end = \Carbon\Carbon::parse($report_end_date)->endOfMonth();
+            $current = $start->copy();
             $khmerMonths = [
                 '01' => 'មករា',
                 '02' => 'កម្ភៈ',
@@ -62,15 +84,57 @@ class ReportAttendanceController extends Controller
                 '11' => 'វិច្ឆិកា',
                 '12' => 'ធ្នូ',
             ];
-            foreach ($allMonths as $ym) {
-                [$year, $month] = explode('-', $ym);
+            while ($current <= $end) {
+                $ym = $current->format('Y-m');
                 $months[$ym] = [
-                    'name' => $khmerMonths[$month] ?? $month,
+                    'name' => $khmerMonths[$current->format('m')] ?? $current->format('m'),
                     'start' => '01',
-                    'end' => date('t', strtotime("$year-$month-01")),
-                    'year' => $year,
-                    'month' => $month,
+                    'end' => $current->daysInMonth,
+                    'year' => $current->format('Y'),
+                    'month' => $current->format('m'),
                 ];
+                $current->addMonth();
+            }
+        }
+
+        $results = [];
+        if ($selected_class) {
+            // Get all students in the class
+            $students = Student::where('class_code', $selected_class)->get();
+
+            // Get all scores for this class, filtered by semester start date
+            $scores = \App\Models\General\student_score::with('student')
+                ->whereHas('student', function($q) use ($selected_class) {
+                    $q->where('class_code', $selected_class);
+                })
+                ->when($semester_start_date, function($query) use ($semester_start_date) {
+                    $query->where('att_date', '>=', $semester_start_date);
+                })
+                // Optionally filter by year code if class_schedule_year_code is set and matches selected_year
+                ->when($selected_year && $class_schedule_year_code, function($query) use ($selected_year, $class_schedule_year_code) {
+                    if ($class_schedule_year_code != $selected_year) {
+                        $query->whereRaw('0 = 1');
+                    }
+                })
+                ->get();
+
+            // Trim $months to only include up to the last month with attendance data
+            $lastMonthWithData = null;
+            if (count($scores) > 0) {
+                $lastMonthWithData = $scores->max(function($score) {
+                    return date('Y-m', strtotime($score->att_date));
+                });
+            }
+            if ($lastMonthWithData) {
+                $months = array_filter(
+                    $months,
+                    function($key) use ($lastMonthWithData) {
+                        return $key <= $lastMonthWithData;
+                    },
+                    ARRAY_FILTER_USE_KEY
+                );
+            } else {
+                $months = [];
             }
 
             // Group scores by student and month
