@@ -27,8 +27,14 @@
            
             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
                 <h3 class=" text-xl sm:text-2xl lg:text-3xl khmer-moul">វត្តមានថ្ងៃនេះ</h3>
-                <div class="text-sm sm:text-base text-muted-foreground khmer-font">
-                    {{ $selectedDate->locale('km')->isoFormat('ថ្ងៃdddd ទីD ខែMMMM ឆ្នាំY') }}
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <div class="text-sm sm:text-base text-muted-foreground khmer-font">
+                        {{ $selectedDate->locale('km')->isoFormat('ថ្ងៃdddd ទីD ខែMMMM ឆ្នាំY') }}
+                    </div>
+                    {{-- <a href="/report_attendance_student" class="inline-flex items-center px-5 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full shadow-lg hover:from-blue-600 hover:to-indigo-700 transition ml-0 sm:ml-4 text-center font-semibold focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2">
+                        <svg class="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m-6 4h6a2 2 0 002-2V7a2 2 0 00-2-2h-1V3.5A1.5 1.5 0 0012.5 2h-1A1.5 1.5 0 0010 3.5V5H9a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        View Report
+                    </a> --}}
                 </div>
             </div>
             
@@ -193,6 +199,5 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endsection
-
 
 

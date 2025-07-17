@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta property="og:site_name" content="Metronic by Keenthemes" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>NTTI</title>
 
@@ -24,14 +25,51 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 </head>
+<style>
+    .battambang-thin {
+      font-family: "Battambang", system-ui;
+      font-weight: 100;
+      font-style: normal;
+    }
+    
+    .battambang-light {
+      font-family: "Battambang", system-ui;
+      font-weight: 300;
+      font-style: normal;
+    }
+    
+    .battambang {
+      font-family: "Battambang", system-ui;
+      font-weight: 400;
+      font-style: normal;
+    }
+    
+    .battambang-bold {
+      font-family: "Battambang", system-ui;
+      font-weight: 700;
+      font-style: normal;
+    }
+    
+    .battambang-black {
+      font-family: "Battambang", system-ui;
+      font-weight: 900;
+      font-style: normal;
+    }
+    .moul-regular {
+  font-family: "Moul", serif;
+  font-weight: 400;
+  font-style: normal;
+}
 
-<body class="min-h-screen bg-gray-50 flex flex-col ">
+</style>
+
+<body class="min-h-screen bg-gray-50 flex flex-col  ">
     
 
 
 
     <nav class="">
-        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+        <div class="max-w-full md:max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-[83rem] mx-auto flex flex-wrap items-center justify-between  p-4">
             <a class="flex-none text-xl font-semibold dark:text-white focus:outline-hidden focus:opacity-80"
                 href="{{ url('/department-menu') }}" aria-label="Brand">
                 <img class="w-62 h-auto" src="{{ asset('asset/NTTI/images/logo.png') }}" alt="logo">
@@ -145,7 +183,7 @@
         </div>
     </nav>
     <nav class="w-full bg-[#2194ce] hidden md:block md:w-auto">
-        <div class="max-w-[83rem] mx-auto h-15 flex items-center">
+        <div class="max-w-full md:max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-[83rem] mx-auto h-15 flex items-center">
             <a href="{{ url('/dashboard') }}"
                 class="flex items-center gap-2 px-6 h-15 text-white hover:bg-[#197bb0] transition">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white"
@@ -193,11 +231,13 @@
     </nav>
 
 
-    <main class="flex-1 max-w-screen-xl mx-auto">
-        @yield('content')
+    <main class="flex-1 w-full">
+        <div class="max-w-full md:max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-[83rem] mx-auto md:px-4 py-6 flex-1 w-full">
+            @yield('content')
+        </div>
     </main>
 
-    <footer class="bg-[#2194ce] text-white py-4 mt-8 sticky bottom-0">
+    <footer class="bg-[#2194ce] text-white py-4 mt-8">
         <div class="container mx-auto px-4 text-center">
             <span class="block text-xs">
                 Copyright © 2024

@@ -16,7 +16,7 @@
       <div class="page-title page-title-custom">
         <div class="title-page">
           <i class="mdi mdi-format-list-bulleted"></i>
-          ដេប៉ាតឺម៉ង់ ឫ​ នាយកដ្ឋាន
+          ដេប៉ាតឺម៉ង់
         </div>
       </div>
     </div>

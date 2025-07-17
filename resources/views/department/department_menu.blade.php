@@ -88,8 +88,9 @@
         </div>
         <div class="container menu-list">
             <ul>
-                <li><a href="{{ url('student/registration') }}">បញ្ជីរាយនាមនិស្សិតដែរចុះឈ្មោះឆ្នាំទី១</a></li>
-                <li><a href="{{ url('student/scholarship') }}">បញ្ជីរាយនាមនិស្សិតអាហារូបករណ៏</a></li>
+                <li><a href="{{ url('student/registration') }}">និស្សិត</a></li>
+                <li><a href="{{ url('student/scholarship') }}">និស្សិតអាហារូបករណ៏</a></li>
+                <li><a href="{{ url('class-new') }}">និស្សិតតាមក្រុមថ្នាក់</a></li>
             </ul>
         </div>
     </div>
@@ -100,10 +101,10 @@
         </div>
         <div class="container menu-list">
             <ul>
-                <li><a href="{{ url('class-new') }}">បែងចែកថ្នាក់ថ្មី</a></li>
-                <li><a href="{{ url('attendance/dashboards-attendance') }}">វត្តមានថ្ងៃប្រចាំថ្ងៃ</a></li>
                 <li><a href="{{ url('exam-schedule') }}">កាលវិភាគ កាប្រឡង</a></li>
                 <li><a href="{{ url('transfer') }}">ផ្លាស់ប្ដូរថ្នាក់/ក្រុម</a></li>
+                <li><a href="{{ url('certificate/D_IT/student_card/MD_CARD') }}">ប្រព័ន្ធគ្រប់គ្រងកាតសិស្ស</a></li>
+
             </ul>
         </div>
     </div>
@@ -114,12 +115,8 @@
         </div>
         <div class="container menu-list">
             <ul>
-                <li><a href="{{ url('/report-first-year-student-registration') }}">ស្ថិតិសិស្សដាក់ពាក្យចុះឈ្មោះចូលរៀនឆ្នាំទី១</a></li>
-              </ul>
-              <ul>
+                <li><a href="{{ url('/report-first-year-student-registration') }}">របាយការចុះឈ្មោះចូលរៀនឆ្នាំទី១</a></li>
                 <li><a href="{{ url('/report_list_of_student_class_and_section') }}">របាយការណ៍និស្សិត ក្រុម និងវេនសិក្សា</a></li>
-              </ul>
-              <ul>
                 <li><a href="{{ url('/report_list_of_student_class_and_section') }}">របាយការណ៍និស្សិត ក្រុម និងវេនសិក្សា</a></li>
               </ul>
         </div>

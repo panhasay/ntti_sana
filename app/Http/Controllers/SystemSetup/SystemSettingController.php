@@ -109,7 +109,6 @@ class SystemSettingController extends Controller
                     break;
                 case 'teachers':
                     $records = Teachers::orderByRaw("name_2 COLLATE utf8mb4_general_ci")->whereRaw($extract_query)->WhitQueryPermission()->paginate(100);
-
                     $blade_file_record = 'general.teachers_lists';
                     break;
                 case 'student_registration':
@@ -169,7 +168,25 @@ class SystemSettingController extends Controller
                     $blade_file_record = 'general.class_schedule_lists';
                     break;
                 case 'assign-classes':
-                    $records = AssingClasses::whereRaw($extract_query)->paginate(1000);
+
+                    // Config::set('database.connections.company.strict', false);
+                    // DB::purge('company');
+
+                    // $records = AssingClasses::with(['department', 'section', 'skill', 'teacher','subject' ])
+                    // ->WhitQueryPermissionTeacher()
+                    // ->groupBy('semester', 'years', 'class_code', 'qualification', 'department_code', 'session_year_code', 'skills_code', 'sections_code')
+                    // ->orderBy('semester', 'asc')->orderBy('years', 'asc')
+                    // ->paginate(20);
+
+                    // Config::set('database.connections.company.strict', true);
+                    // \DB::purge('company');
+
+                    $records = DB::table('assing_classes')
+                    ->select('id','semester', 'years', 'class_code', 'qualification', 'department_code', 'session_year_code', 'skills_code', 'sections_code')
+                    ->groupBy('id','semester', 'years', 'class_code', 'qualification', 'department_code', 'session_year_code', 'skills_code', 'sections_code')
+                    ->orderBy('semester', 'asc')
+                    ->orderBy('years', 'asc')
+                    ->paginate(20);
 
                     // dd($extract_query);
                     $blade_file_record = 'general.assing_classes_lists';

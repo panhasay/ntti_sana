@@ -186,7 +186,6 @@ class AttendanceController extends Controller
 
                 // Split assignments into separate schedule items if multiple exist for same time
                 $scheduleItems = collect();
-                
                 $assignments->each(function($assignment) use ($scheduleItems) {
                     $sectionName = $this->extractSectionName($assignment->section);
                     
@@ -214,7 +213,7 @@ class AttendanceController extends Controller
                 return !empty($schedule['schedule_items']);
             })
             ->values();
-
+            
         // Get list of departments
         $departments = Department::pluck('name_2')->toArray();
 
