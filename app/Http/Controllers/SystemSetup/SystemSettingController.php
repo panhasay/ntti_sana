@@ -22,11 +22,13 @@ use Illuminate\Support\Facades\Auth;
 class SystemSettingController extends Controller
 {
     public $service;
+    public $services;
     public $page;
     public $page_id;
     function __construct()
     {
         $this->service = new service();
+        $this->services = new service();
     }
     public function pageSearch(Request $request)
     {
@@ -107,11 +109,10 @@ class SystemSettingController extends Controller
                     break;
                 case 'teachers':
                     $records = Teachers::orderByRaw("name_2 COLLATE utf8mb4_general_ci")->whereRaw($extract_query)->WhitQueryPermission()->paginate(100);
-
                     $blade_file_record = 'general.teachers_lists';
                     break;
                 case 'student_registration':
-                    $records = StudentRegistration::with(['session_year'])->whereRaw($extract_query)->paginate(100);
+                    $records = StudentRegistration::with(['session_year'])->whereRaw($this->services->getRrecordsByDepartment())->whereRaw($extract_query)->paginate(100);
                     $total_records = StudentRegistration::selectRaw(
                         DB::raw('COUNT(name) AS total_count'),
                     )->where('study_type', 'new student')
@@ -167,8 +168,27 @@ class SystemSettingController extends Controller
                     $blade_file_record = 'general.class_schedule_lists';
                     break;
                 case 'assign-classes':
-                    $records = AssingClasses::whereRaw($extract_query)
-                        ->paginate(1000);
+
+                    // Config::set('database.connections.company.strict', false);
+                    // DB::purge('company');
+
+                    // $records = AssingClasses::with(['department', 'section', 'skill', 'teacher','subject' ])
+                    // ->WhitQueryPermissionTeacher()
+                    // ->groupBy('semester', 'years', 'class_code', 'qualification', 'department_code', 'session_year_code', 'skills_code', 'sections_code')
+                    // ->orderBy('semester', 'asc')->orderBy('years', 'asc')
+                    // ->paginate(20);
+
+                    // Config::set('database.connections.company.strict', true);
+                    // \DB::purge('company');
+
+                    $records = DB::table('assing_classes')
+                    ->select('id','semester', 'years', 'class_code', 'qualification', 'department_code', 'session_year_code', 'skills_code', 'sections_code')
+                    ->groupBy('id','semester', 'years', 'class_code', 'qualification', 'department_code', 'session_year_code', 'skills_code', 'sections_code')
+                    ->orderBy('semester', 'asc')
+                    ->orderBy('years', 'asc')
+                    ->paginate(20);
+
+                    // dd($extract_query);
                     $blade_file_record = 'general.assing_classes_lists';
                     break;
                 default:
@@ -242,6 +262,7 @@ class SystemSettingController extends Controller
                                 $query->where('name_2', 'like', $search_value . "%")
                                     ->orWhere('name', 'like', $search_value . "%");
                             })
+                            ->whereRaw($this->services->getRrecordsByDepartment())
                             ->whereNotNull('class_code') // Ensures class_code is not null
                             ->get();
                     $blade_file_record = 'general.student_register_lists';
@@ -331,6 +352,7 @@ class SystemSettingController extends Controller
                                 ->orWhere('name_2', 'like', $search_value . "%");
                         })
                         ->whereNotNull('code')
+                        ->whereRaw($this->services->getRrecordsByDepartment())
                         ->paginate(100);
                     $blade_file_record = 'general.student_register_lists';
                 } else if ($page == 'class-new') {
@@ -378,7 +400,7 @@ class SystemSettingController extends Controller
                 } else if ($page == 'teachers') {
                     $records = Teachers::where('code', null)->paginate(100);
                 } else if ($page == 'student_registration') {
-                    $records = StudentRegistration::paginate(100);
+                    $records = StudentRegistration::whereRaw($this->services->getRrecordsByDepartment())->paginate(10);
                 } else if ($page == 'class-new') {
                     $records = Classes::where('department_code', Auth::user()->department_code)->paginate(100);
                 } else if ($page == 'scholarship') {

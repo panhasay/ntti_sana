@@ -27,6 +27,8 @@
         <th style="font-weight: 700" width="20">ថ្ងៃខែឆ្នាំកំណើត</th>
         <th style="font-weight: 700" width="50">ទីកន្លែងកំណើត</th>
         <th style="font-weight: 700" width="20">លេខទូរស័ព្ទ</th>
+        <th style="font-weight: 700" width="20">អាណាព្យាបាល</th>
+        <th style="font-weight: 700" width="20">លេខទូរស័ព្ទ អាណាព្យាបាល</th>
         <th style="font-weight: 700" width="20">ជំនាញ</th>
         <th style="font-weight: 700" width="20">កម្រិត</th>
         <th style="font-weight: 700" width="20">ក្រុម</th>
@@ -49,6 +51,8 @@
           <td>{{ $record->khmerDate }}</td>
           <td>{{ $record->student_address }}</td>
           <td>{{ $record->phone_student }}</td>
+          <td>{{ $record->guardian_name }}</td>
+          <td>{{ $record->guardian_phone }}</td>
           <td>{{ $record->skills }}</td>
           <td>{{ $record->qualification }}</td>
           <td>{{ $record->class_code }}</td>

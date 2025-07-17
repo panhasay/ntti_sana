@@ -36,7 +36,16 @@ class AuthController extends Controller
     {
         return view('auth.login');
     }  
-      
+
+    public function HomeLogin()
+    {
+        if(Auth::user()){
+            return redirect('department-menu');
+        }else{
+            return view('auth.login');
+        }
+    }  
+
     /**
      * Write code on Method
      *
@@ -58,6 +67,7 @@ class AuthController extends Controller
         return redirect()->route('login')->with('success', 'You can try logging in again.');
     }
     
+
     /**
      * Write code on Method
      *

@@ -18,7 +18,7 @@ class UserPermission
     {
         $user = Auth::user();
         if ($user->role == "attendant") {
-            return redirect('/user-dont-have-permission');
+            return redirect('/attendance/dashboards-attendance');
         }else if ($user->role ==  'teachers'){
             return redirect('/teacher-dashboard');
         }else if ($user->role ==  'student'){

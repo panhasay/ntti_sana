@@ -51,6 +51,7 @@ Route::get('/greeting/{locale}', function (string $locale) {
     Route::get('/', function () {
         return view('auth.login');
     });
+    Route::get('/', [AuthController::class, 'HomeLogin'])->name('HomeLogin');
     Route::get('/thank-you-for-submit', function () {
         return view('/system.thank_you_for_submit');
     });
@@ -129,13 +130,18 @@ Route::group(['perfix' => 'report-first-year-student-registration'], function ()
     Route::get('reports-list-of-student-print/export/', [ReportFirstYearStudentRegistrationController::class, 'export']);
 })->middleware('auth');
 
-Route::group(['perfix' => 'dashboard'], function (){
-    Route::get('dashboard', [DashboardController::class, 'index'])->name('index');
-    Route::get('dahhboard-student-print', [DashboardController::class, 'Print'])->name('Print');
-    Route::get('teacher-dashboard', [DashboardController::class, 'TeacherDashboard'])->name('TeacherDashboard');
-    Route::get('teacher-management-class', [DashboardController::class, 'TeacherMmanagementClass'])->name('TeacherMmanagementClass');
-    Route::get('dahhboard-student-account', [DashboardController::class, 'StudentUserAccount'])->name('StudentUserAccount');
+Route::group(['prefix' => 'dashboard','middleware' => 'user_permission'
+], function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
+    Route::get('student-print', [DashboardController::class, 'Print'])->name('dashboard.print');
+    // Route::get('teacher-dashboard', [DashboardController::class, 'TeacherDashboard'])->name('dashboard.teacherDashboard');
+    // Route::get('teacher-management-class', [DashboardController::class, 'TeacherMmanagementClass'])->name('dashboard.teacherManagementClass');
+    Route::get('student-account', [DashboardController::class, 'StudentUserAccount'])->name('dashboard.studentAccount');
 });
+
+ Route::get('teacher-dashboard', [DashboardController::class, 'TeacherDashboard'])->name('dashboard.teacherDashboard');
+    Route::get('teacher-management-class', [DashboardController::class, 'TeacherMmanagementClass'])->name('dashboard.TeacherMmanagementClass');
+
 Route::get('dsa', [DashboardController::class, 'StudentUserAccount'])->name('StudentUserAccount');
 Route::group(['perfix' => 'department' ,  'middleware' => 'permission'], function (){
     Route::get('department-setup', [DepartmentController::class, 'index'])->name('index');
@@ -404,4 +410,38 @@ Route::group(['prefix' => 'sections'], function () {
     Route::post('/delete', [SectionsController::class, 'delete']);
 })->middleware('auth');
 
-Route::get('/api/department/{code}/options', [\App\Http\Controllers\Report\ReportAttendanceController::class, 'getDepartmentOptions']);
+Route::group(['perfix' => 'exam-schedule'], function () {
+    Route::get('/exam-schedule', [ExamScheduleController::class, 'index']);
+
+    // Route::get('/exam-schedule_printkk', [ExamScheduleController::class, 'examSchedulePrint'])->name('exam_schedule_printkk');
+
+    Route::get('/exam-schedule/transaction', [ExamScheduleController::class, 'transaction']);
+    Route::post('/exam-schedule/update', [ExamScheduleController::class, 'update']);
+    Route::post('/exam-schedule/store', [ExamScheduleController::class, 'store']);
+    Route::post('/exam-schedule/save', [ExamScheduleController::class, 'saveExamSchedule'])->name('save.exam.schedule');
+    Route::post('/exam-schedule/delete-both-sessions', [ExamScheduleController::class, 'deleteBothSessions'])->name('delete.both.sessions');
+
+
+    // Route::post('/exam-schedule/update/{id}', [ExamScheduleController::class, 'updateExamSchedule']);
+    // Route::delete('/exam-schedule/delete/{id}', [ExamScheduleController::class, 'deleteExamSchedule']);
+    Route::post('/exam-schedule/upload-document', [ExamScheduleController::class, 'uploadDocument'])->name('exam-schedule.upload-document');
+    // Route::get('/exam-schedule/view-pdf/{filename}', [ExamScheduleController::class, 'viewPdf'])->name('viewPdf');
+    Route::get('/exam-schedule-print', [ExamScheduleController::class, 'printLine']);
+    // Route::post('/exam-schedule/confirm-print', [ExamScheduleController::class, 'confirmPrint'])->name('exam-schedule.confirm-print');
+    // In web.php (routes file)
+    // Route::delete('/exam-schedule/delete-multiple', [ExamScheduleController::class, 'destroyMultiple'])->name('exam-schedule-multi-delete');
+    Route::post('/exam-schedule-print-multiple', [ExamScheduleController::class, 'printMultiple']);
+    Route::get('/exam-schedule/get-schedule/{id}', [ExamScheduleController::class, 'getSchedule']);
+
+    Route::get('/exam-schedule/get-assigned-teachers-subjects/{classCode}/{year}/{sessionYear}/{sectionCode}/{semester}/{level}/{skills_code}/{department_code}', [ExamScheduleController::class, 'getAssignedTeachersAndSubjects']);
+
+    Route::post('/save-exam-date-khmer', [ExamScheduleController::class, 'saveExamDateKhmer'])->name('save-exam-date-khmer');
+    Route::post('/save-exam-date-khmer-multiple', [ExamScheduleController::class, 'saveExamDateKhmerMultiple'])->name('exam-schedule.save-date-khmer-multiple');
+    Route::POST('/exam-schedule-delete', [ExamScheduleController::class, 'delete'])->name('exam-schedule-delete');
+
+    Route::post('/exam-schedule/delete-session', [ExamScheduleController::class, 'deleteSession'])->name('exam.schedule.delete.session');
+
+    Route::get('/exam-schedule/get-all-teachers', [ExamScheduleController::class, 'getAllTeachers']);
+
+    Route::post('/exam-schedule/update-date', [ExamScheduleController::class, 'updateDate'])->name('exam.schedule.update.date');
+})->middleware('auth');

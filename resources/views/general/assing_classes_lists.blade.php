@@ -20,5 +20,5 @@
         @include('general.assing_classes_records')
       </tbody>
     </table>
-    {{ $records->appends(['type' => $type, 'years' => request('years')])->links("pagination::bootstrap-4") }}
+    {{ $records->appends(['type' => $type ?? "", 'years' => request('years')])->links("pagination::bootstrap-4") }}
   </div><br><br>
