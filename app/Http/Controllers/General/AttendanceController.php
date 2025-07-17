@@ -133,16 +133,18 @@ class AttendanceController extends Controller
         }
 
         // ទប់ស្កាត់ថ្ងៃអាទិត្យ
-        if ($selectedDate->isSunday()) {
-            $today = Carbon::now()->format('Y-m-d');
-            $params = $request->all();
-            $params['date'] = $today;
-            return redirect()->to(url('attendance/dashboards-attendance') . '?' . http_build_query($params))
-                ->with('warning', 'មិនអាចជ្រើសរើសថ្ងៃអាទិត្យបានទេ។ ប្រព័ន្ធបានកំណត់ទៅថ្ងៃបច្ចុប្បន្នវិញ។');
-        }
+        // if ($selectedDate->isSunday()) {
+        //     $today = Carbon::now()->format('Y-m-d');
+        //     $params = $request->all();
+        //     $params['date'] = $today;
+        //     return redirect()->to(url('attendance/dashboards-attendance') . '?' . http_build_query($params))
+        //         ->with('warning', 'មិនអាចជ្រើសរើសថ្ងៃអាទិត្យបានទេ។ ប្រព័ន្ធបានកំណត់ទៅថ្ងៃបច្ចុប្បន្នវិញ។');
+        // }
 
-        $selectedDepartment = $request->query('department', 'All Departments');
-        
+        // Get department code from user or request
+        $user = Auth::user();
+        $defaultDepartmentCode = $user && $user->department_code ? $user->department_code : 'All';
+        $selectedDepartmentCode = $request->query('department_code', $defaultDepartmentCode);
         // Set default section based on current time if not specified in request
         $selectedSection = $request->query('section') ?? $this->getCurrentSection();
         
@@ -164,15 +166,13 @@ class AttendanceController extends Controller
             ->whereDate('start_date', '<=', $selectedDate)
             ->orderBy('start_date', 'asc')
             ->get()
-            ->map(function ($schedule) use ($selectedDay, $selectedDepartment, $selectedSection) {
+            ->map(function ($schedule) use ($selectedDay, $selectedDepartmentCode, $selectedSection) {
                 // Get assignments for this schedule that match selected day
                 $assignments = AssingClasses::where('class_schedule_id', $schedule->id)
                     ->where('date_name', $selectedDay)
                     ->with(['teacher', 'subject', 'department'])
-                    ->when($selectedDepartment !== 'All Departments', function ($query) use ($selectedDepartment) {
-                        $query->whereHas('department', function($q) use ($selectedDepartment) {
-                            $q->where('name_2', $selectedDepartment);
-                        });
+                    ->when($selectedDepartmentCode !== 'All', function ($query) use ($selectedDepartmentCode) {
+                        $query->where('department_code', $selectedDepartmentCode);
                     })
                     ->get()
                     ->filter(function ($assignment) use ($selectedSection) {
@@ -197,7 +197,9 @@ class AttendanceController extends Controller
                         'room' => $assignment->room,
                         'checked' => (bool) $assignment->status,
                         'assing_no' => $assignment->assing_no,
-                        'section' => $sectionName
+                        'section' => $sectionName,
+                        'department_code' => $assignment->department->code ?? '',
+                        'department_name' => $assignment->department->name_2 ?? '',
                     ]);
                 });
 
@@ -214,10 +216,10 @@ class AttendanceController extends Controller
             })
             ->values();
             
-        // Get list of departments
-        $departments = Department::pluck('name_2')->toArray();
+        // Get list of departments (code and name_2)
+        $departments = Department::select('code', 'name_2')->get();
 
-        return view('dashboard.dashboard_attendance_student', compact('schedules', 'selectedDate', 'selectedDepartment', 'selectedSection', 'departments' , 'holidays', 'dateStrings', 'holidayNames'));
+        return view('dashboard.dashboard_attendance_student', compact('schedules', 'selectedDate', 'selectedDepartmentCode', 'selectedSection', 'departments' , 'holidays', 'dateStrings', 'holidayNames'));
     }
    
     public function SumbitDocumentByDate(Request $request)

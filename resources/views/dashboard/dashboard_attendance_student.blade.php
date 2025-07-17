@@ -39,18 +39,15 @@
                             @include('components.custom_date')
                         </div>
 
-                        <div>
+                        <div class="hidden">
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 ដេប៉ាតឺម៉ង់
                             </label>
                             <select id="department-filter"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="All Departments"
-                                    {{ $selectedDepartment == 'All Departments' ? 'selected' : '' }}>ដេប៉ាតឺម៉ង់ទាំងអស់
-                                </option>
+                                <option value="All" {{ $selectedDepartmentCode == 'All' ? 'selected' : '' }}>ដេប៉ាតឺម៉ង់ទាំងអស់</option>
                                 @foreach ($departments as $dept)
-                                    <option value="{{ $dept }}"
-                                        {{ $selectedDepartment == $dept ? 'selected' : '' }}>{{ $dept }}</option>
+                                    <option value="{{ $dept->code }}" {{ $selectedDepartmentCode == $dept->code ? 'selected' : '' }}>{{ $dept->name_2 }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -102,7 +99,7 @@
                 // Build query parameters
                 const params = new URLSearchParams();
                 if (date) params.append('date', date);
-                if (department && department !== 'All Departments') params.append('department', department);
+                if (department && department !== 'All') params.append('department_code', department);
                 if (section && section !== 'All') params.append('section', section);
 
                 // Make API call to get attendance data
@@ -158,7 +155,7 @@
                 const department = document.getElementById('department-filter').value;
                 const section = document.getElementById('section-filter').value;
                 window.location.href =
-                    `{{ url()->current() }}?date=${selectedDate}&department=${encodeURIComponent(department)}&section=${encodeURIComponent(section)}`;
+                    `{{ url()->current() }}?date=${selectedDate}&department_code=${encodeURIComponent(department)}&section=${encodeURIComponent(section)}`;
             }
 
             // Listen for custom dateSelected event from custom_date.blade.php

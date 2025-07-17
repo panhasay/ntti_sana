@@ -113,7 +113,7 @@
                 const isHoliday = holidays.includes(dateStr);
                 const isSunday = dateObj.getDay() === 0;
                 const isFuture = dateObj > today;
-                const isBlocked = isHoliday || isSunday || isFuture || isFutureMonth;
+                const isBlocked = isHoliday || isFuture || isFutureMonth;
                 const isSelected = selectedDate && selectedDate === dateStr;
                 const isToday = dateStr === todayStr;
                 // Get holiday name for tooltip
@@ -166,9 +166,8 @@
             if (date) {
                 const dateObj = new Date(date);
                 const isHoliday = holidays.includes(date);
-                const isSunday = dateObj.getDay() === 0;
                 const isFuture = dateObj > today;
-                if (!isHoliday && !isSunday) {
+                if (!isHoliday && !isFuture) {
                     selectedDate = date;
                     input.value = date;
                     toggleCalendar();
@@ -241,9 +240,8 @@
                 d.setDate(d.getDate() + direction);
                 const dateStr = d.toISOString().split('T')[0];
                 const isHoliday = holidays.includes(dateStr);
-                const isSunday = d.getDay() === 0;
                 const isFuture = d > today;
-                if (!isHoliday && !isSunday && !isFuture) {
+                if (!isHoliday && !isFuture) {
                     return dateStr;
                 }
                 // Prevent infinite loop (optional: set a limit)
