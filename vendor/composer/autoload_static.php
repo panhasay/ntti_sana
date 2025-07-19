@@ -349,13 +349,13 @@ class ComposerStaticInit6a57c4b69d4f36c66c0826879354ed13
         ),
         'Spatie\\LaravelIgnition\\' => 
         array (
-            0 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/laravel-ignition',
-            1 => __DIR__ . '/..' . '/spatie/laravel-ignition/src',
+            0 => __DIR__ . '/..' . '/spatie/laravel-ignition/src',
+            1 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/laravel-ignition',
         ),
         'Spatie\\Ignition\\' => 
         array (
-            0 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/ignition',
-            1 => __DIR__ . '/..' . '/spatie/ignition/src',
+            0 => __DIR__ . '/..' . '/spatie/ignition/src',
+            1 => __DIR__ . '/..' . '/spatie/error-solutions/legacy/ignition',
         ),
         'Spatie\\FlareClient\\' => 
         array (
@@ -403,8 +403,8 @@ class ComposerStaticInit6a57c4b69d4f36c66c0826879354ed13
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -669,6 +669,7 @@ class ComposerStaticInit6a57c4b69d4f36c66c0826879354ed13
         'App\\Http\\Controllers\\QrCodeController' => __DIR__ . '/../..' . '/app/Http/Controllers/QrCodeController.php',
         'App\\Http\\Controllers\\Report' => __DIR__ . '/../..' . '/app/Http/Controllers/Report.php',
         'App\\Http\\Controllers\\Report\\ListOfStudentController' => __DIR__ . '/../..' . '/app/Http/Controllers/Report/ListOfStudentController.php',
+        'App\\Http\\Controllers\\Report\\ReportAttendanceController' => __DIR__ . '/../..' . '/app/Http/Controllers/Report/ReportAttendanceController.php',
         'App\\Http\\Controllers\\Report\\ReportFirstYearStudentRegistrationController' => __DIR__ . '/../..' . '/app/Http/Controllers/Report/ReportFirstYearStudentRegistrationController.php',
         'App\\Http\\Controllers\\Report\\ReportListOfStudentClassAndSectionController' => __DIR__ . '/../..' . '/app/Http/Controllers/Report/ReportListOfStudentClassAndSectionController.php',
         'App\\Http\\Controllers\\Report\\ReportListTableStudentOfYearController' => __DIR__ . '/../..' . '/app/Http/Controllers/Report/ReportListTableStudentOfYearController.php',
@@ -7563,6 +7564,7 @@ class ComposerStaticInit6a57c4b69d4f36c66c0826879354ed13
         'Symfony\\Component\\HttpKernel\\Fragment\\RoutableFragmentRenderer' => __DIR__ . '/..' . '/symfony/http-kernel/Fragment/RoutableFragmentRenderer.php',
         'Symfony\\Component\\HttpKernel\\Fragment\\SsiFragmentRenderer' => __DIR__ . '/..' . '/symfony/http-kernel/Fragment/SsiFragmentRenderer.php',
         'Symfony\\Component\\HttpKernel\\HttpCache\\AbstractSurrogate' => __DIR__ . '/..' . '/symfony/http-kernel/HttpCache/AbstractSurrogate.php',
+        'Symfony\\Component\\HttpKernel\\HttpCache\\CacheWasLockedException' => __DIR__ . '/..' . '/symfony/http-kernel/HttpCache/CacheWasLockedException.php',
         'Symfony\\Component\\HttpKernel\\HttpCache\\Esi' => __DIR__ . '/..' . '/symfony/http-kernel/HttpCache/Esi.php',
         'Symfony\\Component\\HttpKernel\\HttpCache\\HttpCache' => __DIR__ . '/..' . '/symfony/http-kernel/HttpCache/HttpCache.php',
         'Symfony\\Component\\HttpKernel\\HttpCache\\ResponseCacheStrategy' => __DIR__ . '/..' . '/symfony/http-kernel/HttpCache/ResponseCacheStrategy.php',
