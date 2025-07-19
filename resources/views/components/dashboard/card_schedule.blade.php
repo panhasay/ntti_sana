@@ -5,7 +5,10 @@
 ])
 
 <div class="rounded-xl border-1 border-green-600 bg-card text-card-foreground shadow-sm hover:shadow-md transition-all cursor-pointer hover:scale-105 transform duration-300 ease-in-out relative"
-    onclick="window.location.href='{{ url('get-attendant-student?assing_no=' . $item['assing_no'] . '&date=' . (is_object($selectedDate) ? $selectedDate->format('Y-m-d') : $selectedDate)) }}'">
+    onclick="window.location.href='{{ url('get-attendant-student?assing_no=' . $item['assing_no'] . '&date=' . (is_object($selectedDate) ? $selectedDate->format('Y-m-d') : $selectedDate)) }}'"
+    data-department="{{ $item['department_code'] ?? '' }}"
+    data-section="{{ $item['section'] ?? '' }}"
+    data-date="{{ is_object($selectedDate) ? $selectedDate->format('Y-m-d') : $selectedDate }}">
     <div class="p-4 sm:p-6 flex flex-col h-full">
         <div class="text-base font-semibold mb-4 flex flex-row items-center justify-between">
             <span>ក្រុម : {{ $schedule['class_code'] }}</span>

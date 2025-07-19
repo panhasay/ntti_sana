@@ -2,6 +2,31 @@
 @section('content')
 
 <div class="px-4 mb-4 print:hidden battambang">
+    <!-- Display validation errors -->
+    @if (!empty($validationErrors))
+        <div class="mb-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-red-800">
+                        មានបញ្ហាក្នុងការបញ្ជូនទិន្នន័យ:
+                    </h3>
+                    <div class="mt-2 text-sm text-red-700">
+                        <ul class="list-disc pl-5 space-y-1">
+                            @foreach ($validationErrors as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="bg-gray-50 p-4 rounded-lg">
         <!-- Flex container: Buttons Left, Filter Button Right -->
         <div class="flex flex-col md:flex-row justify-between items-center gap-4 ">
@@ -35,12 +60,12 @@
         </div>
         <!-- Filter form section (hidden by default) -->
         <form id="filter-form" method="GET" action="" class="w-full md:w-auto hidden">
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 items-end">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4 items-end">
                 <!-- Year -->
                 <div>
                     <label for="year" class="block mb-1 text-sm font-medium text-gray-900">ឆ្នាំសិក្សា</label>
                     <select id="year" name="year"
-                        class="bg-white border border-gray-300 text-sm rounded-lg w-full h-10 px-2 focus:ring-blue-500 focus:border-blue-500">
+                        class="bg-white border {{ isset($validationErrors['year']) ? 'border-red-500' : 'border-gray-300' }} text-sm rounded-lg w-full h-10 px-2 focus:ring-blue-500 focus:border-blue-500">
                         <option value="">ជ្រើសរើសឆ្នាំសិក្សា</option>
                         @foreach ($years as $year)
                             <option value="{{ $year->code }}" {{ ($filters['year'] ?? '') == $year->code ? 'selected' : '' }}>
@@ -48,12 +73,15 @@
                             </option>
                         @endforeach
                     </select>
+                    @if (isset($validationErrors['year']))
+                        <p class="mt-1 text-sm text-red-600">{{ $validationErrors['year'] }}</p>
+                    @endif
                 </div>
                 <!-- Semester -->
                 <div>
                     <label for="semester" class="block mb-1 text-sm font-medium text-gray-900">ឆមាស</label>
                     <select id="semester" name="semester"
-                        class="bg-white border border-gray-300 text-sm rounded-lg w-full h-10 px-2 focus:ring-blue-500 focus:border-blue-500">
+                        class="bg-white border {{ isset($validationErrors['semester']) ? 'border-red-500' : 'border-gray-300' }} text-sm rounded-lg w-full h-10 px-2 focus:ring-blue-500 focus:border-blue-500">
                         <option value="">ជ្រើសរើសឆមាស</option>
                         @foreach ($semesters as $semester)
                             <option value="{{ $semester }}" {{ ($filters['semester'] ?? '') == $semester ? 'selected' : '' }}>
@@ -61,8 +89,12 @@
                             </option>
                         @endforeach
                     </select>
+                    @if (isset($validationErrors['semester']))
+                        <p class="mt-1 text-sm text-red-600">{{ $validationErrors['semester'] }}</p>
+                    @endif
                 </div>
                 <!-- Department -->
+                @if (Auth::user()->role == 'admin')
                 <div>
                     <label for="department" class="block mb-1 text-sm font-medium text-gray-900">ដេប៉ាតឺម៉ង់</label>
                     <select id="department" name="department"
@@ -75,11 +107,12 @@
                         @endforeach
                     </select>
                 </div>
+                @endif
                 <!-- Class -->
                 <div>
                     <label for="class" class="block mb-1 text-sm font-medium text-gray-900">ថ្នាក់</label>
                     <select id="class" name="class"
-                        class="bg-white border border-gray-300 text-sm rounded-lg w-full h-10 px-2 focus:ring-blue-500 focus:border-blue-500">
+                        class="bg-white border {{ isset($validationErrors['class']) ? 'border-red-500' : 'border-gray-300' }} text-sm rounded-lg w-full h-10 px-2 focus:ring-blue-500 focus:border-blue-500">
                         <option value="">ជ្រើសរើសថ្នាក់</option>
                         @foreach ($classes as $class)
                             <option value="{{ $class->code }}" {{ ($filters['class'] ?? '') == $class->code ? 'selected' : '' }}>
@@ -87,6 +120,9 @@
                             </option>
                         @endforeach
                     </select>
+                    @if (isset($validationErrors['class']))
+                        <p class="mt-1 text-sm text-red-600">{{ $validationErrors['class'] }}</p>
+                    @endif
                 </div>
                 <!-- Search Button -->
                 <div class="flex items-end h-full">
@@ -107,9 +143,9 @@
     {{-- {{ dd($results) }} --}}
     <div id="print-area" class="bg-white p-12 rounded shadow">
         <div class="text-center mb-2 gap-2 flex flex-col items-center">
-            <h3 class="moul text-md font-bold">បញ្ជីសរុបអវត្តមានប្រចាំឆមាសទី១ ឆ្នាំទី១</h3>
-            <h3 class="moul text-md font-bold">ថ្នាក់: បរិញ្ញាបត្រ ជំនាញ៖​ ព័ត៌មានវិទ្យា ក្រុម៖ IT07B វេនយប់</h3>
-            <h4 class="moul text-md font-bold">ឆ្នាំសិក្សា ២០២៣-២០២៤</h4>
+            <h3 class="moul text-md font-bold">បញ្ជីសរុបអវត្តមានប្រចាំឆមាសទី{{ $filters['khmer_semester'] }} ឆ្នាំទី {{ $filters['khmer_year_level'] }}</h3>
+            <h3 class="moul text-md font-bold">ថ្នាក់: {{ $filters['qualification'] }} ជំនាញ៖​ {{ $filters['skill_name'] }} ក្រុម៖ {{ $filters['class'] }} វេន{{ $filters['section_name'] }}</h3>
+            <h4 class="moul text-md font-bold">ឆ្នាំសិក្សា {{ $filters['khmer_year'] }}</h4>
         </div>
         <div class="overflow-x-auto">
             <table id="attendance-table" class="w-full table-auto border border-black text-center battambang">
@@ -120,8 +156,8 @@
                         @if (isset($months))
                             @foreach ($months as $month)
                                 <th class="border border-black p-2" colspan="2">
-                                    ខែ {{ $month['name'] }}<br />
-                                    ថ្ងៃទី{{ $month['start'] }} <br /> ដល់ថ្ងៃទី{{ $month['end'] }}
+                                     {{ $month['name'] }}<br />
+                                    {{ $month['start'] }} <br /> {{ $month['end'] }}
                                 </th>
                             @endforeach
                         @endif
@@ -191,14 +227,20 @@
                 filterForm.classList.toggle('hidden');
             });
 
-            // Dynamic filter for subject and class by department
+            // Show filter form for all users if they have a default class selected
+            @if(!empty($filters['class']))
+                // Show the filter form to display the selected filters
+                filterForm.classList.remove('hidden');
+            @endif
+
+            // Dynamic filter for class by department
             const departmentSelect = document.getElementById('department');
             const classSelect = document.getElementById('class');
             if (departmentSelect) {
                 departmentSelect.addEventListener('change', function() {
                     const departmentCode = this.value;
                     if (!departmentCode) {
-                        // Reset subjects and classes
+                        // Reset classes
                         classSelect.innerHTML = '<option value="">ជ្រើសរើសថ្នាក់</option>';
                         return;
                     }

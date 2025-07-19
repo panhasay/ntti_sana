@@ -98,14 +98,6 @@ class AttendanceController extends Controller
             return [$date => $name];
         })->toArray();
 
-        // return response()->json([
-        //     'holidays' => $holidays,
-        //     'dateStrings' => $dateStrings
-        // ]);
-        
-
-
-
         $classCode = $request->query('class_code');
         $dateString = $request->query('date');
         if ($dateString) {
@@ -132,22 +124,6 @@ class AttendanceController extends Controller
                 ->with('warning', 'មិនអាចជ្រើសរើសថ្ងៃឈប់សម្រាកបានទេ។ ប្រព័ន្ធបានកំណត់ទៅថ្ងៃបច្ចុប្បន្នវិញ។');
         }
 
-        // ទប់ស្កាត់ថ្ងៃអាទិត្យ
-        // if ($selectedDate->isSunday()) {
-        //     $today = Carbon::now()->format('Y-m-d');
-        //     $params = $request->all();
-        //     $params['date'] = $today;
-        //     return redirect()->to(url('attendance/dashboards-attendance') . '?' . http_build_query($params))
-        //         ->with('warning', 'មិនអាចជ្រើសរើសថ្ងៃអាទិត្យបានទេ។ ប្រព័ន្ធបានកំណត់ទៅថ្ងៃបច្ចុប្បន្នវិញ។');
-        // }
-
-        // Get department code from user or request
-        $user = Auth::user();
-        $defaultDepartmentCode = $user && $user->department_code ? $user->department_code : 'All';
-        $selectedDepartmentCode = $request->query('department_code', $defaultDepartmentCode);
-        // Set default section based on current time if not specified in request
-        $selectedSection = $request->query('section') ?? $this->getCurrentSection();
-        
         // If class code is provided, get the assignment record first
         if ($classCode) {
             $assignment = AssingClasses::where('class_code', $classCode)
@@ -161,30 +137,20 @@ class AttendanceController extends Controller
         // Get the selected day name in lowercase
         $selectedDay = strtolower($selectedDate->format('l'));
         
-        // Get the class schedules and related assignments for the selected date
+        // Load all schedules for the selected date without filtering by department or section
+        // Let client-side JavaScript handle the filtering
         $schedules = ClassSchedule::with(['section', 'subject'])
             ->whereDate('start_date', '<=', $selectedDate)
             ->orderBy('start_date', 'asc')
             ->get()
-            ->map(function ($schedule) use ($selectedDay, $selectedDepartmentCode, $selectedSection) {
-                // Get assignments for this schedule that match selected day
+            ->map(function ($schedule) use ($selectedDay) {
+                // Get all assignments for this schedule that match selected day
                 $assignments = AssingClasses::where('class_schedule_id', $schedule->id)
                     ->where('date_name', $selectedDay)
                     ->with(['teacher', 'subject', 'department'])
-                    ->when($selectedDepartmentCode !== 'All', function ($query) use ($selectedDepartmentCode) {
-                        $query->where('department_code', $selectedDepartmentCode);
-                    })
-                    ->get()
-                    ->filter(function ($assignment) use ($selectedSection) {
-                        if ($selectedSection === 'All') {
-                            return true; // Show all sections
-                        }
-                        
-                        $sectionName = $this->extractSectionName($assignment->section);
-                        return strtolower($sectionName) === strtolower($selectedSection);
-                    });
+                    ->get();
 
-                // Split assignments into separate schedule items if multiple exist for same time
+                // Split assignments into separate schedule items
                 $scheduleItems = collect();
                 $assignments->each(function($assignment) use ($scheduleItems) {
                     $sectionName = $this->extractSectionName($assignment->section);
@@ -218,6 +184,12 @@ class AttendanceController extends Controller
             
         // Get list of departments (code and name_2)
         $departments = Department::select('code', 'name_2')->get();
+
+        // Set default values for filters (these will be used for initial state)
+        $user = Auth::user();
+        $defaultDepartmentCode = $user && $user->department_code ? $user->department_code : 'All';
+        $selectedDepartmentCode = $request->query('department_code', $defaultDepartmentCode);
+        $selectedSection = $request->query('section', $this->getCurrentSection());
 
         return view('dashboard.dashboard_attendance_student', compact('schedules', 'selectedDate', 'selectedDepartmentCode', 'selectedSection', 'departments' , 'holidays', 'dateStrings', 'holidayNames'));
     }

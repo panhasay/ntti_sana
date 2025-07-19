@@ -110,6 +110,7 @@
             for (let day = 1; day <= lastDate; day++) {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 const dateObj = new Date(year, month, day);
+                dateObj.setHours(0, 0, 0, 0); // Set to midnight for proper comparison
                 const isHoliday = holidays.includes(dateStr);
                 const isSunday = dateObj.getDay() === 0;
                 const isFuture = dateObj > today;
@@ -165,6 +166,7 @@
             const date = e.target.getAttribute('data-date');
             if (date) {
                 const dateObj = new Date(date);
+                dateObj.setHours(0, 0, 0, 0); // Set to midnight for proper comparison
                 const isHoliday = holidays.includes(date);
                 const isFuture = dateObj > today;
                 if (!isHoliday && !isFuture) {
@@ -238,6 +240,7 @@
             let d = new Date(date);
             while (true) {
                 d.setDate(d.getDate() + direction);
+                d.setHours(0, 0, 0, 0); // Set to midnight for proper comparison
                 const dateStr = d.toISOString().split('T')[0];
                 const isHoliday = holidays.includes(dateStr);
                 const isFuture = d > today;

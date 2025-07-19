@@ -11,24 +11,81 @@ use App\Models\General\Classes as ClassModel;
 use Illuminate\Support\Facades\DB;
 use App\Models\General\ClassSchedule;
 use App\Models\Student\Student;
+use Illuminate\Support\Facades\Auth;
 
 class ReportAttendanceController extends Controller
 {
     public function index(Request $request)
     {
+        // Get current user and their department
+        $user = Auth::user();
+        $userDepartmentCode = $user->department_code ?? null;
+        
         // Fetch filter options
         $years = DB::table('session_year')->orderBy('code', 'desc')->get();
         $semesters = DB::table('assing_classes')->select('semester')->distinct()->pluck('semester');
-        $departments = Department::orderBy('name_2')->get();
-        $subjects = Subjects::orderBy('name')->get();
-        $classes = ClassModel::orderBy('name')->get();
+        
+        // Set default department for all users based on their department_code
+        $selected_department = $request->department ?? $userDepartmentCode;
+        
+        // Filter departments based on user role and department
+        if ($user->role == 'admin') {
+            $departments = Department::orderBy('name_2')->get();
+        } else {
+            // For non-admin users, only show their department
+            $departments = Department::where('code', $userDepartmentCode)->orderBy('name_2')->get();
+        }
+        
+        // Filter classes based on user's department
+        if ($userDepartmentCode) {
+            // For all users (including admin), filter classes by their department by default
+            $classes = ClassModel::where('department_code', $userDepartmentCode)->orderBy('name')->get();
+        } else {
+            $classes = ClassModel::orderBy('name')->get();
+        }
 
-        // Get selected filter values
+        // Get selected filter values with defaults based on user's department
         $selected_year = $request->year;
         $selected_semester = $request->semester;
-        $selected_department = $request->department;
-        $selected_subject = $request->subject;
-        $selected_class = $request->class;
+        
+        // Initialize validation errors array
+        $validationErrors = [];
+        
+        // Check if form was submitted (has any of the required fields)
+        $formSubmitted = $request->has('year') || $request->has('semester') || $request->has('class');
+        
+        // Validate required fields only if form was submitted
+        if ($formSubmitted) {
+            if (empty($selected_year)) {
+                $validationErrors['year'] = 'សូមជ្រើសរើសឆ្នាំសិក្សា';
+            }
+            if (empty($selected_semester)) {
+                $validationErrors['semester'] = 'សូមជ្រើសរើសឆមាស';
+            }
+            if (empty($request->class)) {
+                $validationErrors['class'] = 'សូមជ្រើសរើសថ្នាក់';
+            }
+        }
+        
+        // Set default class based on user's department for all users
+        $defaultClass = null;
+        if ($userDepartmentCode && !$request->class) {
+            $defaultClass = ClassModel::where('department_code', $userDepartmentCode)
+                ->orderBy('name')
+                ->first();
+        }
+        $selected_class = $request->class ?? ($defaultClass ? $defaultClass->code : '');
+        
+        // Set default semester if class is selected but no semester
+        if ($selected_class && !$selected_semester) {
+            $defaultSemester = DB::table('assing_classes')
+                ->where('class_code', $selected_class)
+                ->select('semester')
+                ->distinct()
+                ->orderBy('semester')
+                ->first();
+            $selected_semester = $defaultSemester ? $defaultSemester->semester : null;
+        }
 
         // Get semester start date and session year code from class_schedule
         $semester_start_date = null;
@@ -41,6 +98,9 @@ class ReportAttendanceController extends Controller
             if ($schedule) {
                 $semester_start_date = $schedule->start_date;
                 $class_schedule_year_code = $schedule->session_year_code ?? null;
+            } else {
+                // If no schedule found, add to validation errors
+                $validationErrors['class'] = 'រកមិនឃើញកាលវិភាគសម្រាប់ថ្នាក់និងឆមាសដែលបានជ្រើសរើស';
             }
         }
 
@@ -66,10 +126,12 @@ class ReportAttendanceController extends Controller
 
         // Build all months from semester start to report end
         $months = [];
+        $results = [];
+
         if ($semester_start_date) {
-            $start = \Carbon\Carbon::parse($semester_start_date)->startOfMonth();
-            $end = \Carbon\Carbon::parse($report_end_date)->endOfMonth();
-            $current = $start->copy();
+            $current = \Carbon\Carbon::parse($semester_start_date);
+            $end = \Carbon\Carbon::parse($report_end_date);
+            
             $khmerMonths = [
                 '01' => 'មករា',
                 '02' => 'កម្ភៈ',
@@ -84,23 +146,53 @@ class ReportAttendanceController extends Controller
                 '11' => 'វិច្ឆិកា',
                 '12' => 'ធ្នូ',
             ];
+            
+            $khmerNumbers = [
+                '0' => '០',
+                '1' => '១',
+                '2' => '២',
+                '3' => '៣',
+                '4' => '៤',
+                '5' => '៥',
+                '6' => '៦',
+                '7' => '៧',
+                '8' => '៨',
+                '9' => '៩',
+            ];
+
             while ($current <= $end) {
-                $ym = $current->format('Y-m');
-                $months[$ym] = [
-                    'name' => $khmerMonths[$current->format('m')] ?? $current->format('m'),
-                    'start' => '01',
-                    'end' => $current->daysInMonth,
-                    'year' => $current->format('Y'),
-                    'month' => $current->format('m'),
+                $yearMonth = $current->format('Y-m');
+                $monthNumber = $current->format('m');
+                $year = $current->format('Y');
+                $khmerMonth = $khmerMonths[$monthNumber] ?? $monthNumber;
+                
+                // Convert day numbers to Khmer numerals
+                $startDay = strtr($current->format('d'), $khmerNumbers);
+                $endDay = strtr($current->endOfMonth()->format('d'), $khmerNumbers);
+                
+                $months[$yearMonth] = [
+                    'name' => 'ខែ ' . $khmerMonth,
+                    'start' => 'ថ្ងៃទី ' . $startDay,
+                    'end' => 'ដល់ថ្ងៃទី ' . $endDay,
                 ];
                 $current->addMonth();
             }
         }
 
-        $results = [];
         if ($selected_class) {
-            // Get all students in the class
-            $students = Student::where('class_code', $selected_class)->get();
+            // Check if class exists
+            $class = ClassModel::where('code', $selected_class)->first();
+            if (!$class) {
+                $validationErrors['class'] = 'ថ្នាក់ដែលបានជ្រើសរើសមិនមាន';
+            } else {
+                // Get all students in the class
+                $students = Student::where('class_code', $selected_class)->get();
+                
+                // Check if class has students
+                if ($students->isEmpty()) {
+                    $validationErrors['class'] = 'ថ្នាក់នេះមិនមានសិស្ស';
+                }
+            }
 
             // Get all scores for this class, filtered by semester start date
             $scores = \App\Models\General\student_score::with('student')
@@ -174,13 +266,76 @@ class ReportAttendanceController extends Controller
             }
         }
 
+        // Get skill name, year level, qualification, session year, and section for display
+        $skillName = '';
+        $yearLevel = '';
+        $qualification = '';
+        $sessionYear = '';
+        $sectionName = '';
+        if ($selected_class) {
+            $class = ClassModel::where('code', $selected_class)->first();
+            if ($class) {
+                // Get skill name
+                if ($class->skills_code) {
+                    $skill = DB::table('skills')->where('code', $class->skills_code)->first();
+                    $skillName = $skill ? $skill->name_2 : $class->skills_code;
+                }
+                
+                // Get year level, qualification, session year, and section from class_schedule
+                if ($selected_semester) {
+                    $schedule = ClassSchedule::where('class_code', $selected_class)
+                        ->where('semester', $selected_semester)
+                        ->first();
+                    if ($schedule) {
+                        if ($schedule->years) {
+                            $yearLevel = $schedule->years;
+                        }
+                        if ($schedule->qualification) {
+                            $qualification = $schedule->qualification;
+                        }
+                        if ($schedule->session_year_code) {
+                            $sessionYear = $schedule->session_year_code;
+                        }
+                        if ($schedule->sections_code) {
+                            $section = DB::table('sections')->where('code', $schedule->sections_code)->first();
+                            $sectionName = $section ? $section->name_2 : $schedule->sections_code;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Convert numbers to Khmer numerals
+        $khmerNumbers = [
+            '0' => '០',
+            '1' => '១',
+            '2' => '២',
+            '3' => '៣',
+            '4' => '៤',
+            '5' => '៥',
+            '6' => '៦',
+            '7' => '៧',
+            '8' => '៨',
+            '9' => '៩',
+        ];
+        
+        $khmerYear = $selected_year ? strtr($selected_year, $khmerNumbers) : '';
+        $khmerSemester = $selected_semester ? strtr($selected_semester, $khmerNumbers) : '';
+        $khmerYearLevel = $yearLevel ? strtr($yearLevel, $khmerNumbers) : '';
+        
         // Prepare filter values
         $filters = [
             'year' => $selected_year,
             'semester' => $selected_semester,
             'department' => $selected_department,
-            'subject' => $selected_subject,
+            'skill_name' => $skillName,
             'class' => $selected_class,
+            'qualification' => $qualification,
+            'session_year' => $sessionYear,
+            'section_name' => $sectionName,
+            'khmer_year' => $khmerYear,
+            'khmer_semester' => $khmerSemester,
+            'khmer_year_level' => $khmerYearLevel,
         ];
 
         return view('reports.report_attendance_student', [
@@ -196,17 +351,15 @@ class ReportAttendanceController extends Controller
             'years' => $years,
             'semesters' => $semesters,
             'departments' => $departments,
-            'subjects' => $subjects,
             'classes' => $classes,
+            'validationErrors' => $validationErrors,
         ]);
     }
     
     public function getDepartmentOptions($code)
     {
-        $subjects = \App\Models\General\Subjects::where('department_code', $code)->orderBy('name')->get(['code', 'name']);
         $classes = \App\Models\General\Classes::where('department_code', $code)->orderBy('name')->get(['code', 'name']);
         return response()->json([
-            'subjects' => $subjects,
             'classes' => $classes,
         ]);
     }

@@ -486,6 +486,27 @@
                 initializeScores();
                 updateStatistics();
 
+                // Search functionality
+                const searchInput = document.getElementById('search-input');
+                if (searchInput) {
+                    searchInput.addEventListener('keyup', function() {
+                        const filter = this.value.toLowerCase();
+                        const rows = document.querySelectorAll('tbody tr');
+
+                        rows.forEach(row => {
+                            const code = row.cells[0].textContent || '';
+                            const nameKh = row.cells[1].textContent || '';
+                            const nameEn = row.cells[2].textContent || '';
+
+                            const found = code.toLowerCase().includes(filter) ||
+                                nameKh.toLowerCase().includes(filter) ||
+                                nameEn.toLowerCase().includes(filter);
+
+                            row.style.display = found ? '' : 'none';
+                        });
+                    });
+                }
+
                 // Sorting logic
                 let currentSort = {
                     column: null,
@@ -579,15 +600,16 @@
                 });
             });
 
-            // Handle select all checkbox
+            // Handle select all checkbox - only if checkbox exists
             const selectAllCheckbox = document.querySelector('thead input[type="checkbox"]');
-            const studentCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]');
-
-            selectAllCheckbox.addEventListener('change', function() {
-                studentCheckboxes.forEach(checkbox => {
-                    checkbox.checked = this.checked;
+            if (selectAllCheckbox) {
+                const studentCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+                selectAllCheckbox.addEventListener('change', function() {
+                    studentCheckboxes.forEach(checkbox => {
+                        checkbox.checked = this.checked;
+                    });
                 });
-            });
+            }
 
             // Update statistics based on attendance
             function updateStatistics() {
@@ -603,24 +625,7 @@
                 document.getElementById('permission-count').textContent = permission;
             }
 
-            // Search functionality
-            const searchInput = document.getElementById('search-input');
-            searchInput.addEventListener('keyup', function() {
-                const filter = this.value.toLowerCase();
-                const rows = document.querySelectorAll('tbody tr');
 
-                rows.forEach(row => {
-                    const code = row.cells[1].textContent || '';
-                    const nameKh = row.cells[2].textContent || '';
-                    const nameEn = row.cells[3].textContent || '';
-
-                    const found = code.toLowerCase().includes(filter) ||
-                        nameKh.toLowerCase().includes(filter) ||
-                        nameEn.toLowerCase().includes(filter);
-
-                    row.style.display = found ? '' : 'none';
-                });
-            });
 
             // Filter panel toggle
             const filterButton = document.getElementById('filter-button');
@@ -688,15 +693,22 @@
 
             // Function to show the toast
             function showToast(message) {
-                toast.classList.remove("hidden");
-                toast.textContent = message;
+                if (toast) {
+                    toast.classList.remove("hidden");
+                    toast.textContent = message;
 
-                setTimeout(() => {
-                    toast.classList.add("hidden");
-                }, 2000);
+                    setTimeout(() => {
+                        toast.classList.add("hidden");
+                    }, 2000);
+                } else {
+                    // Fallback: use console or alert if toast element doesn't exist
+                    console.log(message);
+                }
             }
 
-            // Initially hide the toast
-            toast.classList.add("hidden");
+            // Initially hide the toast if it exists
+            if (toast) {
+                toast.classList.add("hidden");
+            }
         </script>
     @endsection
