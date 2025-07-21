@@ -131,7 +131,8 @@ class ReportAttendanceController extends Controller
         if ($semester_start_date) {
             $current = \Carbon\Carbon::parse($semester_start_date);
             $end = \Carbon\Carbon::parse($report_end_date);
-            
+            $months = [];
+            $firstMonth = true;
             $khmerMonths = [
                 '01' => 'មករា',
                 '02' => 'កម្ភៈ',
@@ -146,7 +147,6 @@ class ReportAttendanceController extends Controller
                 '11' => 'វិច្ឆិកា',
                 '12' => 'ធ្នូ',
             ];
-            
             $khmerNumbers = [
                 '0' => '០',
                 '1' => '១',
@@ -159,23 +159,39 @@ class ReportAttendanceController extends Controller
                 '8' => '៨',
                 '9' => '៩',
             ];
-
             while ($current <= $end) {
                 $yearMonth = $current->format('Y-m');
                 $monthNumber = $current->format('m');
                 $year = $current->format('Y');
                 $khmerMonth = $khmerMonths[$monthNumber] ?? $monthNumber;
-                
-                // Convert day numbers to Khmer numerals
-                $startDay = strtr($current->format('d'), $khmerNumbers);
-                $endDay = strtr($current->endOfMonth()->format('d'), $khmerNumbers);
-                
-                $months[$yearMonth] = [
-                    'name' => 'ខែ ' . $khmerMonth,
-                    'start' => 'ថ្ងៃទី ' . $startDay,
-                    'end' => 'ដល់ថ្ងៃទី ' . $endDay,
-                ];
-                $current->addMonth();
+                if ($firstMonth) {
+                    $startDay = strtr($current->format('d'), $khmerNumbers);
+                    $firstMonthStart = $current->copy();
+                    $firstMonthEnd = $current->copy()->endOfMonth();
+                    $endDay = strtr($firstMonthEnd->format('d'), $khmerNumbers);
+                    $months[$yearMonth] = [
+                        'name' => 'ខែ ' . $khmerMonth,
+                        'start' => 'ថ្ងៃទី ' . $startDay,
+                        'end' => 'ដល់ថ្ងៃទី ' . $endDay,
+                        'from' => $firstMonthStart->toDateString(),
+                        'to' => $firstMonthEnd->toDateString(),
+                    ];
+                    $current = $firstMonthEnd->addDay();
+                    $firstMonth = false;
+                } else {
+                    $monthStart = $current->copy()->startOfMonth();
+                    $monthEnd = $current->copy()->endOfMonth();
+                    $startDay = strtr($monthStart->format('d'), $khmerNumbers);
+                    $endDay = strtr($monthEnd->format('d'), $khmerNumbers);
+                    $months[$yearMonth] = [
+                        'name' => 'ខែ ' . $khmerMonth,
+                        'start' => 'ថ្ងៃទី ' . $startDay,
+                        'end' => 'ដល់ថ្ងៃទី ' . $endDay,
+                        'from' => $monthStart->toDateString(),
+                        'to' => $monthEnd->toDateString(),
+                    ];
+                    $current = $monthEnd->addDay();
+                }
             }
         }
 
@@ -229,18 +245,26 @@ class ReportAttendanceController extends Controller
                 $months = [];
             }
 
-            // Group scores by student and month
+            // Group scores by student and month (handle first month as partial)
             $scoresByStudentMonth = [];
             foreach ($scores as $score) {
                 $studentCode = $score->student_code;
-                $ym = date('Y-m', strtotime($score->att_date));
-                if (!isset($scoresByStudentMonth[$studentCode][$ym])) {
-                    $scoresByStudentMonth[$studentCode][$ym] = ['permission' => 0, 'absent' => 0];
-                }
-                if ($score->att_score == 0.5) {
-                    $scoresByStudentMonth[$studentCode][$ym]['permission']++;
-                } elseif ($score->att_score == 0) {
-                    $scoresByStudentMonth[$studentCode][$ym]['absent']++;
+                $scoreDate = \Carbon\Carbon::parse($score->att_date);
+                // Find the correct month bucket for this score
+                foreach ($months as $ym => $monthInfo) {
+                    $from = \Carbon\Carbon::parse($monthInfo['from']);
+                    $to = \Carbon\Carbon::parse($monthInfo['to']);
+                    if ($scoreDate->between($from, $to)) {
+                        if (!isset($scoresByStudentMonth[$studentCode][$ym])) {
+                            $scoresByStudentMonth[$studentCode][$ym] = ['permission' => 0, 'absent' => 0];
+                        }
+                        if ($score->att_score == 0.5) {
+                            $scoresByStudentMonth[$studentCode][$ym]['permission']++;
+                        } elseif ($score->att_score == 0) {
+                            $scoresByStudentMonth[$studentCode][$ym]['absent']++;
+                        }
+                        break;
+                    }
                 }
             }
 

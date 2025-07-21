@@ -179,7 +179,7 @@
                         @foreach ($results as $student)
                             @php
                                 $sum_absent = $student['total_absent'] + ($student['total_permission'] / 2);
-                                $highlight = $sum_absent > 4;
+                                $highlight = $sum_absent > 15;
                             @endphp
                             <tr @if($highlight) class="bg-red-300" @endif>
                                 <td class="border border-black p-2">{{ $loop->iteration }}</td>
@@ -188,8 +188,8 @@
                                     <td class="border border-black p-2">{{ $student['monthly'][$monthKey]['absent'] }}</td>
                                     <td class="border border-black p-2">{{ $student['monthly'][$monthKey]['permission'] }}</td>
                                 @endforeach
-                                <td class="border border-black p-2 {{ $highlight ? 'bg-red-300' : 'bg-gray-200' }}">{{ $student['total_permission'] }}</td>
                                 <td class="border border-black p-2 {{ $highlight ? 'bg-red-300' : 'bg-gray-200' }}">{{ $student['total_absent'] }}</td>
+                                <td class="border border-black p-2 {{ $highlight ? 'bg-red-300' : 'bg-gray-200' }}">{{ $student['total_permission'] }}</td>
                             </tr>
                         @endforeach
                     @endif

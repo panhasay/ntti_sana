@@ -305,33 +305,37 @@ class AssingClassesController extends Controller
     {
         $data = $request->all();
         try {
-            $records = AssingClassesStudentLine::with(['student'])
-                    ->where('assing_line_no', $data['assing_no'])
-                    ->get();
+            // 1. Get the assignment
+            $assignment = \App\Models\General\AssingClasses::where('assing_no', $data['assing_no'])->first();
+            if (!$assignment) {
+                return response()->json(['status' => 'warning', 'msg' => 'Assignment not found.']);
+            }
+            $class_code = $assignment->class_code;
 
-            // Get scores for the specific date
+            // 2. Get all students in the class
+            $students = \App\Models\Student\Student::where('class_code', $class_code)->get();
+
+            // 3. Get scores for the specific date and assign_no
             $selectedDate = $request->get('date', date('Y-m-d'));
-            
-            // Get all student scores for this assignment and date
-            $student_scores = student_score::where('assign_line_no', $data['assing_no'])
+            $student_scores = \App\Models\General\student_score::where('assign_line_no', $data['assing_no'])
                 ->whereDate('att_date', $selectedDate)
                 ->get()
-                ->keyBy('student_code'); // Index by student_code for easier lookup
+                ->keyBy('student_code');
 
-            // Add attendance data to each student record
-            $records = $records->map(function($record) use ($student_scores) {
-                $score = $student_scores->get($record->student_code);
-                $record->score = $score ? $score->att_score : null;
-                return $record;
+            // 4. Build the records array
+            $records = $students->map(function($student) use ($student_scores) {
+                $score = $student_scores->get($student->code);
+                $student->score = $score ? $score->att_score : null;
+                // For compatibility with the view, wrap student in an object with 'student' property
+                return (object)[
+                    'student' => $student,
+                    'student_code' => $student->code,
+                    'score' => $student->score,
+                    // Optionally add more fields if needed
+                ];
             });
 
-            $header = AssingClasses::where('assing_no', $data['assing_no'])->first();
-            $scores = $student_scores->map(function($score) {
-                return [
-                    'student_id' => $score->student_code,
-                    'att_score' => $score->att_score
-                ];
-            })->values()->toArray();
+            $header = $assignment;
 
             return view('general.assing_attendant_lists', compact('records', 'header'));
 

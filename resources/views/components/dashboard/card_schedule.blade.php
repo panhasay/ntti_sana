@@ -4,8 +4,8 @@
     'selectedDate' // Carbon or string (Y-m-d)
 ])
 
-<div class="rounded-xl border-1 border-green-600 bg-card text-card-foreground shadow-sm hover:shadow-md transition-all cursor-pointer hover:scale-105 transform duration-300 ease-in-out relative"
-    onclick="window.location.href='{{ url('get-attendant-student?assing_no=' . $item['assing_no'] . '&date=' . (is_object($selectedDate) ? $selectedDate->format('Y-m-d') : $selectedDate)) }}'"
+<div class="rounded-xl border-1 border-green-600 bg-card text-card-foreground shadow-sm hover:shadow-md transition-all cursor-pointer hover:scale-105 transform duration-300 ease-in-out relative card-schedule-clickable"
+    data-assing-no="{{ $item['assing_no'] }}"
     data-department="{{ $item['department_code'] ?? '' }}"
     data-section="{{ $item['section'] ?? '' }}"
     data-date="{{ is_object($selectedDate) ? $selectedDate->format('Y-m-d') : $selectedDate }}">
@@ -69,3 +69,19 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.card-schedule-clickable').forEach(function(card) {
+            card.addEventListener('click', function() {
+                const assingNo = card.getAttribute('data-assing-no');
+                const date = card.getAttribute('data-date');
+                if (assingNo) {
+                    let url = `/get-attendant-student?assing_no=${encodeURIComponent(assingNo)}`;
+                    if (date) url += `&date=${encodeURIComponent(date)}`;
+                    window.location.href = url;
+                }
+            });
+        });
+    });
+</script>

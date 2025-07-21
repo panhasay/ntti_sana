@@ -238,6 +238,23 @@
                     <tbody>
                         @foreach ($records as $students)
                             @if ($students->student && $students->student->code)
+                                @php
+                                    // Derive status from score if not set
+                                    $status = null;
+                                    if (isset($students->status)) {
+                                        $status = $students->status;
+                                    } elseif (isset($students->score)) {
+                                        if ($students->score == 2) {
+                                            $status = 'present';
+                                        } elseif ($students->score == 1) {
+                                            $status = 'late';
+                                        } elseif ($students->score == 0.5) {
+                                            $status = 'permission';
+                                        } elseif ($students->score == 0) {
+                                            $status = 'absent';
+                                        }
+                                    }
+                                @endphp
                                 <tr class="border-b">
                                     {{-- <td class="px-2 py-2 text-center"><input type="checkbox" class="rounded border-gray-300"></td> --}}
                                     <td class="px-2 py-2 text-xs sm:text-sm">{{ $students->student->code }}</td>
@@ -249,9 +266,9 @@
                                         <div class="flex gap-2 justify-center relative">
                                             <!-- Present Button and Tooltip -->
                                             <button type="button"
-                                                data-tooltip-target="tooltip-present-{{ $students->id }}"
+                                                data-tooltip-target="tooltip-present-{{ $students->student->id }}"
                                                 data-tooltip-trigger="hover"
-                                                class="attendance-btn p-1 sm:p-3 rounded-lg border {{ $students->status === 'present' ? 'active' : '' }}"
+                                                class="attendance-btn p-1 sm:p-3 rounded-lg border {{ $status === 'present' ? 'active' : '' }}"
                                                 data-type="present">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                                     viewBox="0 0 24 24" stroke="currentColor">
@@ -259,16 +276,16 @@
                                                         d="M5 13l4 4L19 7" />
                                                 </svg>
                                             </button>
-                                            <div id="tooltip-present-{{ $students->id }}" role="tooltip"
+                                            <div id="tooltip-present-{{ $students->student->id }}" role="tooltip"
                                                 class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
                                                 <span class="text-sm">វត្តមាន</span>
                                                 <div class="tooltip-arrow" data-popper-arrow></div>
                                             </div>
                                             <!-- Absent Button and Tooltip -->
                                             <button type="button"
-                                                data-tooltip-target="tooltip-absent-{{ $students->id }}"
+                                                data-tooltip-target="tooltip-absent-{{ $students->student->id }}"
                                                 data-tooltip-trigger="hover"
-                                                class="attendance-btn p-1 sm:p-3 rounded-lg border {{ $students->status === 'absent' ? 'active' : '' }}"
+                                                class="attendance-btn p-1 sm:p-3 rounded-lg border {{ $status === 'absent' ? 'active' : '' }}"
                                                 data-type="absent">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                                     viewBox="0 0 24 24" stroke="currentColor">
@@ -276,16 +293,16 @@
                                                         d="M6 18L18 6M6 6l12 12" />
                                                 </svg>
                                             </button>
-                                            <div id="tooltip-absent-{{ $students->id }}" role="tooltip"
+                                            <div id="tooltip-absent-{{ $students->student->id }}" role="tooltip"
                                                 class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
                                                 <span class="text-sm">អវត្តមាន</span>
                                                 <div class="tooltip-arrow" data-popper-arrow></div>
                                             </div>
                                             <!-- Permission Button and Tooltip -->
                                             <button type="button"
-                                                data-tooltip-target="tooltip-permission-{{ $students->id }}"
+                                                data-tooltip-target="tooltip-permission-{{ $students->student->id }}"
                                                 data-tooltip-trigger="hover"
-                                                class="attendance-btn p-1 sm:p-3 rounded-lg border {{ $students->status === 'permission' ? 'active' : '' }}"
+                                                class="attendance-btn p-1 sm:p-3 rounded-lg border {{ $status === 'permission' ? 'active' : '' }}"
                                                 data-type="permission">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                                     viewBox="0 0 24 24" stroke="currentColor">
@@ -293,15 +310,15 @@
                                                         d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                                 </svg>
                                             </button>
-                                            <div id="tooltip-permission-{{ $students->id }}" role="tooltip"
+                                            <div id="tooltip-permission-{{ $students->student->id }}" role="tooltip"
                                                 class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
                                                 <span class="text-sm">ច្បាប់</span>
                                                 <div class="tooltip-arrow" data-popper-arrow></div>
                                             </div>
                                             <!-- Late Button and Tooltip -->
-                                            <button type="button" data-tooltip-target="tooltip-late-{{ $students->id }}"
+                                            <button type="button" data-tooltip-target="tooltip-late-{{ $students->student->id }}"
                                                 data-tooltip-trigger="hover"
-                                                class="attendance-btn p-1 sm:p-3 rounded-lg border {{ $students->status === 'late' ? 'active' : '' }}"
+                                                class="attendance-btn p-1 sm:p-3 rounded-lg border {{ $status === 'late' ? 'active' : '' }}"
                                                 data-type="late">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                                     viewBox="0 0 24 24" stroke="currentColor">
@@ -309,7 +326,7 @@
                                                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                             </button>
-                                            <div id="tooltip-late-{{ $students->id }}" role="tooltip"
+                                            <div id="tooltip-late-{{ $students->student->id }}" role="tooltip"
                                                 class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
                                                 <span class="text-sm">យឺត</span>
                                                 <div class="tooltip-arrow" data-popper-arrow></div>
