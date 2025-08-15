@@ -1,6 +1,19 @@
 @extends('app_layout.layout')
 @section('content')
 
+<style>
+    @font-face {
+      font-family: 'tacteing';
+      src: url('/fonts/Tacteing.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+  
+    .tacteing {
+      font-family: 'tacteing';
+    }
+  </style>
+
     <div class="px-4 mb-4 print:hidden battambang">
         <!-- Display validation errors -->
         @if (!empty($validationErrors))
@@ -33,10 +46,10 @@
             <!-- Flex container: Buttons Left, Filter Button Right -->
             <div class="flex flex-col md:flex-row justify-between items-center gap-4 ">
                 <!-- Buttons section (left) -->
-                <div class="flex gap-2 w-full md:w-auto text-xs">
+                <div class="flex gap-2 w-full md:w-auto text-md">
                     <!-- Preview Button -->
                     <button
-                        class=" py-1.5 flex items-center gap-1 border border-blue-600 text-blue-600 font-bold text-xs px-3  rounded hover:bg-blue-600 hover:text-white transition">
+                        class=" py-1.5 flex items-center gap-1 border border-blue-600 text-blue-600 font-bold text-sm px-3  rounded hover:bg-blue-600 hover:text-white transition">
                         Privew
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg">
@@ -168,9 +181,9 @@
 
 
     {{-- {{ dd($results) }} --}}
-    <div id="print-area" class="bg-white p-12 rounded shadow">
+    <div id="print-area" class="bg-white p-12">
 
-            <div class="flex justify-between items-start hidden print:flex ">
+            <div class="flex justify-between items-start   ">
                 <!-- Left: Ministry and Institution -->
                 <div class="text-start space-y-2 pt-9">
                     <div class="moul text-base font-bold leading-tight">វិទ្យាស្ថានជាតិបណ្តុះបណ្តាលបច្ចេកទេស</div>
@@ -182,13 +195,13 @@
                         <div class="moul text-base font-bold leading-tight"></div>
                     @endif
 
-                    <div class="mt-1 mb-1"><span class="inline-block w-32 border-t border-black"></span></div>
+                    <div ><span class="tacteing ml-15 text-3xl">3</span></div>
                 </div>
                 <!-- Right: Country and Motto -->
                 <div class="text-end space-y-2 ">
                     <div class="moul text-base font-bold leading-tight mr-4">ព្រះរាជាណាចក្រកម្ពុជា</div>
                     <div class="moul text-base font-bold leading-tight ">ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
-                    <div class="mt-1 mb-1"><span class="inline-block w-32 border-t border-black"></span></div>
+                    <div><span class=" tacteing text-3xl mr-15">3</span></div>
                 </div>
             </div>
 
@@ -199,7 +212,7 @@
                 {{ $filters['skill_name'] }} ក្រុម៖ {{ $filters['class'] }} វេន{{ $filters['section_name'] }}</h3>
             <h4 class="moul text-md font-bold">ឆ្នាំសិក្សា {{ $filters['khmer_year'] }}</h4>
         </div>
-        <div class="overflow-x-auto">
+        <div >
             <table id="attendance-table" class="w-full table-auto border border-black text-center battambang">
                 <thead class="bg-gray-200">
                     <tr>
@@ -253,12 +266,12 @@
             </table>
         </div>
         <!-- Note: print only, centered -->
-        <div class="text-center mt-2 hidden print:block text-xs">
+        <div class="text-center mt-2 hidden print:block text-xs ">
             <span class="battambang-bold">កំណត់សម្គាល់៖</span>
-            និស្សិតដែលមានអវត្តមានសរុបលើស ១៥ដង ក្នុងមួយឆមាសនោះប្រធានដេប៉ាតឺម៉ង់មិនអនុញ្ញាតអោយប្រឡងឆមាសជាដាច់ខាត។
+            <span class="battambang">និស្សិតដែលមានអវត្តមានសរុបលើស ១៥ដង ក្នុងមួយឆមាសនោះប្រធានដេប៉ាតឺម៉ង់មិនអនុញ្ញាតអោយប្រឡងឆមាសជាដាច់ខាត។</span>
         </div>
         <!-- Footer: print only, 3 columns -->
-        <div class="hidden print:flex justify-between mt-16 px-8 w-full">
+        <div class="hidden print:flex justify-between mt-16 px-8 w-full text-sm">
             <!-- Left: Prepared by -->
             <div class="flex-1 text-center">
                 <div class="battambang">បានត្រួតពិនិត្យ និងអនុម័ត</div>
@@ -273,9 +286,9 @@
 
             </div>
             <div class="flex-1 text-center">
-                <div class="battambang">ភ្នំពេញ ថ្ងៃទី ...... ខែ ...... ឆ្នាំ ...........</div>
-                <div class="battambangs">រាជធានីភ្នំពេញ​ ថ្ងៃទី​​     ខែ      ឆ្នាំ២០ </div>
-                <div class="mt-8 moul font-bold underline">អ្នកធ្វើតារាង</div>
+                <div class="battambang">ភ្នំពេញ ថ្ងៃទី ...... ខែ ...... ឆ្នាំ .........</div>
+                <div class="battambang">រាជធានីភ្នំពេញ​ ថ្ងៃទី​​     ខែ      ឆ្នាំ២០ </div>
+                <div class="moul font-bold underline">អ្នកធ្វើតារាង</div>
             </div>
         </div>
     </div>
@@ -346,6 +359,9 @@
             body * {
                 visibility: hidden !important;
                 padding-left: 10px !important;
+                font-size: 14px
+
+                
             }
 
             #print-area,
@@ -369,21 +385,9 @@
                 display: none !important;
             }
 
-            #print-area table,
-            #print-area th,
-            #print-area td {
-                border: 1px solid #000 !important;
-                border-collapse: collapse !important;
 
-            }
 
-            /* .print-footer {
-                position: fixed;
-                bottom: 40px;
-                left: 0;
-                width: 100vw;
-                z-index: 1000;
-            } */
+
         }
     </style>
 
