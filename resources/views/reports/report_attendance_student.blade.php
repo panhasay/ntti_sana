@@ -48,7 +48,7 @@
                 <!-- Buttons section (left) -->
                 <div class="flex gap-2 w-full md:w-auto text-md">
                     <!-- Preview Button -->
-                    <button
+                    {{-- <button
                         class=" py-1.5 flex items-center gap-1 border border-blue-600 text-blue-600 font-bold text-sm px-3  rounded hover:bg-blue-600 hover:text-white transition">
                         Privew
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
@@ -59,7 +59,7 @@
                                 d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.478 0-8.268-2.943-9.542-7z">
                             </path>
                         </svg>
-                    </button>
+                    </button> --}}
 
                     <!-- Print Button -->
                     <button onclick="window.print()" type="button"
@@ -183,9 +183,10 @@
     {{-- {{ dd($results) }} --}}
     <div id="print-area" class="bg-white p-12">
 
-            <div class="flex justify-between items-start   ">
+
+            <div class="flex justify-between items-start ">
                 <!-- Left: Ministry and Institution -->
-                <div class="text-start space-y-2 pt-9">
+                <div class="text-start space-y-2 pt-9 ">
                     <div class="moul text-base font-bold leading-tight">វិទ្យាស្ថានជាតិបណ្តុះបណ្តាលបច្ចេកទេស</div>
                     @if (!empty($filters['department']))
                         <div class="moul text-base font-bold leading-tight">
@@ -266,9 +267,9 @@
             </table>
         </div>
         <!-- Note: print only, centered -->
-        <div class="text-center mt-2 hidden print:block text-xs ">
+        <div class=" mt-2 hidden print:block text-2xs ">
             <span class="battambang-bold">កំណត់សម្គាល់៖</span>
-            <span class="battambang">និស្សិតដែលមានអវត្តមានសរុបលើស ១៥ដង ក្នុងមួយឆមាសនោះប្រធានដេប៉ាតឺម៉ង់មិនអនុញ្ញាតអោយប្រឡងឆមាសជាដាច់ខាត។</span>
+            <span class="battambang">និស្សិតដែលមានអវត្តមានសរុបលើស ១៥ដង ក្នុងមួយឆមាសនោះដេប៉ាតឺម៉ង់មិនអនុញ្ញាតអោយប្រឡងឆមាសជាដាច់ខាត។</span>
         </div>
         <!-- Footer: print only, 3 columns -->
         <div class="hidden print:flex justify-between mt-16 px-8 w-full text-sm">
@@ -287,7 +288,7 @@
             </div>
             <div class="flex-1 text-center">
                 <div class="battambang">ភ្នំពេញ ថ្ងៃទី ...... ខែ ...... ឆ្នាំ .........</div>
-                <div class="battambang">រាជធានីភ្នំពេញ​ ថ្ងៃទី​​     ខែ      ឆ្នាំ២០ </div>
+                <div class="battambang">រាជធានីភ្នំពេញ,​ ថ្ងៃទី​​.....ខែ........ឆ្នាំ២០... </div>
                 <div class="moul font-bold underline">អ្នកធ្វើតារាង</div>
             </div>
         </div>
@@ -295,23 +296,65 @@
 
     <script>
         function exportTableToExcel(tableID, filename = '') {
-            var downloadLink;
-            var dataType = 'application/vnd.ms-excel';
             var tableSelect = document.getElementById(tableID);
-            var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+            var tableHTML = tableSelect.outerHTML;
+            
+            // Add Excel-specific styling for borders
+            var excelHTML = tableHTML.replace(/<table/g, '<table style="border-collapse: collapse;"');
+            excelHTML = excelHTML.replace(/<th/g, '<th style="border: 1px solid black; padding: 8px; background-color: #f0f0f0; font-weight: bold;"');
+            excelHTML = excelHTML.replace(/<td/g, '<td style="border: 1px solid black; padding: 8px;"');
+            
+            // Create a temporary container to apply styles
+            var tempDiv = document.createElement('div');
+            tempDiv.innerHTML = excelHTML;
+            
+            // Apply border styles to all cells
+            var cells = tempDiv.querySelectorAll('th, td');
+            cells.forEach(function(cell) {
+                cell.style.border = '1px solid black';
+                cell.style.padding = '8px';
+                if (cell.tagName === 'TH') {
+                    cell.style.backgroundColor = '#f0f0f0';
+                    cell.style.fontWeight = 'bold';
+                }
+            });
+            
+            // Get the styled HTML
+            var styledHTML = tempDiv.innerHTML;
+            
+            // Create Excel file content with proper formatting
+            var excelContent = `
+                <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+                <head>
+                    <meta charset="UTF-8">
+                    <style>
+                        table { border-collapse: collapse; width: 100%; font-family: 'Battambang', Arial, sans-serif; }
+                        th, td { border: 1px solid black; padding: 8px; text-align: center; font-family: 'Battambang', Arial, sans-serif; }
+                        th { background-color: #f0f0f0; font-weight: bold; font-family: 'Battambang', Arial, sans-serif; }
+                        .text-left { text-align: left; }
+                        .bg-red-300 { background-color: #fecaca; }
+                        .bg-gray-200 { background-color: #e5e7eb; }
+                    </style>
+                </head>
+                <body style="font-family: 'Battambang', Arial, sans-serif;">
+                    ${styledHTML}
+                </body>
+                </html>
+            `;
+            
+            // Create download link
+            var downloadLink = document.createElement("a");
+            var dataType = 'application/vnd.ms-excel';
             filename = filename ? filename + '.xls' : 'excel_data.xls';
-            downloadLink = document.createElement("a");
-            document.body.appendChild(downloadLink);
-            if (navigator.msSaveOrOpenBlob) {
-                var blob = new Blob(['\ufeff', tableHTML], {
-                    type: dataType
-                });
-                navigator.msSaveOrOpenBlob(blob, filename);
-            } else {
-                downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
-                downloadLink.download = filename;
-                downloadLink.click();
-            }
+            
+            // For modern browsers
+            var blob = new Blob(['\ufeff', excelContent], { type: dataType });
+            downloadLink.href = URL.createObjectURL(blob);
+            downloadLink.download = filename;
+            downloadLink.click();
+            
+            // Clean up
+            URL.revokeObjectURL(downloadLink.href);
         }
 
         // Toggle filter form visibility
@@ -360,14 +403,11 @@
                 visibility: hidden !important;
                 padding-left: 10px !important;
                 font-size: 14px
-
-                
             }
 
             #print-area,
             #print-area * {
                 visibility: visible !important;
-
             }
 
             #print-area {
@@ -381,13 +421,16 @@
                 margin: 0;
             }
 
+            /* Ensure header positioning is consistent in print */
+            #print-area .flex.justify-between.items-start {
+                margin-top: 0 !important;
+                padding-top: 0 !important;
+                margin-bottom: 20px !important;
+            }
+
             .print-hidden {
                 display: none !important;
             }
-
-
-
-
         }
     </style>
 

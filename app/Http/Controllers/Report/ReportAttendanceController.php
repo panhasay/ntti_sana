@@ -362,30 +362,26 @@ class ReportAttendanceController extends Controller
             'khmer_year_level' => $khmerYearLevel,
         ];
 
-        return view('reports.report_attendance_student', [
-            'results' => $results,
-            'months' => $months,
-            'attendance_types' => [
-                ['value' => 2, 'label' => 'វត្តមាន'],    // Present
-                ['value' => 1, 'label' => 'យឺត'],        // Late
-                ['value' => 0.5, 'label' => 'ច្បាប់'],    // Permission/Leave
-                ['value' => 0, 'label' => 'អវត្តមាន'],   // Absent
-            ],
-            'filters' => $filters,
-            'years' => $years,
-            'semesters' => $semesters,
-            'departments' => $departments,
-            'classes' => $classes,
-            'validationErrors' => $validationErrors,
-        ]);
+        return view('reports.report_attendance_student', compact('results', 'years', 'semesters', 'departments', 'classes', 'months', 'filters'));
     }
-    
-    public function getDepartmentOptions($code)
+
+    public function getDepartmentOptions($departmentCode)
     {
-        $classes = \App\Models\General\Classes::where('department_code', $code)->orderBy('name')->get(['code', 'name']);
-        return response()->json([
-            'classes' => $classes,
-        ]);
+        try {
+            $classes = DB::table('classes')
+                ->where('department_code', $departmentCode)
+                ->select('code', 'name')
+                ->orderBy('name')
+                ->get();
+
+            return response()->json([
+                'classes' => $classes
+            ], 200);
+        } catch (\Exception $ex) {
+            return response()->json([
+                'status' => 'error', 
+                'message' => $ex->getMessage()
+            ], 500);
+        }
     }
-    
 }

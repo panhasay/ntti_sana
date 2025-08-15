@@ -22,3 +22,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('get-student', [ApiController::class, 'APIGetStudent']);
+Route::get('department/{departmentCode}/options', [App\Http\Controllers\Report\ReportAttendanceController::class, 'getDepartmentOptions']);
