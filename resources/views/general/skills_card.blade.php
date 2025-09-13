@@ -12,7 +12,7 @@
           @else
             បន្ថែមថ្មី
           @endif
-          &nbsp;&nbsp; <button type="button" id="BtnSave" class="btn btn-success"> save </button>
+          &nbsp;&nbsp; <button type="button" id="BtnSave" class="btn btn-success">រក្សាទុក </button>
         </div>
       </div>
     </div>

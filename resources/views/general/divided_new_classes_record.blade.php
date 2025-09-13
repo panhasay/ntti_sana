@@ -33,7 +33,7 @@
         <td class="">
             <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2"
                 target="_blank" href="{{'/class-new/transaction?type=ed&code='.\App\Service\service::Encr_string($record->code ?? '') }}">
-                <i class="mdi mdi-border-color"></i> Open
+                <i class="mdi mdi-border-color"></i>បើក
             </a>
         </td>
         <td class="">{{ $record->code ?? '' }}</td>

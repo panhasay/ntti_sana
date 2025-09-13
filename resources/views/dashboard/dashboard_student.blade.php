@@ -64,12 +64,12 @@
         <div class="col-sm-12 stretch-card grid-margin">
             <div class="card">
               <div class="row">
-                <div class="col-md-4">
+                {{-- <div class="col-md-4">
                   <div class="card border-0">
                     <div class="card-titles">អវត្តមាន</div>
                     <div id="piechart" style="width: 440px; height: 350px;"></div>
                   </div>
-                </div>
+                </div> --}}
                 <div class="col-md-4">
                   <div class="card border-0">
                    
@@ -111,7 +111,7 @@
                         </div>
                       </div>
                     </div>
-                    <div class="card stretch-card mb-3">
+                    {{-- <div class="card stretch-card mb-3">
                       <div class="card-body d-flex flex-wrap justify-content-between">
                         <div>
                           <h4 class="font-weight-semibold mb-1 text-black">ពត័មានការសិក្សា ឆ្នាំទី ១</h4>
@@ -119,7 +119,7 @@
                           <h6 class="text-muted">ឆមាសទី 2 : ពីន្ទុសរុប​​៖​ 60, មធ្យមភាគ៖​ 50,5 លេខ៖ 20</h6>
                         </div>
                       </div>
-                    </div>
+                    </div> --}}
                   </div>
               </div>
             </div>

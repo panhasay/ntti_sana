@@ -29,11 +29,13 @@
     use App\Http\Controllers\General\SectionsController;
     use App\Http\Controllers\General\StudentSanaController;
     use App\Http\Controllers\General\TransferController;
-use App\Http\Controllers\Report\ReportAttendanceController;
-use App\Http\Controllers\Report\ReportListOfStudentClassAndSectionController;
-use App\Http\Controllers\Report\ReportTotalScoreExamController;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Artisan;
+    use App\Http\Controllers\Report\ReportAttendanceController;
+    use App\Http\Controllers\Report\ReportListOfStudentClassAndSectionController;
+    use App\Http\Controllers\Report\ReportTotalScoreExamController;
+    use Illuminate\Support\Facades\DB;
+    use Illuminate\Support\Facades\Artisan;
+    use App\Http\Controllers\General\ExamCreditController;
+    use App\Http\Controllers\General\RetakeExamController;
 Route::get('/clear-all', function() {
     Artisan::call('cache:clear');    
     Artisan::call('config:clear');   
@@ -136,9 +138,10 @@ Route::group(['prefix' => 'dashboard','middleware' => 'user_permission'
     Route::get('student-print', [DashboardController::class, 'Print'])->name('dashboard.print');
     // Route::get('teacher-dashboard', [DashboardController::class, 'TeacherDashboard'])->name('dashboard.teacherDashboard');
     // Route::get('teacher-management-class', [DashboardController::class, 'TeacherMmanagementClass'])->name('dashboard.teacherManagementClass');
-    Route::get('student-account', [DashboardController::class, 'StudentUserAccount'])->name('dashboard.studentAccount');
+   
 });
 
+     Route::get('dahhboard-student-account', [DashboardController::class, 'StudentUserAccount'])->name('dashboard.studentAccount');
  Route::get('teacher-dashboard', [DashboardController::class, 'TeacherDashboard'])->name('dashboard.teacherDashboard');
     Route::get('teacher-management-class', [DashboardController::class, 'TeacherMmanagementClass'])->name('dashboard.TeacherMmanagementClass');
 
@@ -158,7 +161,7 @@ Route::group(['perfix' => 'Users'], function (){
     Route::get('profile/reset-password', [UsersController::class, 'ResetPassword'])->name('ResetPassword');
     Route::GET('profile/update-information', [UsersController::class, 'UpdateProfile'])->name('UpdateProfile');
     Route::POST('profile/upload-img', [UsersController::class, 'UploadImages'])->name('UploadImages');
-    Route::GEt('users/transaction', [UsersController::class, 'transaction'])->name('transaction');
+    Route::GET('users/transaction', [UsersController::class, 'transaction'])->name('transaction');
     Route::post('users/update', [UsersController::class, 'update'])->name('update');
     Route::post('users/store', [UsersController::class, 'store'])->name('store');
 })->middleware('auth');
@@ -170,6 +173,10 @@ Route::group(['perfix' => 'table'], function (){
     Route::get('/system/avanceSearch-clear-data/{page}',[SystemSettingController::class, 'avanceSearchClearData']);
     Route::get('/system/live-Search/{page}',[SystemSettingController::class, 'LiveSearch']);
     Route::get('/system/class-get-data-group',[SystemSettingController::class, 'ClassGetData']);
+    // Route::get('/', [SystemSettingController::class, 'index'])->name('locations.index');
+    // Route::get('/districts', [SystemSettingController::class, 'districts'])->name('locations.districts');
+    // Route::get('/communes', [SystemSettingController::class, 'communes'])->name('locations.communes');
+    // Route::get('/villages', [SystemSettingController::class, 'villages'])->name('locations.villages');
 })->middleware('auth');
 
 
@@ -268,22 +275,6 @@ Route::group(['perfix' => 'class-new'], function (){
     Route::get('/class-new/transaction/download-excel', [DividedNewClassesController::class, 'ClassNewDownloadExcel']);
     Route::get('/class-new/transaction/update-student', [DividedNewClassesController::class, 'ClassNewUpdateStudent']);
     Route::POST('/class-new/student/registration/update', [DividedNewClassesController::class, 'ClassNewUpdateStudentTransaction']);
-})->middleware('auth');
-
-Route::group(['perfix' => 'exam-schedule'], function (){
-    Route::get('/exam-schedule',[ExamScheduleController::class,'index']);
-    Route::get('/exam-schedule/transaction', [ExamScheduleController::class, 'transaction']);
-    Route::post('/exam-schedule/update', [ExamScheduleController::class, 'update']);
-    Route::post('/exam-schedule/store', [ExamScheduleController::class, 'store']);
-    Route::get('/exam-schedule/create', [ExamScheduleController::class, 'GetDataForCreateExamSchedule'])->name('exam.schedule.create');
-    Route::post('/exam-schedule/save', [ExamScheduleController::class, 'SaveExamSchedule'])->name('save.exam.schedule');
-    Route::get('/get-exam-schedules', [ExamScheduleController::class, 'getSchedules'])->name('get.exam.schedules');
-    Route::post('/exam-schedule/update/{id}', [ExamScheduleController::class, 'updateExamSchedule']);
-    Route::post('/exam-schedule/upload-document', [ExamScheduleController::class, 'uploadDocument'])->name('exam-schedule.upload-document');
-    Route::get('/exam-schedule/view-pdf/{filename}', [ExamScheduleController::class, 'viewPdf'])->name('viewPdf');
-    Route::delete('/exam-schedule/delete/{id}', [ExamScheduleController::class, 'deleteExamSchedule']);
-    Route::post ('/exam-schedule/save-schedule', [ExamScheduleController::class, 'SaveSchedule']);
-    Route::get('/exam-schedule-print',[ExamScheduleController::class,'printLine']);
 })->middleware('auth');
 
 Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static function () {
@@ -412,16 +403,11 @@ Route::group(['prefix' => 'sections'], function () {
 
 Route::group(['perfix' => 'exam-schedule'], function () {
     Route::get('/exam-schedule', [ExamScheduleController::class, 'index']);
-
-    // Route::get('/exam-schedule_printkk', [ExamScheduleController::class, 'examSchedulePrint'])->name('exam_schedule_printkk');
-
     Route::get('/exam-schedule/transaction', [ExamScheduleController::class, 'transaction']);
     Route::post('/exam-schedule/update', [ExamScheduleController::class, 'update']);
     Route::post('/exam-schedule/store', [ExamScheduleController::class, 'store']);
     Route::post('/exam-schedule/save', [ExamScheduleController::class, 'saveExamSchedule'])->name('save.exam.schedule');
     Route::post('/exam-schedule/delete-both-sessions', [ExamScheduleController::class, 'deleteBothSessions'])->name('delete.both.sessions');
-
-
     // Route::post('/exam-schedule/update/{id}', [ExamScheduleController::class, 'updateExamSchedule']);
     // Route::delete('/exam-schedule/delete/{id}', [ExamScheduleController::class, 'deleteExamSchedule']);
     Route::post('/exam-schedule/upload-document', [ExamScheduleController::class, 'uploadDocument'])->name('exam-schedule.upload-document');
@@ -432,16 +418,39 @@ Route::group(['perfix' => 'exam-schedule'], function () {
     // Route::delete('/exam-schedule/delete-multiple', [ExamScheduleController::class, 'destroyMultiple'])->name('exam-schedule-multi-delete');
     Route::post('/exam-schedule-print-multiple', [ExamScheduleController::class, 'printMultiple']);
     Route::get('/exam-schedule/get-schedule/{id}', [ExamScheduleController::class, 'getSchedule']);
-
     Route::get('/exam-schedule/get-assigned-teachers-subjects/{classCode}/{year}/{sessionYear}/{sectionCode}/{semester}/{level}/{skills_code}/{department_code}', [ExamScheduleController::class, 'getAssignedTeachersAndSubjects']);
-
     Route::post('/save-exam-date-khmer', [ExamScheduleController::class, 'saveExamDateKhmer'])->name('save-exam-date-khmer');
     Route::post('/save-exam-date-khmer-multiple', [ExamScheduleController::class, 'saveExamDateKhmerMultiple'])->name('exam-schedule.save-date-khmer-multiple');
     Route::POST('/exam-schedule-delete', [ExamScheduleController::class, 'delete'])->name('exam-schedule-delete');
-
     Route::post('/exam-schedule/delete-session', [ExamScheduleController::class, 'deleteSession'])->name('exam.schedule.delete.session');
-
     Route::get('/exam-schedule/get-all-teachers', [ExamScheduleController::class, 'getAllTeachers']);
-
     Route::post('/exam-schedule/update-date', [ExamScheduleController::class, 'updateDate'])->name('exam.schedule.update.date');
 })->middleware('auth');
+
+Route::group(['prefix' => 'exam-credit',], function () {
+    Route::get('/', [ExamCreditController::class, 'index']);
+    Route::get('/results', [ExamCreditController::class, 'examCreditResult'])->name('exam-credit.results');
+    Route::get('/get-student-detail', [ExamCreditController::class, 'GetStudentDetail'])->name('get-student-detail');
+    Route::get('/print-attendance-list',[ExamCreditController::class,'printAttedanceList']);
+    Route::get('/attendance-list',[ExamCreditController::class,'attendanceList']);
+    Route::get('/attendance-list-monthly',[ExamCreditController::class,'attendenceListMonthly']);
+    Route::get('/attendance-list/download-excel', [ExamCreditController::class, 'attendanceListExcel']);
+    Route::get('/print-attendance-list-monthly',[ExamCreditController::class,'printAttedanceListMonthly']);
+    Route::get('/attendance-monthly/download-excel', [ExamCreditController::class, 'downloadAttedanceListMonthly']);
+    Route::get('/exam-student-list',[ExamCreditController::class,'examCreditStudentList']);
+    Route::post('/print-exam-student-list',[ExamCreditController::class,'printExamCreditStudentList']);
+    Route::post('/assign-score', [ExamCreditController::class, 'assignScore'])->name('exam-credit.assign-score');
+    Route::get('/assign-score/preview', [ExamCreditController::class, 'assignScorePreview'])->name('exam-credit.assign-score.preview');
+    Route::post('/print-assign-score', [ExamCreditController::class, 'printAssignScore'])->name('exam-credit.print-assign-score');
+    Route::post('/assign-score/export-excel', [ExamCreditController::class, 'assignScoreExcel'])->name('assign-score.export.excel');
+    Route::get('/search-attendance', [ExamCreditController::class, 'liveSearchAttendance'])->name('exam-credit.search');
+})->middleware('auth');
+
+Route::group(['prefix' => 'retake-exam'],function(){
+    Route::get('/', [RetakeExamController::class, 'index'])->name('retake.exam');
+    Route::get('/live-search', [RetakeExamController::class, 'liveSearch'])->name('retake.exam.live.search');
+    Route::post('/print-print-list', [RetakeExamController::class, 'printList'])->name('retake.exam.print.ajax');
+    Route::get('/export-excel', [RetakeExamController::class, 'exportExcel'])->name('retake.exam.export');
+    Route::get('/score/input', [ScoreController::class, 'input'])->name('score.input');
+})->middleware('auth');
+

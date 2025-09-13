@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\General;
 
 use App\Http\Controllers\Controller;
+use App\Models\DailyDate;
 use App\Models\General\AssingClasses;
 use App\Models\General\Classes;
 use App\Models\General\ClassSchedule as GeneralClassSchedule;
@@ -11,11 +12,14 @@ use App\Models\General\ExamScheduleLine;
 use App\Models\General\StudyYears;
 use App\Models\General\Subjects;
 use App\Models\General\Teachers;
+use App\Models\General\ExamDateKhmer;
 use App\Models\SystemSetup\Department;
 use App\Service\service;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Models\General\ClassSchedule;
 
 class ExamScheduleController extends Controller
@@ -46,131 +50,245 @@ class ExamScheduleController extends Controller
         }
         return view('general.exam_schedule', compact('records', 'page'));
     }
+
+
+    public function transaction(Request $request)
+    {
+        try {
+            $data = $request->all();
+            $type = $data['type'];
+            $page = $this->page;
+            $records = null;
+            $examScheduleId = null;
+            $record_sub_lines = ExamScheduleLine::where('id', '')->get();
+
+            $record_sub_lines = AssingClasses::where('class_code', $data['type'])->get();
+            $classs = Classes::orderBy('code', 'desc')->get();
+
+            // Get the next ID for exam_schedule
+            $lastId = DB::table('exam_schedule')->max('id') ?? 0;
+            $nextId = $lastId + 1;
+
+            $sections = DB::table('sections')->get();
+            $department = Department::get();
+            $school_years = DB::table('session_year')->orderBy('code', 'desc')->get();
+            $skills = DB::table('skills')->get();
+            $study_years = StudyYears::get();
+            $teachers = Teachers::orderBy('code', 'asc')->get();
+            $subjects = Subjects::orderBy('code', 'asc')->get();
+            $date_name = DB::table('date_name')->orderBy('index', 'asc')->get();
+            $days = $date_name->pluck('name')->toArray();
+
+
+
+            if (isset($_GET['code'])) {
+                $examScheduleId = $this->services->Decr_string($_GET['code']);
+                $records = ExamSchedule::where('id', $examScheduleId)->first();
+                if ($records) {
+                    $record_sub_lines = ExamScheduleLine::with(['teacher', 'coTeacher', 'coTeacher1', 'subject'])
+                        ->where('exam_schedule_id', $records->id)
+                        ->get()
+                        ->filter(function ($item) {
+                            return $item->dayOfWeek >= 1 && $item->dayOfWeek <= 6;
+                        })
+                        ->sortBy('dayOfWeek');
+                } else {
+                    $record_sub_lines = [];
+                }
+                // dd($examScheduleId);
+            }
+
+
+
+            // Pass necessary data to the view
+            $params = compact(
+                'records',
+                'type',
+                'page',
+                'sections',
+                'department',
+                'school_years',
+                'skills',
+                'classs',
+                'study_years',
+                'teachers',
+                'subjects',
+                'record_sub_lines',
+                'date_name',
+                'days',
+                'examScheduleId',
+                'nextId' // Add nextId to the view
+            );
+
+            return view('general.exam_schedule_card', $params);
+        } catch (\Exception $ex) {
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+
+
+
+
+    public function store(Request $request)
+    {
+        $input = $request->all();
+        $requiredFields = [
+            'start_date' => 'ចាប់ផ្តើមអនុវត្ត ត្រូវបំពេញ!',
+            'class_code' => 'ថា្នក់/ក្រុម​ ត្រូវបំពេញ!',
+            'sections_code' => 'វេន ត្រូវបំពេញ!',
+            'skills_code' => 'ជំនាញ ត្រូវបំពេញ!',
+            'department_code' => 'ដេប៉ាតឺម៉ង់ ត្រូវបំពេញ!',
+            'school_year_code' => 'ឆ្នាំសិក្សា ត្រូវបំពេញ!',
+            'level' => 'Level is ត្រូវបំពេញ!',
+            'semester' => 'Semester is ត្រូវបំពេញ!',
+            'years' => 'ត្រូវបំពេញ បរិញាប័ត្រ ឆ្នាំ !'
+        ];
+
+        foreach ($requiredFields as $field => $message) {
+            if (empty($input[$field])) {
+                return response()->json(['status' => 'error', 'msg' => $message]);
+            }
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Get the next ID
+            $lastId = DB::table('exam_schedule')->max('id') ?? 0;
+            $nextId = $lastId + 1;
+
+            // Create new record with explicit ID
+            $records = new ExamSchedule();
+            $records->id = $nextId;
+            $records->start_date = $request->start_date;
+            $records->sections_code = $request->sections_code;
+            $records->skills_code = $request->skills_code;
+            $records->department_code = $request->department_code;
+            $records->session_year_code = $request->school_year_code;
+            $records->qualification = $request->level;
+            $records->semester = $request->semester;
+            $records->class_code = $request->class_code;
+            $records->years = $request->years;
+            $records->save();
+
+            $encryptedCode = \App\Service\service::Encr_string($nextId);
+            $url = "/exam-schedule/transaction?type=ed&code=" . $encryptedCode;
+
+            DB::commit();
+            return response()->json(['store' => 'yes', 'url' => $url, 'msg' => 'Records Add Succesfully !!']);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+
+
+
+
+
     public function saveExamSchedule(Request $request)
     {
         try {
             DB::beginTransaction();
 
             $data = $request->all();
-            $header = ExamSchedule::findOrFail($data['exam_schedule']);
 
-            $dates = $request->input('date');
-            $subjects = $request->input('subjects_code');
-            $teachers = $request->input('teacher_code');
-            $documents = $request->input('document_exam');
+            // Decode schedule if it's a JSON string
+            if (isset($data['schedule']) && is_string($data['schedule'])) {
+                $data['schedule'] = json_decode($data['schedule'], true);
+            }
 
-            foreach ($dates as $key => $date) {
-                if (!empty($date) && !empty($subjects[$key])) {
-                    ExamScheduleLine::create([
-                        'exam_schedule_id' => $header->id,
-                        'date' => $date,
-                        'subjects_code' => $subjects[$key],
-                        'teacher_code' => $teachers[$key] ?? null,
-                        'document_exam' => $documents[$key] ?? null,
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
+            // Validate the data structure
+            if (empty($data['exam_schedule_id']) || empty($data['schedule']) || !is_array($data['schedule'])) {
+                return response()->json([
+                    'status' => 'error',
+                    'msg' => 'ទិន្នន័យមិនគ្រប់គ្រាន់ ឬមិនត្រឹមត្រូវ'
+                ]);
+            }
+
+            $exam_schedule_id = $data['exam_schedule_id'];
+
+            // First, get all existing records for this exam schedule
+            $existingRecords = ExamScheduleLine::where('exam_schedule_id', $exam_schedule_id)->get();
+
+            // Create a map of existing records by their IDs
+            $existingRecordsMap = [];
+            foreach ($existingRecords as $record) {
+                $existingRecordsMap[$record->id] = $record;
+            }
+
+            foreach ($data['schedule'] as $schedule) {
+                // Only process if we have the required data
+                if (empty($schedule['date'])) {
+                    continue;
+                }
+
+                // Get the day name from the date
+                $dayOfWeek = strtolower(date('l', strtotime($schedule['date'])));
+
+                // If date_name_code is not provided, use the day name
+                if (empty($schedule['date_name_code'])) {
+                    $schedule['date_name_code'] = $dayOfWeek;
+                }
+
+                // Prepare the data array for update or create
+                $scheduleData = [
+                    'exam_schedule_id' => $exam_schedule_id,
+                    'date' => $schedule['date'],
+                    'date_name_code' => strtolower($schedule['date_name_code']),
+                    'teacher_code' => $schedule['teacher_code'] ?? null,
+                    'subjects_code' => $schedule['subjects_code'] ?? null,
+                    'start_time' => $schedule['start_time'] ?? null,
+                    'end_time' => $schedule['end_time'] ?? null,
+                    'room' => $schedule['room'] ?? null,
+                    'co_teacher_code' => isset($schedule['co_teacher_code']) && $schedule['co_teacher_code'] !== 'null' ? $schedule['co_teacher_code'] : null,
+                    'co_teacher_code1' => isset($schedule['co_teacher_code1']) && $schedule['co_teacher_code1'] !== 'null' ? $schedule['co_teacher_code1'] : null,
+                    'is_second_schedule' => $schedule['is_second_schedule'] ?? 0
+                ];
+
+                if (!empty($schedule['id'])) {
+                    // Update existing record
+                    $existingRecord = $existingRecordsMap[$schedule['id']] ?? null;
+                    if ($existingRecord) {
+                        $existingRecord->update($scheduleData);
+                        // Remove from map to track which records were updated
+                        unset($existingRecordsMap[$schedule['id']]);
+                    }
+                } else {
+                    // Create new record
+                    ExamScheduleLine::create($scheduleData);
                 }
             }
 
-            DB::commit();
-            return response()->json([
-                'status' => 'success',
-                'msg' => 'Exam Schedule saved successfully!'
-            ]);
-        } catch (\Exception $ex) {
-            DB::rollBack();
-            return response()->json([
-                'status' => 'error',
-                'msg' => $ex->getMessage()
-            ]);
-        }
-    }
-
-    public function updateExamSchedule(Request $request, $id)
-    {
-        try {
-            $record = ExamScheduleLine::findOrFail($id);
-            $record->update([
-                'date' => $request->input('date'),
-                'subjects_code' => $request->input('subjects_code'),
-                'teacher_code' => $request->input('teacher_code'),
-                'updated_at' => now()
-            ]);
-
-            return response()->json([
-                'status' => 'success',
-                'msg' => 'Exam Schedule updated successfully!'
-            ]);
-        } catch (\Exception $ex) {
-            return response()->json([
-                'status' => 'error',
-                'msg' => $ex->getMessage()
-            ]);
-        }
-    }
-
-    public function deleteExamSchedule($id)
-    {
-        try {
-            $record = ExamScheduleLine::findOrFail($id); // Check if record exists
-            $record->delete(); // Perform delete
-
-            return response()->json([
-                'status' => 'success',
-                'msg' => 'Exam Schedule deleted successfully!'
-            ]);
-        } catch (\Exception $ex) {
-            return response()->json([
-                'status' => 'error',
-                'msg' => $ex->getMessage()
-            ]);
-        }
-    }
-
-
-    public function transaction(request $request)
-    {
-        $data = $request->all();
-        $type = $data['type'];
-        $page = $this->page;
-        $page_url = $this->page;
-        $records = null;
-        $record_sub_lines = ExamScheduleLine::where('id', '')->get();
-        $classs = Classes::orderBy('code', 'desc')->get();
-        $sections = DB::table('sections')->get();
-        $department = Department::get();
-        $school_years = DB::table('session_year')->orderBy('code', 'desc')->get();
-        $skills = DB::table('skills')->get();
-        $study_years = StudyYears::get();
-        $teachers = Teachers::orderBy('code', 'asc')->get();
-        $subjects = Subjects::orderBy('code', 'asc')->get();
-        try {
-            $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'classs', 'study_years', 'teachers', 'subjects', 'record_sub_lines'];
-            if ($type == 'cr') return view('general.exam_schedule_card', compact($params));
-            if (isset($_GET['code'])) {
-                $records = ExamSchedule::where('id', $this->services->Decr_string($_GET['code']))->first();
-                $record_sub_lines = ExamScheduleLine::where('exam_schedule_id', $records->id)->get();
+            // Delete any remaining records that weren't updated (they were removed from the UI)
+            foreach ($existingRecordsMap as $record) {
+                $record->delete();
             }
-            return view('general.exam_schedule_card', compact($params));
-        } catch (\Exception $ex) {
-            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
-            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
-        }
-    }
-    public function delete(Request $request)
-    {
-        $code = $request->code;
-        try {
-            $records = Skills::where('code', $code);
-            $records->delete();
+
             DB::commit();
-            return response()->json(['status' => 'success', 'msg' => 'ទិន្ន័យត្រូវបាន លុប​!']);
-        } catch (\Exception $ex) {
-            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
-            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+
+            return response()->json([
+                'status' => 'success',
+                'msg' => 'កាលវិភាគត្រូវបានរក្សាទុក'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error saving exam schedule: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'msg' => 'មានបញ្ហាក្នុងការរក្សាទុក: ' . $e->getMessage()
+            ]);
         }
     }
+
+
+
+
+
+
+
     public function update(Request $request)
     {
         $input = $request->all();
@@ -197,273 +315,645 @@ class ExamScheduleController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-    public function store(request $request)
-    {
-        $input = $request->all();
-        $requiredFields = [
-            'start_date' => 'ចាប់ផ្តើមអនុវត្ត ត្រូវបំពេញ!',
-            'class_code' => 'ថា្នក់/ក្រុម​ ត្រូវបំពេញ!',
-            'sections_code' => 'វេន ត្រូវបំពេញ!',
-            'skills_code' => 'ជំនាញ ត្រូវបំពេញ!',
-            'department_code' => 'ដេប៉ាតឺម៉ង់ ត្រូវបំពេញ!',
-            'school_year_code' => 'ឆ្នាំសិក្សា ត្រូវបំពេញ!',
-            'level' => 'Level is ត្រូវបំពេញ!',
-            'semester' => 'Semester is ត្រូវបំពេញ!',
-            'years' => 'ត្រូវបំពេញ បរិញាប័ត្រ ឆ្នាំ !'
-        ];
-        foreach ($requiredFields as $field => $message) {
-            if (empty($input[$field])) {
-                return response()->json(['status' => 'error', 'msg' => $message]);
-            }
-        }
-        try {
-            $records = new ExamSchedule();
-            $records->start_date = $request->start_date;
-            $records->sections_code = $request->sections_code;
-            $records->skills_code = $request->skills_code;
-            $records->department_code = $request->department_code;
-            $records->session_year_code = $request->school_year_code;
-            $records->qualification = $request->level;
-            $records->semester = $request->semester;
-            $records->class_code = $request->class_code;
-            $records->years = $request->years;
-            $records->save();
 
-            $record = ExamSchedule::latest('id')->first();
-            if (isset($record->id)) {
-                $encryptedCode = \App\Service\service::Encr_string($record->id);
-                $url = "/exam-schedule/transaction?type=ed&code=" . $encryptedCode;
-            }
-            return response()->json(['store' => 'yes', 'url' => $url, 'msg' => 'Records Add Succesfully !!']);
-        } catch (\Exception $ex) {
-            DB::rollBack();
-            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
-            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
-        }
+    private function convertToKhmerNumber($number)
+    {
+        $khmerNumbers = [
+            '0' => '០',
+            '1' => '១',
+            '2' => '២',
+            '3' => '៣',
+            '4' => '៤',
+            '5' => '៥',
+            '6' => '៦',
+            '7' => '៧',
+            '8' => '៨',
+            '9' => '៩'
+        ];
+
+        return strtr($number, $khmerNumbers);
     }
+
     public function printLine(Request $request)
     {
-        $data = $request->all();
         $is_print = "yes";
         try {
-            $records = GeneralClassSchedule::where('id', $this->services->Decr_string($_GET['code']))->first();
-            $record_sub_lines = AssingClasses::where('class_code', $records->class_code)
-                ->where('semester', $records->semester)
-                ->where('years', $records->years)
-                ->where('qualification', $records->qualification)
-                ->where('sections_code', $records->sections_code)
-                ->where('skills_code', $records->skills_code)
-                ->where('department_code', $records->department_code)
+            $examScheduleId = $this->services->Decr_string($_GET['code']);
+            $record = ExamSchedule::with(['section', 'subject', 'department'])->findOrFail($examScheduleId);
+
+            // Get exam schedule lines with relationships
+            $record_sub_lines = ExamScheduleLine::where('exam_schedule_id', $record->id)
+                ->with(['subject', 'teacher', 'coTeacher', 'coTeacher1'])
+                ->orderBy('date')
+                ->orderBy('is_second_schedule')
                 ->get();
-            return view('general.class_schedule_sub_lists', compact('records', 'record_sub_lines', 'is_print'));
+
+            $class = DB::table('classes')->where('code', $record->class_code)->first();
+
+            // Get unique dates from exam schedule lines
+            $scheduleDates = $record_sub_lines->pluck('date')->unique()->filter();
+
+            // Get date_name and map dates to it
+            $date_name = DB::table('date_name')
+                ->orderBy('index', 'asc')
+                ->get()
+                ->map(function ($day) use ($record_sub_lines) {
+                    // Find schedules for this day
+                    $schedules = $record_sub_lines->filter(function ($line) use ($day) {
+                        return strtolower($line->date_name_code) === strtolower($day->code);
+                    });
+
+                    // Get the date from the first schedule (they should all have the same date)
+                    $day->schedule_date = $schedules->first() ? $schedules->first()->date : null;
+                    return $day;
+                });
+
+            $days = $date_name->pluck('name')->toArray();
+
+            // Get the required variables for the view header
+            $semesters = [$this->convertToKhmerNumber($record->semester)];
+            $years = collect([$this->convertToKhmerNumber($record->years)]);
+            $skills = collect([$record->skill]);
+            $session_years_imploded = DB::table('session_year')
+                ->where('code', $record->session_year_code)
+                ->value('name') ?? '';
+
+            // Convert to Khmer number if not empty
+            $session_years_imploded = $session_years_imploded ? $this->convertToKhmerNumber($session_years_imploded) : '';
+
+            // Get records for multiple data display
+            $records = collect([$record]);
+
+            return view('general.exams_schedule_print', compact(
+                'record',
+                'record_sub_lines',
+                'is_print',
+                'date_name',
+                'days',
+                'class',
+                'semesters',
+                'years',
+                'skills',
+                'session_years_imploded',
+                'records'
+            ));
         } catch (\Exception $ex) {
             DB::rollBack();
-            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-    public function SaveSchedule(Request $request)
+
+
+
+
+
+    public function printMultiple(Request $request)
     {
-        $data = $request->all();
-        $id = $this->services->Decr_string($data['code']);
-        $header = GeneralClassSchedule::where('id', $id)->first();
+        $is_print = "yes";
 
-        dd($header);
+        try {
+            // Get the selected exam schedule IDs from the request
+            $examScheduleIds = $request->input('examScheduleIds');
 
-        $assing = AssingClasses::latest('id')->first();
+            if (empty($examScheduleIds)) {
+                return response()->json([
+                    'status' => 'error',
+                    'msg' => 'សូមជ្រើសរើសយ៉ាងហោចណាស់មួយដើម្បីបោះពុម្ព'
+                ]);
+            }
 
-        if ($assing) {
-            $assing_no = $assing->assing_no + 10;
-        } else {
-            $assing_no = 10;
+            // Fetch multiple ExamSchedule records with relationships
+            $records = ExamSchedule::with([
+                'section',  // Make sure section is included
+                'subject',
+                'qualification',
+                'department',
+                'session_year',
+                'study_years'
+            ])
+                ->whereIn('id', $examScheduleIds)
+                ->get();
+
+            if ($records->isEmpty()) {
+                return response()->json([
+                    'status' => 'error',
+                    'msg' => 'មិនមានទិន្នន័យត្រូវបានរកឃើញ'
+                ]);
+            }
+
+            // Get unique semesters and ensure it's an array
+            // $semesters = $records->pluck('semester')->filter()->unique()->values()->toArray();
+            // Convert semesters to Khmer numbers
+            $semesters = $records->pluck('semester')
+                ->filter()
+                ->unique()
+                ->map(fn($s) => $this->convertToKhmerNumber($s)) // Convert each semester
+                ->values()
+                ->toArray();
+
+            // Get unique years and ensure it's a collection
+            // $years = collect($records->pluck('years')->filter()->unique()->values());
+            // Convert years to Khmer numbers
+            $years = collect($records->pluck('years'))
+                ->filter()
+                ->unique()
+                ->map(fn($y) => $this->convertToKhmerNumber($y)) // Convert each year
+                ->values();
+
+
+            // Get unique departments with name_2
+            $departments = Department::whereIn('code', $records->pluck('department_code')->unique())->get();
+
+            // Get unique timestudys and ensure it's an array of strings
+            $timestudys = $records->pluck('timestudy')
+                ->filter()
+                ->map(function ($item) {
+                    if (strpos($item, '[') !== false || strpos($item, ']') !== false) {
+                        $decoded = json_decode($item, true);
+                        return is_array($decoded) ? $decoded : [$item];
+                    } elseif (strpos($item, ',') !== false) {
+                        return array_map('trim', explode(',', $item));
+                    }
+                    return [$item];
+                })
+                ->flatten()
+                ->unique()
+                ->values()
+                ->toArray();
+
+            // Get session years imploded, with null check
+            $session_years_imploded = DB::table('session_year')
+                ->whereIn('code', $records->pluck('session_year_code')->filter())
+                ->pluck('name')
+                ->filter()
+                ->unique()
+                ->implode(', ') ?: '';
+
+            // Convert to Khmer number if not empty
+            if (!empty($session_years_imploded)) {
+                $session_years_imploded = $this->convertToKhmerNumber($session_years_imploded);
+            }
+
+            // Get the first record as header
+            $header = $records->first();
+
+            // Fetch related exam schedule lines
+            $record_sub_lines = ExamScheduleLine::whereIn('exam_schedule_id', $examScheduleIds)
+                ->with(['subject', 'teacher', 'coTeacher', 'coTeacher1'])
+                ->get();
+
+            // Fetch the date names
+            $date_name = DB::table('date_name')
+                ->orderBy('index', 'asc')
+                ->get();
+
+            $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+
+            // Group records
+            $groupedRecords = $records->groupBy('class_code');
+
+            // Group lines
+            $groupedLines = $record_sub_lines->groupBy('exam_schedule_id');
+
+            // Fetch classes
+            $classes = DB::table('classes')
+                ->whereIn('code', $records->pluck('class_code'))
+                ->get()
+                ->keyBy('code');
+
+            // Add dates to date_name
+            foreach ($date_name as $dataZ) {
+                $examSchedule = $record_sub_lines
+                    ->where('date_name_code', strtolower(trim($dataZ->code)))
+                    ->first();
+                $dataZ->date = $examSchedule ? $examSchedule->date : 'N/A';
+            }
+
+
+            try {
+                // Render the view with all required variables
+                $html = view('general.exams_schedule_print_multiple', compact(
+                    'groupedRecords',
+                    'groupedLines',
+                    'is_print',
+                    'date_name',
+                    'days',
+                    'classes',
+                    'semesters',
+                    'years',
+                    'departments',
+                    'timestudys',
+                    'session_years_imploded',
+                    'header',
+                    'records'
+                ))->render();
+
+                return response()->json(['status' => 'success', 'html' => $html]);
+            } catch (\Exception $viewEx) {
+                throw $viewEx;
+            }
+        } catch (\Exception $ex) {
+            return response()->json([
+                'status' => 'error',
+                'msg' => 'មានបញ្ហាក្នុងការបោះពុម្ព សូមព្យាយាមម្តងទៀត'
+            ]);
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function uploadDocument(Request $request)
+    {
+        $code = $request->query('code');
+
+        $request->validate([
+            'document_exam' => 'required|mimes:pdf|max:10240',
+        ]);
+
+        $record = ExamScheduleLine::find($code);
+
+        if (!$record) {
+            return response()->json(['status' => 'error', 'message' => 'Record not found'], 404);
         }
 
         try {
-            $records = new AssingClasses();
-            $records->class_schedule_id = $header->id;
-            $records->teachers_code = $request->teachers_code;
-            $records->class_code = $request->class_code;
-            $records->sections_code = $request->sections_code;
-            $records->skills_code = $request->skills_code;
-            $records->department_code = $request->department_code;
-            $records->session_year_code = $request->session_year_code;
-            $records->subjects_code = $request->subjects_code;
-            $records->status = $request->status;
-            $records->semester = $request->semester;
-            $records->qualification = $request->qualification;
+            if (!empty($record->document_exam) && file_exists(public_path('storage/' . $record->document_exam))) {
+                unlink(public_path('storage/' . $record->document_exam));
+            }
+            if ($request->hasFile('document_exam') && $request->file('document_exam')->isValid()) {
+                $file = $request->file('document_exam');
+                $directory = public_path('storage/documents/exam');
+                if (!file_exists($directory)) {
+                    mkdir($directory, 0777, true);
+                }
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move($directory, $filename);
+                $filePath = 'documents/exam/' . $filename;
+                $record->document_exam = $filePath;
+                $record->save();
 
-            dd($records);
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'File uploaded successfully',
+                    'path' => $filePath,
+                ]);
+            }
+        } catch (\Exception $e) {
 
-            return view('student.student_print', compact('records', 'class_record'));
-        } catch (\Exception $ex) {
-            DB::rollBack();
-            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
-            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An error occurred during file upload. Please try again.',
+            ], 500);
         }
     }
-    public function EditTeacherSchedule(Request $request)
+
+
+
+
+
+
+
+
+    public function getSchedule($id)
     {
-        $data = $request->all();
         try {
-            $subjects = Subjects::orderBy('code')->get();
-            $teachers = Teachers::orderBy('code')->get();
-            $records = AssingClasses::with(['subject', 'teacher'])->where('id',  $data['id'])->first();
-            return response()->json(['status' => 'success', 'records' => $records, 'subjects' => $subjects, 'teachers' => $teachers]);
-        } catch (\Exception $ex) {
-            DB::rollBack();
-            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
-            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+            $scheduleLines = ExamScheduleLine::with([
+                'teacher',
+                'coTeacher',
+                'coTeacher1',
+                'subject'
+            ])
+                ->where('exam_schedule_id', $id)
+                ->orderBy('date')
+                ->orderBy('is_second_schedule')
+                ->get();
+
+            if ($scheduleLines->isEmpty()) {
+                return response()->json([
+                    'status' => 'success',
+                    'data' => []
+                ]);
+            }
+
+            // Group schedules by date
+            $groupedSchedules = $scheduleLines->groupBy('date')->map(function ($dateGroup) {
+                return $dateGroup->groupBy('is_second_schedule');
+            });
+
+            $formattedSchedules = [];
+            foreach ($groupedSchedules as $date => $sessions) {
+                // First session
+                if (isset($sessions[0])) {
+                    $firstSession = $sessions[0]->first();
+                    $formattedSchedules[] = [
+                        'date' => $date,
+                        'teacher_code' => $firstSession->teacher_code,
+                        'co_teacher_code' => $firstSession->co_teacher_code,
+                        'co_teacher_code1' => $firstSession->co_teacher_code1,
+                        'subjects_code' => $firstSession->subjects_code,
+                        'date_name_code' => $firstSession->date_name_code,
+                        'start_time' => $firstSession->start_time,
+                        'end_time' => $firstSession->end_time,
+                        'room' => $firstSession->room,
+                        'is_second_schedule' => 0
+                    ];
+                }
+
+                // Second session
+                if (isset($sessions[1])) {
+                    $secondSession = $sessions[1]->first();
+                    $formattedSchedules[] = [
+                        'date' => $date,
+                        'teacher_code' => $secondSession->teacher_code,
+                        'co_teacher_code' => $secondSession->co_teacher_code,
+                        'co_teacher_code1' => $secondSession->co_teacher_code1,
+                        'subjects_code' => $secondSession->subjects_code,
+                        'date_name_code' => $secondSession->date_name_code,
+                        'start_time' => $secondSession->start_time,
+                        'end_time' => $secondSession->end_time,
+                        'room' => $secondSession->room,
+                        'is_second_schedule' => 1
+                    ];
+                }
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $formattedSchedules
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in getSchedule: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to get schedule data'
+            ], 500);
         }
     }
 
-    public function Search(Request $request, $page)
+
+    public function getAssignedTeachersAndSubjects($classCode, $year, $sessionYear, $sectionCode, $semester, $level, $skills_code, $department_code)
     {
-        dd("helo");
-        $input = $request->all();
-        $strings = explode(" ", strtoupper($input['string']));
-        $search_value = '';
-        $user = Auth::user();
-        if (count($strings) > 0) {
-            if ($strings[0] == 'NEW' || $strings[0] == 'OPEN') {
-                if (count($strings) > 2) {
-                    for ($i = 1; $i < count($strings) - 1; $i++) {
-                        $search_value .= $strings[$i] . " ";
-                    }
-                } else {
-                    if (count($strings) == 2) {
-                        $search_value = $strings[1];
-                    }
-                }
-                $search_value = rtrim($search_value, " ");
-                if ($page == 'student') {
-                    $menus = DB::table('student')->where('name', 'like', $search_value . "%")
-                        ->orWhere('code', 'like', $search_value . "%")
-                        ->orWhere('name_2', 'like', $search_value . "%")
-                        ->where('class_code', '<>', null)->get();
-                    $blade_file_record = 'student.student_list';
-                } else if ($page == 'department') {
-                    $menus = DB::table('department')->where('department_name', 'like', $search_value . "%")
-                        ->where('id', '<>', null)->get();
-                    $blade_file_record = 'department.department_list';
-                }
+        try {
+            // Get all teachers and subjects assigned to the class
+            $query = DB::table('assing_classes as ac')
+                ->select(
+                    'ac.subjects_code',
+                    'ac.teachers_code',
+                    's.name AS subject_name',
+                    's.name_2 AS subject_name_2',
+                    't.name AS teacher_name',
+                    't.name_2 AS teacher_name_2'
+                )
+                ->join('subjects as s', 'ac.subjects_code', '=', 's.code')
+                ->join('teachers as t', 'ac.teachers_code', '=', 't.code')
+                ->where('ac.class_code', $classCode)
+                ->where('ac.years', $year)
+                ->where('ac.session_year_code', $sessionYear)
+                ->where('ac.sections_code', $sectionCode)
+                ->where('ac.semester', $semester)
+                ->where('ac.qualification', $level)
+                ->where('ac.skills_code', $skills_code)
+                ->where('ac.department_code', $department_code)
+                ->whereNotNull('ac.subjects_code')
+                ->distinct();
 
-                if (count($menus) > 0) {
-                    foreach ($menus as $menu) {
-                        if ($strings[0] == 'OPEN' && count($strings) > 2) {
-                            $menu->code = $menu->code . ' ' . $strings[count($strings) - 1];
-                        }
-                        $menu->url = $menu->url . ($strings[0] == 'NEW' ? "type=cr" : "type=ed&code=" . $this->service->Encr_string($strings[count($strings) - 1]));
-                    }
-                }
-            } else {
-                for ($i = 0; $i < count($strings); $i++) {
-                    $search_value .= $strings[$i] . " ";
-                }
-                $search_value = rtrim($search_value, " ");
-                if ($page == 'student') {
-                    $menus = DB::table('student')->where('name', 'like', $search_value . "%")
-                        ->orWhere('code', 'like', $search_value . "%")
-                        ->orWhere('name_2', 'like', $search_value . "%")
-                        ->where('class_code', '<>', null)->paginate(1000);
-                    $blade_file_record = 'student.student_list';
-                } else if ($page == 'department') {
-                    $menus = DB::table('department')->where('department_name', 'like', $search_value . "%")
-                        ->where('id', '<>', null)->paginate(1000);
-                    $blade_file_record = 'department.department_list';
-                }
-            }
+            $assignments = $query->get();
 
-            if (count($menus) > 0) {
-                $records = $menus;
-            } else {
-                if ($page == 'student') {
-                    $records = Student::where('department_code', $user->childs)->paginate(10);
-                } else if ($page == 'department') {
-                    $records = Department::paginate(15);
-                }
-            }
-            $view = view($blade_file_record, compact('records'))->render();
-            return response()->json(['status' => 'success', 'view' => $view]);
+            // Format the response
+            $formattedData = $assignments->map(function ($item) {
+                return [
+                    'teachers_code' => $item->teachers_code,
+                    'teacher_name' => $item->teacher_name_2 ?? $item->teacher_name,
+                    'subjects_code' => $item->subjects_code,
+                    'subject_name' => $item->subject_name_2 ?? $item->subject_name
+                ];
+            });
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $formattedData
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in getAssignedTeachersAndSubjects', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to load assigned teachers and subjects: ' . $e->getMessage()
+            ], 500);
         }
-        return 'none';
     }
 
- public function uploadDocument(Request $request)
- {
-     $code = $request->query('code'); 
- 
-     $request->validate([
-         'document_exam' => 'required|mimes:pdf|max:10240', 
-     ]);
- 
-     $record = ExamScheduleLine::find($code);
- 
-     if (!$record) {
-         return response()->json(['status' => 'error', 'message' => 'Record not found'], 404);
-     }
- 
-     try {
-         if (!empty($record->document_exam) && file_exists(public_path('storage/' . $record->document_exam))) {
-             unlink(public_path('storage/' . $record->document_exam));
-         }
-         if ($request->hasFile('document_exam') && $request->file('document_exam')->isValid()) {
-             $file = $request->file('document_exam');
-             $directory = public_path('storage/documents/exam');
-             if (!file_exists($directory)) {
-                 mkdir($directory, 0777, true); 
-             }
-             $filename = time() . '_' . $file->getClientOriginalName();
-             $file->move($directory, $filename);
-             $filePath = 'documents/exam/' . $filename;
-             $record->document_exam = $filePath;
-             $record->save();
- 
-             return response()->json([
-                 'status' => 'success',
-                 'message' => 'File uploaded successfully',
-                 'path' => $filePath,
-             ]);
-         }
+    public function saveExamDateKhmer(Request $request)
+    {
+        try {
+            DB::beginTransaction();
 
-     } catch (\Exception $e) {
-         // Catch and log any exceptions
-         \Log::error('File upload error:', ['error' => $e->getMessage()]);
-         return response()->json([
-             'status' => 'error',
-             'message' => 'An error occurred during file upload. Please try again.',    
-         ], 500);
-     }
- }
+            // if (empty($request->date_khmer)) {
+            //     return response()->json([
+            //         'status' => 'error',
+            //         'message' => 'Date in Khmer is required'
+            //     ]);
+            // }
 
- public function deleteExamScheduleLine($id)
- {
-     $record = ExamScheduleLine::find($id);
- 
-     if (!$record) {
-         return response()->json(['status' => 'error', 'message' => 'Record not found'], 404);
-     }
- 
-     try {
-         $record->delete();
-         return response()->json(['status' => 'success', 'message' => 'Record and file deleted successfully']);
-     } catch (\Exception $e) {
-        //  \Log::error('Error deleting record:', ['error' => $e->getMessage()]);
-         return response()->json(['status' => 'error', 'message' => 'Failed to delete record. Please try again.'], 500);
-     }
- }
- public function viewPdf($filename)
- {
-     $filePath = public_path('storage/documents/exam/' . $filename);
+            $examScheduleId = $this->services->Decr_string($request->code);
 
-     if (!file_exists($filePath)) {
-         abort(404, 'File not found');
-     }
+            if (!$examScheduleId) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Invalid exam schedule code'
+                ]);
+            }
 
-     return response()->file($filePath, [
-         'Content-Type' => 'application/pdf',
-         'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"',
-     ]);
- }
+            $examDateKhmer = ExamDateKhmer::updateOrCreate(
+                ['exam_schedule_id' => $examScheduleId],
+                [
+                    'date_khmer' => $request->date_khmer,
+                    'updated_at' => now()
+                ]
+            );
 
-    
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Exam date in Khmer saved successfully'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error saving exam date in Khmer: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to save exam date in Khmer: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function saveExamDateKhmerMultiple(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $examScheduleIds = $request->input('examScheduleIds');
+            $dateKhmer = $request->input('date_khmer_multiple');
+
+            if (empty($examScheduleIds)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No exam schedules selected'
+                ]);
+            }
+
+            // Update or create exam date khmer records for each schedule
+            foreach ($examScheduleIds as $examScheduleId) {
+                ExamDateKhmer::updateOrCreate(
+                    ['exam_schedule_id' => $examScheduleId],
+                    [
+                        'date_khmer' => $dateKhmer,
+                        'updated_at' => now()
+                    ]
+                );
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Exam dates in Khmer saved successfully'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error saving exam dates in Khmer: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to save exam dates in Khmer: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function deleteSession(Request $request)
+    {
+        try {
+            $examScheduleId = $request->exam_schedule_id;
+            $dateNameCode = $request->date_name_code;
+            $isSecondSchedule = $request->is_second_schedule;
+
+            Log::info('Attempting to delete schedule:', [
+                'exam_schedule_id' => $examScheduleId,
+                'date_name_code' => $dateNameCode,
+                'is_second_schedule' => $isSecondSchedule
+            ]);
+
+            // Find and delete the specific schedule
+            $schedule = ExamScheduleLine::where('exam_schedule_id', $examScheduleId)
+                ->where('date_name_code', strtolower($dateNameCode))
+                ->where('is_second_schedule', $isSecondSchedule)
+                ->first();
+
+            if ($schedule) {
+                Log::info('Found schedule to delete:', ['schedule_id' => $schedule->id]);
+                $schedule->delete();
+                return response()->json(['status' => 'success']);
+            }
+
+            Log::warning('Schedule not found for deletion with criteria:', [
+                'exam_schedule_id' => $examScheduleId,
+                'date_name_code' => $dateNameCode,
+                'is_second_schedule' => $isSecondSchedule
+            ]);
+
+            return response()->json(['status' => 'error', 'message' => 'Schedule not found']);
+        } catch (\Exception $e) {
+            Log::error('Delete session error:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function deleteBothSessions(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $examScheduleId = $request->exam_schedule_id;
+            $date = $request->date;
+
+            // Delete both first and second sessions for this date
+            ExamScheduleLine::where('exam_schedule_id', $examScheduleId)
+                ->where('date', $date)
+                ->delete();
+
+            DB::commit();
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    // public function delete(Request $request)
+    // {
+    //     try {
+    //         DB::beginTransaction();
+
+    //         $code = $request->code;
+    //         $check = Classes::where('code', $code)->first();
+    //         if ($check) {
+    //             return response()->json(['status' => 'error', 'msg' => 'មិនអាចលុប ថ្នាក់/ក្រុមនេះបានទេមាន ព៍តមានរូចហើយ !']);
+    //         }
+
+    //         $records = ExamSchedule::where('code', $code);
+    //         $records->delete();
+
+    //     } catch (\Exception $ex) {
+    //         DB::rollBack();
+    //         return response()->json(['status' => 'error', 'msg' => $ex->getMessage()]);
+    //     }
+    // }
+
+    public function getAllTeachers()
+    {
+        try {
+            $subjects = Subjects::select('code', 'name', 'name_2')
+                ->orderBy('code', 'asc')
+                ->get();
+            $teachers = Teachers::select('code', 'name', 'name_2')
+                ->orderBy('code', 'asc')
+                ->get()
+                ->map(function ($teacher) {
+                    return [
+                        'code' => $teacher->code,
+                        'name' => $teacher->name_2 ?? $teacher->name
+                    ];
+                });
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $teachers,
+                'subjects' => $subjects
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to load teachers data'
+            ], 500);
+        }
+    }
 }

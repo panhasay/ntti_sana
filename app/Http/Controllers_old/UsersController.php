@@ -68,6 +68,7 @@ class UsersController extends Controller
         $prefix = $this->prefix;
         $fields = $this->system->getField($this->page_id);
         $records = App\Models\UsersModels::paginate($this->pagination);
+
         $param = [
             'page' => $page,
             'tabe_id' => $tabe_id,

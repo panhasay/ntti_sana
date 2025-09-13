@@ -72,7 +72,7 @@
             <ul>
                 <li><a href="{{ url('department-setup') }}">ដេប៉ាតឺម៉ង់</a></li>
                 {{-- <li><a href="{{ url('student') }}">Student -សិស្សនិស្សិត</a></li> --}}
-                {{-- <li><a href="{{ url('users') }}">User Management - អ្នកប្រើប្រាស់</a></li> --}}
+                <li><a href="{{ url('users') }}">អ្នកប្រើប្រាស់</a></li>
                 <li><a href="{{ url('classes') }}">ថ្នាក់ / ក្រុម</a></li>
                 <li><a href="{{ url('skills') }}">ជំនាញ</a></li>
                 <li><a href="{{ url('subject') }}">មុខវិជ្ជា</a></li>
@@ -104,6 +104,7 @@
                 <li><a href="{{ url('exam-schedule') }}">កាលវិភាគ កាប្រឡង</a></li>
                 <li><a href="{{ url('transfer') }}">ផ្លាស់ប្ដូរថ្នាក់/ក្រុម</a></li>
                 <li><a href="{{ url('certificate/D_IT/student_card/MD_CARD') }}">ប្រព័ន្ធគ្រប់គ្រងកាតសិស្ស</a></li>
+                <li><a href="{{ url('exam-credit') }}">បញ្ជីរាយនាមវត្តមានប្រចាំខែ</a></li>
 
             </ul>
         </div>

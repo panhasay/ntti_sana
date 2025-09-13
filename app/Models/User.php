@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\General\Role;
 
 class User extends Authenticatable
 {
@@ -51,5 +52,9 @@ class User extends Authenticatable
         return $this->belongsTo(Department::class, 'department_code', 'code');
     }
 
+    public function roles()
+    {
+        return $this->belongsTo(Role::class, 'role', 'code');
+    }
 
 }

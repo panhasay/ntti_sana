@@ -7,7 +7,7 @@
       <div class="page-title page-title-custom">
         <div class="title-page">
           <i class="mdi mdi-format-list-bulleted"></i>
-            បែងចែក ក្រុម/ថា្នក់ ថ្មី 
+            និស្សិតតាមក្រុមថ្នាក់
         </div>
       </div>
     </div>

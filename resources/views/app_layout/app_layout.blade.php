@@ -140,10 +140,10 @@
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="{{ route('logout') }}">
                     <i class="mdi mdi-logout me-2 text-primary"></i> Signout </a>
-                    @if(Auth::user()->email  == "saypanha500@gmail.com")
+                    {{-- @if(Auth::user()->email  == "saypanha500@gmail.com")
                       <a class="dropdown-item" href="{{ url('admin-panel') }}">
                       <i class="mdi mdi-account-convert me-2 text-primary"></i> Admin Panel</a>
-                    @endif
+                    @endif --}}
                 </div>
               </li>
             </ul>
@@ -388,10 +388,10 @@
           duration: 3000,
         });
         $(document).ready(function() {
-          $('.js-example-basic-single').select2({
-              placeholder: "សូមជ្រើសរើស",
-              allowClear: true             
-          });
+          // $('.js-example-basic-single').select2({
+          //     placeholder: "សូមជ្រើសរើស",
+          //     allowClear: true             
+          // });
           
           // $(".collapse").addClass('show');
 

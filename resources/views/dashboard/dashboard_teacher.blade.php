@@ -162,92 +162,6 @@
             </a>
         </div>
     </div>
-
-    <div>
-        <h6 class="welcome-title" style="font-size: 17px; color: #2c3e50; margin-bottom: 1rem;">
-            តារាងការបង្រៀន
-        </h6>
-    </div>
-            @php
-                $daysKhmer = [
-                    'monday'    => 'ច័ន្ទ',
-                    'tuesday'   => 'អង្គារ',
-                    'wednesday' => 'ពុធ',
-                    'thursday'  => 'ព្រហស្បតិ៍',
-                    'friday'    => 'សុក្រ',
-                    'saturday'  => 'សៅរ៍',
-                    'sunday'    => 'អាទិត្យ',
-                ];
-                $groupedByDay = collect($schedules_recored)
-                                ->groupBy(function($record) {
-                                    return strtolower($record->date_name);
-                                });
-                $groupedByDayAndGroup = [];
-                foreach ($groupedByDay as $day => $records) {
-                    $groupedByDayAndGroup[$day] = $records->groupBy(function($item) {
-                        return $item->class_code . '-' . $item->semester . '-' . $item->qualification;
-                    });
-                }
-                $allGroupKeys = collect();
-                foreach ($groupedByDayAndGroup as $day => $groups) {
-                    foreach ($groups as $groupKey => $items) {
-                        $allGroupKeys->push($groupKey);
-                    }
-                }
-                $allGroupKeys = $allGroupKeys->unique()->values();
-            @endphp
-            <div class="row">
-                <table border="1" style="border-collapse: collapse; width: 100%;">
-            <thead class="table table-striped">
-                <tr class="general-data">
-                    @foreach($daysKhmer as $eng => $khmer)
-                        <th width="120" class="text-center">{{ $khmer }}</th>
-                    @endforeach
-                </tr>
-            </thead>
-            <tbody>
-                @php
-                    $filteredGroupKeys = $allGroupKeys->filter(function($groupKey) use ($groupedByDayAndGroup, $daysKhmer) {
-                        foreach ($daysKhmer as $dayKey => $dayName) {
-                            if (!empty($groupedByDayAndGroup[$dayKey][$groupKey]) && $groupedByDayAndGroup[$dayKey][$groupKey]->isNotEmpty()) {
-                                return true;
-                            }
-                        }
-                        return false; 
-                    })->values();
-                @endphp
-                @foreach($filteredGroupKeys as $groupKey)
-                    <tr class="general-data">
-                        @foreach($daysKhmer as $eng => $khmer)
-                            @php
-                                $records = $groupedByDayAndGroup[$eng][$groupKey] ?? collect();
-                            @endphp
-
-                            @if($records->isNotEmpty())
-                                <td class="text-center" style="padding: 5px;">
-                                    @foreach($records as $record)
-                                        <a class="no-decoration" href="{{ '/assign-classes/transaction?type=ed&code=' . App\Service\service::Encr_string($record->id) }}&years={{ $record->years ?? '' }}&type={{ $record->qualification ?? '' }}&assing_no={{ $record->assing_no ?? '' }}">
-                                            <div style="margin-bottom: 5px;">
-                                                {{ $record->class_code ?? '' }},
-                                                ឆ្នាំទី {{ $record->years ?? '' }},
-                                                {{ $record->qualification ?? '' }},
-                                                ឆមាសទី {{ $record->semester ?? '' }}
-                                                <br>
-                                                មុខវិជ្ជា {{ $record->subject->name ?? '' }}
-                                            </div>
-                                        </a>
-                                    @endforeach
-                                </td>
-                            @else
-                                <td></td> 
-                            @endif
-                        @endforeach
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-    <br><br>
     <div class="row">
         <div class="col-md-3 col-sm-4 col-6">
             <div class="titl-main-name">
@@ -268,7 +182,7 @@
             </div>
             <div class="container menu-list">
                 <ul>
-                    <li><a href="{{ url('student/registration') }}">បញ្ជីរាយនាមនិស្សិតដែរចុះឈ្មោះ</a></li>
+                    <li><a href="{{ url('student/registration') }}">បញ្ជីរាយនាមនិស្សិត</a></li>
                     <li><a href="{{ url('student/scholarship') }}">បញ្ជីរាយនាមនិស្សិតអាហារូបករណ៏</a></li>
                 </ul>
             </div>

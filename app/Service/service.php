@@ -543,7 +543,18 @@ class service
         if (empty($code)) {
             return "1=1";
         }
-
         return "1=1 and department_code = '" . addslashes($code) . "'";
+    }
+    public static function formatSessionYearToKhmer($yearRange){
+        $yearRange = str_replace('_', '-', $yearRange);
+
+        $khmerDigits = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+        $westernDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+        return str_replace($westernDigits, $khmerDigits, $yearRange);
+    }
+    public static function removeDotFromCode($classCode)
+    {
+        return str_replace('.', '', $classCode);
     }
 }

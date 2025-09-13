@@ -79,9 +79,9 @@
           <button type="button" data-type="skill" id="prints" class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2 pull-right text-white" style="float: right !important;"> Print
             <i class="mdi mdi-printer btn-icon-append"></i>
           </button>
-          <button type="button" class="btn btn-outline-success btn-icon-text btn-sm mb-2 mb-md-0 me-2 text-white BtnDownlaodExcel">Excel 
+          {{-- <button type="button" class="btn btn-outline-success btn-icon-text btn-sm mb-2 mb-md-0 me-2 text-white BtnDownlaodExcel">Excel 
             <i class="mdi mdi-printer btn-icon-append"></i>
-          </button>
+          </button> --}}
         </div>
       </div>
       <div class="modal-body">

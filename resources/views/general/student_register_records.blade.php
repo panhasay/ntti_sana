@@ -28,7 +28,7 @@
       <td>{{ $record->student_address ?? '' }}</td>
       <td>{{ $record->phone_student ?? '' }}</td>
       <td>{{ $record->class_code ?? '' }}</td>
-      <td>{{ $record->skills_name ?? '' }}</td>
+      <td>{{ $record->skill->name_2 ?? '' }}</td>
       <td>{{ $record->qualification ?? '' }}</td>
       <td>{{ $record->section_name ?? '' }}</td>
       <td>{{ $record->mother_name ?? '' }}</td>

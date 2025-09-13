@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SystemSetup;
 
 use App\Http\Controllers\Controller;
 use App\Models\General\Picture;
+use App\Models\General\Role;
 use App\Models\General\Teachers;
 use App\Models\Student\Student;
 use Illuminate\Support\Facades\Validator;
@@ -36,7 +37,8 @@ class UsersController extends Controller
     }
     public function index()
     {
-        $records = User::paginate(10);
+        $records = User::with('roles')->paginate(10);
+        // dd($records);
         $page_title = $this->page;
         return view('system_setup.users', compact('records', 'page_title'));
     }
@@ -60,9 +62,10 @@ class UsersController extends Controller
         $type = "ed";
         $records = "";
         $department = DB::table('department')->where('is_active', 'yes')->get();
+        $role = Role::all();
 
         try {
-            $params = ['records', 'type', 'page', 'page_url', 'department'];
+            $params = ['records', 'type', 'page', 'page_url', 'department', 'role'];
             if ($type == 'cr') return view('system_setup.users_card', compact($params));
             if (isset($_GET['code'])) {
                 $records = DB::table('users')->where('id', $this->services->Decr_string($_GET['code']))->first();
@@ -255,13 +258,13 @@ class UsersController extends Controller
     $validator = Validator::make($request->all(), [
         'name' => 'required',
         'email' => 'required|email',
-        'department_code' => 'required',
+        // 'department_code' => 'required',
         'role' => 'required',
     ], [
         'name.required' => 'សូមបំពេញឈ្មោះ',
         'email.required' => 'សូមបំពេញអ៊ីមែល',
         'email.email' => 'អ៊ីមែលមិនត្រឹមត្រូវទេ',
-        'department_code.required' => 'សូមជ្រើសរើសនាយកដ្ឋាន',
+        // 'department_code.required' => 'សូមជ្រើសរើសនាយកដ្ឋាន',
         'role.required' => 'សូមជ្រើសរើសតួនាទី',
     ]);
 

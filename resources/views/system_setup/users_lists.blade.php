@@ -16,6 +16,7 @@
           <th>ឈ្មោះ អ្នកប្រើប្រាស់</th>
           <th>អុីម៉ែល</th>
           <th>ភេទ</th>
+          <th>លេខទូរសព្ទ</th>
           <th>តួនាទី</th>
         </tr>
       </thead>
@@ -34,7 +35,8 @@
                 <td class="">{{ $record->name ?? '' }}</td>
                 <td class="">{{ $record->email }}</td>
                 <td class="">{{ $record->gender }}</td>
-                <td class="">{{ $record->role }}</td>
+                <td class="">{{ $record->phone }}</td>
+                <td class="">{{ $record->roles->name_2 ?? '' }}</td>
             </tr>
         @endforeach
       </tbody>

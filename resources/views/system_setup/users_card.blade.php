@@ -9,7 +9,6 @@
           <a href="{{ url('skills') }}"><i class="mdi mdi-format-list-bulleted"></i></a>
            &nbsp;&nbsp; <button type="button" id="BtnSave" class="btn btn-success float-left btn-sm mb-2 mb-md-0 me-2"><i class="mdi mdi-content-save"></i>  រក្សាទុក </button>
          
-         
         </div>
       </div>
     </div>
@@ -58,7 +57,7 @@
                       <option value="">&nbsp;</option>
                       @foreach ($department as $record) 
                           <option value="{{ $record->code ?? '' }}" {{ isset($records->department_code) && $records->department_code == $record->code ? 'selected' : '' }}>
-                          {{ isset($record->code) ? $record->code : '' }} -  {{ isset($record->name_2) ? $record->name_2 : '' }}
+                           {{ isset($record->name_2) ? $record->name_2 : '' }}
                           </option>
                       @endforeach
                   </select>
@@ -72,10 +71,15 @@
                   style="color:red; font-size:15px;"> *</strong></span>
               <div class="col-sm-9">
                 <select class="js-example-basic-single" id="role" name="role" style="width: 100%;">
-                    <option value="">&nbsp;</option>
+                  @foreach ($role as $record) 
+                      <option value="{{ $record->code ?? '' }}" {{ isset($records->role) && $records->role == $record->code ? 'selected' : '' }}>
+                      {{ isset($record->name_2) ? $record->name_2 : '' }}
+                      </option>
+                  @endforeach
+                    {{-- <option value="">&nbsp;</option>
                     <option value="admin" {{ ($records->role ?? '') == 'admin' ? 'selected' : '' }}>admin</option>
-                    <option value="teachers" {{ ($records->role ?? '') == 'teachers' ? 'selected' : '' }}>teachers</option>
-                    <option value="student" {{ ($records->role ?? '') == 'student' ? 'selected' : '' }}>student</option>
+                    <option value="teachers" {{ ($records->role ?? '') == 'teachers' ? 'selected' : '' }}>teachers</option> --}}
+                    {{-- <option value="student" {{ ($records->role ?? '') == 'student' ? 'selected' : '' }}>student</option> --}}
                 </select>
               </div>
             </div>
