@@ -43,12 +43,9 @@ class ClassScheduleController extends Controller
             return redirect("login")->withSuccess('Opps! You do not have access');
         }
         $page = $this->page;
-        $records = GeneralClassSchedule::orderBy('semester', 'asc')->orderBy('years', 'asc')->paginate(20);
+        $records = GeneralClassSchedule::orderBy('semester', 'desc')->orderBy('years', 'desc')->paginate(20);
         $data = $this->services->GetDateIndexOption(now()); 
-
         return view('general.class_schedule', array_merge($data, compact('page', 'records')));
-
-        // return view('general.class_schedule', compact('records', 'page', 'classs'));
     }
     public function transaction(request $request)
     {
@@ -271,6 +268,7 @@ class ClassScheduleController extends Controller
                 $records->start_time = $request->start_time;
                 $records->end_time = $request->end_time;
                 $records->subjects_code = $request->subjects_code;
+                $records->sessions_type = $request->sessions_type;
                 $records->update();
 
                 $is_print = "No";
@@ -313,6 +311,7 @@ class ClassScheduleController extends Controller
                 $records->date_name = $request->date_name;
                 $records->start_time = $request->start_time;
                 $records->end_time = $request->end_time;
+                $records->sessions_type = $request->sessions_type;
                 $records->save();
 
                 $is_print = "No";
@@ -350,6 +349,8 @@ class ClassScheduleController extends Controller
             $subjects = Subjects::orderBy('code')->get();
             $teachers = Teachers::orderBy('code')->get();
             $records = AssingClasses::with(['subject', 'teacher'])->where('id',  $data['id'])->first();
+
+            // dd($records);
             return response()->json(['status' => 'success', 'records' => $records, 'subjects' => $subjects, 'teachers' => $teachers]);
         } catch (\Exception $ex) {
             DB::rollBack();

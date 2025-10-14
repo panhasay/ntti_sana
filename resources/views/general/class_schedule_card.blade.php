@@ -409,8 +409,9 @@
                         $('#start_time').val(records.start_time);
                         $('#end_time').val(records.end_time);
                         $('#room').val(records.room);
+                        $('#sessions_type').val(records.sessions_type).trigger('change');
                         $("#ModalTeacherSchedule").modal("show");
-                         $('#teachers_code, #subjects_code, #date_name, #subjects_code_wednesday, #subjects_code_thursday, #subjects_code_friday, #subjects_code_saturday').select2({
+                         $('#teachers_code, #subjects_code, #date_name, #subjects_code_wednesday, #subjects_code_thursday, #subjects_code_friday, #subjects_code_saturday, #sessions_type').select2({
                             dropdownParent: $('#ModalTeacherSchedule') 
                         });
                         $('#SaveTeacherSchedule').attr('data-id', records.id);

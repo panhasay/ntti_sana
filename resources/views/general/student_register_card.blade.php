@@ -37,7 +37,8 @@
           <i class="mdi mdi-printer btn-icon-append"></i>
         </button>
         @endif
-        <button id="btn-Image" data-code ='{{$records->code ?? ''}}' type="button" id="BtnUploadImg" class="btn btn-outline-secondary btn-sm mb-2 mb-md-0 me-2">
+        <button id="btn-Image" data-code='{{$records->code ?? ''}}' type="button" id="BtnUploadImg"
+          class="btn btn-outline-secondary btn-sm mb-2 mb-md-0 me-2">
           ​រូបថត
           <i class="mdi mdi-account"></i>
         </button>
@@ -65,7 +66,7 @@
             <span class="labels col-sm-3 col-form-label">ខ្ញុំបាទ/នាងខ្ញុំឈ្មោះ<strong
                 style="color:red; font-size:15px;"> *</strong></span>
             <div class="col-sm-9">
-              <input type="text" class="form-control form-control-sm " id="name_2" name="name_2"
+              <input autocomplete="off" type="text" class="form-control form-control-sm " id="name_2" name="name_2"
                 value="{{ $records->name_2 ?? ''}}" placeholder="ឈ្មោះ ជាភាសាខ្មែរ" aria-label="ឈ្មោះ ជាភាសាខ្មែរ">
             </div>
           </div>
@@ -76,7 +77,7 @@
             <span class="labels col-sm-3 col-form-label">អក្សរឡាតាំង<strong style="color:red; font-size:15px;">
                 *</strong></span>
             <div class="col-sm-9">
-              <input type="text" class="form-control form-control-sm " id="name" name="name"
+              <input autocomplete="off" type="text" class="form-control form-control-sm " id="name" name="name"
                 value="{{ $records->name ?? ''}}" placeholder="ឈ្មោះ ជាអក្សរឡាតាំង" aria-label="ឈ្មោះ ជាអក្សរឡាតាំង">
             </div>
           </div>
@@ -88,7 +89,8 @@
                 style="color:red; font-size:15px;">
                 *</strong></span>
             <div class="col-sm-9">
-              <input type="text" class="form-control form-control-sm" id="date_of_birth" name="date_of_birth"
+              <input autocomplete="off" type="text" class="form-control form-control-sm" id="date_of_birth"
+                name="date_of_birth"
                 value="{{ isset($records->date_of_birth) ? \Carbon\Carbon::parse($records->date_of_birth)->format('d-m-Y') : '' }}"
                 min="1970-01-01" max="2010-12-31" placeholder="ថ្ងៃ-ខែ-ឆ្នាំកំណើត" aria-label="ថ្ងៃ-ខែ-ឆ្នាំកំណើត">
             </div>
@@ -102,8 +104,8 @@
                 <span class="labels col-sm-6 col-form-label">សញ្ជាតិ<strong style="color:red; font-size:15px;">
                     *</strong></span>
                 <div class="col-sm-6">
-                  <input type="text" class="form-control form-control-sm " id="" name="" value="ខ្មែរ"
-                    placeholder="សញ្ជាតិ" aria-label="សញ្ជាតិ">
+                  <input autocomplete="off" type="text" class="form-control form-control-sm " id="" name=""
+                    value="ខ្មែរ" placeholder="សញ្ជាតិ" aria-label="សញ្ជាតិ">
                 </div>
               </div>
             </div>
@@ -129,8 +131,9 @@
             <span class="labels col-sm-3 col-form-label">ទីកន្លែងកំណើត<strong style="color:red; font-size:15px;">
                 *</strong></span>
             <div class="col-sm-9">
-              <input type="text" class="form-control form-control-sm " id="student_address" name="student_address"
-                value="{{ $records->student_address ?? ''}}" placeholder="ទីកន្លែងកំណើត" aria-label="ទីកន្លែងកំណើត">
+              <input autocomplete="off" type="text" class="form-control form-control-sm " id="student_address"
+                name="student_address" value="{{ $records->student_address ?? ''}}" placeholder="ទីកន្លែងកំណើត"
+                aria-label="ទីកន្លែងកំណើត">
             </div>
           </div>
         </div>
@@ -140,8 +143,8 @@
             <span class="labels col-sm-3 col-form-label">អាសយដ្ឋានបច្ចុប្បន្ន<strong style="color:red; font-size:15px;">
                 *</strong></span>
             <div class="col-sm-9">
-              <input type="text" class="form-control form-control-sm " id="current_address" name="current_address"
-                value="{{ $records->current_address ?? ''}}" placeholder="អាសយដ្ឋានបច្ចុប្បន្ន"
+              <input autocomplete="off" type="text" class="form-control form-control-sm " id="current_address"
+                name="current_address" value="{{ $records->current_address ?? ''}}" placeholder="អាសយដ្ឋានបច្ចុប្បន្ន"
                 aria-label="អាសយដ្ឋានបច្ចុប្បន្ន">
             </div>
           </div>
@@ -152,8 +155,8 @@
             <span class="labels col-sm-3 col-form-label">មុខរបរ<strong style="color:red; font-size:15px;">
                 *</strong></span>
             <div class="col-sm-9">
-              <input type="text" class="form-control form-control-sm " id="occupation" name="occupation"
-                value="{{ $records->occupation ?? ''}}" placeholder="មុខរបរ" aria-label="មុខរបរ">
+              <input autocomplete="off" type="text" class="form-control form-control-sm " id="occupation"
+                name="occupation" value="{{ $records->occupation ?? ''}}" placeholder="មុខរបរ" aria-label="មុខរបរ">
             </div>
           </div>
         </div>
@@ -163,8 +166,9 @@
             <span class="labels col-sm-3 col-form-label">លេខទូរស័ព្ទ<strong style="color:red; font-size:15px;">
                 *</strong></span>
             <div class="col-sm-9">
-              <input type="number" class="form-control form-control-sm " id="phone_student" name="phone_student"
-                value="{{ $records->phone_student ?? ''}}" placeholder="លេខទូរស័ព្ទ" aria-label="លេខទូរស័ព្ទ">
+              <input autocomplete="off" type="number" class="form-control form-control-sm " id="phone_student"
+                name="phone_student" value="{{ $records->phone_student ?? ''}}" placeholder="លេខទូរស័ព្ទ"
+                aria-label="លេខទូរស័ព្ទ">
             </div>
           </div>
         </div>
@@ -173,8 +177,9 @@
           <div class="form-group row">
             <span class="labels col-sm-3 col-form-label">អាណាព្យាបាល</span>
             <div class="col-sm-9">
-              <input type="text" class="form-control form-control-sm " id="guardian_name" name="guardian_name"
-                value="{{ $records->guardian_name ?? ''}}" placeholder="អាណាព្យាបាល" aria-label="អាណាព្យាបាល">
+              <input autocomplete="off" type="text" class="form-control form-control-sm " id="guardian_name"
+                name="guardian_name" value="{{ $records->guardian_name ?? ''}}" placeholder="អាណាព្យាបាល"
+                aria-label="អាណាព្យាបាល">
             </div>
           </div>
         </div>
@@ -183,8 +188,9 @@
             <span class="labels col-sm-3 col-form-label">លេខទូរស័ព្ទ<strong style="color:red; font-size:15px;">
                 *</strong></span>
             <div class="col-sm-9">
-              <input type="number" class="form-control form-control-sm " id="guardian_phone" name="guardian_phone"
-                value="{{ $records->guardian_phone ?? ''}}" placeholder="លេខទូរស័ព្ទ" aria-label="លេខទូរស័ព្ទ">
+              <input autocomplete="off" type="number" class="form-control form-control-sm " id="guardian_phone"
+                name="guardian_phone" value="{{ $records->guardian_phone ?? ''}}" placeholder="លេខទូរស័ព្ទ"
+                aria-label="លេខទូរស័ព្ទ">
             </div>
           </div>
         </div>
@@ -195,8 +201,9 @@
             <span class="labels col-sm-3 col-form-label">ឈ្មោះឪពុក<strong style="color:red; font-size:15px;">
                 *</strong></span>
             <div class="col-sm-9">
-              <input type="text" class="form-control form-control-sm " id="father_name" name="father_name"
-                value="{{ $records->father_name ?? ''}}" placeholder="ឈ្មោះឪពុក" aria-label="ឈ្មោះឪពុក">
+              <input autocomplete="off" type="text" class="form-control form-control-sm " id="father_name"
+                name="father_name" value="{{ $records->father_name ?? ''}}" placeholder="ឈ្មោះឪពុក"
+                aria-label="ឈ្មោះឪពុក">
             </div>
           </div>
         </div>
@@ -204,8 +211,9 @@
           <div class="form-group row">
             <span class="labels col-sm-3 col-form-label">មុខរបរ</span>
             <div class="col-sm-9">
-              <input type="text" class="form-control form-control-sm " id="father_occupation" name="father_occupation"
-                value="{{ $records->father_occupation ?? ''}}" placeholder="មុខរបរ" aria-label="មុខរបរ">
+              <input autocomplete="off" type="text" class="form-control form-control-sm " id="father_occupation"
+                name="father_occupation" value="{{ $records->father_occupation ?? ''}}" placeholder="មុខរបរ"
+                aria-label="មុខរបរ">
             </div>
           </div>
         </div>
@@ -215,8 +223,9 @@
             <span class="labels col-sm-3 col-form-label">ឈ្មោះម្ដាយ<strong style="color:red; font-size:15px;">
                 *</strong></span>
             <div class="col-sm-9">
-              <input type="text" class="form-control form-control-sm " id="mother_name" name="mother_name"
-                value="{{ $records->mother_name ?? ''}}" placeholder="ឈ្មោះម្ដាយ" aria-label="ឈ្មោះម្ដាយ">
+              <input autocomplete="off" type="text" class="form-control form-control-sm " id="mother_name"
+                name="mother_name" value="{{ $records->mother_name ?? ''}}" placeholder="ឈ្មោះម្ដាយ"
+                aria-label="ឈ្មោះម្ដាយ">
             </div>
           </div>
         </div>
@@ -225,8 +234,9 @@
           <div class="form-group row">
             <span class="labels col-sm-3 col-form-label">មុខរបរ</span>
             <div class="col-sm-9">
-              <input type="text" class="form-control form-control-sm " id="mother_occupation" name="mother_occupation"
-                value="{{ $records->father_occupation ?? ''}}" placeholder="មុខរបរ" aria-label="មុខរបរ">
+              <input autocomplete="off" type="text" class="form-control form-control-sm " id="mother_occupation"
+                name="mother_occupation" value="{{ $records->father_occupation ?? ''}}" placeholder="មុខរបរ"
+                aria-label="មុខរបរ">
             </div>
           </div>
         </div>
@@ -242,7 +252,8 @@
                     style="width: 100%;">
                     <option value="">&nbsp;</option>
                     @foreach ($skills as $record)
-                    <option value="{{ $record->code ?? '' }}" {{ isset($records->skills_code) && $records->skills_code ==
+                    <option value="{{ $record->code ?? '' }}" {{ isset($records->skills_code) && $records->skills_code
+                      ==
                       $record->code ? 'selected' : '' }}>
                       {{ isset($record->name_2) ? $record->name_2 : '' }}
                     </option>
@@ -255,11 +266,13 @@
               <div class="form-group row">
                 <span class="labels col-sm-3 col-form-label">ថ្នាក់/ក្រុម</span>
                 <div class="col-sm-9">
-                  <select class="js-example-basic-single class_code" id="class_code" name="class_code" style="width: 100%;">
+                  <select class="js-example-basic-single class_code" id="class_code" name="class_code"
+                    style="width: 100%;">
                     <option value="">&nbsp;</option>
                     @foreach ($class_record as $record)
                     <option value="{{ $record->code ?? '' }}" {{ isset($records->class_code) && $records->class_code
-                      == $record->code ? 'selected' : '' }}>{{ isset($record->code) ? $record->code : '' }}
+                      == $record->code ? 'selected' : '' }}>{{ isset($record->code) ? $record->code : '' }} - {{
+                      $record->level ?? "" }}
                     </option>
                     @endforeach
                   </select>
@@ -314,11 +327,11 @@
             <div class="col-sm-9">
               <select class="js-example-basic-single" id="qualification" name="qualification" style="width: 100%;">
                 @foreach ($qualification as $value => $record)
-                  <option value="{{ $record->code }}" {{ isset($records->qualification) && $records->qualification ==
-                    $record->code ?
-                    'selected' : '' }}>
-                    {{ $record->code }}
-                  </option>
+                <option value="{{ $record->code }}" {{ isset($records->qualification) && $records->qualification ==
+                  $record->code ?
+                  'selected' : '' }}>
+                  {{ $record->code }}
+                </option>
                 @endforeach
               </select>
             </div>
@@ -403,7 +416,7 @@
                   <select class="js-example-basic-single" id="bakdop_results" name="bakdop_results"
                     style="width: 100%;">
                     <?php 
-                    $options = [
+                      $options = [
                             'ជាប់' => 'ជាប់',
                             'ធ្លាក់' => 'ធ្លាក់',
                             'C3' => 'C3',
@@ -463,13 +476,13 @@
                   <select class="js-example-basic-single" id="year_final" name="year_final" style="width: 100%;">
                     <?php 
                     $options = [
+                            '2025' => '2025',
                             '2024' => '2024',
                             '2023' => '2023',
                             '2022' => '2022',
                             '2021' => '2021',
                             '2020' => '2020',
-                            '2019' => '2019',
-                            '2018' => '2018',
+                            'មុនឆ្នាំ2020' => 'មុនឆ្នាំ2020',
                         ];
                     ?>
                     <option value="">&nbsp;</option>
@@ -592,8 +605,8 @@
           <div class="form-group row">
             <span class="labels col-sm-3 col-form-label ">ប្រភព អាហារូបករណ៍</span>
             <div class="col-sm-9">
-              <input type="text" class="form-control form-control-sm " id="scholarship_type" name="scholarship_type"
-                value="{{ $records->scholarship_type ?? ''}}" placeholder="ប្រភព អាហារូបករណ៍"
+              <input autocomplete="off" type="text" class="form-control form-control-sm " id="scholarship_type"
+                name="scholarship_type" value="{{ $records->scholarship_type ?? ''}}" placeholder="ប្រភព អាហារូបករណ៍"
                 aria-label="ប្រភព អាហារូបករណ៍">
             </div>
           </div>
@@ -605,9 +618,10 @@
           <div class="form-group row">
             <span class="labels col-sm-3 col-form-label ">ស្គាល់សាលា តាមរយះ</span>
             <div class="col-sm-9">
-              {{-- <input type="text" class="form-control form-control-sm " id="submit_your_application"
-                name="submit_your_application" value="{{ $records->submit_your_application ?? ''}}"
-                placeholder="ដាក់ពាក្សសិក្សា តាមរយះ" aria-label="ដាក់ពាក្សសិក្សា តាមរយះ"> --}}
+              {{-- <input autocomplete="off" type="text" class="form-control form-control-sm "
+                id="submit_your_application" name="submit_your_application"
+                value="{{ $records->submit_your_application ?? ''}}" placeholder="ដាក់ពាក្សសិក្សា តាមរយះ"
+                aria-label="ដាក់ពាក្សសិក្សា តាមរយះ"> --}}
 
               <select class="js-example-basic-single" id="submit_your_application" name="submit_your_application"
                 style="width: 100%;">
@@ -640,7 +654,7 @@
           <div class="form-group row">
             <span class="labels col-sm-3 col-form-label ">មកពី វិទ្យាល័យ</span>
             <div class="col-sm-9">
-              <input type="text" class="form-control form-control-sm " id="educational_institutions"
+              <input autocomplete="off" type="text" class="form-control form-control-sm " id="educational_institutions"
                 name="educational_institutions" value="{{ $records->educational_institutions ?? ''}}"
                 placeholder="គ្រឹះស្ថាន សិក្សា ឫ វិទ្យាល័យសិក្សា" aria-label="គ្រឹះស្ថាន សិក្សា ឫ វិទ្យាល័យសិក្សា">
             </div>
@@ -662,18 +676,18 @@
 </div>
 
 <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModals" aria-hidden="true">
-  <div class="modal-dialog modal-xl"> 
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title text-dark" id="imageModals">Upload Image</h5>
-        
+
       </div>
-      <div class="modal-body PreImage" >
-          
+      <div class="modal-body PreImage">
+
       </div>
       <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        </div>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
     </div>
   </div>
 </div>
@@ -704,6 +718,10 @@
 <br><br>
 <script>
   $(document).ready(function() {
+    
+    allIndexOptions();
+    $('#name_2').attr('autocomplete', 'off');
+    $('#name').attr('autocomplete', 'off');
     $('#date_of_birth').on('input', function () {
       // Allow only numeric characters and specific symbols (-, ., /)
       let rawValue = $(this).val().replace(/[^0-9\-\.\/]/g, ''); 
@@ -755,10 +773,12 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(response) {
+                  notyf.success("Data success !");
                 if (response.status == 'success') {
                   notyf.success(response.msg);
                 }else if(response.store == 'yes'){
-                    window.location.href = '/student/registration/transaction?type=ed&code=' + response.code_transetion;
+                   window.location.href = '/student/registration/transaction?type=cr';
+                    // window.location.href = '/student/registration/transaction?type=ed&code=' + response.code_transetion;
                 }else {
                     notyf.error(response.msg);
                 }
@@ -909,7 +929,7 @@
                   $('.class_code').empty();
                   $('.class_code').append('<option value="">ជ្រើសរើសក្រុម</option>');
                   $.each(response.records, function(index, record) {
-                      $('.class_code').append('<option value="' + record.code + '">' + record.code + '</option>');
+                      $('.class_code').append('<option value="' + record.code + '">' + record.code + ' - ' + record.level + '</option>');
                   });
               } else {
                   notyf.error("Error: " + response.msg);
@@ -937,13 +957,21 @@
           success: function(response) {
               $('.loader').hide();
               if (response.status === 'success') {
-                  $('#skills_codes').empty();
-                  $('#skills_codes').append(`<option value="${response.records.skills_code}">${response.name_2}</option>`);
-                  $('#sections_code').empty();
-                  $('#sections_code').append(`<option value="${response.sections_code}">${response.sections_name}</option>`);
+                  // $('#skills_codes').empty();
+                  // Select existing option for #skills_codes
+                  $('#skills_codes option').each(function() {
+                      $(this).prop('selected', $(this).val() == response.records.skills_code);
+                  });
 
-                  $('#qualification').empty();
-                  $('#qualification').append(`<option value="${response.qualification}">${response.qualification}</option>`);
+                  // Select existing option for #sections_code
+                  $('#sections_code option').each(function() {
+                      $(this).prop('selected', $(this).val() == response.sections_code);
+                  });
+
+                  // Select existing option for #qualification
+                  $('#qualification option').each(function() {
+                      $(this).prop('selected', $(this).val() == response.qualification);
+                  });
               } else {
                   notyf.error("Error: " + response.msg);
               }
@@ -1186,5 +1214,30 @@
 
     
   }
+
+  function allIndexOptions() {
+    // Save the original index options (run only once)
+    const allOptions = $('#bakdop_index option').clone();
+
+    // When bakdop_results changes
+    $('#bakdop_results').on('change', function() {
+        const selectedResult = $(this).val();
+        const $indexSelect = $('#bakdop_index');
+
+        // Clear options
+        $indexSelect.empty();
+
+        if (selectedResult === 'ធ្លាក់') {
+            // Show only "F"
+            $indexSelect.append('<option value="F">F</option>');
+            $indexSelect.val('F');
+        } else {
+            // Restore all options
+            $indexSelect.append(allOptions);
+        }
+
+        $indexSelect.trigger('change');
+    });
+}
 </script>
 @endsection

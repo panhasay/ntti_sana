@@ -467,6 +467,7 @@
     });
     $('.form_data_line').on('change', function() {
       var maxValues = {
+        attendance: 15,
         assessment: 15,
         midterm: 15,
         final: 55,

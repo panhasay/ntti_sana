@@ -296,4 +296,22 @@ class DashboardController extends Controller
         return view('dashboard.dashboard_teacher_management_class', array_merge($data, compact('records', 'type')));
         // return view('dashboard.dashboard_teacher_management_class', compact('records'));
     }
+    public function dahhboardInter(Request $request)
+    {
+        try {
+            $data = $request->all();
+            $code = Auth::user()->user_code;
+            $records = Student::where('code', $code)->first();
+            // dd($records);
+            $skills = DB::table('skills')->where('code', $records->skills_code ?? '')->first();
+            $qualification = DB::table('qualification')->where('code', $records->qualification ?? '')->first();
+            $imgs = Picture::where('code', $records->code ?? '')->first();
+            return view('dashboard.dashboard_inputer', compact('records', 'skills', 'qualification', 'imgs'));
+
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
 }

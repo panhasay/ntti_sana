@@ -65,24 +65,29 @@ Route::get('/greeting/{locale}', function (string $locale) {
     });
 
     Route::get('/login-blocked', function () {
-        return view('errors.login_block'); 
-    })->name('login.blocked');
+        return view('auth.login'); 
+    });
 
+    Route::get('/student-verification', function () {
+        return view('general.student_signin');
+    });
+
+    
     Route::get('/return-login', [AuthController::class, 'returnlogin'])->name('returnlogin');
-
     Route::get('login', [AuthController::class, 'index'])->name('login');
     Route::post('post-login', [AuthController::class, 'postLogin'])->middleware('limit.logins')->name('login.post');
     Route::get('registration_hole', [AuthController::class, 'registration'])->name('register');
     Route::post('post-registration', [AuthController::class, 'postRegistration'])->name('register.post');
-   
+
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
     Route::group(['perfix' => 'department', 'middleware' => 'user_permission'], function (){
-    // Route::get('/department-menu', [AuthController::class, 'departmentMenu']);
-    Route::get('/department-menu', [AuthController::class, 'departmentMenu'])->middleware('user_permission');
-   
-});
+        // Route::get('/department-menu', [AuthController::class, 'departmentMenu']);
+        Route::get('/department-menu', [AuthController::class, 'departmentMenu'])->middleware('user_permission');
+    
+    });
 Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('forgot.password');
 Route::group(['perfix' => 'student'], function (){
+    
     Route::get('/student', [StudnetController::class, 'index'])->name('student');
     Route::get('/settings-customize-field', [StudnetController::class, 'SettingsCustomizeField'])->name('SettingsCustomizeField');
     Route::get('/student/print', [StudnetController::class, 'Print'])->name('Print');
@@ -102,6 +107,7 @@ Route::group(['perfix' => 'student'], function (){
     Route::Post('/student/uploadimage',[StudnetController::class,'UploadImage']);
     Route::Post('/student/delete-image',[StudnetController::class,'DeleteImage']);
     Route::get('/students/list', [StudnetController::class, 'getStudents'])->name('students.list');
+
 })->middleware('auth');
 
 Route::group(['perfix' => 'table'], function (){
@@ -141,9 +147,9 @@ Route::group(['prefix' => 'dashboard','middleware' => 'user_permission'
    
 });
 
-     Route::get('dahhboard-student-account', [DashboardController::class, 'StudentUserAccount'])->name('dashboard.studentAccount');
- Route::get('teacher-dashboard', [DashboardController::class, 'TeacherDashboard'])->name('dashboard.teacherDashboard');
-    Route::get('teacher-management-class', [DashboardController::class, 'TeacherMmanagementClass'])->name('dashboard.TeacherMmanagementClass');
+Route::get('dahhboard-student-account', [DashboardController::class, 'StudentUserAccount'])->name('dashboard.studentAccount');
+Route::get('teacher-dashboard', [DashboardController::class, 'TeacherDashboard'])->name('dashboard.teacherDashboard');
+Route::get('teacher-management-class', [DashboardController::class, 'TeacherMmanagementClass'])->name('dashboard.TeacherMmanagementClass');
 
 Route::get('dsa', [DashboardController::class, 'StudentUserAccount'])->name('StudentUserAccount');
 Route::group(['perfix' => 'department' ,  'middleware' => 'permission'], function (){
@@ -357,6 +363,8 @@ Route::group(['prefix' => 'transfer'], function (){
     Route::POST ('/transfer-delete', [TransferController::class, 'delete']);
     Route::get ('/get-student/-hang_of_study', [TransferController::class, 'GetStudentHangOfStudy']);
     Route::POST ('/submit-student-request-hang-of-study', [TransferController::class, 'SubmitStudentRequestHangOfStudy']);
+
+    Route::get ('/get-student/change-class', [TransferController::class, 'GetStudentChangeClass']);
 })->middleware('auth');
 
 Route::group(['perfix' => 'report_list_of_student_class_and_section'], function (){
@@ -444,6 +452,8 @@ Route::group(['prefix' => 'exam-credit',], function () {
     Route::post('/print-assign-score', [ExamCreditController::class, 'printAssignScore'])->name('exam-credit.print-assign-score');
     Route::post('/assign-score/export-excel', [ExamCreditController::class, 'assignScoreExcel'])->name('assign-score.export.excel');
     Route::get('/search-attendance', [ExamCreditController::class, 'liveSearchAttendance'])->name('exam-credit.search');
+
+    Route::get('/monthly-attendance-list', [ExamScheduleController::class, 'MonthlyAttendancList']);
 })->middleware('auth');
 
 Route::group(['prefix' => 'retake-exam'],function(){
@@ -454,3 +464,24 @@ Route::group(['prefix' => 'retake-exam'],function(){
     Route::get('/score/input', [ScoreController::class, 'input'])->name('score.input');
 })->middleware('auth');
 
+Route::get('dahhboard-inputer-account', [DashboardController::class, 'dahhboardInter'])->name('dashboard.dahhboardInter');
+
+// Route::group(['perfix' => 'department', 'middleware' => 'user_permission'], function (){
+//     Route::get('/dahhboard-inputer-account', [DashboardController::class, 'dahhboardInter'])->middleware('user_permission');
+// });
+
+
+// Route::group(['prefix' => 'sections' ], function () {
+//     Route::get('/', [DashboardController::class, 'dahhboardInter']);
+// })->middleware('auth');
+
+
+Route::get('/qr-stu', function () {
+    return view('general.card_student_login');
+});
+
+
+// Route::get('register-card-student',[StudnetController::class,'cardStudent']);
+Route::post('register-card-student',[StudnetController::class,'cardStudentLogin'])->name('card.student.login.post');
+Route::get('card-student-list/{code}',[StudnetController::class,'cardStudentList'])->name('card.student.lsit');
+Route::put('card-student-list/{code}', [StudnetController::class, 'updateCardStudent'])->name('students.update');

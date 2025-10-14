@@ -45,29 +45,25 @@ class TransferController extends Controller
     }
     public function index()
     {
+
+        if (!Auth::check()) {
+            return redirect("login")->withSuccess('Opps! You do not have access');
+        }
         $page = $this->page;
         $user = Auth::user();
 
-      $records = VStudentLedgerEntry::withQueryPermission()
+        $records = VStudentLedgerEntry::withQueryPermission()
 
-        ->select('student_code' , 'class_code', 'skills_code', 'qualification', 'sections_code', 'years', DB::raw('MAX(semester) as semester'))
-        ->groupBy('student_code', 'class_code', 'skills_code', 'qualification', 'sections_code', 'years')
-        ->orderBy('student_code', 'desc')
-        ->paginate(15);
+            ->select('student_code', 'class_code', 'skills_code', 'qualification', 'sections_code', 'years', DB::raw('MAX(semester) as semester'))
+            ->groupBy('student_code', 'class_code', 'skills_code', 'qualification', 'sections_code', 'years')
+            ->orderBy('student_code', 'desc')
+            ->paginate(15);
 
 
-    // ->orderBy('student_code', 'desc')
-    // ->groupBy('student_code', 'class_code', 'sections_code', 'department_code', 'skills_code', 'semester', 'years')
-    // ->select('student_code', 'class_code', 'sections_code', 'department_code', 'skills_code', 'semester', 'years')
-    // ->paginate(15);
 
-        if (Auth::check()) {
-            return view('general.transfer', compact('records', 'page'));
-        } else {
-            return redirect("login")->withSuccess('Opps! You do not have access');
-        }
-
-        return view('general.transfer', compact('records', 'page'));
+        $TtoalHangOfStudent = HangOfStudent::all();
+        $total_student_HangOfStudent = $TtoalHangOfStudent->count();
+        return view('general.transfer', compact('records', 'page', 'total_student_HangOfStudent'));
     }
     public function transaction(request $request)
     {
@@ -273,11 +269,46 @@ class TransferController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-    // use App\Models\HangOfStudent;
-    // use Illuminate\Support\Facades\File;
-    // use Illuminate\Support\Str;
-    // use Carbon\Carbon;
+    public function GetStudentChangeClass(Request $request)
+    {
+        $code = $request->code;
+        $student = VStudentLedgerEntry::withQueryPermission()
+            ->with('student')
+            ->select(
+                'student_code',
+                'class_code',
+                'skills_code',
+                'qualification',
+                'sections_code',
+                'years',
+                DB::raw('MAX(semester) as semester')
+            )
+            ->where('student_code', $code)
+            ->groupBy(
+                'student_code',
+                'class_code',
+                'skills_code',
+                'qualification',
+                'sections_code',
+                'years'
+            )
+            ->orderBy('student_code', 'desc')
+            ->first();
+        if ($student) {
+            $view = view('modals.modals_student_change_class', compact('student'))->render();
 
+            return response()->json([
+                'status' => 'success',
+                'view' => $view,
+                'records' => $student
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Student not found'
+            ]);
+        }
+    }
     public function SubmitStudentRequestHangOfStudy(Request $request)
     {
         try {
@@ -293,12 +324,12 @@ class TransferController extends Controller
             if ($existing) {
                 return response()->json([
                     'status' => 'error',
-                    'msg' => 'សិស្សមានសំណើរម្ដងរួចហើយ។' 
+                    'msg' => 'សិស្សមានសំណើរម្ដងរួចហើយ។'
                 ]);
             }
 
             $student = VStudentLedgerEntry::withQueryPermission()
-                ->select('student_code' , 'class_code', 'skills_code', 'qualification', 'sections_code', 'years', DB::raw('MAX(semester) as semester'))
+                ->select('student_code', 'class_code', 'skills_code', 'qualification', 'sections_code', 'years', DB::raw('MAX(semester) as semester'))
                 ->groupBy('student_code', 'class_code', 'skills_code', 'qualification', 'sections_code', 'years')
                 ->orderBy('student_code', 'desc')
                 ->first();

@@ -1,148 +1,146 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NTTI Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bayon&family=Moul&family=Noto+Serif+Khmer:wght@600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<style>
-  .footer {
-      color: color(dark);
-      padding: 14px 25px 12px 37px;
-      transition: all .25sease;
-      -moz-transition: all .25s ease;
-      -webkit-transition: all .25sease;
-      -ms-transition: all .25s ease;
-      font-size: .825rem;
-      font-family: Open Sans, sans-serif;
-      font-weight: 400;
-      position: fixed;
-      left: 0;
-      bottom: 0;
-      width: 100%;
-      color: #fff;
-      text-align: center;
-      background: #fbfbfb !important;
-  }
-</style>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-@extends('layout')
-@section('content')
-<div class="modal fade" id="forGetform" tabindex="-1" role="dialog" aria-labelledby="forGetformLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="forGetformLabel" style="font-family: Khmer OS Battambang !important;" >ភ្លេចលេខសម្ងាត់</h5>
-        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <input type="email" id="email" class="form-control" placeholder="អ៊ីមែល" style="    font-family: Khmer OS Battambang !important;"><br>
-        <input type="password" id="newpassword" class="form-control" placeholder="លេខសម្ងាត់" required  style="font-family: Khmer OS Battambang !important;">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="    font-family: Khmer OS Battambang !important;">បិទ</button>
-        <button type="button" class="btn btn-primary" id="submit-forgot" style="    font-family: Khmer OS Battambang !important;">ស្នើរ</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<section class="background-radial-gradient overflow-hidden">
-  <div class="container px-4 py-5 px-md-5 text-center text-lg-start my-5">
-    <div class="row gx-lg-5 align-items-center mb-5">
-      <div class="col-lg-6 mb-5 mb-lg-0" style="z-index: 10">
-        <h1 class="my-5 display-5 fw-bold ls-tight" style="color: hsl(218, 81%, 95%)">
-          The Ntti Portal
-        </h1>
-        <p class="mb-4 opacity-70" style="color: hsl(218, 81%, 85%)">
-          DIRECTOR OF NTTI ... Welcome to the National Technical Training Institute (NTTI) - one of the leading quality institutes of technical and vocational training and ...
-        </p>
-      </div>
-      <div class="col-lg-5 mb-4 mb-lg-0 position-relative">
-        <div id="radius-shape-1" class="position-absolute rounded-circle shadow-5-strong"></div>
-        <div id="radius-shape-2" class="position-absolute shadow-5-strong"></div>
-        <div class="card bg-glass">
-          <div class="card-body px-4 py-4 px-md-4">
-              <div class="col-12 khmer-mef2" style="font-family: 'Bayon', sans-serif;">ប្រព័ន្ធគ្រប់គ្រង</div>
-              <form class="mt-3" action="{{ route('login.post') }}" method="POST">
-                  @csrf
-                  <div class="form-floating mb-3">
-                      <input type="email" class="form-control" id="floatingInput" name="email" placeholder="name@example.com">
-                      <label for="floatingInput" style="cursor: pointer;     font-family: Khmer OS Battambang !important;">អ៊ីមែល</label>
-                      @if ($errors->has('email'))
-                          <span class="text-danger">{{ $errors->first('email') }}</span>
-                      @endif
-                  </div>
-                    <div class="form-floating">
-                      <input type="password" class="form-control" id="floatingPassword"  name="password" placeholder="Password">
-                      <label for="floatingPassword" style="cursor: pointer;     font-family: Khmer OS Battambang !important;">ពាក្យសម្ងាត់</label>
-                      @if(session()->has('message'))
-                      <span class="text-danger"> {{session()->get('message')}}</span>
-                      @endif
-                      <div class="text-right" id="forgot-link" style="cursor: pointer; font-family: 'Bayon'; color: #0f4e87;">ភ្លេចពាក្យសម្ងាត់ !</div>
-                    </div><br>
-                  <div class="offset-md-12">
-                      <button type="submit" class="btn btn-primary col-md-12">
-                          Login
-                      </button>
-                  </div>
-              </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  </section>
-  <section>
-    <footer class="footer">
-      <div class="container">
-        <div class="col-md-12">
-          <span class="text-black text-center text-sm-left d-block d-sm-inline-block" style="color: #333; font-family: Khmer OS Battambang !important;">Copyright © 2024 <a href="https://www.ntti.edu.kh/" target="_blank">National Technical Training Institute</a> <span style="color: #333; font-family: Khmer OS Battambang !important;">អាសយដ្ឋាន: មហាវិថី សហព័ន្ធរុស្ស៊ី សង្កាត់ទឹកថ្លា ខណ្ឌសែនសុខ រាជធានីភ្នំពេញ</span> <a href="https://www.facebook.com/panha.say.73" target="_blank">Deverlop By</a> </span>
-        </div>
-      </div>
-    </footer>
-  </section>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script>
-  $(document).ready(function() {
-      // Open modal
-      $('#forgot-link').on('click', function(e) {
-          e.preventDefault();
-          $('#forGetform').modal('show'); 
-      });
-
-      // Submit form
-      $('#submit-forgot').on('click', function() {
-        const email = $('#email').val();
-        const newpassword = $('#newpassword').val();
-
-        if (!newpassword || !email) {
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "សូមបំពេញ!",
-            });
-            return;
+    <style>
+        /* Global Styles */
+        body {
+            margin: 0;
+            font-family: "Noto Serif Khmer", serif;
+             /* background-image: url('asset/NTTI/images/img_login.jpg'); */
+            background: url('asset/NTTI/images/img_login.jpg') no-repeat center center/cover;
+            background-image: url('asset/NTTI/images/img_login.jpg');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            position: relative;
         }
 
-        $.ajax({
-            url: '{{ route("forgot.password") }}',
-            type: 'POST',
-            data: {
-                email: email,
-                newpassword: newpassword,
-                _token: '{{ csrf_token() }}'
-            },
-            success: function(response) {
-                $('#forGetform').modal('hide');
-            },
-            error: function(xhr) {
-              Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "អ៊ីមែលមិនត្រឹមត្រូវទេ!",
-              });
+        /* Dark overlay */
+        body::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 0;
+        }
+
+        .container-login {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            /* flex-direction: column;
+            justify-content: center; */
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+            text-align: center;
+        }
+
+        .login-box {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 10px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-box h2 {
+            font-family: "Bayon", sans-serif;
+            color: #0f4e87;
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            height: 45px;
+        }
+
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #0f4e87;
+        }
+
+        .btn-login {
+            background-color: #0f4e87;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 8px;
+            width: 100%;
+            height: 45px;
+            transition: background 0.3s;
+        }
+
+        .btn-login:hover {
+            background-color: #083963;
+        }
+
+        footer {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: #fff;
+            font-size: 0.9rem;
+            padding: 15px 0;
+        }
+
+        footer a {
+            color: #ffb300;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 576px) {
+            .login-box {
+                padding: 2rem 1.5rem;
             }
-        });
-      });
-  });
-  </script>
-@endsection
+        }
+    </style>
+</head>
+<body>
+    <div class="row container-login">
+      <div class="col-md-6 col-sm-12">
+          <div class="text-center mb-4">
+            <h1 class="mt-3 fw-bold">The NTTI Portal</h1>
+            <p class="px-3">
+                សូមស្វាគមន៍មកកាន់ វិទ្យាស្ថានបច្ចេកទេសជាតិ  <br>
+                បណ្តុះបណ្តាលបច្ចេកទេស (NTTI)
+            </p>
+        </div>
+      </div>
+     <div class="col-md-6 col-sm-12">
+          <div class="login-box">
+            <h2>ប្រព័ន្ធចូលគណនី</h2>
+           <form class="mt-3" action="{{ route('login.post') }}" method="POST">
+              @csrf
+                <div class="mb-3">
+                    <input type="text" class="form-control" name="email" placeholder="ឈ្មោះអ្នកប្រើប្រាស់">
+                </div>
+                  @if ($errors->has('email'))
+                      <span class="text-danger">{{ $errors->first('email') }}</span>
+                  @endif
+                <div class="mb-3">
+                    <input type="password" name="password" class="form-control" placeholder="ពាក្យសម្ងាត់">
+                </div>
+                @if (session()->has('message'))
+                    <span class="text-danger"> {{ session()->get('message') }}</span>
+                @endif
+                <button type="submit" class="btn btn-login">Login</button>
+            </form>
+            <div class="mt-3 text-end">
+                <a href="#" style="color:#0f4e87;">ភ្លេចពាក្យសម្ងាត់?</a>
+            </div>
+        </div>
+      </div>
+    </div>
+</body>
+</html>

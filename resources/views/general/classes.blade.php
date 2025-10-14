@@ -44,7 +44,6 @@
   <div class="collapse" id="Fliter">
     <div class="card card-body">
       @include('system.option_advance_search_classes', ['page_name' => 'class'])
-
       {{-- <form id="advance_search" role="form" class="form-horizontal" enctype="multipart/form-data" action="">
         <div class="row">
           <div class="col-md-12">

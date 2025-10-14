@@ -157,12 +157,12 @@
       <nav class="bottom-navbar">
         <div class="container">
           <ul class="nav page-navigation">
-            <li class="nav-item">
+            {{-- <li class="nav-item">
               <a class="nav-link" href="{{ url('/dashboard') }}">
                 <i class="mdi mdi-compass-outline menu-icon"></i>
                 <span class="menu-title">Dashboard</span>
               </a>
-            </li>
+            </li> --}}
             <li class="nav-item">
               <a class="nav-link" href="{{ url('/department-menu') }}">
                 <i class="mdi mdi-monitor-dashboard menu-icon"></i>
@@ -237,12 +237,12 @@
                 <span class="menu-title">Tables</span> --}}
               </a>
             </li>
-            <li class="nav-item">
+            {{-- <li class="nav-item">
               <a href="{{ url('/menu-reports') }}" class="nav-link"
                 target="_blank">
                 <i class="mdi mdi-file-document-box menu-icon"></i>
                 <span class="menu-title">Report</span></a>
-            </li>
+            </li> --}}
             <li class="nav-item">
               <div class="nav-link d-flex">
                 {{-- <button class="btn btn-sm bg-danger text-white"> Trailing </button> --}}
@@ -627,6 +627,7 @@
                           $('.loader').hide();
 
                           if (response.status === 'success') {
+                            
                               let selectData = {
                                   '#skills_code': [response.records.skills_code, response.skills],
                                   '#sections_code': [response.records.sections_code, response.sections],
@@ -635,8 +636,18 @@
                                   '#school_year_code': [response.records.school_year_code, response.session_year]
                               };
 
-                              $.each(selectData, function (selector, values) {
-                                  $(selector).empty().append(`<option value="${values[0]}">${values[1]}</option>`);
+                              // Loop through each select and set the selected option
+                              $.each(selectData, function(selector, values) {
+                                  let value = values[0]; // value to select
+
+                                  // jQuery style: find the option and set selected
+                                  $(selector).find('option').each(function() {
+                                      if ($(this).val() == value) {
+                                          $(this).prop('selected', true);
+                                      } else {
+                                          $(this).prop('selected', false);
+                                      }
+                                  });
                               });
                           }
                       }

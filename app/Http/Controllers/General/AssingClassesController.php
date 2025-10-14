@@ -101,7 +101,7 @@ class AssingClassesController extends Controller
                 }, SORT_REGULAR, false); 
 
         $isEmpty = $recordsLine->isEmpty(); 
-       // Prepare the attendance scores indexed by student_code
+
         $results = DB::table('student_score')
             ->select(
                 'student_code',
@@ -111,9 +111,8 @@ class AssingClassesController extends Controller
             ->where('assign_line_no', $data['assing_no'])
             ->groupBy('student_code')
             ->get()
-            ->keyBy('student_code'); // <-- Create a map indexed by student_code
+            ->keyBy('student_code'); 
 
-        // Update each student line with corresponding attendance score
         foreach ($recordsLine as $line) {
             $studentCode = $line->student_code;
             if (isset($results[$studentCode])) {
@@ -138,7 +137,6 @@ class AssingClassesController extends Controller
                     $recordExists = AssingClassesStudentLine::whereIn('student_code', $studentCodes)
                                         ->where('assing_line_no', $records->assing_no)
                                         ->exists(); 
-
                     if (!$recordExists) {
                         foreach ($students as $student) {
                             $recordStudent = new AssingClassesStudentLine();

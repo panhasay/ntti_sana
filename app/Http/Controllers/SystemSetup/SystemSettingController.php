@@ -514,11 +514,11 @@ class SystemSettingController extends Controller
             $records = Classes::where('code', $data['class_code'])->first();
 
             // dd($records->skill->name_2);
-            $skills =  $records->skill->name_2;
-            $sections =  $records->section->name_2;
-            $department =  $records->department->name_2;
+            $skills =  $records->skill->name_2 ?? '';
+            $sections =  $records->section->name_2 ?? '';
+            $department =  $records->department->name_2 ?? '';
 
-            $session_year = SessionYear::where('code', $records->school_year_code)->value('name');
+            $session_year = SessionYear::where('code', $records->school_year_code ?? '')->value('name');
             return response()->json(['status' => 'success', 'records' => $records, 'skills' => $skills, 'sections' => $sections, 'department' => $department, 'session_year' => $session_year]);
         } catch (Exception $ex) {
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);

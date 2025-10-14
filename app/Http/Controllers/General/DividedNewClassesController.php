@@ -53,10 +53,12 @@ class DividedNewClassesController extends Controller
         $page = $this->page;
         $data = $this->services->GetDateIndexOption(now()); 
         $records = Classes::leftJoin('student', 'student.class_code', '=', 'classes.code')
-            ->select('classes.code',  'classes.level', 'classes.department_code', 'classes.school_year_code', 'classes.name', 'classes.skills_code', 'classes.sections_code', DB::raw('COUNT(student.name) as totals_student'))
-            ->groupBy('classes.code',  'classes.level', 'classes.department_code', 'classes.school_year_code', 'classes.name', 'classes.skills_code', 'classes.sections_code')
+            ->select('classes.code',  'classes.level', 'classes.department_code', 'classes.school_year_code', 'classes.name', 'classes.skills_code', 'classes.sections_code', DB::raw('COUNT(student.name) as totals_student' , 'classes.created_at'))
+            // ->where('classes.school_year_code', '2025_2026')
+            ->groupBy('classes.code',  'classes.level', 'classes.department_code', 'classes.school_year_code', 'classes.name', 'classes.skills_code', 'classes.sections_code', 'classes.created_at')
             ->orderBy('totals_student', 'desc')
             ->orderBy('classes.department_code', 'desc')
+            ->orderBy('classes.created_at', 'desc')
             ->WithQueryPermissionTeacher()
             ->paginate(20);
             

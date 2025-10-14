@@ -47,6 +47,8 @@ class ExamCreditController extends Controller
 
         $page = "exam-credit";
         $records = AssingClasses::select('class_code', 'semester', 'years', 'skills_code', 'qualification', 'sections_code','session_year_code')->groupBy('class_code', 'semester', 'years', 'skills_code', 'qualification', 'sections_code','session_year_code')->paginate(10);
+
+        // dd($records);
          
         $data = $this->services->GetDateIndexOption(now()); 
 

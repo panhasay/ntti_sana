@@ -1,10 +1,12 @@
 <?php
+
 /**
  * Created by Say Panha.
  * User: Panha
  * Date: 18/3/2024
  * Time: 3:22 PM
  */
+
 namespace App\Http\Controllers\General;
 
 use Hash;
@@ -32,6 +34,7 @@ use App\Models\General\StudyYears;
 use App\Models\SystemSetup\Department;
 use App\Models\General\Qualifications;
 use App\Models\General\Sections;
+use App\Models\General\StudentCard;
 use UserImport;
 
 class StudnetController extends Controller
@@ -57,18 +60,17 @@ class StudnetController extends Controller
         try {
             $user = Auth::user();
 
-            if(isset($user->role) && $user->role == 'user_department'){
+            if (isset($user->role) && $user->role == 'user_department') {
                 $records = Student::where('department_code', $user->childs)
-                ->orderBy('code', 'asc')
-                ->paginate(10);
-            }else if(isset($user->role) && $user->role == 'student'){
+                    ->orderBy('code', 'asc')
+                    ->paginate(10);
+            } else if (isset($user->role) && $user->role == 'student') {
                 return redirect("user-dont-have-permission")->withSuccess('Opps! You do not have access');
-            }
-            else{
+            } else {
                 $records = Student::orderBy('code', 'asc')->paginate(15);
             }
             $class_record = DB::table('classes')->get();
-            if (Auth::check()   ) {
+            if (Auth::check()) {
                 return view('general.student', compact('records', 'class_record'));
             } else {
                 return redirect("login")->withSuccess('Opps! You do not have access');
@@ -79,7 +81,8 @@ class StudnetController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-    public function StudentRegistration(Request $request){
+    public function StudentRegistration(Request $request)
+    {
         // $sql = "
         //     UPDATE student_registration AS reg
         //     INNER JOIN student AS stu ON stu.code = reg.code
@@ -95,36 +98,36 @@ class StudnetController extends Controller
         $qualifications = Qualifications::get();
 
         $student_code = Student::where('study_type', 'new student')->get();
-       
-        if($user->role == "teacherss"){
+
+        if ($user->role == "teacherss") {
             $total_student_have_class = Student::select(
-                DB::raw('COUNT(name) AS total_count'),  
+                DB::raw('COUNT(name) AS total_count'),
             )->where('study_type', 'new student')
-            ->where('department_code', $user->department_code)
-            ->whereNotNull('class_code')
-            ->get();
+                ->where('department_code', $user->department_code)
+                ->whereNotNull('class_code')
+                ->get();
 
             $total_records = StudentRegistration::select(
-                DB::raw('COUNT(name) AS total_count'),  
+                DB::raw('COUNT(name) AS total_count'),
             )->where('study_type', 'new student')
-             ->where('department_code', $user->department_code)
-             ->get();
+                ->where('department_code', $user->department_code)
+                ->get();
             $records = StudentRegistration::with(['session_year'])
-            ->where('study_type', 'new student')
-            ->where('department_code', $user->department_code)
-            ->orderBy('code', 'desc')->paginate(15);
-        }else{
+                ->where('study_type', 'new student')
+                ->where('department_code', $user->department_code)
+                ->orderBy('code', 'desc')->paginate(15);
+        } else {
 
             $total_records = StudentRegistration::select(
-                DB::raw('COUNT(name) AS total_count'),  
+                DB::raw('COUNT(name) AS total_count'),
             )->where('study_type', 'new student')
-             ->get();
+                ->get();
 
             $total_student_have_class = Student::select(
-                DB::raw('COUNT(name) AS total_count'),  
+                DB::raw('COUNT(name) AS total_count'),
             )->where('study_type', 'new student')
-            ->whereNotNull('class_code')
-            ->get();
+                ->whereNotNull('class_code')
+                ->get();
 
             $records = StudentRegistration::with(['session_year'])
                 ->whereRaw($this->services->getRrecordsByDepartment())
@@ -175,7 +178,7 @@ class StudnetController extends Controller
         $skills_records = DB::table('skills')->get();
         $sections = DB::table('sections')->get();
         $department = DB::table('department')->get();
-        $currentDate = Carbon::now()->toDateString(); 
+        $currentDate = Carbon::now()->toDateString();
         $records = null;
         $user_student = '';
         $skills = Skills::get();
@@ -247,7 +250,7 @@ class StudnetController extends Controller
     }
     public function storeRegistration(request $request)
     {
-        $input = $request->all();   
+        $input = $request->all();
         $requiredFields = [
             'name' => 'សូមបំពេញ ខ្ញុំបាទ/នាងខ្ញុំឈ្មោះ',
             'name_2' => 'សូមបំពេញឈ្មោះ អក្សរឡាតាំង',
@@ -273,43 +276,56 @@ class StudnetController extends Controller
 
         $lastRecord = StudentRegistration::latest('code')->first();
         $code =  $lastRecord->code;
-        $record = StudentRegistration::where('name_2',$request->name_2)->first();
+        $record = StudentRegistration::where('name_2', $request->name_2)->first();
 
-        // if (isset($record->name_2) && $record->name_2 == $request->name_2){
-        //     return response()->json(['status' => 'error', 'msg' => "ឈ្មោះ\"{$request->name_2}\"មានរួចហើយ​!"]);
-        // }
+        if (isset($record->name_2) && $record->name_2 == $request->name_2) {
+            return response()->json(['status' => 'error', 'msg' => "ឈ្មោះ\"{$request->name_2}\"មានរួចហើយ​!"]);
+        }
+
+        if (
+            isset($record->name_2, $record->date_of_birth)
+            && $record->name_2 == $request->name_2
+            && $record->date_of_birth == $request->date_of_birth
+        ) {
+
+            return response()->json([
+                'status' => 'error',
+                'msg' => "ឈ្មោះ \"{$request->name_2}\" និង ថ្ងៃខែឆ្នាំកំណើត មានរួចហើយ!"
+            ]);
+        }
+
         $department_code = Skills::where('code',  $input['skills_code'])->first();
-        if($department_code) {
+        if ($department_code) {
             $department_code = $department_code->department_code;
         }
         $status = ($input['status'] == 'no') ? 'no' : 'yes';
         $phone_student = $this->services->convertKhmerToEnglishNumber($request->phone_student);
         $guardian_phone = $this->services->convertKhmerToEnglishNumber($request->guardian_phone);
 
-        $date_of_birth = \Carbon\Carbon::parse($request->date_of_birth)->format('Y-m-d'); 
-        
+        $date_of_birth = \Carbon\Carbon::parse($request->date_of_birth)->format('Y-m-d');
+
         try {
             $records = new StudentRegistration();
             $records->code = $lastRecord ? $lastRecord->code + 1 : 1;
             $records->name_2 = $request->name_2;
-            $records->name = $request->name; 
-            $records->date_of_birth = $date_of_birth; 
+            $records->name = $request->name;
+            $records->date_of_birth = $date_of_birth;
             $records->student_address = $request->student_address;
             $records->current_address = $request->current_address;
-            $records->occupation = $request->occupation; 
-            $records->phone_student = $phone_student; 
-            $records->guardian_name = $request->guardian_name; 
-            $records->guardian_phone = $guardian_phone; 
-            $records->father_name = $request->father_name; 
-            $records->father_occupation = $request->father_occupation; 
-            $records->mother_name = $request->mother_name; 
-            $records->mother_occupation = $request->mother_occupation; 
-            $records->education_Level = $request->education_Level; 
-            $records->skills_code = $request->skills_code; 
-            $records->sections_code = $request->sections_code; 
-            $records->apply_year = $request->apply_year; 
-            $records->qualification = $request->qualification; 
-            $records->status = $request->status; 
+            $records->occupation = $request->occupation;
+            $records->phone_student = $phone_student;
+            $records->guardian_name = $request->guardian_name;
+            $records->guardian_phone = $guardian_phone;
+            $records->father_name = $request->father_name;
+            $records->father_occupation = $request->father_occupation;
+            $records->mother_name = $request->mother_name;
+            $records->mother_occupation = $request->mother_occupation;
+            $records->education_Level = $request->education_Level;
+            $records->skills_code = $request->skills_code;
+            $records->sections_code = $request->sections_code;
+            $records->apply_year = $request->apply_year;
+            $records->qualification = $request->qualification;
+            $records->status = $request->status;
             $records->register_date = Carbon::now();
             $records->study_type = "new student";
             $records->gender = $request->gender;
@@ -327,12 +343,12 @@ class StudnetController extends Controller
             $records->submit_your_application = $request->submit_your_application;
             $records->educational_institutions = $request->educational_institutions;
             $records->class_code = $request->class_code;
-            $records->save(); 
+            $records->save();
 
             $code_last = StudentRegistration::latest('code')->first();
 
             $code_transetion = \App\Service\service::Encr_string($code_last->code);
-            return response()->json(['code_transetion'=> $code_transetion,'store' => 'yes', 'msg' => 'លោកអ្នកបាន ចុះឈ្មោះជោជ័យ']);
+            return response()->json(['code_transetion' => $code_transetion, 'store' => 'yes', 'msg' => 'លោកអ្នកបាន ចុះឈ្មោះជោជ័យ']);
         } catch (\Exception $ex) {
             DB::rollBack();
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
@@ -352,12 +368,12 @@ class StudnetController extends Controller
         //         'msg' => 'មិនអាចក្រែប្រែ ទិន្ន័យសិស្សបានទេ​ ឈ្មោះ' . $check_classe->name_2 . 'មាន ក្រុមរួចហើយ ' . $check_classe->class_code,
         //     ]);
         // } 
-       
+
         $records = StudentRegistration::where('code', $code)->first();
-        
+
         $status = ($input['status'] == 'no') ? 'no' : 'yes';
         $department_code = Skills::where('code',  $input['skills_code'])->first();
-        if($department_code) {
+        if ($department_code) {
             $department_code = $department_code->department_code;
         }
         $phone_student = $this->services->convertKhmerToEnglishNumber($request->phone_student);
@@ -369,56 +385,55 @@ class StudnetController extends Controller
         //     ]);
         // }
 
-        $date_of_birth = \Carbon\Carbon::parse($request->date_of_birth)->format('Y-m-d'); 
+        $date_of_birth = \Carbon\Carbon::parse($request->date_of_birth)->format('Y-m-d');
         try {
-                $records->name_2 = $request->name_2;
-                $records->name = $request->name; 
-                $records->date_of_birth = $date_of_birth; 
-                $records->student_address = $request->student_address;
-                $records->current_address = $request->current_address;
-                $records->occupation = $request->occupation; 
-                $records->phone_student = $phone_student; 
-                $records->guardian_name = $request->guardian_name; 
-                $records->guardian_phone = $guardian_phone; 
-                $records->father_name = $request->father_name; 
-                $records->father_occupation = $request->father_occupation; 
-                $records->mother_name = $request->mother_name; 
-                $records->mother_occupation = $request->mother_occupation; 
-                $records->education_Level = $request->education_Level; 
-                $records->skills_code = $request->skills_code; 
-                $records->sections_code = $request->sections_code; 
-                $records->apply_year = $request->apply_year; 
-                $records->qualification = $request->qualification; 
-                $records->status = $request->status; 
-                $records->register_date = Carbon::now();
-                $records->study_type = "new student";
-                $records->gender = $request->gender;
-                $records->session_year_code = $request->session_year_code;
-                $records->semester = $request->semester;
-                $records->department_code = $department_code;
+            $records->name_2 = $request->name_2;
+            $records->name = $request->name;
+            $records->date_of_birth = $date_of_birth;
+            $records->student_address = $request->student_address;
+            $records->current_address = $request->current_address;
+            $records->occupation = $request->occupation;
+            $records->phone_student = $phone_student;
+            $records->guardian_name = $request->guardian_name;
+            $records->guardian_phone = $guardian_phone;
+            $records->father_name = $request->father_name;
+            $records->father_occupation = $request->father_occupation;
+            $records->mother_name = $request->mother_name;
+            $records->mother_occupation = $request->mother_occupation;
+            $records->education_Level = $request->education_Level;
+            $records->skills_code = $request->skills_code;
+            $records->sections_code = $request->sections_code;
+            $records->apply_year = $request->apply_year;
+            $records->qualification = $request->qualification;
+            $records->status = $request->status;
+            $records->register_date = Carbon::now();
+            $records->study_type = "new student";
+            $records->gender = $request->gender;
+            $records->session_year_code = $request->session_year_code;
+            $records->semester = $request->semester;
+            $records->department_code = $department_code;
 
-                $records->bakdop_results = $request->bakdop_results;
-                $records->year_final = $request->year_final;
-                $records->bakdop_index = $request->bakdop_index;
-                $records->bakdop_province = $request->bakdop_province;
-                $records->bakdop_type = $request->bakdop_type;
-                $records->scholarship = $request->scholarship;
-                $records->scholarship_type = $request->scholarship_type;
-                $records->submit_your_application = $request->submit_your_application;
-                $records->educational_institutions = $request->educational_institutions;
-                $records->class_code = $request->class_code;
-                $records->update(); 
+            $records->bakdop_results = $request->bakdop_results;
+            $records->year_final = $request->year_final;
+            $records->bakdop_index = $request->bakdop_index;
+            $records->bakdop_province = $request->bakdop_province;
+            $records->bakdop_type = $request->bakdop_type;
+            $records->scholarship = $request->scholarship;
+            $records->scholarship_type = $request->scholarship_type;
+            $records->submit_your_application = $request->submit_your_application;
+            $records->educational_institutions = $request->educational_institutions;
+            $records->class_code = $request->class_code;
+            $records->update();
 
             return response()->json(['status' => 'success', 'msg' => 'Data Update Success !', '$records' => $records]);
         } catch (\Exception $ex) {
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
             return response()->json([
                 'error' => 'invalid_date',
-                'msg' => 'សូម ពិនិត្យមើល ថ្ងៃខែឆ្នាំម្ដងទៀត​!',
+                'msg' => 'ប្រពន្ធ័រមានបញ្ហា សូមទាក់ទងអ្នកបង្កើតប្រពន្ធ័',
             ]);
         }
     }
-
     public function StudentDownlaodRegistrationDownlaodexcel(Request $request)
     {
         try {
@@ -426,17 +441,17 @@ class StudnetController extends Controller
             $header = null;
             $department = $filter['department_code'];
             $department = Department::where('code', $department)->first();
-            if ($department){
+            if ($department) {
                 $department = $department->name_2;
             }
             $skills = $filter['skills_code'];
             $skills = Skills::where('code', $skills)->first();
-            if ($skills){
+            if ($skills) {
                 $skills = $skills->name_2;
             }
             $sections = $filter['sections_code'];
             $sections = Sections::where('code', $sections)->first();
-            if ($sections){
+            if ($sections) {
                 $sections = $sections->name_2;
             }
             $qualification = $filter['qualification'];
@@ -446,27 +461,27 @@ class StudnetController extends Controller
             }
 
             $extract_query = $this->services->extractQuery($filter);
-           
+
             // Use get() instead of paginate() for exporting
             $records = Student::whereRaw($extract_query)
-            ->where('study_type', 'new student')
-            ->orderBy('class_code')
-            ->orderBy('department_code')
-            ->orderByRaw("name_2 COLLATE utf8mb4_general_ci")
-            ->get()
-            ->map(function ($record) {
-                $record->skills = DB::table('skills')->where('code', $record->skills_code)->value('name_2');
-                $record->classes = DB::table('classes')->where('code', $record->class_code)->value('name');
-                $record->section = DB::table('sections')->where('code', $record->sections_code)->value('name_2');
-                $record->gender = $record->gender;
-                $record->department = DB::table('department')->where('code', $record->department_code)->value('name_2');
-                $record->khmerDate = service::DateFormartKhmer($record->date_of_birth);
-                $record->year_student = service::calculateDateDifference($record->posting_date);
-                $record->picture = Picture::where('code', $record->code)
-                    ->where('type', 'student')
-                    ->value('picture_ori');
-                return $record;
-            });
+                ->where('study_type', 'new student')
+                ->orderBy('class_code')
+                ->orderBy('department_code')
+                ->orderByRaw("name_2 COLLATE utf8mb4_general_ci")
+                ->get()
+                ->map(function ($record) {
+                    $record->skills = DB::table('skills')->where('code', $record->skills_code)->value('name_2');
+                    $record->classes = DB::table('classes')->where('code', $record->class_code)->value('name');
+                    $record->section = DB::table('sections')->where('code', $record->sections_code)->value('name_2');
+                    $record->gender = $record->gender;
+                    $record->department = DB::table('department')->where('code', $record->department_code)->value('name_2');
+                    $record->khmerDate = service::DateFormartKhmer($record->date_of_birth);
+                    $record->year_student = service::calculateDateDifference($record->posting_date);
+                    $record->picture = Picture::where('code', $record->code)
+                        ->where('type', 'student')
+                        ->value('picture_ori');
+                    return $record;
+                });
 
 
             $blade_download = "general.student_register_lists_excel";
@@ -474,13 +489,12 @@ class StudnetController extends Controller
             // Create an instance of ExportData and pass the necessary parameters
             return Excel::download(new ExportData($records, $blade_download, $department, $sections, $skills, $qualification, $header), 'registration.xlsx');
 
-            return response()->json(['status' =>'success','view' =>$view]);
-        } catch (\Exception $ex){
-            $this->services->telegram($ex->getMessage(),'list of student',$ex->getLine());
-            return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
+            return response()->json(['status' => 'success', 'view' => $view]);
+        } catch (\Exception $ex) {
+            $this->services->telegram($ex->getMessage(), 'list of student', $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-
     public function update(Request $request)
     {
         $input = $request->all();
@@ -544,7 +558,7 @@ class StudnetController extends Controller
                     'status' => 'error',
                     'msg' => 'មិនអាចលុប ទិន្ន័យសិស្សបានទេ​ ឈ្មោះ' . $check_classe->name_2 . 'មាន ក្រុមរួចហើយ ' . $check_classe->class_code,
                 ]);
-            } 
+            }
             $records = StudentRegistration::where('code', $code)->first();
             $records->delete();
             DB::commit();
@@ -562,26 +576,27 @@ class StudnetController extends Controller
         //  response()->json(['status'=>'success','msg' =>'Table Build Successfuly']);
     }
 
-    public function IndexStudentScholarshipc(Request $request){
+    public function IndexStudentScholarshipc(Request $request)
+    {
         $user = Auth::user();
         $sections = DB::table('sections')->get();
         $department = Department::get();
         $skills = DB::table('skills')->get();
         $qualifications = Qualifications::get();
         $total_records = StudentRegistration::select(
-            DB::raw('COUNT(name) AS total_count'),  
+            DB::raw('COUNT(name) AS total_count'),
         )->where('study_type', 'new student')
-         ->where('department_code', $user->department_code)
-         ->get();
+            ->where('department_code', $user->department_code)
+            ->get();
 
         $classs = Classes::orderBy('code', 'asc')->get();
-       
+
         $records = Student::where('study_type', 'new student')
-                            ->whereNotNull('scholarship')
-                            ->orderBy('class_code', 'desc')->paginate(20);
+            ->whereNotNull('scholarship')
+            ->orderBy('class_code', 'desc')->paginate(20);
         return view('general.student_scholarship', compact('records', 'total_records', 'qualifications', 'skills', 'department', 'sections', 'sections', 'classs'));
     }
-    
+
     public function sendmessage()
     {
         return dd('sendmessage');
@@ -593,9 +608,9 @@ class StudnetController extends Controller
         $extract_query = $this->services->extractQuery($data);
         $user = Auth::user();
         try {
-            if(isset($user->role) && $user->role == 'user_department'){
+            if (isset($user->role) && $user->role == 'user_department') {
                 $records = Student::whereRaw($extract_query)->where('department_code', $user->childs)->get();
-            }else{
+            } else {
                 $records = Student::whereRaw($extract_query)->get();
             }
             return view('student.student_print', compact('records', 'class_record'));
@@ -646,7 +661,7 @@ class StudnetController extends Controller
             $name = $record->name;
             $name = strtolower($name);
             $name = str_replace([' ', 'es'], ['', 'er'], $name);
-            $email = $name."@email.com";
+            $email = $name . "@email.com";
             $check_record = User::where('user_code', $data['code'])->first();
             if ($check_record)
                 return response()->json(['status' => 'error', 'msg' => 'User Student មានរូចហើយ​!']);
@@ -665,10 +680,11 @@ class StudnetController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-    public function ImportExcel(Request $request){
-        try{
+    public function ImportExcel(Request $request)
+    {
+        try {
             $data = $request->all();
-            $row = Excel::toArray(new ImportExcell(),$data['excel_file']);
+            $row = Excel::toArray(new ImportExcell(), $data['excel_file']);
 
             $row_header = end($row);
 
@@ -698,8 +714,6 @@ class StudnetController extends Controller
                 }
 
                 $main_data->push($collect->toArray());
-
-
             }
             // dd($main_data);
 
@@ -727,7 +741,6 @@ class StudnetController extends Controller
                     // Save the updated record
 
                     $record_exist->save();
-
                 } else {
                     // Create a new record if it does not exist
                     $insert_record = new Student();
@@ -745,36 +758,39 @@ class StudnetController extends Controller
                     $insert_record->save();
                 }
             }
-            return response()->json(['status' =>'success','msg' =>'Data Import Successfully']);
-        }catch (\Exception $ex) {
-            return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
+            return response()->json(['status' => 'success', 'msg' => 'Data Import Successfully']);
+        } catch (\Exception $ex) {
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-    public function ManageStudnetWork(Request $request){
+    public function ManageStudnetWork(Request $request)
+    {
         return view('department.manage_academic_work');
     }
 
-    public function GetImage(Request $request){
+    public function GetImage(Request $request)
+    {
         try {
             $code = $request->code;
             $record = null;
-            $record = DB::table('picture')->where('code',$code)->get();
-            $view =view('system.model_picture',compact('code','record'))->render();
-            return response()->json(['status' => 'success','view' => $view]);
-        } catch (\Exception $ex){ 
-            return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
+            $record = DB::table('picture')->where('code', $code)->get();
+            $view = view('system.model_picture', compact('code', 'record'))->render();
+            return response()->json(['status' => 'success', 'view' => $view]);
+        } catch (\Exception $ex) {
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-    public function UploadImages(Request $request){
+    public function UploadImages(Request $request)
+    {
         DB::beginTransaction();
         try {
             $data = $request->all();
 
             // dd($data);
             $code = $data['code'];
-            $exstain_img = Picture::where('code',$code)->first();
-            if($exstain_img){
-                return response()->json(['status' => 'field' , 'msg' => 'រូបភាពសិស្សមានមួយហើយមិនអាចមាន ពីបានទេ !']);
+            $exstain_img = Picture::where('code', $code)->first();
+            if ($exstain_img) {
+                return response()->json(['status' => 'field', 'msg' => 'រូបភាពសិស្សមានមួយហើយមិនអាចមាន ពីបានទេ !']);
             }
             $upload_path = 'upload/student';
             $item_picture = new Picture();
@@ -789,20 +805,20 @@ class StudnetController extends Controller
             $token = bin2hex($token);
             $fname = $token . '.' . $fileExt;
             $moveResult = move_uploaded_file($fileTmpLoc, $upload_path . "/" . $fname);
-             if($moveResult){
+            if ($moveResult) {
                 $http = $request->getSchemeAndHttpHost();
-                $file_path = $http.'/'. $upload_path . "/" . $fname ;
+                $file_path = $http . '/' . $upload_path . "/" . $fname;
                 $item_picture->picture_ori = $file_path;
                 $item_picture->code = $code;
                 $item_picture->type = 'student';
                 $item_picture->save();
-                 DB::commit();
-                return response()->json(['status' => 'success' , 'msg' => 'Your changes have been successfully saved!','path' => $file_path]);
-             }
-             return response()->json(['status' => 'warning' , 'msg' => 'Something went wrong !']);   
+                DB::commit();
+                return response()->json(['status' => 'success', 'msg' => 'Your changes have been successfully saved!', 'path' => $file_path]);
+            }
+            return response()->json(['status' => 'warning', 'msg' => 'Something went wrong !']);
         } catch (\Exception $ex) {
             DB::rollBack();
-            return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
     public function UploadImage(Request $request)
@@ -813,16 +829,16 @@ class StudnetController extends Controller
             if (!$request->hasFile('file')) {
                 return response()->json(['status' => 'error', 'msg' => 'No file uploaded']);
             }
-    
+
             $photo = $request->file('file'); // Get the file
             $code = $request->input('code'); // Get student code
             $date = now()->format('Ymd');
-    
+
             // // Validate file type before processing
             // $request->validate([
             //     'photo' => 'required|image|mimes:jpg,png,jpeg|max:5048', // Allow jpg, png, jpeg max 2MB
             // ]);
-    
+
             // Check if the image already exists for the student
             $existingPhoto = Picture::where('code', $code)->first();
             if ($existingPhoto) {
@@ -831,14 +847,14 @@ class StudnetController extends Controller
                     'msg' => 'រូបភាពសិស្សមានមួយហើយមិនអាចមាន ពីបានទេ !' // Student image already exists
                 ]);
             }
-    
+
             // Generate unique file name
             $fileName = 'ntti_' . $code . '_' . $date . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
             $filePath = public_path('uploads/student');
-    
+
             // Move uploaded file
             $photo->move($filePath, $fileName);
-    
+
             // Save the image details in the database
             Picture::create([
                 'code' => $code,
@@ -846,7 +862,7 @@ class StudnetController extends Controller
             ]);
 
             $parth = Picture::where('code', $code)->first();
-    
+
             $file_path = $parth->picture_ori;
             DB::commit();
             return response()->json([
@@ -855,41 +871,40 @@ class StudnetController extends Controller
                 'path' => $file_path,
                 'id' => $parth->id,
             ]);
-    
         } catch (\Exception $ex) {
             DB::rollBack();
             return response()->json(['status' => 'error', 'msg' => $ex->getMessage()]);
         }
     }
 
-    public function DeleteImage(Request $request){
+    public function DeleteImage(Request $request)
+    {
         DB::beginTransaction();
-        try{
+        try {
             $data = $request->all();
-            $record = Picture::where('id',$data['id'])->first();
+            $record = Picture::where('id', $data['id'])->first();
             $http = $request->getSchemeAndHttpHost();
-            $path_folder = str_replace($http,'',$record->picture_ori);
-            $sd = public_path('/uploads/student/'.$record->picture_ori);
+            $path_folder = str_replace($http, '', $record->picture_ori);
+            $sd = public_path('/uploads/student/' . $record->picture_ori);
             if (file_exists($sd)) {
                 unlink($sd);
             }
             DB::commit();
             $record->delete();
-            return response()->json(['status' => 'success' , 'msg' => 'File has been delete']);
-        }
-        catch (\Exception $ex) {
+            return response()->json(['status' => 'success', 'msg' => 'File has been delete']);
+        } catch (\Exception $ex) {
             DB::rollBack();
-            return response()->json(['status' => 'warning' , 'msg' => $ex->getMessage()]);
-        } 
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
     }
     public function PrintRegistration(Request $request)
     {
         $data = $request->all();
         $type = $data['type'];
         try {
-            $records = StudentRegistration::where('code', $data['code']) ->first();
-            $skills = Skills::where('code', $records->skills_code) ->first();
-           // Set the locale to Khmer
+            $records = StudentRegistration::where('code', $data['code'])->first();
+            $skills = Skills::where('code', $records->skills_code)->first();
+            // Set the locale to Khmer
             Carbon::setLocale('km');
             $dates = Carbon::now();
             // Format the date to Khmer style
@@ -897,7 +912,7 @@ class StudnetController extends Controller
 
             $date = $records->date_of_birth;
             $DateFormartKhmer = service::DateFormartKhmer($date);
-            
+
 
             return view('general.student_register_print', compact('records', 'type', 'skills', 'formattedDate', 'DateFormartKhmer'));
         } catch (\Exception $ex) {
@@ -916,8 +931,8 @@ class StudnetController extends Controller
         try {
 
             $records = StudentRegistration::where('study_type', 'new student')
-            ->whereNull('class_code')
-            ->paginate(20);
+                ->whereNull('class_code')
+                ->paginate(20);
 
             return view('general.student_register_remaining', compact('records', 'class_record', 'department', 'skills', 'sections', 'qualifications'));
         } catch (\Exception $ex) {
@@ -930,7 +945,9 @@ class StudnetController extends Controller
     {
         $data = $request->all();
         try {
-            $records = Classes::where('skills_code',  $data['value'])->get();
+            $records = Classes::where('skills_code',  $data['value'])
+                ->orderBy('code', 'desc')
+                ->get();
             return response()->json(['status' => 'success', 'records' => $records]);
         } catch (\Exception $ex) {
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
@@ -941,11 +958,20 @@ class StudnetController extends Controller
     {
         $data = $request->all();
         try {
+            if (!$data['value']) {
+                $name_2 = '';
+                $sections_code = '';
+                $sections_name = '';
+                $qualification = '';
+            }
             $records = Classes::where('code',  $data['value'])->first();
-            $name_2 = $records->skill->name_2;
-            $sections_code = $records->sections_code;
-            $sections_name = $records->section->name_2;
-            $qualification = $records->level;
+            if (!$records) {
+                return response()->json(['status' => 'success', 'records' => null, 'name_2' => '', 'sections_code' => '', 'sections_name' => '', 'qualification' => '']);
+            }
+            $name_2 = $records->skill->name_2  ?? '';
+            $sections_code = $records->sections_code ?? "";
+            $sections_name = $records->section->name_2 ?? '';
+            $qualification = $records->level ?? '';
             return response()->json(['status' => 'success', 'records' => $records, 'name_2' => $name_2, 'sections_code' => $sections_code, 'sections_name' => $sections_name, 'qualification' => $qualification]);
         } catch (\Exception $ex) {
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
@@ -960,14 +986,83 @@ class StudnetController extends Controller
         if ($request->has('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('code', 'LIKE', '%' . $request->search . '%')
-                  ->orWhere('name_2', 'LIKE', '%' . $request->search . '%')
-                  ->orWhere('name', 'LIKE', '%' . $request->search . '%');
+                    ->orWhere('name_2', 'LIKE', '%' . $request->search . '%')
+                    ->orWhere('name', 'LIKE', '%' . $request->search . '%');
             });
         }
-        $students = $query->paginate(10); 
+        $students = $query->paginate(10);
 
         return response()->json($students);
     }
-    
-}
 
+    public function cardStudent()
+    {
+        return view('general.card_student_login');
+    }
+
+    public function cardStudentLogin(Request $request)
+    {
+        $code = $request->input('code');
+        $student = StudentCard::where('code', $code)->first();
+
+        if ($student) {
+            return redirect()->route('card.student.lsit', ['code' => $student->code]);
+        } else {
+            return redirect()->back()->with('error', 'មិនមានលេខកូដក្នុងប្រព័ន្ធទេ!');
+        }
+    }
+
+    public function cardStudentList($code)
+    {
+        $student = DB::table('student as s')
+            ->join('department as d', 's.department_code', '=', 'd.code')
+            ->join('sections as se', 's.sections_code', '=', 'se.code')
+            ->join('skills as sk', 's.skills_code', "=", 'sk.code')
+            ->join('cert_student_print_card_expire_class as cert_expire_class', 's.class_code', '=', 'cert_expire_class.class_code')
+            ->select(
+                's.*',
+                'd.name_2 as department_name',
+                'se.name_2 as section_name',
+                'sk.name_2 as skill_name',
+                'cert_expire_class.print_expire_date as expire_date'
+            )
+            ->where('s.code', $code)
+            ->first();
+
+        if (!$student) {
+            return redirect()->back()->with('error', 'Student not found');
+        }
+
+        return view('general.card_student_list', compact('student'));
+    }
+
+    public function updateCardStudent(Request $request, $code)
+    {
+        $student = StudentCard::where('code', $code)->firstOrFail();
+
+        // Only update the fields you actually want
+        $student->update($request->only([
+            'name',
+            'name_2',
+            'gender',
+            'date_of_birth',
+            'phone_student',
+            'student_address',
+            'father_name',
+            'father_phone',
+            'father_occupation',
+            'mother_name',
+            'mother_phone',
+            'mother_occupation',
+            'guardian_name',
+            'guardian_phone',
+            'guardian_occupation',
+            'guardian_address'
+        ]));
+
+        return response()->json([
+            'success' => true,
+            'student' => $student
+        ]);
+    }
+}

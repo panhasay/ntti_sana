@@ -21,6 +21,16 @@
     th {
         padding: 12px !important;
     }
+
+    .subject-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .subject-card:hover {
+        transform: scale(1.05);
+        border: solid #0dcaf0 1px !important;
+        z-index: 2;
+    }
 </style>
 <div id="exam-credit-wrapper" class="control-table table-responsive custom-data-table-wrapper2">
     <table class="table table-bordered table-striped">
@@ -110,6 +120,48 @@
             @endif
         </tbody>
     </table>
-
-    {{ $records->links('pagination::bootstrap-4') ?? '' }}
+    <div class="modal fade" id="mdiveStudetdetail" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-dark" id="modal-teacher-subject"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="studentDetailContent">
+                    <!-- Content from controller will be injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
 </div><br><br>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).on('click', '.detailStudent', function() {
+        var code = $(this).data('code');
+        var teacher = $(this).data('teacher');
+        var subject = $(this).data('subject');
+
+        $('#modal-teacher-subject').html(`${teacher} | ${subject}`);
+        $('#studentDetailContent').html('<p class="text-muted">កំពុងទាញ...</p>');
+
+        $.ajax({
+            url: '{{ route('get-student-detail') }}',
+            type: 'GET',
+            data: {
+                code: code
+            },
+            success: function(res) {
+                if (res.status === 'success') {
+                    $('#studentDetailContent').html(res.html);
+                } else {
+                    $('#studentDetailContent').html(
+                        '<div class="alert alert-warning">មិនមានទិន្នន័យ</div>');
+                }
+            },
+            error: function() {
+                $('#studentDetailContent').html(
+                    '<div class="alert alert-danger">បរាជ័យក្នុងការទាញទិន្នន័យ</div>');
+            }
+        });
+    });
+</script>

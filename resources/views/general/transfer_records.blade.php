@@ -8,7 +8,7 @@
             <div class="btn-group">
                 <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">ស្នើរសុំ</button>
                 <div class="dropdown-menu" style="">
-                <a class="dropdown-item" data-type="transfer" data-code="{{ $record->student_code ?? '' }}" id="transfer" href="javascript:;">ប្ដូរក្រុម/ប្ដូរវេនសិក្សា</a>
+                <a class="dropdown-item" data-type="transfer" data-code="{{ $record->student_code ?? '' }}" id="student_change_class" href="javascript:;">ប្ដូរក្រុម/ប្ដូរវេនសិក្សា</a>
                 <a class="dropdown-item" id="hang_of_study" data-code="{{ $record->student_code ?? '' }}" data-type="hang_of_study" href="javascript:;">ព្យួរកាសិក្សា</a>
                 <a class="dropdown-item">ឈប់ </a>
                 </div>
@@ -21,8 +21,8 @@
 
         </td>
         <td class="text-center">{{ $record->student_code }}</td>
-        <td class="">{{ $record->student->name_2 }}</td>
-        <td class="">{{ $record->student->name }}</td>
+        <td class="">{{ $record->student->name_2 ?? '' }}</td>
+        <td class="">{{ $record->student->name ?? '' }}</td>
         <td class="">{{ $record->student->gender }}</td>
         <td class="">{{ $record->student->phone_student }}</td>
         <td class="">{{ str_replace('.', '', $record->class_code) }}</td>

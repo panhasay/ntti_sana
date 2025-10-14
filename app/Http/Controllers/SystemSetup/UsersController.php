@@ -63,7 +63,6 @@ class UsersController extends Controller
         $records = "";
         $department = DB::table('department')->where('is_active', 'yes')->get();
         $role = Role::all();
-
         try {
             $params = ['records', 'type', 'page', 'page_url', 'department', 'role'];
             if ($type == 'cr') return view('system_setup.users_card', compact($params));

@@ -1,4 +1,3 @@
-
 @extends('app_layout.app_layout')
 @section('content')
 
@@ -8,7 +7,7 @@
       <div class="page-title page-title-custom">
         <div class="title-page">
           <i class="mdi mdi-format-list-bulleted"></i>
-            ការគ្រប់គ្រង ប្ដូរក្រុម / ប្ដូរវេនសិក្សា ព្យួរកាសិក្សា និងឈប់
+          ការគ្រប់គ្រង ប្ដូរក្រុម / ប្ដូរវេនសិក្សា ព្យួរកាសិក្សា និងឈប់
         </div>
       </div>
     </div>
@@ -23,7 +22,8 @@
 </div>
 <div class="page-header flex-wrap">
   <div class="header-left">
-    {{-- <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="BntCreate" href="{{url('transfer/transaction/?type=cr')}}"><i class="mdi mdi-account-plus"></i> Add New</i></a> --}}
+    {{-- <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="BntCreate"
+      href="{{url('transfer/transaction/?type=cr')}}"><i class="mdi mdi-account-plus"></i> Add New</i></a> --}}
     {{-- <button type="button" data-type="skill" onclick="prints()"
       class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2"> Print
       <i class="mdi mdi-printer btn-icon-append"></i> --}}
@@ -32,39 +32,46 @@
           class="mdi mdi-printer btn-icon-append"></i> </button>
   </div>
   <div class="d-grid d-md-flex justify-content-md-end p-3">
-    <input type="text" class="form-control mb-2 mb-md-0 me-2" id="search_data" data-page="{{ $page ?? '' }}" name="search_data"
-      placeholder="Serch...." aria-label="Recipient's username" aria-describedby="basic-addon2">
+    <input type="text" class="form-control mb-2 mb-md-0 me-2" id="search_data" data-page="{{ $page ?? '' }}"
+      name="search_data" placeholder="Serch...." aria-label="Recipient's username" aria-describedby="basic-addon2">
     <div>
     </div>
     <a class="btn btn-primary mb-2 mb-md-0 me-2" data-toggle="collapse" href="#Fliter" role="button"
       aria-expanded="false" aria-controls="collapseExample">
-      Fliter
+      ស្វែងរក
     </a>
   </div>
 </div>
-<div class="collapse" id="Fliter">
+<div class="collapse show" id="Fliter">
   <div class="card card-body">
     <form id="advance_search" role="form" class="form-horizontal" enctype="multipart/form-data" action="">
       <div class="row">
         <div class="col-md-12">
           <div class="form-group row">
-            <div class="col-sm-3">
+            <div class="col-sm-2">
+              <button type="button" class="btn btn-outline-primary " 
+                style="cursor: pointer; width: 197px;height: 79px;background: #f2b707;font-size: 17px;">ចំនួននិស្សិតព្យួរ {{ $total_student_HangOfStudent ??"" }}
+              </button>
+            </div>
+
+            {{-- <div class="col-sm-2">
               <span class="labels">លេខកូដ</span>
               <input type="text" class="form-control form-control-sm" id="code" name="code" value=""
                 placeholder="លេខកូដ" aria-label="លេខកូដ">
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-2">
               <span class="labels">ជំនាញ</span>
-              <input type="text" class="form-control form-control-sm" id="name" name="name" value=""
-                placeholder="ជំនាញ" aria-label="ជំនាញ">
+              <input type="text" class="form-control form-control-sm" id="name" name="name" value="" placeholder="ជំនាញ"
+                aria-label="ជំនាញ">
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-2">
               <span class="labels">ជំនាញ ភាសាខ្មែរ</span>
               <input type="text" class="form-control form-control-sm" id="name_2" name="name_2" value=""
                 placeholder="ជំនាញ ភាសាខ្មែរ" aria-label="ជំនាញ ភាសាខ្មែរ">
-            </div>
+            </div> --}}
           </div>
-          <button type="button" class="btn btn-primary text-white" data-page="transfer" id="btn-adSearch">Search</button>
+          {{-- <button type="button" class="btn btn-primary text-white" data-page="transfer"
+            id="btn-adSearch">Search</button> --}}
         </div>
       </div>
     </form>
@@ -74,6 +81,26 @@
   <div class="print-content">
 
   </div>
+</div>
+
+<div class="modal fade" id="divChangeClass" tabindex="-1" aria-labelledby="modaldivChangeClass" aria-hidden="true">
+    <div class="modal-dialog modal-xl"><!-- XL for 1200px width -->
+        <div class="modal-content">
+            <div class="modal-header bg-m-header">
+                <h5 class="modal-title" id="modaldivChangeClass">ស្ពាក្យសុំប្ដូរវេនសិក្សា</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row container contain-changeClass mt-2 mb-2" style="white-space: nowrap">
+                    
+                </div>
+            </div><br>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="btnYesSave" data-code="" data-type="change-class" class="btn btn-primary">Yes</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 @include('modals.modals_hang_of_study')
@@ -147,6 +174,35 @@
               $('#hang_of_study').select2({
                   dropdownParent: $('#divHangOfStudy') 
               });
+            }
+          }
+        });
+       
+    });
+    $(document).on('click', '#student_change_class', function() {
+        var code = $(this).attr('data-code');
+        $.ajax({
+          type: "get",
+          url: `transfer/get-student/change-class`,
+          data: {
+            code: code
+          },
+          success: function(response) {
+            if (response.status == 'success') {
+              $("#btnYesSave").attr('data-code', code);
+              $("#divChangeClass").modal('show');
+              $(".contain-changeClass").html(response.view);
+                $(".contain-changeClass").html(response.view);
+
+              // $(".name_2").html(response.records.name_2);
+              // $("#date_of_birth").html(response.records.date_of_birth);
+              // $("#student_code").html(response.records.code);
+              // $("#class_code").html(response.records.class_code);
+              // $("#phone_student").html(response.records.phone_student);
+
+              // $('#hang_of_study').select2({
+              //     dropdownParent: $('#divHangOfStudy') 
+              // });
             }
           }
         });

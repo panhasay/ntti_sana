@@ -46,10 +46,10 @@
                                 id="date_name" name="date_name" style="width: 100%;">
                                 <option value="">&nbsp;</option>
                                 @foreach ($date_name as $record)
-                                <option value="{{ $record->code ?? '' }}" {{ isset($records->years) && $records->years
-                                    == $record->code ? 'selected' : '' }}>
-                                    {{ isset($record->name_2) ? $record->name_2 : '' }}
-                                </option>
+                                    <option value="{{ $record->code ?? '' }}" {{ isset($records->years) && $records->years
+                                        == $record->code ? 'selected' : '' }}>
+                                        {{ isset($record->name_2) ? $record->name_2 : '' }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
@@ -88,6 +88,19 @@
                         <div class="col-sm-9">
                             <input class="formSublist form-control form-control-sm" type="text" date-name="room"
                                 id="room" name="room" placeholder="ម៉ោង" value="" style="width: 100%;">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <span class="labels col-sm-3 col-form-label text-end">ម៉ោង ទី១ឫ២ {{ $record->sessions_type ?? '' }}</span>
+                        <div class="col-sm-9">
+                           <select class="js-example-basic-single FieldRequired formSublist" date-type="sessions_type"
+                                id="sessions_type" name="sessions_type" style="width: 100%;">
+                                <option value="">&nbsp;</option>
+                                <option value="1" {{ ($record->sessions_type ?? '') == 1 ? 'selected' : '' }}>ម៉ោងទី១</option>
+                                <option value="2" {{ ($record->sessions_type ?? '') == 2 ? 'selected' : '' }}>ម៉ោងទី២</option>
+                                <option value="3" {{ ($record->sessions_type ?? '') == 3 ? 'selected' : '' }}>ម៉ោងទី៣</option>
+                            </select>
                         </div>
                     </div>
                 </form>

@@ -1,7 +1,7 @@
 @if(count($records) > 0)
   @foreach ($records as $record)
     <?php 
-        $gender = ($record->gender == 'male') ? 'ប្រុស' : 'ស្រី';
+        // $gender = ($record->gender == 'male') ? 'ប្រុស' : 'ស្រី';
         $khmerDate = !empty($record->date_of_birth) ? App\Service\service::DateYearKH($record->date_of_birth) : '';
         $student_picture = App\Models\General\Picture::where('code', $record->code)->value('picture_ori');	
 
@@ -23,7 +23,7 @@
       <td class="text-center">{{ $record->code ?? '' }}</td>
       <td>{{ $record->name_2 ?? '' }}</td>
       <td>{{ ucwords(strtolower($record->name ?? '')) }}</td>
-      <td>{{ $gender }}</td>
+      <td>{{ $record->gender }}</td>
       <td>{{ $khmerDate }}</td>
       <td>{{ $record->student_address ?? '' }}</td>
       <td>{{ $record->phone_student ?? '' }}</td>

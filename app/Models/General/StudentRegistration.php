@@ -24,11 +24,14 @@ class StudentRegistration extends Model
    function convertDaysToDate($days)
    {
        $referenceDate = strtotime('1900-01-01');
-       $targetDate = $referenceDate + ($days * 86400); // 86400 seconds per day
-       // dd($targetDate);
+       $targetDate = $referenceDate + ($days * 86400); 
        return date('Y-m-d', $targetDate);
    }
 
+   public static function codeExists($code)
+    {
+        return self::where('code', $code)->exists();
+    }
    public function department()
    {
        return $this->belongsTo(Department::class, 'department_code', 'code');

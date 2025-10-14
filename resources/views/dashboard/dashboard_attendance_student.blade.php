@@ -7,6 +7,9 @@
   .khmer-moul {
     font-family: "Moul", serif;
   }
+  .bg-active{
+        background: #a6d3e9 !important;
+  }
 </style>
 {{-- {{ dd($schedules) }} --}}
 <div class="bg-gray-50 font-noto">
@@ -74,9 +77,9 @@
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 pb-8 sm:pb-16">
                 @foreach ($schedules as $schedule)
-                @foreach ($schedule['schedule_items'] as $item)
-                    <x-dashboard.card_schedule :schedule="$schedule" :item="$item" :selectedDate="$selectedDate" />
-                @endforeach
+                    @foreach ($schedule['schedule_items'] as $item)
+                        <x-dashboard.card_schedule :schedule="$schedule" :item="$item" :selectedDate="$selectedDate" />
+                    @endforeach
                 @endforeach
             </div>
         </div>

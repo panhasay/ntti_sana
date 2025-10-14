@@ -92,14 +92,14 @@
                                 )->get();
                             @endphp
                             <div class="col-lg-3 col-md-4 col-sm-6 mb-3 ">
-                                <a href="javascript:void(0)" class="text-decoration-none d-block h-100 detailStudent"
+                                {{-- <a href="javascript:void(0)" class="text-decoration-none d-block h-100 detailStudent"
                                     data-code="{{ $line->assing_no ?? '' }}"
-                                    data-teacher="{{ $line->teacher->gender == 'ប្រុស' ? 'លោកគ្រូៈ' : 'អ្នកគ្រូៈ' }} {{ $line->teacher->name_2 ?? 'គ្មានគ្រូបង្រៀន' }}"
+                                    data-teacher="{{ $line->teacher->gender ?? "" == 'ប្រុស' ? 'លោកគ្រូៈ' : 'អ្នកគ្រូៈ' }} {{ $line->teacher->name_2 ?? 'គ្មានគ្រូបង្រៀន' }}"
                                     data-subject="{{ $line->subject->name_2 ?? $line->subjects_code }}"
                                     data-bs-toggle="modal" data-bs-target="#mdiveStudetdetail">
                                     <div class="border rounded-3 p-3 bg-white h-100 subject-card">
                                         <h6 class="text-muted mb-2">
-                                            {{ $line->teacher->gender == 'ប្រុស' ? 'លោកគ្រូៈ' : 'អ្នកគ្រូៈ' }}
+                                            {{ $line->teacher->gender ?? "" == 'ប្រុស' ? 'លោកគ្រូៈ' : 'អ្នកគ្រូៈ' }}
                                             {{ $line->teacher->name_2 ?? 'គ្មានគ្រូបង្រៀន' }}
                                         </h6>
                                         <div class="fw-semibold text-dark">
@@ -107,7 +107,7 @@
                                             {{ $line->subject->name_2 ?? $line->subjects_code }}
                                         </div>
                                     </div>
-                                </a>
+                                </a> --}}
                             </div>
                         @endforeach
                     </div>

@@ -50,8 +50,6 @@ class ExamScheduleController extends Controller
         }
         return view('general.exam_schedule', compact('records', 'page'));
     }
-
-
     public function transaction(Request $request)
     {
         try {
@@ -126,10 +124,6 @@ class ExamScheduleController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-
-
-
-
     public function store(Request $request)
     {
         $input = $request->all();
@@ -183,11 +177,6 @@ class ExamScheduleController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-
-
-
-
-
     public function saveExamSchedule(Request $request)
     {
         try {
@@ -282,13 +271,6 @@ class ExamScheduleController extends Controller
             ]);
         }
     }
-
-
-
-
-
-
-
     public function update(Request $request)
     {
         $input = $request->all();
@@ -315,7 +297,6 @@ class ExamScheduleController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-
     private function convertToKhmerNumber($number)
     {
         $khmerNumbers = [
@@ -333,7 +314,6 @@ class ExamScheduleController extends Controller
 
         return strtr($number, $khmerNumbers);
     }
-
     public function printLine(Request $request)
     {
         $is_print = "yes";
@@ -402,11 +382,6 @@ class ExamScheduleController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-
-
-
-
-
     public function printMultiple(Request $request)
     {
         $is_print = "yes";
@@ -559,20 +534,6 @@ class ExamScheduleController extends Controller
             ]);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public function uploadDocument(Request $request)
     {
         $code = $request->query('code');
@@ -617,14 +578,6 @@ class ExamScheduleController extends Controller
             ], 500);
         }
     }
-
-
-
-
-
-
-
-
     public function getSchedule($id)
     {
         try {
@@ -700,8 +653,6 @@ class ExamScheduleController extends Controller
             ], 500);
         }
     }
-
-
     public function getAssignedTeachersAndSubjects($classCode, $year, $sessionYear, $sectionCode, $semester, $level, $skills_code, $department_code)
     {
         try {
@@ -756,7 +707,6 @@ class ExamScheduleController extends Controller
             ], 500);
         }
     }
-
     public function saveExamDateKhmer(Request $request)
     {
         try {
@@ -802,7 +752,6 @@ class ExamScheduleController extends Controller
             ]);
         }
     }
-
     public function saveExamDateKhmerMultiple(Request $request)
     {
         try {
@@ -845,7 +794,6 @@ class ExamScheduleController extends Controller
             ]);
         }
     }
-
     public function deleteSession(Request $request)
     {
         try {
@@ -886,7 +834,6 @@ class ExamScheduleController extends Controller
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
     }
-
     public function deleteBothSessions(Request $request)
     {
         try {
@@ -956,4 +903,11 @@ class ExamScheduleController extends Controller
             ], 500);
         }
     }
+    public function MonthlyAttendancList()
+    {
+        // $record = AssingClasses::SelectRaw()
+        return view('general.monthly_attendance');
+
+    }
+    
 }

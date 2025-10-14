@@ -33,17 +33,12 @@ class ClassesController extends Controller
     }
     public function index(){
         $page = $this->page;
-        $records = Classes::orderBy('name', 'desc')->paginate(10);
+        $records = Classes::orderBy('created_at', 'desc')->paginate(10);
         if(!Auth::check()){
             return redirect("login")->withSuccess('Opps! You do not have access');
         }  
-
-
         $data = $this->services->GetDateIndexOption(now()); 
-
         return view('general.classes', array_merge($data, compact('records', 'page')));
-        // return view('general.classes', compact('records','page'));	
-        
     }
     public function transaction(request $request)
     {
@@ -55,7 +50,7 @@ class ClassesController extends Controller
         $sections = Classes::get();
         $sections = DB::table('sections')->get();
         $department = Department::get();
-        $school_years = DB::table('session_year')->get();   
+        $school_years = DB::table('session_year')->orderBy('code', 'desc')->get();   
         $skills = DB::table('skills')->get();
         $qualifications = Qualifications::get();
         try {
@@ -73,12 +68,10 @@ class ClassesController extends Controller
     public function deleteCLASS(Request $request)
     {
         $code = $request->code;
-
         $check = Student::where('class_code', $code)->first();
         if ($check) {
             return response()->json(['status' => 'error', 'msg' => 'មិនអាចលុប ថ្នាក់/ក្រុមនេះបានទេមាន ព៍តមានរូចហើយ !']);
         }
-
         try {
             $records = Classes::where('code',$code);
             $records->delete();
@@ -100,8 +93,6 @@ class ClassesController extends Controller
         if ($check) {
             return response()->json(['status' => 'error', 'msg' => 'មិនអាចកែប្រែ ថ្នាក់/ក្រុមនេះបានទេមាន ព៍តមានរូចហើយ !']);
         }
-
-
         try {
             $records = Classes::where('code', $code)->first();
             if ($records) {
@@ -163,7 +154,6 @@ class ClassesController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-
     public function Search (Request $request,$page)
     {
         dd("helo");

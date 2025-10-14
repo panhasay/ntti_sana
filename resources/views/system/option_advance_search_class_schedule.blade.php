@@ -8,9 +8,8 @@
                         style="width: 100%;">
                         <option value="">&nbsp;</option>
                         @foreach ($classs as $record)
-                            <option value="{{ $record->code ?? '' }}" {{ isset($records->class_code) && $records->class_code
-                                == $record->code ? 'selected' : '' }}>
-                                {{ isset($record->code) ? $record->code : '' }}
+                            <option value="{{ $record->code ?? '' }}">
+                                {{ str_replace('.', '', $record->code ?? '') }}
                             </option>
                         @endforeach
                     </select>

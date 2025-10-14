@@ -23,6 +23,8 @@ class UserPermission
             return redirect('/teacher-dashboard');
         }else if ($user->role ==  'student'){
             return redirect('/dahhboard-student-account');
+        }else if ($user->role ==  'inputer'){
+            return redirect('/dahhboard-inputer-account');
         }
         return $next($request);
     }

@@ -4,7 +4,15 @@
     'selectedDate' // Carbon or string (Y-m-d)
 ])
 
-<div class="rounded-xl border-1 border-green-600 bg-card text-card-foreground shadow-sm hover:shadow-md transition-all cursor-pointer hover:scale-105 transform duration-300 ease-in-out relative"
+<?php
+
+    $count_data = App\Models\General\student_score::where('assign_line_no', $item['assing_no'])
+    ->where('att_date', request()->get('date'))
+    ->count();
+
+?>
+
+<div class="rounded-xl border-1 border-green-600 bg-card text-card-foreground shadow-sm hover:shadow-md transition-all cursor-pointer hover:scale-105 transform duration-300 ease-in-out relative {{ $count_data > 0 ? 'bg-active' : '' }}"
     onclick="window.location.href='{{ url('get-attendant-student?assing_no=' . $item['assing_no'] . '&date=' . (is_object($selectedDate) ? $selectedDate->format('Y-m-d') : $selectedDate)) }}'">
     <div class="p-4 sm:p-6 flex flex-col h-full">
         <div class="text-base font-semibold mb-4 flex flex-row items-center justify-between">
