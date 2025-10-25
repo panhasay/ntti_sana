@@ -51,6 +51,10 @@
       position: absolute !important;
       z-index: 100000000000000000;
     }
+    .dropdown .dropdown-menu .dropdown-item {
+      font-size: 1rem !important;
+      padding: 10px 1.5rem !important;
+  }
   </style>
 </head>
 <body class="addClass">
@@ -97,12 +101,14 @@
                       <i class="mdi mdi-magnify"></i>
                     </span>
                   </div> --}}
-                  
+
                   {{-- <input id="search_menu_function" class="form-control btn-circle-right" type="text"
                     name="search_menu_function" placeholder="{{ trans('greetings.Search').'...' }}"> --}}
                   {{-- <input type="text" class="form-control" id="search_menu_function" name="search_menu_function"
                     placeholder="Search" aria-label="search" aria-describedby="search" /> --}}
                   {{-- @include('system.menu_search_list') --}}
+
+
                 </div>
               </li>
             </ul>
@@ -110,28 +116,23 @@
               <li class="nav-item nav-profile dropdown">
                 <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                   <div class="nav-profile-img">
-                    
                     <?php
+
                         $user = Auth::user();
-
-                        
-                        
-
                         $picture =  App\Models\General\Picture::where('code', $user->id ?? '')->where('type','profile')->value('picture_ori');
-                    ?>
+                        $sessionYear = App\Models\General\SessionYear::orderBy('code', 'desc')->get();
 
+                    ?>
                     @if(isset($picture) && $picture != null)
                       <img class="btn-Image" id="btn-Image" data-code ='{{$records_by_user->code ?? ''}}' src="{{ $picture ?? '' }}" width="1000" height="1000">
                     @else
-                      <img class="btn-Image" id="btn-Image" data-code ='{{$records_by_user->code ?? ''}}' src="asset/NTTI/images/faces/default_User.jpg" width="1000" height="1000">
+                      <img class="btn-Image" id="btn-Image" data-code ='{{$records_by_user->code ?? ''}}' src="{{asset('asset/NTTI/images/faces/default_User.jpg')}}" width="1000" height="1000">
                     @endif
                     {{-- <img src="{{asset('asset/NTTI/images/faces/default_User.jpg')}}" alt="image" /> --}}
-
-
                   </div>
                   <div class="nav-profile-text">
                     <p class="text-black font-weight-semibold m-0"> {{ Auth::user()->name ?? ''}} </p>
-                    <span class="font-13 online-color">{{ Auth::user()->username ?? ''}} <i class="mdi mdi-chevron-down"></i></span>
+                    <span class="font-13 online-color">{{ Auth::user()->username ?? ''}} </span>
                   </div>
                 </a>
                 <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">
@@ -166,7 +167,7 @@
             <li class="nav-item">
               <a class="nav-link" href="{{ url('/department-menu') }}">
                 <i class="mdi mdi-monitor-dashboard menu-icon"></i>
-                <span class="menu-title">Department</span>
+                <span class="menu-title">Dashboard</span>
               </a>
             </li>
             {{-- <li class="nav-item">
@@ -245,28 +246,22 @@
             </li> --}}
             <li class="nav-item">
               <div class="nav-link d-flex">
-                {{-- <button class="btn btn-sm bg-danger text-white"> Trailing </button> --}}
 
+                {{-- <button class="btn btn-sm bg-danger text-white"> Trailing </button> --}}
                 {{-- page  for hold  --}}
-                {{-- <div class="nav-item dropdown">
+
+                <div class="nav-item dropdown">
                   <a class="nav-link count-indicator dropdown-toggle text-white font-weight-semibold"
-                    id="notificationDropdown" href="#" data-bs-toggle="dropdown"> English </a>
-                  <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
-                    aria-labelledby="notificationDropdown">
-                    <a class="dropdown-item" href="#">
-                      <i class="flag-icon flag-icon-bl me-3"></i> French </a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">
-                      <i class="flag-icon flag-icon-cn me-3"></i> Chinese </a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">
-                      <i class="flag-icon flag-icon-de me-3"></i> German </a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">
-                      <i class="flag-icon flag-icon-ru me-3"></i>Russian </a>
+                     id="current_session_year" href="#" data-bs-toggle="dropdown">​ឆ្នាំសិក្សា {{ str_replace('_', '-', Auth::user()->session_year_code ?? '') }}</a>
+                  <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                    @foreach ($sessionYear as $record)
+                        <a class="dropdown-item" href="#" id="session_year_code" data-code="{{ $record->code ?? '' }}">
+                            {{ $record->name ?? '' }}
+                        </a>
+                    @endforeach
                   </div>
-                </div> --}}
-                <a id="systemSettings" class="text-white" href="#"><i class="mdi mdi-settings"></i></a>
+                </div>
+                {{-- <a id="systemSettings" class="text-white" href="#"><i class="mdi mdi-settings"></i></a> --}}
               </div>
             </li>
           </ul>
@@ -294,11 +289,8 @@
   </div>
   <!-- page-body-wrapper ends -->
   </div>
-
   <!-- container-scroller -->
   <!-- plugins:js -->
- 
-
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
   integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
 </script>
@@ -309,7 +301,6 @@
   integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous">
 </script>
 <script src="{{ asset('/asset/NTTI/vendors/js/vendor.bundle.base.js') }}"></script>
-
   <!-- endinject -->
   <!-- Plugin js for this page -->
   <script src="{{ asset('asset/NTTI/vendors/jquery-bar-rating/jquery.barrating.min.js') }}"></script>
@@ -323,7 +314,7 @@
   <script src="{{ asset('asset/NTTI/vendors/select2/select2.min.js') }}"></script>
   <script src="{{ asset('asset/NTTI/js/select2.js') }}"></script>
   <script src="{{ asset('asset/NTTI/js/printThis.js') }}"></script>
-  
+  <link rel="stylesheet" href="{{asset('assets/vendors/simple-datatables/style.css')}}">
 
   <!-- End plugin js for this page -->
   <!-- inject:js -->
@@ -339,6 +330,23 @@
   <script src="{{ asset('asset/NTTI/css/ntti.js') }}"></script>
   <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
   {{-- Google Chart --}}
+
+
+  <script src="{{ asset('assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
+  {{-- <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script> --}}
+
+  <script src="{{ asset('assets/vendors/simple-datatables/simple-datatables.js') }}"></script>
+  <script>
+    // Simple Datatable
+    document.addEventListener("DOMContentLoaded", function() {
+        let table1 = document.querySelector('#table1');
+        if (table1) {
+            let dataTable = new simpleDatatables.DataTable(table1);
+        }
+    });
+  </script>
+
+  <script src="{{ asset('assets/js/main.js') }}"></script>
 
   <script>
   //  let logoutTimer;
@@ -388,6 +396,7 @@
           duration: 3000,
         });
         $(document).ready(function() {
+
           // $('.js-example-basic-single').select2({
           //     placeholder: "សូមជ្រើសរើស",
           //     allowClear: true             
@@ -580,40 +589,49 @@
             });
           });
 
-          // $(document).on('change', '#class_code', function(e) {
-          //   let class_code = $('#class_code').val();
-          //   $.ajax({
-          //       type: "GET",
-          //       url: `/system/class-get-data-group?class_code=${class_code}`,
-          //       beforeSend: function() {
-          //         $('.loader').show();
-          //       },
-          //       success: function (response) {
-          //         $('.loader').hide();
-          //         if (response.status === 'success') {
-          //             let $skillsSelect = $('#skills_code');
-          //             $skillsSelect.empty();
-          //             $skillsSelect.append(`<option value="${response.records.skills_code}">${response.records.skills_code} - ${response.skills}</option>`);
+          $(document).on('change', '#class_code', function(e) {
+            let class_code = $('#class_code').val();
+            $.ajax({
+                type: "GET",
+                url: `/system/class-get-data-group?class_code=${class_code}`,
+                beforeSend: function() {
+                  $('.loader').show();
+                },
+                success: function (response) {
+                  $('.loader').hide();
+                  if (response.status === 'success') {
+                      let $skillsSelect = $('#skills_code');
+                      $skillsSelect.empty();
+                      $skillsSelect.append(`<option value="${response.records.skills_code}">${response.records.skills_code} - ${response.skills}</option>`);
 
-          //             let $selectionSelect = $('#sections_code');
-          //             $selectionSelect.empty();
-          //             $selectionSelect.append(`<option value="${response.records.sections_code}">${response.sections}</option>`);
+                      let $selectionSelect = $('#sections_code');
+                      $selectionSelect.empty();
+                      $selectionSelect.append(`<option value="${response.records.sections_code}">${response.sections}</option>`);
 
-          //             let $departmentSelect = $('#department_code');
-          //             $departmentSelect.empty();
-          //             $departmentSelect.append(`<option value="${response.records.department_code}">${response.department}</option>`);
+                      let $departmentSelect = $('#department_code');
+                      $departmentSelect.empty();
+                      $departmentSelect.append(`<option value="${response.records.department_code}">${response.department}</option>`);
                       
-          //             let $levelSelect = $('#level');
-          //             $levelSelect.empty();
-          //             $levelSelect.append(`<option value="${response.records.level}">${response.records.level}</option>`);
+                      let $levelSelect = $('#level');
+                      $levelSelect.empty();
+                      $levelSelect.append(`<option value="${response.records.level}">${response.records.level}</option>`);
 
-          //             let $schoolyearcodeSelect = $('#school_year_code');
-          //             $schoolyearcodeSelect.empty();
-          //             $schoolyearcodeSelect.append(`<option value="${response.records.school_year_code}">${response.session_year}</option>`);
-          //         }
-          //       }
-          //   });
-          // });
+                      let $schoolyearcodeSelect = $('#school_year_code');
+                      $schoolyearcodeSelect.empty();
+                      $schoolyearcodeSelect.append(`<option value="${response.records.school_year_code}">${response.session_year}</option>`);
+
+
+                      let $semesterSelect = $('#semester');
+                      $semesterSelect.empty();
+                      $semesterSelect.append(`<option value="${response.semester}">${response.semester_name}</option>`);
+
+                      let $yearsSelect = $('#years');
+                      $yearsSelect.empty();
+                      $yearsSelect.append(`<option value="${response.years}">${response.years_name}</option>`);
+                  }
+                }
+            });
+          });
 
           $(document).on('change', '#class_code', function () {
               let class_code = $(this).val();
@@ -655,6 +673,26 @@
               });
           });
 
+          $('a#session_year_code').on('click', function(e) {
+            e.preventDefault();
+            var yearCode = $(this).data('code');
+
+            $.ajax({
+                url: "/user/session-year",
+                type: "POST",
+                data: {
+                    session_year_code: yearCode,
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    window.location.reload();
+                    // $('#current_session_year').text(response.session_year_code);
+                },
+                error: function(xhr) {
+                }
+            });
+          });
+
 
 
     //     document.addEventListener('DOMContentLoaded', function () {
@@ -692,6 +730,21 @@
         });
     @endif
     
+  // AlertMessager("success", "ជោគជ័យ!", "បានរក្សាទុកទិន្នន័យដោយជោគជ័យ!");
+  // AlertMessager("error", "បរាជ័យ!", "មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ!");
+  // AlertMessager("info", "ព័ត៌មាន", "សូមពិនិត្យព័ត៌មានរបស់អ្នកម្តងទៀត!");
+  // AlertMessager("warning", "សូមជ្រើសរើស​ !", "សូមជ្រើសរើសសិស្សយ៉ាងហោចណាស់ម្នាក់!");
+
+    function AlertMessager(type, title, message) {
+        Swal.fire({
+            title: title,
+            text: message,
+            icon: type, // e.g. "warning", "success", "error", "info", "question"
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "យល់ព្រម",
+            showCancelButton: false,
+        });
+    }
   </script>
 </body>
 </html>

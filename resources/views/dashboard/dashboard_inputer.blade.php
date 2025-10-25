@@ -43,7 +43,7 @@
         <br><br><br><br>
         <div class="row m-3">
             <div class="col-md-4 col-sm-4 col-6 p-3">
-              <a target="_blank" href="{{ url('/student/registration/transaction?type=cr') }}" style="text-decoration: none; color: inherit;">
+              <a  href="{{ url('/student/registration/transaction?type=cr') }}" style="text-decoration: none; color: inherit;">
                 <div class="page-title-card page-title-custom text-center box-hover">
                     <h3 class="text-center">
                     <i class="mdi mdi-keyboard-variant"></i>
@@ -54,7 +54,7 @@
             </div>
 
             <div class="col-md-4 col-sm-4 col-6 p-3">
-              <a target="_blank" href="{{ url('/student/registration') }}" style="text-decoration: none; color: inherit;">
+              <a  href="{{ url('/student/registration') }}" style="text-decoration: none; color: inherit;">
                 <div class="page-title-card page-title-custom text-center box-hover">
                     <h3 class="text-center">
                     <i class="mdi mdi-format-align-justify"></i>
@@ -65,7 +65,7 @@
             </div>
 
             <div class="col-md-4 col-sm-4 col-6 p-3">
-              <a target="_blank" href="{{ url('/class-new') }}" style="text-decoration: none; color: inherit;">
+              <a  href="{{ url('/class-new') }}" style="text-decoration: none; color: inherit;">
                 <div class="page-title-card page-title-custom text-center box-hover">
                     <h3 class="text-center">
                     <i class="mdi mdi-folder-multiple"></i>

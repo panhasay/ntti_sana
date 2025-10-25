@@ -45,25 +45,35 @@ class TransferController extends Controller
     }
     public function index()
     {
-
         if (!Auth::check()) {
-            return redirect("login")->withSuccess('Opps! You do not have access');
+            return redirect('login')->withSuccess('Opps! You do not have access');
         }
+
         $page = $this->page;
         $user = Auth::user();
+        $sessionYearCode = $user->session_year_code ?? null;
 
+        // Student records
         $records = VStudentLedgerEntry::withQueryPermission()
-
-            ->select('student_code', 'class_code', 'skills_code', 'qualification', 'sections_code', 'years', DB::raw('MAX(semester) as semester'))
-            ->groupBy('student_code', 'class_code', 'skills_code', 'qualification', 'sections_code', 'years')
-            ->orderBy('student_code', 'desc')
+            ->select(
+                'student_code', 'class_code', 'skills_code', 'qualification', 
+                'sections_code', 'years', 'session_year_code', 
+                DB::raw('MAX(semester) as semester')
+            )
+            ->when($sessionYearCode, fn($q) => $q->where('session_year_code', $sessionYearCode))
+            ->groupBy('student_code', 'class_code', 'skills_code', 'qualification', 'sections_code', 'years', 'session_year_code')
+            ->orderByDesc('student_code')
             ->paginate(15);
 
+        // Total HangOfStudent
+        $total_student_HangOfStudent = HangOfStudent::when($sessionYearCode, fn($q) => $q->where('session_year_code', $sessionYearCode))
+            ->count();
 
+        // Total TransferLine
+        $total_student_Transfer = TransferLine::when($sessionYearCode, fn($q) => $q->where('session_year_code', $sessionYearCode))
+            ->count();
 
-        $TtoalHangOfStudent = HangOfStudent::all();
-        $total_student_HangOfStudent = $TtoalHangOfStudent->count();
-        return view('general.transfer', compact('records', 'page', 'total_student_HangOfStudent'));
+        return view('general.transfer', compact('records', 'page', 'total_student_HangOfStudent', 'total_student_Transfer'));
     }
     public function transaction(request $request)
     {
@@ -281,6 +291,7 @@ class TransferController extends Controller
                 'qualification',
                 'sections_code',
                 'years',
+                'session_year_code',
                 DB::raw('MAX(semester) as semester')
             )
             ->where('student_code', $code)
@@ -290,17 +301,29 @@ class TransferController extends Controller
                 'skills_code',
                 'qualification',
                 'sections_code',
-                'years'
+                'years',
+                'session_year_code',
             )
             ->orderBy('student_code', 'desc')
             ->first();
-        if ($student) {
-            $view = view('modals.modals_student_change_class', compact('student'))->render();
+            
+            $sessionYearCode = Auth::user()->session_year_code ?? null;
 
+            $class = Classes::WithQueryPermissionTeacher();
+
+            if (!empty($sessionYearCode)) {
+                $class = $class->where('school_year_code', $sessionYearCode);
+            }
+
+            $class = $class->get();
+
+        if ($student) {
+            $view = view('modals.modals_student_change_class', compact('student', 'class'))->render();
             return response()->json([
                 'status' => 'success',
                 'view' => $view,
-                'records' => $student
+                'records' => $student,
+                'class' => $class
             ]);
         } else {
             return response()->json([
@@ -329,8 +352,8 @@ class TransferController extends Controller
             }
 
             $student = VStudentLedgerEntry::withQueryPermission()
-                ->select('student_code', 'class_code', 'skills_code', 'qualification', 'sections_code', 'years', DB::raw('MAX(semester) as semester'))
-                ->groupBy('student_code', 'class_code', 'skills_code', 'qualification', 'sections_code', 'years')
+                ->select('student_code', 'class_code', 'skills_code', 'qualification', 'sections_code', 'years', 'session_year_code', DB::raw('MAX(semester) as semester'))
+                ->groupBy('student_code', 'class_code', 'skills_code', 'qualification', 'sections_code', 'years', 'session_year_code')
                 ->orderBy('student_code', 'desc')
                 ->first();
 
@@ -342,6 +365,7 @@ class TransferController extends Controller
             $records->years = $student->years;
             $records->semester = $student->semester;
             $records->class_code = $student->class_code;
+            $records->session_year_code = $student->session_year_code;
             $records->type = "Hang Of Study";
             $records->from_date = Carbon::parse($request->from_date)->format('Y-m-d');
 
@@ -358,6 +382,44 @@ class TransferController extends Controller
                 $records->image_reference = url('uploads/hang_of_study/' . $filename);
             }
 
+            $records->save();
+
+            return response()->json(['status' => 'success', 'records' => $records]);
+        } catch (\Exception $ex) {
+            \DB::rollBack();
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+        }
+    }
+
+    public function SubmitStudentRequestChangeClass(Request $request)
+    {
+        try {
+            $existing = TransferLine::where('student_code', $request->code)->first();
+            if ($existing) {
+                return response()->json([
+                    'status' => 'error',
+                    'msg' => 'សិស្សមានសំណើរម្ដងរួចហើយ។'
+                ]);
+            }
+
+            $sections_code = Classes::where('code', $request->class_old)->value('sections_code');
+            $sections_code_new = Classes::where('code', $request->class_code)->value('sections_code');
+            $student_code = $request->code;
+
+            $records = new TransferLine();
+            $records->student_code = $request->code;
+            $records->class_code_new = $request->class_code;
+            $records->class_code = $request->class_old;
+            $records->posting_date = $request->posting_date;
+            $records->reason_detail = $request->reason_detail;
+            $records->sections_code = $sections_code;
+            $records->sections_code_new = $sections_code_new;
+            $records->session_year_code = $request->session_year_code;
+
+            $records->year = $request->year;
+            $records->semester = $request->semester;
+            $records->status = "Yes";
             $records->save();
 
             return response()->json(['status' => 'success', 'records' => $records]);

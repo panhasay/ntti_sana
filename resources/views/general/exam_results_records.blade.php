@@ -2,9 +2,13 @@
 @foreach ($records as $record)
     <tr id="row{{ $record->code ?? '' }}">
         <td class="">
-            <a class="btn btn-success btn-icon-text btn-sm mb-2 mb-md-0 me-2 ExamResults" data-class="{{ $record->class_code ?? ''}}"
+            <a class="btn btn-success btn-icon-text btn-sm mb-2 mb-md-0 me-2 ExamResults"
+                data-class="{{ $record->class_code ?? '' }}"
+                data-years="{{ $record->years ?? '' }}"
+                data-type="{{ $record->qualification ?? '' }}"
+                data-semester="{{ $record->semester ?? '' }}"
                 href="javascript:void(0)">
-                <i class="mdi mdi-border-color"></i>សរុបពិន្ទុ
+                    <i class="mdi mdi-border-color"></i>សរុបពិន្ទុ
             </a>
         </td>
         <td class="text-center">{{ $record->class_code }}</td>

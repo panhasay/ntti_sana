@@ -4,6 +4,7 @@ namespace App\Models\General;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class ClassSchedule extends Model
 {
@@ -24,5 +25,15 @@ class ClassSchedule extends Model
     public function subject()
     {
         return $this->belongsTo(Subjects::class, 'subjects_code', 'code');
+    }
+    public function scopeWithQueryPermissionTeacher($query)
+    {
+        $user = Auth::user();
+
+        if ($user->department_code === 'D_IT') {
+            return $query->where('department_code', 'D_IT');
+        }
+
+        return $query;
     }
 }

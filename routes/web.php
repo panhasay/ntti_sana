@@ -36,6 +36,8 @@
     use Illuminate\Support\Facades\Artisan;
     use App\Http\Controllers\General\ExamCreditController;
     use App\Http\Controllers\General\RetakeExamController;
+use App\Http\Controllers\General\UpgradeClassController;
+
 Route::get('/clear-all', function() {
     Artisan::call('cache:clear');    
     Artisan::call('config:clear');   
@@ -81,12 +83,12 @@ Route::get('/greeting/{locale}', function (string $locale) {
 
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
     Route::group(['perfix' => 'department', 'middleware' => 'user_permission'], function (){
-        // Route::get('/department-menu', [AuthController::class, 'departmentMenu']);
-        Route::get('/department-menu', [AuthController::class, 'departmentMenu'])->middleware('user_permission');
+    // Route::get('/department-menu', [AuthController::class, 'departmentMenu']);
+    Route::get('/department-menu', [AuthController::class, 'departmentMenu'])->middleware('user_permission');
     
     });
-Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('forgot.password');
-Route::group(['perfix' => 'student'], function (){
+    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('forgot.password');
+    Route::group(['perfix' => 'student'], function (){
     
     Route::get('/student', [StudnetController::class, 'index'])->name('student');
     Route::get('/settings-customize-field', [StudnetController::class, 'SettingsCustomizeField'])->name('SettingsCustomizeField');
@@ -144,7 +146,6 @@ Route::group(['prefix' => 'dashboard','middleware' => 'user_permission'
     Route::get('student-print', [DashboardController::class, 'Print'])->name('dashboard.print');
     // Route::get('teacher-dashboard', [DashboardController::class, 'TeacherDashboard'])->name('dashboard.teacherDashboard');
     // Route::get('teacher-management-class', [DashboardController::class, 'TeacherMmanagementClass'])->name('dashboard.teacherManagementClass');
-   
 });
 
 Route::get('dahhboard-student-account', [DashboardController::class, 'StudentUserAccount'])->name('dashboard.studentAccount');
@@ -161,6 +162,7 @@ Route::group(['perfix' => 'department' ,  'middleware' => 'permission'], functio
     Route::get('departments/print', [DepartmentController::class, 'Print'])->name('Print');
 
 })->middleware('auth');
+
 Route::group(['perfix' => 'Users'], function (){
     Route::get('users', [UsersController::class, 'index'])->name('index');
     Route::get('profile', [UsersController::class, 'Profile'])->name('Profile');
@@ -170,6 +172,8 @@ Route::group(['perfix' => 'Users'], function (){
     Route::GET('users/transaction', [UsersController::class, 'transaction'])->name('transaction');
     Route::post('users/update', [UsersController::class, 'update'])->name('update');
     Route::post('users/store', [UsersController::class, 'store'])->name('store');
+
+    Route::post('user/session-year', [UsersController::class, 'updateSessionYear'])->name('updateSessionYear');
 })->middleware('auth');
 
 Route::group(['perfix' => 'table'], function (){
@@ -363,7 +367,7 @@ Route::group(['prefix' => 'transfer'], function (){
     Route::POST ('/transfer-delete', [TransferController::class, 'delete']);
     Route::get ('/get-student/-hang_of_study', [TransferController::class, 'GetStudentHangOfStudy']);
     Route::POST ('/submit-student-request-hang-of-study', [TransferController::class, 'SubmitStudentRequestHangOfStudy']);
-
+    Route::POST ('/submit-student-request-change-class', [TransferController::class, 'SubmitStudentRequestChangeClass']);
     Route::get ('/get-student/change-class', [TransferController::class, 'GetStudentChangeClass']);
 })->middleware('auth');
 
@@ -470,18 +474,30 @@ Route::get('dahhboard-inputer-account', [DashboardController::class, 'dahhboardI
 //     Route::get('/dahhboard-inputer-account', [DashboardController::class, 'dahhboardInter'])->middleware('user_permission');
 // });
 
-
 // Route::group(['prefix' => 'sections' ], function () {
 //     Route::get('/', [DashboardController::class, 'dahhboardInter']);
 // })->middleware('auth');
-
 
 Route::get('/qr-stu', function () {
     return view('general.card_student_login');
 });
 
-
 // Route::get('register-card-student',[StudnetController::class,'cardStudent']);
+Route::post('register-card-student',[StudnetController::class,'cardStudentLogin'])->name('card.student.login.post');
+Route::get('card-student-list/{code}',[StudnetController::class,'cardStudentList'])->name('card.student.lsit');
+Route::put('card-student-list/{code}', [StudnetController::class, 'updateCardStudent'])->name('students.update');
+
+
+Route::group(['prefix' => 'up-grade-class'], function (){
+    Route::get('/',[UpgradeClassController::class,'index']);
+    Route::get('/transaction', [UpgradeClassController::class, 'transaction']);
+    Route::POST('/save-selected-students', [UpgradeClassController::class, 'SelectedStudent']);
+    Route::POST('/save-upgraded-students', [UpgradeClassController::class, 'SaveUpgradedStudents']);
+   
+})->middleware('auth');
+
+
+Route::get('register-card-student',[StudnetController::class,'cardStudent']);
 Route::post('register-card-student',[StudnetController::class,'cardStudentLogin'])->name('card.student.login.post');
 Route::get('card-student-list/{code}',[StudnetController::class,'cardStudentList'])->name('card.student.lsit');
 Route::put('card-student-list/{code}', [StudnetController::class, 'updateCardStudent'])->name('students.update');

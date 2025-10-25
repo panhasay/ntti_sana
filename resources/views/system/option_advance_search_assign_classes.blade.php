@@ -86,8 +86,10 @@
                         @endforeach
                     </select>
                 </div>
+                <input type="hidden" value="{{ isset($_GET['years']) ? addslashes($_GET['years']) : '' }}" name="years">
+                {{-- <input type="hidden" value="{{ isset($_GET['type']) ? addslashes($_GET['type']) : '' }}" name="qualification"> --}}
             </div>
-            <button type="button" class="btn btn-primary text-white float-left btn-sm mb-2 mb-md-0 me-2" data-page="{{ $page_name ?? '' }}" id="btn-adSearch"><i class="mdi mdi-account-search"></i> ស្វែងរក</button>
+            <button type="button" class="btn btn-primary text-white float-left btn-sm mb-2 mb-md-0 me-2" data-page="{{ $page_name ?? '' }}" data-years="{{ isset($_GET['years']) ? addslashes($_GET['years']) : '' }}" data-type="{{ isset($_GET['type']) ? addslashes($_GET['type']) : '' }}" id="btn-adSearch"><i class="mdi mdi-account-search"></i> ស្វែងរក</button>
             <button type="button" class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2" data-page="{{ $page_name ?? '' }}" id="btnCleardata"><i class="mdi mdi-cloud-off-outline"></i> ជម្រះទិន្នន័យ</button>
         </div>
     </div>

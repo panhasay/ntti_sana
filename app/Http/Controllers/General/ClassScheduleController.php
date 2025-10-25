@@ -42,20 +42,33 @@ class ClassScheduleController extends Controller
         if (!Auth::check()) {
             return redirect("login")->withSuccess('Opps! You do not have access');
         }
+        $user =  Auth::user();
         $page = $this->page;
-        $records = GeneralClassSchedule::orderBy('semester', 'desc')->orderBy('years', 'desc')->paginate(20);
+        $records = GeneralClassSchedule::orderBy('semester', 'desc')
+            ->orderBy('years', 'desc');
+        $records = $this->services->filterByUser($records, $user);
+        $records = $records->get();
+
         $data = $this->services->GetDateIndexOption(now()); 
         return view('general.class_schedule', array_merge($data, compact('page', 'records')));
     }
     public function transaction(request $request)
     {
+        $sessionYearCode = Auth::user()->session_year_code ?? null;
         $data = $request->all();
         $type = $data['type'];
         $page = $this->page;
         $page_url = $this->page;
         $records = null;
+
         $record_sub_lines = AssingClasses::where('class_code', $data['type'])->get();
-        $classs = Classes::orderBy('code', 'desc')->get();
+
+        $classs = Classes::WithQueryPermissionTeacher()->orderBy('code', 'desc');
+        if (!empty($sessionYearCode)) {
+            $classs = $classs->where('school_year_code', $sessionYearCode);
+        }
+        $classs = $classs->get();
+        
         $sections = DB::table('sections')->get();
         $department = Department::get();
         $school_years = DB::table('session_year')->orderBy('code', 'desc')->get();

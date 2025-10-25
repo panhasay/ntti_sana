@@ -10,12 +10,12 @@
                         @foreach ($classs as $record)
                             <option value="{{ $record->code ?? '' }}" {{ isset($records->class_code) && $records->class_code
                                 == $record->code ? 'selected' : '' }}>
-                                {{ isset($record->code) ? $record->code : '' }}
+                                {{ preg_replace('/[^a-zA-Z0-9]/', '', $record->code ?? '') }}
                             </option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-sm-2">
+                {{-- <div class="col-sm-2">
                     <span class="labels">ដេប៉ាតឺម៉ង់</span>
                     <select class="js-example-basic-single FieldRequired" id="department_code" name="department_code"
                         style="width: 100%;">
@@ -27,7 +27,7 @@
                         </option>
                         @endforeach
                     </select>
-                </div>
+                </div> --}}
 
                 <div class="col-sm-2">
                     <span class="labels">ជំនាញ</span>
@@ -72,7 +72,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-sm-2">
+                {{-- <div class="col-sm-2">
                     <span class="labels">លោកគ្រូ</span>
                     <select class="js-example-basic-single FieldRequired" id="teachers_code" name="teachers_code"
                         style="width: 100%;">
@@ -85,7 +85,7 @@
                             </option>
                         @endforeach
                     </select>
-                </div>
+                </div> --}}
             </div>
             <button type="button" class="btn btn-primary text-white float-left btn-sm mb-2 mb-md-0 me-2" data-page="{{ $page_name ?? '' }}" id="btn-adSearch"><i class="mdi mdi-account-search"></i> ស្វែងរក</button>
             <button type="button" class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2" data-page="{{ $page_name ?? '' }}" id="btnCleardata"><i class="mdi mdi-cloud-off-outline"></i> ជម្រះទិន្នន័យ</button>

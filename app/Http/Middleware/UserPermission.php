@@ -16,6 +16,9 @@ class UserPermission
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (!Auth::check()) {
+            return redirect("login")->withSuccess('Opps! You do not have access');
+        }
         $user = Auth::user();
         if ($user->role == "attendant") {
             return redirect('/attendance/dashboards-attendance');

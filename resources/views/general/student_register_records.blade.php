@@ -4,7 +4,6 @@
         // $gender = ($record->gender == 'male') ? 'ប្រុស' : 'ស្រី';
         $khmerDate = !empty($record->date_of_birth) ? App\Service\service::DateYearKH($record->date_of_birth) : '';
         $student_picture = App\Models\General\Picture::where('code', $record->code)->value('picture_ori');	
-
     ?>
     <tr id="row{{$record->code}}">
       <td>
@@ -27,13 +26,13 @@
       <td>{{ $khmerDate }}</td>
       <td>{{ $record->student_address ?? '' }}</td>
       <td>{{ $record->phone_student ?? '' }}</td>
-      <td>{{ $record->class_code ?? '' }}</td>
+      <td>{{ preg_replace('/[^a-zA-Z0-9]/', '', $record->class_code ?? '') }}</td>
       <td>{{ $record->skill->name_2 ?? '' }}</td>
       <td>{{ $record->qualification ?? '' }}</td>
       <td>{{ $record->section_name ?? '' }}</td>
       <td>{{ $record->mother_name ?? '' }}</td>
       <td>{{ $record->father_name ?? '' }}</td>
-      <td>{{ $record->session_year_name ?? '' }}</td>
+      <td>{{ str_replace('_', ' - ', $record->session_year_code ?? '') }}</td>
     </tr>
   @endforeach
 @endif

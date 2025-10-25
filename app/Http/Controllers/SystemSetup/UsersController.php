@@ -37,10 +37,13 @@ class UsersController extends Controller
     }
     public function index()
     {
-        $records = User::with('roles')->paginate(10);
-        // dd($records);
-        $page_title = $this->page;
-        return view('system_setup.users', compact('records', 'page_title'));
+        if(Auth::user()->role == "admin") {
+            $records = User::with('roles')->paginate(10);
+            $page_title = $this->page;
+            return view('system_setup.users', compact('records', 'page_title'));
+        }else{
+             return view('errors.permission_acces');
+        }
     }
     public function Profile()
     {
@@ -94,7 +97,6 @@ class UsersController extends Controller
         $data = $request->all();
 
         DB::beginTransaction();
-
         try {
             if (empty($data['password'])) {
                 return response()->json(['status' => 'error', 'msg' => "សូមបំពេញ ពាក្យសម្ងាត់ចាស់"]);
@@ -133,8 +135,6 @@ class UsersController extends Controller
 
     public function store(Request $request)
     {
-        // 1. Validate the request
-        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email',
@@ -252,77 +252,88 @@ class UsersController extends Controller
     }
 
     public function update(Request $request)
-{
-    // 1. Validate the request
-    $validator = Validator::make($request->all(), [
-        'name' => 'required',
-        'email' => 'required|email',
-        // 'department_code' => 'required',
-        'role' => 'required',
-    ], [
-        'name.required' => 'សូមបំពេញឈ្មោះ',
-        'email.required' => 'សូមបំពេញអ៊ីមែល',
-        'email.email' => 'អ៊ីមែលមិនត្រឹមត្រូវទេ',
-        // 'department_code.required' => 'សូមជ្រើសរើសនាយកដ្ឋាន',
-        'role.required' => 'សូមជ្រើសរើសតួនាទី',
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json([
-            'status' => 'error',
-            'msg' => $validator->errors()->first(),
+    {
+        // 1. Validate the request
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|email',
+            // 'department_code' => 'required',
+            'role' => 'required',
+        ], [
+            'name.required' => 'សូមបំពេញឈ្មោះ',
+            'email.required' => 'សូមបំពេញអ៊ីមែល',
+            'email.email' => 'អ៊ីមែលមិនត្រឹមត្រូវទេ',
+            // 'department_code.required' => 'សូមជ្រើសរើសនាយកដ្ឋាន',
+            'role.required' => 'សូមជ្រើសរើសតួនាទី',
         ]);
-    }
 
-    // 2. Get the record being updated
-    $records = User::where('email', $request->email)->first();
-
-    if (!$records) {
-        return response()->json([
-            'status' => 'error',
-            'msg' => 'រកមិនឃើញអ្នកប្រើប្រាស់នោះទេ!',
-        ]);
-    }
-
-    try {
-        // ✅ Check if current authenticated user is the one being updated
-        $currentUser = Auth::user();
-        $isSelfUpdate = $currentUser && $currentUser->id === $records->id;
-
-        // ✅ Check if email is changed
-        $emailChanged = $records->email !== $request->email;
-
-        // 3. Update fields
-        $records->name = $request->name;
-        $records->email = $request->email;
-        $records->department_code = $request->department_code;
-        $records->role = $request->role;
-        $records->password = Hash::make('123456'); // Only if you want to reset password
-        $records->update();
-
-        // ✅ If the user updated their own email → logout
-        if ($isSelfUpdate && $emailChanged) {
-            Auth::logout();
+        if ($validator->fails()) {
             return response()->json([
-                'status' => 'logout',
-                'msg' => 'អ៊ីមែលត្រូវបានផ្លាស់ប្តូរ។ សូមចូលឡើងវិញ។',
-                'redirect' => route('login') // redirect URL to login
+                'status' => 'error',
+                'msg' => $validator->errors()->first(),
             ]);
         }
 
+        // 2. Get the record being updated
+        $records = User::where('email', $request->email)->first();
+
+        if (!$records) {
+            return response()->json([
+                'status' => 'error',
+                'msg' => 'រកមិនឃើញអ្នកប្រើប្រាស់នោះទេ!',
+            ]);
+        }
+
+        try {
+            // ✅ Check if current authenticated user is the one being updated
+            $currentUser = Auth::user();
+            $isSelfUpdate = $currentUser && $currentUser->id === $records->id;
+
+            // ✅ Check if email is changed
+            $emailChanged = $records->email !== $request->email;
+
+            // 3. Update fields
+            $records->name = $request->name;
+            $records->email = $request->email;
+            $records->department_code = $request->department_code;
+            $records->role = $request->role;
+            $records->password = Hash::make('123456'); // Only if you want to reset password
+            $records->update();
+
+            // ✅ If the user updated their own email → logout
+            if ($isSelfUpdate && $emailChanged) {
+                Auth::logout();
+                return response()->json([
+                    'status' => 'logout',
+                    'msg' => 'អ៊ីមែលត្រូវបានផ្លាស់ប្តូរ។ សូមចូលឡើងវិញ។',
+                    'redirect' => route('login') // redirect URL to login
+                ]);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'store' => 'no',
+                'msg' => 'អ្នកប្រើប្រាស់បានកែប្រែដោយជោគជ័យ',
+            ]);
+        } catch (\Exception $ex) {
+            DB::rollBack(); // Only call this if you're inside a transaction
+            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
+            return response()->json([
+                'status' => 'warning',
+                'msg' => $ex->getMessage()
+            ]);
+        }
+    }
+    public function updateSessionYear(Request $request)
+    {
+        $user = Auth::user();
+        $user->session_year_code = $request->session_year_code;
+        $user->update();
+
         return response()->json([
             'status' => 'success',
-            'store' => 'no',
-            'msg' => 'អ្នកប្រើប្រាស់បានកែប្រែដោយជោគជ័យ',
-        ]);
-    } catch (\Exception $ex) {
-        DB::rollBack(); // Only call this if you're inside a transaction
-        $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
-        return response()->json([
-            'status' => 'warning',
-            'msg' => $ex->getMessage()
+            'message' => 'Session year updated successfully!',
+            'session_year_code' => $user->session_year_code
         ]);
     }
-}
-
 }

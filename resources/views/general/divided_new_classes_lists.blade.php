@@ -1,6 +1,25 @@
 
 <div class="control-table table-responsive custom-data-table-wrapper2">
-  <table class="table table-striped">
+  <div class="page-title">
+    <div class="row">
+      <div class="col-12 col-md-6 order-md-1 order-last">
+        <div class="title-page">
+          និស្សិតតាមក្រុមថ្នាក់
+        </div>
+        <div class="header-left">
+        </div>
+      </div>
+      <div class="col-12 col-md-6 order-md-2 order-first">
+        <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url('/department-menu') }}">ទំព័រដើម</a></li>
+            <li class="breadcrumb-item active" aria-current="page">និស្សិតតាមក្រុមថ្នាក់</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <table class="table table-striped" id="table1">
     <thead>
       <tr>
         <th width="10"></th>
@@ -17,6 +36,4 @@
       @include('general.divided_new_classes_record')
     </tbody>
   </table>
-  {{$records->links("pagination::bootstrap-4")}}
-  <span>សរុប : {{ $total_records[0]->total_count ?? ''}} នាក់</span>
 </div><br><br>

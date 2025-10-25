@@ -22,6 +22,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Exports\ExportData;
+use App\Models\General\ClassStudent;
 use Maatwebsite\Excel\Facades\Excel;
 
 use function App\Models\Student\qualification;
@@ -50,22 +51,27 @@ class DividedNewClassesController extends Controller
         if (!Auth::check()) {
             return redirect("login")->withSuccess('Opps! You do not have access');
         }
+
+        $sessionYearCode = Auth::user()->session_year_code ?? null;
         $page = $this->page;
-        $data = $this->services->GetDateIndexOption(now()); 
+        $data = $this->services->GetDateIndexOption(now());
+
         $records = Classes::leftJoin('student', 'student.class_code', '=', 'classes.code')
-            ->select('classes.code',  'classes.level', 'classes.department_code', 'classes.school_year_code', 'classes.name', 'classes.skills_code', 'classes.sections_code', DB::raw('COUNT(student.name) as totals_student' , 'classes.created_at'))
-            // ->where('classes.school_year_code', '2025_2026')
-            ->groupBy('classes.code',  'classes.level', 'classes.department_code', 'classes.school_year_code', 'classes.name', 'classes.skills_code', 'classes.sections_code', 'classes.created_at')
+            ->select('classes.code',  'classes.level', 'classes.department_code', 'classes.school_year_code', 'classes.name', 'classes.skills_code', 'classes.sections_code', DB::raw('COUNT(student.name) as totals_student'))
+            ->groupBy('classes.code',  'classes.level', 'classes.department_code', 'classes.school_year_code', 'classes.name', 'classes.skills_code', 'classes.sections_code')
             ->orderBy('totals_student', 'desc')
             ->orderBy('classes.department_code', 'desc')
-            ->orderBy('classes.created_at', 'desc')
-            ->WithQueryPermissionTeacher()
-            ->paginate(20);
-            
+            ->WithQueryPermissionTeacher();
+
+        if (!empty($sessionYearCode)) {
+            $records = $records->where('school_year_code', $sessionYearCode);
+        }
+        $records = $records->get();
+
         $total_records = Student::select(
             DB::raw('COUNT(name) AS total_count'),
-        )->where('study_type', 'new student')
-            ->get();
+        )->where('study_type', 'new student')->get();
+
         return view('general.divided_new_classes', array_merge($data, compact('page', 'records')));
     }
     public function transaction(request $request)
@@ -87,7 +93,7 @@ class DividedNewClassesController extends Controller
         $subjects = Subjects::orderBy('code', 'asc')->get();
         $qualifications = Qualifications::orderBy('code', 'desc')->get();
         try {
-            $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'classs', 'study_years', 'teachers', 'subjects', 'record_sub_lines', 'qualifications', 'records_student'];
+            $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'classs', 'study_years', 'teachers', 'subjects', 'record_sub_lines', 'qualifications', 'records_student', 'totalFemale'];
             if ($type == 'cr') return view('general.divided_new_classes_card', compact($params));
             if (isset($_GET['code'])) {
                 $records = Classes::where('code', $this->services->Decr_string($_GET['code']))->first();
@@ -98,6 +104,57 @@ class DividedNewClassesController extends Controller
                     ->where('department_code', $records->department_code)
                     ->orderByRaw("name_2 COLLATE utf8mb4_general_ci")
                     ->get();
+
+                $totalFemale = Student::where('class_code', $records->code)
+                    ->where('qualification', $records->level)
+                    ->where('sections_code', $records->sections_code)
+                    ->where('skills_code', $records->skills_code)
+                    ->where('department_code', $records->department_code)
+                    ->where('gender', 'ស្រី')
+                    ->count();
+                if (count($record_sub_lines) > 0) {
+                    $newStudentCodes = collect($record_sub_lines)->pluck('code')->toArray();
+                    $existingStudents = ClassStudent::where('class_code', $record_sub_lines[0]->class_code)
+                        ->where('sections_code', $record_sub_lines[0]->sections_code)
+                        ->where('semester', 1)
+                        ->where('years', 1)
+                        ->pluck('student_code')
+                        ->toArray();
+
+                    $studentsToDelete = array_diff($existingStudents, $newStudentCodes);
+
+                    if (!empty($studentsToDelete)) {
+                        ClassStudent::whereIn('student_code', $studentsToDelete)
+                            ->where('class_code', $record_sub_lines[0]->class_code)
+                            ->where('sections_code', $record_sub_lines[0]->sections_code)
+                            ->where('semester', 1)
+                            ->where('years', 1)
+                            ->delete();
+                    }
+
+                    foreach ($record_sub_lines as $line) {
+                        $exists = ClassStudent::where('student_code', $line->code)
+                            ->where('class_code', $line->class_code)
+                            ->where('sections_code', $line->sections_code)
+                            ->where('semester', 1)
+                            ->where('years', 1)
+                            ->exists();
+
+                        if (!$exists) {
+                            $missingDataTo = new ClassStudent();
+                            $missingDataTo->student_code = $line->code;
+                            $missingDataTo->class_code = $line->class_code;
+                            $missingDataTo->skills_code = $line->skills_code;
+                            $missingDataTo->sections_code = $line->sections_code;
+                            $missingDataTo->department_code = $line->department_code;
+                            $missingDataTo->session_year_code = $line->session_year_code;
+                            $missingDataTo->semester = 1;
+                            $missingDataTo->years = 1;
+                            $missingDataTo->qualification = $line->qualification;
+                            $missingDataTo->save();
+                        }
+                    }
+                }
             }
             return view('general.divided_new_classes_card', compact($params));
         } catch (\Exception $ex) {
@@ -118,7 +175,7 @@ class DividedNewClassesController extends Controller
                 ->where('sections_code', $class->sections_code)
                 ->where('department_code', $class->department_code)
                 ->orderBy('class_code', 'asc')
-                ->get();   
+                ->get();
 
             $class_code = $class->code;
 
@@ -197,18 +254,18 @@ class DividedNewClassesController extends Controller
         //         'msg' => 'មិនអាចក្រែប្រែ ទិន្ន័យសិស្សបានទេ​ ឈ្មោះ' . $check_classe->name_2 . 'មាន ក្រុមរួចហើយ ' . $check_classe->class_code,
         //     ]);
         // } 
-       
+
         $records = StudentRegistration::where('code', $code)->first();
         $records_student = Student::where('code', $code)->first();
-        
+
         $status = ($input['status'] == 'no') ? 'no' : 'yes';
         $department_code = Skills::where('code',  $input['skills_code'])->first();
-        if($department_code) {
+        if ($department_code) {
             $department_code = $department_code->department_code;
         }
         $phone_student = $this->services->convertKhmerToEnglishNumber($request->phone_student);
         $guardian_phone = $this->services->convertKhmerToEnglishNumber($request->guardian_phone);
-        
+
         // if ($request->date_of_birth = \Carbon\Carbon::parse($request->date_of_birth)->format('Ymd')) {
         //     return response()->json([
         //         'error' => 'invalid_date',
@@ -216,85 +273,85 @@ class DividedNewClassesController extends Controller
         //     ]);
         // }
 
-        $date_of_birth = \Carbon\Carbon::parse($request->date_of_birth)->format('Y-m-d'); 
+        $date_of_birth = \Carbon\Carbon::parse($request->date_of_birth)->format('Y-m-d');
         try {
-                $records->name_2 = $request->name_2;
-                $records->name = $request->name; 
-                $records->date_of_birth = $date_of_birth; 
-                $records->student_address = $request->student_address;
-                $records->current_address = $request->current_address;
-                $records->occupation = $request->occupation; 
-                $records->phone_student = $phone_student; 
-                $records->guardian_name = $request->guardian_name; 
-                $records->guardian_phone = $guardian_phone; 
-                $records->father_name = $request->father_name; 
-                $records->father_occupation = $request->father_occupation; 
-                $records->mother_name = $request->mother_name; 
-                $records->mother_occupation = $request->mother_occupation; 
-                $records->education_Level = $request->education_Level; 
-                $records->skills_code = $request->skills_code; 
-                $records->sections_code = $request->sections_code; 
-                $records->apply_year = $request->apply_year; 
-                $records->qualification = $request->qualification; 
-                $records->status = $request->status; 
-                $records->register_date = Carbon::now();
-                $records->study_type = "new student";
-                $records->gender = $request->gender;
-                $records->session_year_code = $request->session_year_code;
-                $records->semester = $request->semester;
-                $records->department_code = $department_code;
+            $records->name_2 = $request->name_2;
+            $records->name = $request->name;
+            $records->date_of_birth = $date_of_birth;
+            $records->student_address = $request->student_address;
+            $records->current_address = $request->current_address;
+            $records->occupation = $request->occupation;
+            $records->phone_student = $phone_student;
+            $records->guardian_name = $request->guardian_name;
+            $records->guardian_phone = $guardian_phone;
+            $records->father_name = $request->father_name;
+            $records->father_occupation = $request->father_occupation;
+            $records->mother_name = $request->mother_name;
+            $records->mother_occupation = $request->mother_occupation;
+            $records->education_Level = $request->education_Level;
+            $records->skills_code = $request->skills_code;
+            $records->sections_code = $request->sections_code;
+            $records->apply_year = $request->apply_year;
+            $records->qualification = $request->qualification;
+            $records->status = $request->status;
+            $records->register_date = Carbon::now();
+            $records->study_type = "new student";
+            $records->gender = $request->gender;
+            $records->session_year_code = $request->session_year_code;
+            $records->semester = $request->semester;
+            $records->department_code = $department_code;
 
-                $records->bakdop_results = $request->bakdop_results;
-                $records->year_final = $request->year_final;
-                $records->bakdop_index = $request->bakdop_index;
-                $records->bakdop_province = $request->bakdop_province;
-                $records->bakdop_type = $request->bakdop_type;
-                $records->scholarship = $request->scholarship;
-                $records->scholarship_type = $request->scholarship_type;
-                $records->submit_your_application = $request->submit_your_application;
-                $records->educational_institutions = $request->educational_institutions;
-                $records->update(); 
+            $records->bakdop_results = $request->bakdop_results;
+            $records->year_final = $request->year_final;
+            $records->bakdop_index = $request->bakdop_index;
+            $records->bakdop_province = $request->bakdop_province;
+            $records->bakdop_type = $request->bakdop_type;
+            $records->scholarship = $request->scholarship;
+            $records->scholarship_type = $request->scholarship_type;
+            $records->submit_your_application = $request->submit_your_application;
+            $records->educational_institutions = $request->educational_institutions;
+            $records->update();
 
 
-                $records_student->name_2 = $request->name_2;
-                $records_student->name = $request->name; 
-                $records_student->date_of_birth = $date_of_birth; 
-                $records_student->student_address = $request->student_address;
-                $records_student->current_address = $request->current_address;
-                $records_student->occupation = $request->occupation; 
-                $records_student->phone_student = $phone_student; 
-                $records_student->guardian_name = $request->guardian_name; 
-                $records_student->guardian_phone = $guardian_phone; 
-                $records_student->father_name = $request->father_name; 
-                $records_student->father_occupation = $request->father_occupation; 
-                $records_student->mother_name = $request->mother_name; 
-                $records_student->mother_occupation = $request->mother_occupation; 
-                $records_student->education_Level = $request->education_Level; 
-                $records_student->skills_code = $request->skills_code; 
-                $records_student->sections_code = $request->sections_code; 
-                $records_student->apply_year = $request->apply_year; 
-                $records_student->qualification = $request->qualification; 
-                $records_student->status = $request->status; 
-                $records_student->register_date = Carbon::now();
-                $records_student->study_type = "new student";
-                $records_student->gender = $request->gender;
-                $records_student->session_year_code = $request->session_year_code;
-                $records_student->semester = $request->semester;
-                $records_student->department_code = $department_code;
+            $records_student->name_2 = $request->name_2;
+            $records_student->name = $request->name;
+            $records_student->date_of_birth = $date_of_birth;
+            $records_student->student_address = $request->student_address;
+            $records_student->current_address = $request->current_address;
+            $records_student->occupation = $request->occupation;
+            $records_student->phone_student = $phone_student;
+            $records_student->guardian_name = $request->guardian_name;
+            $records_student->guardian_phone = $guardian_phone;
+            $records_student->father_name = $request->father_name;
+            $records_student->father_occupation = $request->father_occupation;
+            $records_student->mother_name = $request->mother_name;
+            $records_student->mother_occupation = $request->mother_occupation;
+            $records_student->education_Level = $request->education_Level;
+            $records_student->skills_code = $request->skills_code;
+            $records_student->sections_code = $request->sections_code;
+            $records_student->apply_year = $request->apply_year;
+            $records_student->qualification = $request->qualification;
+            $records_student->status = $request->status;
+            $records_student->register_date = Carbon::now();
+            $records_student->study_type = "new student";
+            $records_student->gender = $request->gender;
+            $records_student->session_year_code = $request->session_year_code;
+            $records_student->semester = $request->semester;
+            $records_student->department_code = $department_code;
 
-                $records_student->bakdop_results = $request->bakdop_results;
-                $records_student->year_final = $request->year_final;
-                $records_student->bakdop_index = $request->bakdop_index;
-                $records_student->bakdop_province = $request->bakdop_province;
-                $records_student->bakdop_type = $request->bakdop_type;
-                $records_student->scholarship = $request->scholarship;
-                $records_student->scholarship_type = $request->scholarship_type;
-                $records_student->submit_your_application = $request->submit_your_application;
-                $records_student->educational_institutions = $request->educational_institutions;
-                $records_student->update(); 
+            $records_student->bakdop_results = $request->bakdop_results;
+            $records_student->year_final = $request->year_final;
+            $records_student->bakdop_index = $request->bakdop_index;
+            $records_student->bakdop_province = $request->bakdop_province;
+            $records_student->bakdop_type = $request->bakdop_type;
+            $records_student->scholarship = $request->scholarship;
+            $records_student->scholarship_type = $request->scholarship_type;
+            $records_student->submit_your_application = $request->submit_your_application;
+            $records_student->educational_institutions = $request->educational_institutions;
+            $records_student->update();
 
-                $type = "Update Student. $records->class_code";
-                $this->services->telegramSendDeleteStudent($records, $type);
+            $type = "Update Student. $records->class_code";
+            $this->services->telegramSendDeleteStudent($records, $type);
 
             return response()->json(['status' => 'success', 'msg' => 'Data Update Success !', '$records' => $records]);
         } catch (\Exception $ex) {
@@ -311,11 +368,11 @@ class DividedNewClassesController extends Controller
     {
         $data = $request->all();
 
-    
+
         try {
             $records =  Student::where('code', $data['code'])->first();
             $records->class_code = $data['class_code'];
-           
+
             $records->update();
             $code_last = Student::latest('code')->first();
             $records = $code_last;

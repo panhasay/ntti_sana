@@ -248,15 +248,22 @@
                 <span class="labels col-sm-6 col-form-label">ជំនាញ<strong style="color:red; font-size:15px;">
                     *</strong></span>
                 <div class="col-sm-6">
-                  <select class="js-example-basic-single FieldRequired" id="skills_codes" name="skills_code"
-                    style="width: 100%;">
-                    <option value="">&nbsp;</option>
+                    <?php
+                      $disble_skill = count($skills);
+
+                      if($disble_skill == 1 ){
+                        $disabled = "disabled";
+                      }
+                    ?>
+                  <select class="js-example-basic-single FieldRequired" id="skills_codes" name="skills_code" 
+                    style="width: 100%;" >
+                    {{-- <option value="">&nbsp;</option> --}}
                     @foreach ($skills as $record)
-                    <option value="{{ $record->code ?? '' }}" {{ isset($records->skills_code) && $records->skills_code
-                      ==
-                      $record->code ? 'selected' : '' }}>
-                      {{ isset($record->name_2) ? $record->name_2 : '' }}
-                    </option>
+                      <option value="{{ $record->code ?? '' }}" {{ isset($records->skills_code) && $records->skills_code
+                          ==
+                        $record->code ? 'selected' : '' }} {{ Auth::user()->department_code == $record->department_code ? 'selected' : '' }}>
+                        {{ isset($record->name_2) ? $record->name_2 : '' }}
+                      </option>
                     @endforeach
                   </select>
                 </div>
@@ -325,7 +332,7 @@
             <span class="labels col-sm-3 col-form-label ">កម្រិត<strong style="color:red; font-size:15px;">
                 *</strong></span>
             <div class="col-sm-9">
-              <select class="js-example-basic-single" id="qualification" name="qualification" style="width: 100%;">
+              <select class="js-example-basic-single" id="level" name="qualification" style="width: 100%;">
                 @foreach ($qualification as $value => $record)
                 <option value="{{ $record->code }}" {{ isset($records->qualification) && $records->qualification ==
                   $record->code ?
@@ -347,9 +354,12 @@
                 style="width: 100%;">
                 <option value="">&nbsp;</option>
                 @foreach ($school_years as $record)
-                <option value="{{ $record->code ?? '' }}" {{ isset($records->session_year_code) &&
-                  $records->session_year_code == $record->code ? 'selected' : '' }}>
-                  {{ isset($record->name) ? $record->name : '' }}
+                <option value="{{ $record->code ?? '' }}"
+                    @if(
+                        (isset($records->session_year_code) && $records->session_year_code == $record->code) ||
+                        (Auth::user()->session_year_code == $record->code)
+                    ) selected @endif>
+                    {{ $record->name ?? '' }}
                 </option>
                 @endforeach
               </select>
@@ -471,7 +481,7 @@
             </div>
             <div class="col-md-6 col-sm-12">
               <div class="form-group row">
-                <span class="labels col-sm-5 col-form-label">ឆ្នាំបញ្ចាប់ទុតិយភូម</span>
+                <span class="labels col-sm-5 col-form-label">ឆ្នាំបញ្ចប់ទុតិយភូមិ</span>
                 <div class="col-sm-7">
                   <select class="js-example-basic-single" id="year_final" name="year_final" style="width: 100%;">
                     <?php 
@@ -718,7 +728,7 @@
 <br><br>
 <script>
   $(document).ready(function() {
-    
+
     allIndexOptions();
     $('#name_2').attr('autocomplete', 'off');
     $('#name').attr('autocomplete', 'off');
@@ -773,10 +783,11 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(response) {
-                  notyf.success("Data success !");
+                 
                 if (response.status == 'success') {
                   notyf.success(response.msg);
                 }else if(response.store == 'yes'){
+                   notyf.success("Data success !");
                    window.location.href = '/student/registration/transaction?type=cr';
                     // window.location.href = '/student/registration/transaction?type=ed&code=' + response.code_transetion;
                 }else {

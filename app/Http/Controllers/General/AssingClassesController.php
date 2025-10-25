@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Exports\ExportData;
+use App\Models\General\ClassStudent;
 use App\Models\General\Qualifications;
 use App\Models\General\Sections;
 use App\Models\General\Skills;
@@ -43,23 +44,36 @@ class AssingClassesController extends Controller
         $type = $data['type'];
         $school_year = $data['years'];
         $user = Auth::user();
-        if($user->role == "teachers"){
-            $records = AssingClasses::with(['department', 'section', 'skill', 'teacher','subject' ])
+        $sessionYearCode = Auth::user()->session_year_code ?? null;
+        // if($user->role == "teachers"){
+        //     $records = AssingClasses::with(['department', 'section', 'skill', 'teacher','subject' ])
+        //         ->where('years', $data['years'])
+        //         ->where('teachers_code', $user->user_code)
+        //         ->WhitQueryPermissionTeacher()
+        //         ->where('qualification', $data['type'])
+        //         ->groupBy('semester', 'years', 'class_code', 'qualification', 'department_code', 'session_year_code', 'skills_code', 'sections_code');
+        //         if (!empty($sessionYearCode)) {
+        //             $records = $records->where('session_year_code', $sessionYearCode);
+        //         }
+        //         $records = $records->orderBy('semester', 'asc')->orderBy('years', 'asc')->paginate(15);
+        // }else{
+        //     $records = AssingClasses::with(['department', 'section', 'skill', 'teacher','subject' ])
+        //         ->where('years', $data['years'])
+        //         ->where('qualification', $data['type'])
+        //         ->WhitQueryPermissionTeacher();
+        //         if (!empty($sessionYearCode)) {
+        //             $records = $records->where('session_year_code', $sessionYearCode);
+        //         }
+        //         $records = $records->orderBy('semester', 'asc')->orderBy('years', 'asc')->paginate(15);
+        // }
+        $records = AssingClasses::with(['department', 'section', 'skill', 'teacher','subject' ])
                 ->where('years', $data['years'])
-                ->where('teachers_code', $user->user_code)
-                ->WhitQueryPermissionTeacher()
                 ->where('qualification', $data['type'])
-                ->groupBy('semester', 'years', 'class_code', 'qualification', 'department_code', 'session_year_code', 'skills_code', 'sections_code')
-                ->orderBy('semester', 'asc')->orderBy('years', 'asc')
-                ->paginate(20);
-        }else{
-            $records = AssingClasses::with(['department', 'section', 'skill', 'teacher','subject' ])
-                ->where('years', $data['years'])
-                ->where('qualification', $data['type'])
-                ->WhitQueryPermissionTeacher()
-                ->orderBy('semester', 'asc')->orderBy('years', 'asc')
-                ->paginate(20);
-        }
+                ->WhitQueryPermissionTeacher();
+                if (!empty($sessionYearCode)) {
+                    $records = $records->where('session_year_code', $sessionYearCode);
+                }
+                $records = $records->orderBy('semester', 'asc')->orderBy('years', 'asc')->paginate(15);
         try{
             $school_year_map = [
                 '1' => '១',
@@ -72,6 +86,8 @@ class AssingClassesController extends Controller
 
             $data = $this->services->GetDateIndexOption(now()); 
 
+
+            // dd($records);
             return view('general.assing_classes', array_merge($data, compact('records', 'users', 'type', 'years')));
             //  return view('general.assing_classes',compact('years', 'type', 'records', 'users'));
         }catch (\Exception $ex) {
@@ -129,10 +145,17 @@ class AssingClassesController extends Controller
                 $records = AssingClasses::where('id', $this->services->Decr_string($_GET['code']))->first();
                 $Assingstudent = Student::where('class_code', $records->class_code ?? '')->get();
                 
-                $students = Student::where('class_code', $records->class_code)->get();
+                $students = ClassStudent::where('class_code', $records->class_code)
+                    ->where('semester', $request->semester)
+                    ->where('years', $request->years)
+                    ->where('department_code', $records->department_code)
+                    ->where('session_year_code', $records->session_year_code)
+                    ->get();
+
+                // dd($students);
 
                 if ($students->isNotEmpty()) {
-                    $studentCodes = $students->pluck('code');
+                    $studentCodes = $students->pluck('student_code');
 
                     $recordExists = AssingClassesStudentLine::whereIn('student_code', $studentCodes)
                                         ->where('assing_line_no', $records->assing_no)
@@ -140,7 +163,7 @@ class AssingClassesController extends Controller
                     if (!$recordExists) {
                         foreach ($students as $student) {
                             $recordStudent = new AssingClassesStudentLine();
-                            $recordStudent->student_code = $student->code;
+                            $recordStudent->student_code = $student->student_code;
                             $recordStudent->assing_line_no = $records->assing_no;
                             $recordStudent->save();
                         }
@@ -431,14 +454,17 @@ class AssingClassesController extends Controller
     public function ExamResults(Request $request)
     {
         $data = $request->all();
+        $user =  Auth::user();
         try {
-            $records = AssingClasses::selectRaw("class_code, qualification, department_code, semester, session_year_code, skills_code, sections_code")
-                        ->where('qualification', $data['type'])
-                        ->where('years', $data['years'])
-                        ->where('semester', $data['semester'])
-                        ->where('exam_type', "Yes")
-                        ->GroupBy('class_code', 'qualification', 'department_code', 'semester', 'session_year_code', 'skills_code', 'sections_code')
-                        ->paginate(20);
+            $records = AssingClasses::selectRaw("class_code, qualification, department_code, semester, session_year_code, skills_code, sections_code, years")
+            // ->where('qualification', $data['type'])
+            // ->where('years', $data['years'])
+            // ->where('semester', $data['semester'])
+            ->where('exam_type', "Yes")
+            ->GroupBy('class_code', 'qualification', 'department_code', 'semester', 'session_year_code', 'skills_code', 'sections_code', 'years');
+            $records = $this->services->filterByUser($records, $user);
+            $records = $records->orderBy('semester', 'desc')->get();
+            
             return view('general.exam_results',compact('records'));
         } catch (\Exception $ex) {
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());

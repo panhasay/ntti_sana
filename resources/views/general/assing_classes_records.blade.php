@@ -37,8 +37,8 @@
         <tr id="row">
                 <td class="">
                     <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2"
-                        href="{{ '/assign-classes/transaction?type=ed&code=' . App\Service\service::Encr_string($record->id) }}&years={{ $record->years ?? '' }}&type={{ $record->qualification ?? '' }}&assing_no={{ $record->assing_no ?? '' }}">
-                        <i class="mdi mdi-border-color"></i> បើក
+                        href="{{ '/assign-classes/transaction?type=ed&code=' . App\Service\service::Encr_string($record->id) }}&years={{ $record->years ?? '' }}&type={{ $record->qualification ?? '' }}&assing_no={{ $record->assing_no ?? '' }}&semester={{ $record->semester ?? '' }}">
+                        <i class="mdi mdi-border-color"></i> ដាក់ពិន្ទុ
                     </a>
                 </td>
                 <td>{{ str_replace('_', ' - ', $record->session_year_code) }}</td>
@@ -63,6 +63,6 @@
     @endforeach
 @else
     <tr>
-        <td colspan="10" class="text-center p-3">មិនមានទិន្ន័យ</td>
+        <td colspan="11" class="text-center p-3">មិនមានទិន្ន័យ</td>
     </tr>
 @endif

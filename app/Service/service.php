@@ -510,14 +510,23 @@ class service
 
     public static function GetDateIndexOption($data)
     {
-
+        $sessionYearCode = Auth::user()->session_year_code ?? null;
         $sections = DB::table('sections')->get();
         $department = Department::get();
-        $skills = DB::table('skills')->get();
         $qualifications = Qualifications::get();
         $classs = Classes::where('is_active', 'yes')
-        ->WhereRaw(self::getRrecordsByDepartment())
-        ->get();
+        ->WhereRaw(self::getRrecordsByDepartment());
+        if (!empty($sessionYearCode)) {
+            $classs = $classs->where('school_year_code', $sessionYearCode);
+        }
+        $classs = $classs->get();
+        $skillCode = $classs->pluck('skills_code');
+
+        $skills = DB::table('skills')->get();
+        if (!empty(Auth::user()->department_code)) {
+            $skills = DB::table('skills')->whereIN('code', $skillCode)->get();
+        }
+
         $teachers = Teachers::WhitQueryPermission()->orderByRaw("name_2 COLLATE utf8mb4_general_ci")->get();
 
         return compact('sections', 'department', 'skills', 'qualifications', 'classs', 'teachers');
@@ -556,5 +565,17 @@ class service
     public static function removeDotFromCode($classCode)
     {
         return str_replace('.', '', $classCode);
+    }
+    public static function filterByUser($query, $user)
+    {
+        if (!empty($user->session_year_code)) {
+            $query = $query->where('session_year_code', $user->session_year_code);
+        }
+
+        if (!empty($user->department_code)) {
+            $query = $query->where('department_code', $user->department_code);
+        }
+
+        return $query;
     }
 }

@@ -53,6 +53,11 @@
                 style="cursor: pointer; width: 197px;height: 79px;background: #f2b707;font-size: 17px;">ចំនួននិស្សិតព្យួរ {{ $total_student_HangOfStudent ??"" }}
               </button>
             </div>
+             <div class="col-sm-2">
+              <button type="button" class="btn btn-outline-primary " 
+                style="cursor: pointer; width: 197px;height: 79px;background: #07c3f2;font-size: 17px;">និស្សិតស្នើសុំប្ដូវេន {{ $total_student_Transfer ??"" }}
+              </button>
+            </div>
 
             {{-- <div class="col-sm-2">
               <span class="labels">លេខកូដ</span>
@@ -96,8 +101,8 @@
                 </div>
             </div><br>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                <button type="button" id="btnYesSave" data-code="" data-type="change-class" class="btn btn-primary">Yes</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">បិទ</button>
+                <button type="button" id="SaveStudentChangeClass" data-code="" data-type="change-class" class="btn btn-primary">រក្សាទុក</button>
             </div>
         </div>
     </div>
@@ -179,34 +184,26 @@
         });
        
     });
+    
     $(document).on('click', '#student_change_class', function() {
         var code = $(this).attr('data-code');
         $.ajax({
-          type: "get",
-          url: `transfer/get-student/change-class`,
-          data: {
-            code: code
-          },
-          success: function(response) {
-            if (response.status == 'success') {
-              $("#btnYesSave").attr('data-code', code);
-              $("#divChangeClass").modal('show');
-              $(".contain-changeClass").html(response.view);
-                $(".contain-changeClass").html(response.view);
-
-              // $(".name_2").html(response.records.name_2);
-              // $("#date_of_birth").html(response.records.date_of_birth);
-              // $("#student_code").html(response.records.code);
-              // $("#class_code").html(response.records.class_code);
-              // $("#phone_student").html(response.records.phone_student);
-
-              // $('#hang_of_study').select2({
-              //     dropdownParent: $('#divHangOfStudy') 
-              // });
+            type: "GET",
+            url: "transfer/get-student/change-class",
+            data: {
+                code: code,
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    $("#SaveStudentChangeClass").attr('data-code', code);
+                    $("#divChangeClass").modal('show');
+                    $(".contain-changeClass").html(response.view);
+                }
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
             }
-          }
         });
-       
     });
    
     $(document).on('click', '#btnYesSave', function() {
@@ -259,7 +256,6 @@
       });
     });
 
-
     $(document).on('click', '#transfer', function() {
       var code = $(this).attr('data-code');
       alert(code);
@@ -274,6 +270,41 @@
             $("#divConfirmation").modal('hide');
             $("#row" + code).remove();
             notyf.success(response.msg);
+          }
+        }
+      });
+    });
+
+    $(document).on('click', '#SaveStudentChangeClass', function() {
+      var code = $(this).attr('data-code');
+      var class_code = $('#class_code_new').val();
+      var class_old = $('#class_old').val();
+      var reason_detail = $('#reason_detail').val();
+      var posting_date = $('#posting_date').val();
+      var year = $('#years').val();
+      var semester = $('#semester').val();
+      var assing_no = $('#assing_no').val();
+      var session_year_code = $('#session_year_codes').val();
+      $.ajax({
+        type: "POST",
+        url: `/transfer/submit-student-request-change-class`,
+        data: {
+          code : code,
+          class_code: class_code,
+          class_old : class_old,
+          reason_detail: reason_detail,
+          posting_date: posting_date,
+          year: year,
+          semester: semester,
+          assing_no: assing_no,
+          session_year_code : session_year_code,
+        },
+        success: function(response) {
+          if (response.status == 'success') {
+            $("#divChangeClass").modal('hide');
+            $("#row" + code).addClass("bg-info text-white"); 
+          }else {
+            notyf.error(response.msg);
           }
         }
       });
@@ -303,6 +334,7 @@
       error: function(xhr, ajaxOptions, thrownError) {}
     });
   }
+
    // Date validation function
   function validateDate(day, month, year) {
       const date = new Date(`${year}-${month}-${day}`);

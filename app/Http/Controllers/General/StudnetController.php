@@ -129,11 +129,18 @@ class StudnetController extends Controller
                 ->whereNotNull('class_code')
                 ->get();
 
+            $sessionYearCode = Auth::user()->session_year_code ?? null;
+
             $records = StudentRegistration::with(['session_year'])
                 ->whereRaw($this->services->getRrecordsByDepartment())
                 ->where('study_type', 'new student')
-                ->orderBy('code', 'desc')
-                ->paginate(15);
+                ->orderBy('code', 'desc');
+
+            if (!empty($sessionYearCode)) {
+                $records = $records->where('session_year_code', $sessionYearCode);
+            }
+
+            $records = $records->get();
         }
 
         return view('general.student_register', compact('records', 'total_records', 'qualifications', 'skills', 'department', 'sections', 'sections', 'total_student_have_class', 'student_code'));
@@ -174,19 +181,34 @@ class StudnetController extends Controller
         $type = $data['type'];
         $page = ucwords(str_replace("_", " ", $this->page));
         $page_url = $this->page;
-        $class_record = DB::table('classes')->get();
-        $skills_records = DB::table('skills')->get();
+        $query = DB::table('classes');
+
+        if (!empty(Auth::user()->department_code)) {
+            $query->where('department_code', Auth::user()->department_code);
+        }
+
+        $class_record = $query
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $skillCode = $class_record->pluck('skills_code');
+
+        $skills = DB::table('skills')->get();
+        if (!empty(Auth::user()->department_code)) {
+            $skills = DB::table('skills')->whereIN('code', $skillCode)->get();
+        }
+
         $sections = DB::table('sections')->get();
         $department = DB::table('department')->get();
         $currentDate = Carbon::now()->toDateString();
         $records = null;
         $user_student = '';
-        $skills = Skills::get();
+
         $school_years = DB::table('session_year')->orderBy('code', 'desc')->get();
         $study_years = StudyYears::get();
         $qualification = Qualifications::get();
         try {
-            $params = ['records', 'class_record', 'type', 'skills_records', 'sections', 'department', 'user_student', 'currentDate', 'skills', 'school_years', 'study_years', 'qualification'];
+            $params = ['records', 'class_record', 'type', 'sections', 'department', 'user_student', 'currentDate', 'skills', 'school_years', 'study_years', 'qualification'];
             if ($type == 'cr')
                 return view('general.student_register_card', compact($params));
 
@@ -1065,4 +1087,5 @@ class StudnetController extends Controller
             'student' => $student
         ]);
     }
+    
 }

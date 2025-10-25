@@ -52,7 +52,7 @@ class Classes extends Model
     {
         return $this->belongsTo(Qualifications::class, 'qualification', 'code');
     }
-   public function scopeWithQueryPermissionTeacher($query)
+    public function scopeWithQueryPermissionTeacher($query)
     {
         $user = Auth::user();
 

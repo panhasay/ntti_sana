@@ -5,6 +5,7 @@ namespace App\Http\Controllers\General;
 use App\Http\Controllers\Controller;
 use App\Models\General\Classes;
 use App\Models\General\Qualifications;
+use App\Models\General\StudyYears;
 use App\Models\Student\Student;
 use App\Models\SystemSetup\Department;
 use App\Service\service;
@@ -32,11 +33,21 @@ class ClassesController extends Controller
         $this->table_id = "10005";
     }
     public function index(){
-        $page = $this->page;
-        $records = Classes::orderBy('created_at', 'desc')->paginate(10);
         if(!Auth::check()){
             return redirect("login")->withSuccess('Opps! You do not have access');
         }  
+
+        $page = $this->page;
+        $sessionYearCode = Auth::user()->session_year_code ?? null;
+        $records = Classes::orderBy('created_at', 'desc');
+
+        if (!empty($sessionYearCode)) {
+            $records = $records->where('school_year_code', $sessionYearCode);
+        }
+        
+        $records = $records->paginate(15);
+
+       
         $data = $this->services->GetDateIndexOption(now()); 
         return view('general.classes', array_merge($data, compact('records', 'page')));
     }
@@ -53,8 +64,9 @@ class ClassesController extends Controller
         $school_years = DB::table('session_year')->orderBy('code', 'desc')->get();   
         $skills = DB::table('skills')->get();
         $qualifications = Qualifications::get();
+        $study_years = StudyYears::get();
         try {
-            $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'qualifications'];
+            $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'qualifications', 'study_years'];
             if ($type == 'cr') return view('general.classes_card', compact($params));
             if (isset($_GET['code'])) {
                 $records = Classes::where('code', $this->services->Decr_string($_GET['code']))->first();
@@ -89,10 +101,13 @@ class ClassesController extends Controller
         if (!$record) return response()->json(['status' => 'error', 'msg' => "មិនអាចកែប្រ លេខកូដ!"]);
         $code = $input['type'];
 
-        $check = Student::where('class_code', $code)->first();
-        if ($check) {
-            return response()->json(['status' => 'error', 'msg' => 'មិនអាចកែប្រែ ថ្នាក់/ក្រុមនេះបានទេមាន ព៍តមានរូចហើយ !']);
-        }
+        // dd($input['code'], $input['semester'], $input['years']);
+
+        // $check = Student::where('class_code', $code)->first();
+        // if ($check) {
+        //     return response()->json(['status' => 'error', 'msg' => 'មិនអាចកែប្រែ ថ្នាក់/ក្រុមនេះបានទេមាន ព៍តមានរូចហើយ !']);
+        // }
+        
         try {
             $records = Classes::where('code', $code)->first();
             if ($records) {
@@ -104,6 +119,9 @@ class ClassesController extends Controller
                 $records->school_year_code = $request->school_year_code;
                 $records->is_active = $request->is_active;
                 $records->level = $request->level;
+
+                $records->semester = $request->semester;
+                $records->years = $request->years;
                 $records->update();
             }
             return response()->json(['status' => 'success', 'msg' => 'បច្ចុប្បន្នភាព ទិន្នន័យជោគជ័យ!', '$records' => $records]);

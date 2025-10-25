@@ -12,6 +12,7 @@ use App\Models\General\Skills;
 use App\Models\General\StudentRegistration;
 use App\Models\General\Subjects;
 use App\Models\General\Teachers;
+use App\Models\General\VStudentLedgerEntry;
 use App\Models\Student\Student;
 use App\Models\SystemSetup\Department;
 use Illuminate\Support\Facades\DB;
@@ -126,7 +127,14 @@ class SystemSettingController extends Controller
                     $blade_file_record = 'general.student_register_lists';
                     break;
                 case 'class-new':
-                    $records = Classes::whereRaw($extract_query)->paginate(100);
+                    $sessionYearCode = Auth::user()->session_year_code ?? null;
+                    $records = Classes::whereRaw($extract_query)
+                    ->WithQueryPermissionTeacher();
+                    if (!empty($sessionYearCode)) {
+                        $records = $records->where('school_year_code', $sessionYearCode);
+                    }
+                    $records = $records->paginate(100);
+
                     $updated_query = $extract_query;
                     if (!empty($data['code'])) {
                         $updated_query = preg_replace("/code=('.*?')/", "class_code=$1", $extract_query);
@@ -136,12 +144,12 @@ class SystemSettingController extends Controller
                     }
                     $total_records = Student::selectRaw('COUNT(DISTINCT code) AS total_count')
                         ->where('study_type', 'new student')
-
                         ->whereRaw($updated_query);
                     // ->groupBy('code');
                     if (!empty($updated_query)) {
                         $total_records = $total_records->whereRaw($updated_query);
                     }
+
                     $total_records = $total_records->get();
                     $blade_file_record = 'general.divided_new_classes_lists';
                     break;
@@ -167,7 +175,14 @@ class SystemSettingController extends Controller
                     $blade_file_record = 'general.class_schedule_lists';
                     break;
                 case 'assign-classes':
-                    $records = AssingClasses::whereRaw($extract_query)->paginate(1000);
+                    $sessionYearCode = Auth::user()->session_year_code ?? null;
+                    $records = AssingClasses::whereRaw($extract_query);
+
+                    if (!empty($sessionYearCode)) {
+                        $records = $records->where('session_year_code', $sessionYearCode);
+                    }
+                    $records = $records->paginate(1000);
+
                     $blade_file_record = 'general.assing_classes_lists';
                     break;
                 default:
@@ -236,13 +251,20 @@ class SystemSettingController extends Controller
                         ->where('code', '<>', null)->get();
                     $blade_file_record = 'general.teachers_lists';
                 } else if ($page == 'student_registration') {
-                        $menus = DB::table('student')
-                            ->where(function ($query) use ($search_value) {
-                                $query->where('name_2', 'like', $search_value . "%")
-                                    ->orWhere('name', 'like', $search_value . "%");
-                            })
-                            ->whereNotNull('class_code')
-                            ->get();
+                       $sessionYearCode = Auth::user()->session_year_code ?? null;
+                    $menus = DB::table('student')
+                        ->where(function ($query) use ($search_value) {
+                            $query->where('name', 'like', $search_value . "%")
+                                ->orWhere('code', 'like', $search_value . "%")
+                                ->orWhere('name_2', 'like', $search_value . "%");
+                        })
+                        ->whereRaw($this->service->getRrecordsByDepartment());
+
+                        if (!empty($sessionYearCode)) {
+                            $menus = $menus->where('session_year_code', $sessionYearCode);
+                        }
+
+                        $menus = $menus->paginate(100);
                     $blade_file_record = 'general.student_register_lists';
                 } else if ($page == 'class-new') {
                     $menus = Classes::where('name', 'like', $search_value . "%")
@@ -322,14 +344,20 @@ class SystemSettingController extends Controller
                         ->where('code', '<>', null)->paginate(100);
                     $blade_file_record = 'general.teachers_lists';
                 } else if ($page == 'student_registration') {
+                    $sessionYearCode = Auth::user()->session_year_code ?? null;
                     $menus = DB::table('student')
                         ->where(function ($query) use ($search_value) {
                             $query->where('name', 'like', $search_value . "%")
                                 ->orWhere('code', 'like', $search_value . "%")
                                 ->orWhere('name_2', 'like', $search_value . "%");
                         })
-                        ->whereNotNull('code')
-                        ->paginate(100);
+                        ->whereRaw($this->service->getRrecordsByDepartment());
+
+                        if (!empty($sessionYearCode)) {
+                            $menus = $menus->where('session_year_code', $sessionYearCode);
+                        }
+
+                        $menus = $menus->paginate(100);
                     $blade_file_record = 'general.student_register_lists';
                 } else if ($page == 'class-new') {
                     $menus = DB::table('classes')->where('name', 'like', $search_value . "%")
@@ -450,7 +478,15 @@ class SystemSettingController extends Controller
                     $blade_file_record = 'general.student_register_lists';
                     break;
                 case 'class-new':
-                    $records = Classes::whereRaw($extract_query)->paginate(100);
+                    $sessionYearCode = Auth::user()->session_year_code ?? null;
+                    $records = Classes::whereRaw($extract_query)
+                    ->WithQueryPermissionTeacher();
+                    if (!empty($sessionYearCode)) {
+                        $records = $records->where('school_year_code', $sessionYearCode);
+                    }
+                    $records = $records->paginate(100);
+
+                    
                     $updated_query = $extract_query;
                     if (!empty($data['code'])) {
                         $updated_query = preg_replace("/code=('.*?')/", "class_code=$1", $extract_query);
@@ -519,7 +555,83 @@ class SystemSettingController extends Controller
             $department =  $records->department->name_2 ?? '';
 
             $session_year = SessionYear::where('code', $records->school_year_code ?? '')->value('name');
-            return response()->json(['status' => 'success', 'records' => $records, 'skills' => $skills, 'sections' => $sections, 'department' => $department, 'session_year' => $session_year]);
+
+            // $student_entry = VStudentLedgerEntry::where('class_code', $data['class_code'])->first();
+            // $years = 1; 
+            // if (!$student_entry) {
+            //     $semester = 1;
+            //     $years = 1;
+            // } else {
+            //     $semester = $student_entry->semester + 1;
+            // }
+
+            // if($student_entry->years == 2){
+            //     $years = 2;
+            //     $semester = 1;
+            // }
+            // if($student_entry->years == 2 && $student_entry->semester == 1){
+            //     $years = 2;
+            //     $semester = 2;
+            // }
+
+          
+            // if($student_entry->years == 2 && $student_entry->semester == 3){
+            //     $years = 3;
+            //     $semester = 1;
+            // }
+            // if($student_entry->years == 3  && $student_entry->semester == 1 ){
+            //     $years = 3;
+            //     $semester = 2;
+            // }
+
+            // if($student_entry->years == 3  && $student_entry->semester == 2 ){
+            //     $years = 4;
+            //     $semester = 1;
+            // }
+
+            // if($student_entry->years == 4  && $student_entry->semester == 1 ){
+            //     $years = 4;
+            //     $semester = 2;
+            // }
+
+            $student_entry = VStudentLedgerEntry::where('class_code', $data['class_code'])->first();
+
+            if (!$student_entry) {
+                // First record
+                $years = 1;
+                $semester = 1;
+            } else {
+                // Continue from previous record
+                $years = $student_entry->years;
+                $semester = $student_entry->semester + 1;
+
+                // When semester exceeds 2, go to next year
+                if ($semester > 2) {
+                    $semester = 1;
+                    $years += 1;
+                }
+
+                // Optional: stop at year 4
+                if ($years > 4) {
+                    $years = 4;
+                    $semester = 2; // last semester
+                }
+            }
+            $semester_name = "ឆមាសទី​".  $semester;
+            $years_name = "ឆ្នាំទី" . $years;
+            
+            return response()->json([
+                'status' => 'success',
+                'records' => $records,
+                'skills' => $skills,
+                'sections' => $sections,    
+                'department' => $department,
+                'session_year' => $session_year,
+                'semester' => $semester,
+                'years' => $years,
+                'semester_name' => $semester_name,
+                'years_name' => $years_name
+            ]);
         } catch (Exception $ex) {
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
