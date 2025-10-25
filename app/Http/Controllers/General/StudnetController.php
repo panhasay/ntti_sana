@@ -1087,5 +1087,7 @@ class StudnetController extends Controller
             'student' => $student
         ]);
     }
-    
+ 
+    // paha
+
 }
