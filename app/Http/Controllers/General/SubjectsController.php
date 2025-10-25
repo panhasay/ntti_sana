@@ -79,21 +79,25 @@ class SubjectsController extends Controller
     public function update(Request $request)
     {
         $input = $request->all();
+
+        // dd($input, $request->year_type );
         $record = Subjects::where('code', $input['code'])->first();
         if (!$record) return response()->json(['status' => 'error', 'msg' => "មិនអាចកែប្រ លេខកូដ!"]);
         $code = $input['type'];
         try {
-            $records = Subjects::where('code', $code)->first();
+            $records = Subjects::where('code', $input['code'])->first();
+
             if ($records) {
                 $records->code = $request->code;
                 $records->name = $request->name;
                 $records->name_2 = $request->name_2;
                 $records->department_code = $request->department_code;
                 $records->skills_code = $request->skills_code;
-                $records->year_type = $request->year_type;
+                $records->years = $request->year_type;
+                $records->semester = $request->semester;
                 $records->type = $request->type;
                 $records->is_active = $request->is_active;
-                $records->update();
+                $records->save();
             }
             return response()->json(['status' => 'success', 'msg' => 'បច្ចុប្បន្នភាព ទិន្នន័យជោគជ័យ!', '$records' => $records]);
         } catch (\Exception $ex) {
@@ -118,6 +122,8 @@ class SubjectsController extends Controller
             $records->skills_code = $request->skills_code;
             $records->year_type = $request->year_type;
             $records->type = $request->type;
+            $records->years = $request->year_type;
+            $records->semester = $request->semester;
             $records->is_active = $request->is_active;
             $records->save();
             return response()->json(['store' => 'yes', 'msg' => 'ទិន្នន័យ បន្ថែមជោគជ័យ!']);

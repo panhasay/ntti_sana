@@ -143,6 +143,21 @@
             </div>
         </div>
 
+         <div class="col-md-6">
+          <div class="form-group row">
+            <span class="labels col-sm-3 col-form-label​ text-end">ឆមាស<strong style="color:red; font-size:15px;">
+                *</strong></span>
+            <div class="col-sm-9">
+              <select class="js-example-basic-single FieldRequired" id="semester" name="semester" style="width: 100%;">
+                <option value="1" {{ (isset($records->semester) && $records->semester == '1') ? '' : 'selected'
+                  }}>ឆមាសទី ១</option>
+                <option value="2" {{ (isset($records->semester) && $records->semester == '2') ? 'selected' : ''
+                  }}>ឆមាសទី ២</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
 
       </div>
     </div>
