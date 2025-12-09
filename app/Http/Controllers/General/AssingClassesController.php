@@ -45,6 +45,7 @@ class AssingClassesController extends Controller
         $school_year = $data['years'];
         $user = Auth::user();
         $sessionYearCode = Auth::user()->session_year_code ?? null;
+        
         // if($user->role == "teachers"){
         //     $records = AssingClasses::with(['department', 'section', 'skill', 'teacher','subject' ])
         //         ->where('years', $data['years'])
@@ -73,7 +74,11 @@ class AssingClassesController extends Controller
                 if (!empty($sessionYearCode)) {
                     $records = $records->where('session_year_code', $sessionYearCode);
                 }
+                if ($user->role == "teachers") {
+                    $records = $records->where('teachers_code', $user->user_code);
+                }
                 $records = $records->orderBy('semester', 'asc')->orderBy('years', 'asc')->paginate(15);
+
         try{
             $school_year_map = [
                 '1' => '១',
@@ -142,6 +147,8 @@ class AssingClassesController extends Controller
             $params = ['records', 'type', 'page', 'skills', 'department', 'sections', 'session_years', 'classes', 'teachers', 'subjects', 'recordsLine', 'Assingstudent', 'isEmpty'];
             if ($type == 'cr') return view('general.assing_classes_card', compact($params));
             if (isset($_GET['code'])) {
+
+
                 $records = AssingClasses::where('id', $this->services->Decr_string($_GET['code']))->first();
                 $Assingstudent = Student::where('class_code', $records->class_code ?? '')->get();
                 

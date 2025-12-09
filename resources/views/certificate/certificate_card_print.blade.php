@@ -159,7 +159,6 @@ use Illuminate\Support\Str;
         font-family: "Battambang" !important;
     }
 
-
     .card-students {
 
         border-radius: 15px;
@@ -171,7 +170,7 @@ use Illuminate\Support\Str;
 
     .stu-card-header {
          color: rgb(0, 18, 138);
-        font-size: 11px;
+        font-size: 1px;
         font-family: 'Khmer OS Muol Light', sans-serif;
         text-align: center;
         word-wrap: break-word;
@@ -278,7 +277,7 @@ use Illuminate\Support\Str;
     <div class="details">
         <div class="id-card-center">
             <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;អត្តលេខ</label>
-            <span style=" font-weight: 900; font-family: 'Arial' !important; font-size: 12px !important;">
+            <span style="font-weight: 900; font-family: 'Arial' !important; font-size: 12px !important;">
                 <b>{{ $records->code }}</b>
             </span>
         </div>
@@ -299,7 +298,7 @@ use Illuminate\Support\Str;
         </div>
         <div class="id-card-left">
             <?php 
-                $description =  App\Models\General\Qualifications::where('code',$records->level)->first();
+                $description =  App\Models\General\Qualifications::where('code',$records->qualification)->first();
             ?>
             កម្រិត<span class="ps-5">&nbsp;&nbsp;{{ $description->name_3 ?? '' }}</span>
         </div>

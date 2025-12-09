@@ -25,7 +25,6 @@
     <div class="col-5 text-center KhmerOSMuolLight"><br>
         វិទ្យាស្ថានជាតិបណ្តុះបណ្តាលបច្ចេកទេស
         ដេប៉ាតឺម៉ង់ព័ត៌មានវិទ្យា
-
     </div>
     <div class="col-2">
     </div>
@@ -33,10 +32,11 @@
         ព្រះរាជាណាចក្រកម្ពុជា <br>
         ជាតិ សាសនា ព្រះមហាក្សត្រ
     </div>
-
-
     <div class="col-12 text-center  title" style="font-family: 'Moul' !important;">
-        គំរូ បញ្ចីឈ្មោះនិស្សឹតធ្វើកាត ក្រុម<span class="bold"> : {{ $header->code ?? ''  }} </span>វេន{{ $header->section->name_2 ?? '' }} ជំនាញ{{ $header->skill->name_2 ?? '' }} ឆ្នាំសិក្សា ២០២៤-២០២៥
+        បញ្ជីរាយនាមនិស្សិតធ្វេីបណ្ណសម្គាល់ខ្លួន​ ក្រុម​ {{ $header->code ?? ''  }} វេន{{ $header->section->name_2 ?? '' }}​ <br>ជំនាញ{{ $header->skill->name_2 ?? '' }}​ ឆ្នាំសិក្សា​ 2025-2026  
+    </div>
+    <div>
+      <img src="{{ asset('assets/images/qr_student.jpg') }}" alt="" width="100" height="100" style="margin-top: -90px !important; float: right !important; margin-right: 30px !important;">
     </div>
 </div>
 <br>
@@ -68,9 +68,7 @@
             <td class="text-center">{{ App\Service\service::DateYearKH($line->date_of_birth) ?? '' }}</td>
             <td class="text-center"></td>
             <td class="text-center">
-              <img 
-                src="{{ asset($pictues && $pictues->picture_ori ? '/uploads/student/' . $pictues->picture_ori : '/asset/NTTI/images/faces/default_User.jpg') }}" 
-                alt="" width="58" height="60"
+              <img   src="{{ asset($pictues && $pictues->picture_ori ? '/uploads/student/' . $pictues->picture_ori : '/asset/NTTI/images/faces/default_User.jpg') }}"  alt="" width="58" height="60"
               >
             </td>
           </tr>

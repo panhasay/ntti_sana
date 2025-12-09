@@ -29,7 +29,7 @@
       <td>{{ preg_replace('/[^a-zA-Z0-9]/', '', $record->class_code ?? '') }}</td>
       <td>{{ $record->skill->name_2 ?? '' }}</td>
       <td>{{ $record->qualification ?? '' }}</td>
-      <td>{{ $record->section_name ?? '' }}</td>
+      <td>{{ $record->section->name_2 ?? '' }}</td>
       <td>{{ $record->mother_name ?? '' }}</td>
       <td>{{ $record->father_name ?? '' }}</td>
       <td>{{ str_replace('_', ' - ', $record->session_year_code ?? '') }}</td>

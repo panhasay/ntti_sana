@@ -27,43 +27,43 @@ window.addEventListener("unhandledrejection", function (event) {
     sendErrorToLaravel(errorDetails);
 });
 
-function sendErrorToLaravel(errorDetails) {
-    // Prevent logging of trivial or expected errors
-    if (shouldIgnoreError(errorDetails)) {
-        return;
-    }
+// function sendErrorToLaravel(errorDetails) {
+//     // Prevent logging of trivial or expected errors
+//     if (shouldIgnoreError(errorDetails)) {
+//         return;
+//     }
 
-    try {
-        fetch("/log-js-error", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": getCSRFToken(),
-            },
-            body: JSON.stringify(errorDetails),
-            credentials: "same-origin", // Important for sending cookies
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                return response.json();
-            })
-            .then((data) => {
-                console.log("Error successfully logged in Laravel", data);
-            })
-            .catch((error) => {
-                // Fallback logging mechanism
-                console.error("Failed to log error:", error);
-                localStorage.setItem(
-                    "failedErrorLog",
-                    JSON.stringify(errorDetails)
-                );
-            });
-    } catch (e) {
-        console.error("Error in error logging:", e);
-    }
-}
+//     try {
+//         fetch("/log-js-error", {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json",
+//                 "X-CSRF-TOKEN": getCSRFToken(),
+//             },
+//             body: JSON.stringify(errorDetails),
+//             credentials: "same-origin", // Important for sending cookies
+//         })
+//             .then((response) => {
+//                 if (!response.ok) {
+//                     throw new Error("Network response was not ok");
+//                 }
+//                 return response.json();
+//             })
+//             .then((data) => {
+//                 console.log("Error successfully logged in Laravel", data);
+//             })
+//             .catch((error) => {
+//                 // Fallback logging mechanism
+//                 console.error("Failed to log error:", error);
+//                 localStorage.setItem(
+//                     "failedErrorLog",
+//                     JSON.stringify(errorDetails)
+//                 );
+//             });
+//     } catch (e) {
+//         console.error("Error in error logging:", e);
+//     }
+// }
 
 // Helper function to get CSRF token
 function getCSRFToken() {

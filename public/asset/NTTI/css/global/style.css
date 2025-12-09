@@ -14350,4 +14350,8 @@ dl {
   font-style: normal;
   font-size: 30px !important;
 }
+.table-striped>tbody>tr:nth-of-type(odd)>* {
+    --bs-table-accent-bg:  #ffffff !important;
+    color: #333333 !important;
+}
 

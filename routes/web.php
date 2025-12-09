@@ -26,7 +26,9 @@
     use App\Http\Controllers\General\ScoreController;
     use App\Models\General\ExamSchedule;
     use App\Http\Controllers\Certificates\CertificateController;
-    use App\Http\Controllers\General\SectionsController;
+use App\Http\Controllers\General\AttendanceMonthlyController;
+use App\Http\Controllers\General\AttendanceSemesterController;
+use App\Http\Controllers\General\SectionsController;
     use App\Http\Controllers\General\StudentSanaController;
     use App\Http\Controllers\General\TransferController;
     use App\Http\Controllers\Report\ReportAttendanceController;
@@ -55,13 +57,16 @@ Route::get('/greeting/{locale}', function (string $locale) {
     Route::get('/', function () {
         return view('auth.login');
     });
+    
     Route::get('/', [AuthController::class, 'HomeLogin'])->name('HomeLogin');
     Route::get('/thank-you-for-submit', function () {
         return view('/system.thank_you_for_submit');
     });
+
     Route::get('/menu-reports', function () {
         return view('general.main_menu_report');
     });
+
     Route::get('user-dont-have-permission', function () {
         return view('errors.permission_acces');
     });
@@ -75,6 +80,10 @@ Route::get('/greeting/{locale}', function (string $locale) {
     });
 
     
+    Route::get('/thank_you', function () {
+        return view('system.thank_you');
+    })->name('thank_you');
+        
     Route::get('/return-login', [AuthController::class, 'returnlogin'])->name('returnlogin');
     Route::get('login', [AuthController::class, 'index'])->name('login');
     Route::post('post-login', [AuthController::class, 'postLogin'])->middleware('limit.logins')->name('login.post');
@@ -189,7 +198,6 @@ Route::group(['perfix' => 'table'], function (){
     // Route::get('/villages', [SystemSettingController::class, 'villages'])->name('locations.villages');
 })->middleware('auth');
 
-
 Route::group(['perfix' => 'classes'], function (){
     Route::get('/classes', [ClassesController::class, 'index']);
     Route::get('/classes/transaction', [ClassesController::class, 'transaction']);
@@ -197,6 +205,30 @@ Route::group(['perfix' => 'classes'], function (){
     Route::post('/classes/store', [ClassesController::class, 'store']);
     Route::post('/classes-delete', [ClassesController::class, 'deleteCLASS']);
     Route::POST ('/class-schedule', [ClassesController::class, 'delete']);
+})->middleware('auth');
+
+Route::group(['perfix' => '/class-schedule'], function (){
+    // Route::get('/class-schedule', [ClassScheduleController::class, 'index']);
+    // Route::get('/class-schedule/transaction', [ClassScheduleController::class, 'transaction']);
+    // Route::post('/class-schedule/update', [ClassScheduleController::class, 'update']);
+    // Route::post('/class-schedule/store', [ClassScheduleController::class, 'store']);
+    // Route::POST ('/class-schedule-delete', [ClassScheduleController::class, 'delete']);
+    // Route::POST ('/class-schedule/save-schedule', [ClassScheduleController::class, 'SaveSchedule']);
+    // Route::POST ('/class-schedule-delete-line', [ClassScheduleController::class, 'DeleteLine']);
+    // Route::get('/class-schedule-print',[ClassScheduleController::class,'printLine']);
+    // Route::get('/update/class-schedule/transaction',[ClassScheduleController::class,'EditTeacherSchedule']);
+    
+    Route::get('/class-schedule-index',[ClassScheduleController::class,'classScheduleV2']);
+    Route::get('/list/transaction/{id}',[ClassScheduleController::class,'classScheduleList'])->name('class.schedule.list');
+    Route::get('/create-new-list',[ClassScheduleController::class,'classScheduleStoreV2view'])->name('class.schedule.add');
+    Route::get('/class-schedule/get-data', [ClassScheduleController::class, 'getClassData'])->name('class.schedule.getData');
+    Route::post('/class-schedule/store-v2', [ClassScheduleController::class, 'classScheduleStoreV2'])->name('class.schedule.store.v2');
+    Route::delete('/class-schedule/delete/{id}', [ClassScheduleController::class, 'deleteClassSchedule'])->name('class.schedule.delete');
+    Route::post('/assign-class/store', [ClassScheduleController::class, 'storeAssignClassSchedule'])->name('assign.class.store');
+    Route::delete('/assign-class/delete/{id}', [ClassScheduleController::class, 'deleteAssignClassSchedule'])->name('assign-class.delete');
+    Route::get('/assign-class/{id}/edit', [ClassScheduleController::class, 'editAssignClassSchedule']);
+    Route::put('/assign-class/{id}', [ClassScheduleController::class, 'updateAssignClassSchedule']);
+
 })->middleware('auth');
 
 Route::group(['perfix' => 'skills'], function (){
@@ -478,26 +510,38 @@ Route::get('dahhboard-inputer-account', [DashboardController::class, 'dahhboardI
 //     Route::get('/', [DashboardController::class, 'dahhboardInter']);
 // })->middleware('auth');
 
-Route::get('/qr-stu', function () {
-    return view('general.card_student_login');
-});
-
-// Route::get('register-card-student',[StudnetController::class,'cardStudent']);
-Route::post('register-card-student',[StudnetController::class,'cardStudentLogin'])->name('card.student.login.post');
-Route::get('card-student-list/{code}',[StudnetController::class,'cardStudentList'])->name('card.student.lsit');
-Route::put('card-student-list/{code}', [StudnetController::class, 'updateCardStudent'])->name('students.update');
-
+ Route::get('qr-stu', [StudnetController::class, 'CheckStudent'])->name('students.CheckStudent');
+ Route::get('qr-card-admin-ntti', [StudnetController::class, 'QrAdminCardNtti'])->name('students.QrAdminCardNtti');
 
 Route::group(['prefix' => 'up-grade-class'], function (){
     Route::get('/',[UpgradeClassController::class,'index']);
     Route::get('/transaction', [UpgradeClassController::class, 'transaction']);
     Route::POST('/save-selected-students', [UpgradeClassController::class, 'SelectedStudent']);
     Route::POST('/save-upgraded-students', [UpgradeClassController::class, 'SaveUpgradedStudents']);
-   
 })->middleware('auth');
 
-
-Route::get('register-card-student',[StudnetController::class,'cardStudent']);
+Route::get('register-card-student',[StudnetController::class,'cardStudent'])->name('card.student.login.get');
 Route::post('register-card-student',[StudnetController::class,'cardStudentLogin'])->name('card.student.login.post');
-Route::get('card-student-list/{code}',[StudnetController::class,'cardStudentList'])->name('card.student.lsit');
+Route::get('card-student-list/{code}',[StudnetController::class,'cardStudentList'])->name('card.student.list');
 Route::put('card-student-list/{code}', [StudnetController::class, 'updateCardStudent'])->name('students.update');
+Route::post('/upload-profile/{code}', [StudnetController::class, 'uploadProfile']);
+
+Route::group(['prefix' => 'attendance-monthly'],function(){
+    Route::get('/index',[AttendanceMonthlyController::class,'index']);
+    Route::get('/class-list',[AttendanceMonthlyController::class,'attendanceMonthlyClassList']);
+    Route::get('/list',[AttendanceMonthlyController::class,'attendanceMonthlyList']);
+    Route::get('/class-detail',[AttendanceMonthlyController::class,'attendanceMonthlySubjectDetail']);
+    Route::get('/print',[AttendanceMonthlyController::class,'printAttendanceMonthly']);
+})->middleware('auth');
+
+Route::group(['prefix' => 'attendance-semester'],function(){
+    Route::get('/index',[AttendanceSemesterController::class,'index']);
+    Route::get('/list',[AttendanceSemesterController::class,'attendanceSemesterList']);
+    Route::get('/print',[AttendanceSemesterController::class,'printAttendanceSemester']);
+})->middleware('auth');
+
+Route::group(['prefix'=> 'exam-credit'],function(){
+    Route::get('/index',[ExamCreditController::class,'index']);
+    Route::get('/print',[ExamCreditController::class,'print']);
+    Route::get('/excel',[ExamCreditController::class,'excel']);
+})->middleware('auth');

@@ -1585,12 +1585,12 @@ a {
     vertical-align: middle
 }
 
-.table-striped>tbody>tr:nth-of-type(odd) {
-    background: #ffff !important;
-    /* color: #ffff !important; */
-}
 .table>:not(caption)>*>* {
     padding: 10px !important;
     background: #ffff !important;
     border-bottom-width: 1px;
 }
+/* .table-striped>tbody>tr:nth-of-type(odd)>* {
+    --bs-table-accent-bg: #ffff !important;
+    color: #ffff !important;
+} */

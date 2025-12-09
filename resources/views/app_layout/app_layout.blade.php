@@ -107,8 +107,6 @@
                   {{-- <input type="text" class="form-control" id="search_menu_function" name="search_menu_function"
                     placeholder="Search" aria-label="search" aria-describedby="search" /> --}}
                   {{-- @include('system.menu_search_list') --}}
-
-
                 </div>
               </li>
             </ul>
@@ -117,11 +115,9 @@
                 <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                   <div class="nav-profile-img">
                     <?php
-
                         $user = Auth::user();
                         $picture =  App\Models\General\Picture::where('code', $user->id ?? '')->where('type','profile')->value('picture_ori');
                         $sessionYear = App\Models\General\SessionYear::orderBy('code', 'desc')->get();
-
                     ?>
                     @if(isset($picture) && $picture != null)
                       <img class="btn-Image" id="btn-Image" data-code ='{{$records_by_user->code ?? ''}}' src="{{ $picture ?? '' }}" width="1000" height="1000">
@@ -131,7 +127,7 @@
                     {{-- <img src="{{asset('asset/NTTI/images/faces/default_User.jpg')}}" alt="image" /> --}}
                   </div>
                   <div class="nav-profile-text">
-                    <p class="text-black font-weight-semibold m-0"> {{ Auth::user()->name ?? ''}} </p>
+                    <p class="text-black font-weight-semibold m-0" style="font-size: 14px !important;"> {{ Auth::user()->name ?? ''}} </p>
                     <span class="font-13 online-color">{{ Auth::user()->username ?? ''}} </span>
                   </div>
                 </a>
@@ -165,11 +161,26 @@
               </a>
             </li> --}}
             <li class="nav-item">
-              <a class="nav-link" href="{{ url('/department-menu') }}">
+              <a class="nav-link" href="{{ url('/dashboard') }}">
                 <i class="mdi mdi-monitor-dashboard menu-icon"></i>
                 <span class="menu-title">Dashboard</span>
               </a>
             </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url('/department-menu') }}">
+                <i class="mdi mdi-clipboard-text menu-icon"></i>
+                <span class="menu-title">Menu</span>
+              </a>
+            </li>
+
+            {{-- <li class="nav-item">
+              <a class="nav-link" href="{{ url('/department-menu') }}">
+                <i class="mdi mdi-clipboard-text menu-icon"></i>
+                <span class="menu-title">Menu</span>
+              </a>
+            </li> --}}
+
             {{-- <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="mdi mdi-monitor-dashboard menu-icon"></i>
@@ -252,7 +263,7 @@
 
                 <div class="nav-item dropdown">
                   <a class="nav-link count-indicator dropdown-toggle text-white font-weight-semibold"
-                     id="current_session_year" href="#" data-bs-toggle="dropdown">​ឆ្នាំសិក្សា {{ str_replace('_', '-', Auth::user()->session_year_code ?? '') }}</a>
+                     id="current_session_year" href="#" data-bs-toggle="dropdown" style="font-size: 14px !important;">​ឆ្នាំសិក្សា {{ str_replace('_', '-', Auth::user()->session_year_code ?? '') }}</a>
                   <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
                     @foreach ($sessionYear as $record)
                         <a class="dropdown-item" href="#" id="session_year_code" data-code="{{ $record->code ?? '' }}">

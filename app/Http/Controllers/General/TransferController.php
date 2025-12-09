@@ -63,7 +63,8 @@ class TransferController extends Controller
             ->when($sessionYearCode, fn($q) => $q->where('session_year_code', $sessionYearCode))
             ->groupBy('student_code', 'class_code', 'skills_code', 'qualification', 'sections_code', 'years', 'session_year_code')
             ->orderByDesc('student_code')
-            ->paginate(15);
+            ->get();
+
 
         // Total HangOfStudent
         $total_student_HangOfStudent = HangOfStudent::when($sessionYearCode, fn($q) => $q->where('session_year_code', $sessionYearCode))

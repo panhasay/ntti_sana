@@ -35,6 +35,7 @@ use App\Models\SystemSetup\Department;
 use App\Models\General\Qualifications;
 use App\Models\General\Sections;
 use App\Models\General\StudentCard;
+use App\Models\General\StudentCradSession;
 use UserImport;
 
 class StudnetController extends Controller
@@ -1025,68 +1026,220 @@ class StudnetController extends Controller
     public function cardStudentLogin(Request $request)
     {
         $code = $request->input('code');
+
+        // if (Cache::has("student_logged_in_$code")) {
+        //     $message = 'អ្នកបានចូលប្រព័ន្ធរួចហើយ!';
+        //     if ($request->ajax()) {
+        //         return response()->json(['status' => 'error', 'message' => $message]);
+        //     }
+        //     return redirect()->back()->with('error', $message);
+        // }
+
+        $exit_recored =  StudentCradSession::where('student_code', $code)->first();
+        if($exit_recored){
+            return response()->json(['status' => 'error']);
+        }
         $student = StudentCard::where('code', $code)->first();
-
-        if ($student) {
-            return redirect()->route('card.student.lsit', ['code' => $student->code]);
-        } else {
-            return redirect()->back()->with('error', 'មិនមានលេខកូដក្នុងប្រព័ន្ធទេ!');
-        }
-    }
-
-    public function cardStudentList($code)
-    {
-        $student = DB::table('student as s')
-            ->join('department as d', 's.department_code', '=', 'd.code')
-            ->join('sections as se', 's.sections_code', '=', 'se.code')
-            ->join('skills as sk', 's.skills_code', "=", 'sk.code')
-            ->join('cert_student_print_card_expire_class as cert_expire_class', 's.class_code', '=', 'cert_expire_class.class_code')
-            ->select(
-                's.*',
-                'd.name_2 as department_name',
-                'se.name_2 as section_name',
-                'sk.name_2 as skill_name',
-                'cert_expire_class.print_expire_date as expire_date'
-            )
-            ->where('s.code', $code)
-            ->first();
-
         if (!$student) {
-            return redirect()->back()->with('error', 'Student not found');
+            $message = 'មិនមានលេខកូដក្នុងប្រព័ន្ធទេ!';
+            if ($request->ajax()) {
+                return response()->json(['status' => 'error', 'message' => $message]);
+            }
+            return redirect()->back()->with('error', $message);
+        }
+        $student = auth()->user();
+        $record = new StudentCradSession();
+        $record->student_code = $code;
+        $record->ssection_code = $request->ssection_code;
+        $record->user_agent = $request->header('User-Agent');
+        $record->uploaded_by = auth()->user()->name ?? 'system';
+        $record->status = 'pending';
+        $record->save();
+        // Cache::put("student_logged_in_$code", true, now()->addDay());
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'redirect_url' => route('card.student.list', ['code' => $code])
+            ]);
         }
 
-        return view('general.card_student_list', compact('student'));
+        return redirect()->route('card.student.list', ['code' => $code]);
+    }
+    public function cardStudentList($code, Request $request)
+    {
+
+        if (
+            !$request->session()->has('student_logged_in') ||
+            $request->session()->get('student_logged_in') !== $code
+        ) {
+
+            // return redirect()->route('card.student.login.get')
+            //     ->with('error', 'អ្នកមិនអាចចូលបានដោយផ្ទាល់តាម URL!');
+        }
+
+        // $student = DB::table('student as s')
+        //     ->join('department as d', DB::raw('CONVERT(s.department_code USING utf8mb4) COLLATE utf8mb4_unicode_ci'), '=', DB::raw('CONVERT(d.code USING utf8mb4) COLLATE utf8mb4_unicode_ci'))
+        //     ->join('sections as se', DB::raw('CONVERT(s.sections_code USING utf8mb4) COLLATE utf8mb4_unicode_ci'), '=', DB::raw('CONVERT(se.code USING utf8mb4) COLLATE utf8mb4_unicode_ci'))
+        //     ->join('skills as sk', DB::raw('CONVERT(s.skills_code USING utf8mb4) COLLATE utf8mb4_unicode_ci'), '=', DB::raw('CONVERT(sk.code USING utf8mb4) COLLATE utf8mb4_unicode_ci'))
+        //     ->leftJoin('picture as pic', DB::raw('CONVERT(s.code USING utf8mb4) COLLATE utf8mb4_unicode_ci'), '=', DB::raw('CONVERT(pic.code USING utf8mb4) COLLATE utf8mb4_unicode_ci'))
+        //     ->join('cert_student_print_card_expire_class as cert_expire_class', DB::raw('CONVERT(s.class_code USING utf8mb4) COLLATE utf8mb4_unicode_ci'), '=', DB::raw('CONVERT(cert_expire_class.class_code USING utf8mb4) COLLATE utf8mb4_unicode_ci'))
+        //     ->select(
+        //         's.*',
+        //         'd.name_2 as department_name',
+        //         'se.name_2 as section_name',
+        //         'sk.name_2 as skill_name',
+        //         'cert_expire_class.print_expire_date as expire_date',
+        //         'pic.picture_ori as student_profile',
+        //     )
+        // ->where('s.code',)
+        // ->where(DB::raw('CONVERT(s.code USING utf8mb4) COLLATE utf8mb4_unicode_ci'), '=', $code)
+        // ->first();
+
+        $student = StudentRegistration::where('code', $code)->first();
+
+        $student_pic = Picture::where('code',  $code)->value('picture_ori');
+
+
+        return view('general.card_student_list', compact('student', 'student_pic'));
     }
 
     public function updateCardStudent(Request $request, $code)
     {
+        // Find student
         $student = StudentCard::where('code', $code)->firstOrFail();
 
-        // Only update the fields you actually want
-        $student->update($request->only([
-            'name',
-            'name_2',
-            'gender',
-            'date_of_birth',
-            'phone_student',
-            'student_address',
-            'father_name',
-            'father_phone',
-            'father_occupation',
-            'mother_name',
-            'mother_phone',
-            'mother_occupation',
-            'guardian_name',
-            'guardian_phone',
-            'guardian_occupation',
-            'guardian_address'
-        ]));
+        // --- Safe date parsing ---
+        $dob = trim($request->date_of_birth);
+
+        if (strpos($dob, '/') !== false) {
+            // format: d/m/Y
+            $date_of_birth = \Carbon\Carbon::createFromFormat('d/m/Y', $dob)->format('Y-m-d');
+        } elseif (strpos($dob, '-') !== false && strlen($dob) === 10 && preg_match('/^\d{2}-\d{2}-\d{4}$/', $dob)) {
+            // format: d-m-Y
+            $date_of_birth = \Carbon\Carbon::createFromFormat('d-m-Y', $dob)->format('Y-m-d');
+        } else {
+            // format: Y-m-d (browser default, fallback)
+            $date_of_birth = \Carbon\Carbon::parse($dob)->format('Y-m-d');
+        }
+
+        // --- Update student ---
+        $student->update([
+            'name'               => $request->name,
+            'name_2'             => $request->name_2,
+            'gender'             => $request->gender,
+            'date_of_birth'      => $date_of_birth,
+            'phone_student'      => $request->phone_student,
+            'student_address'    => $request->student_address,
+            'father_name'        => $request->father_name,
+            'father_phone'       => $request->father_phone,
+            'father_occupation'  => $request->father_occupation,
+            'mother_name'        => $request->mother_name,
+            'mother_phone'       => $request->mother_phone,
+            'mother_occupation'  => $request->mother_occupation,
+            'guardian_name'      => $request->guardian_name,
+            'guardian_phone'     => $request->guardian_phone,
+            'guardian_occupation' => $request->guardian_occupation,
+            'guardian_address'   => $request->guardian_address,
+        ]);
 
         return response()->json([
             'success' => true,
             'student' => $student
         ]);
     }
-    // paha
 
+    public function uploadProfile(Request $request, $code)
+    {
+        try {
+            // 🧩 Validate file (max: 2MB, must be jpeg/png/jpg)
+            $request->validate([
+                'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            ]);
+
+            $uploadPath = public_path('uploads/student');
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0777, true);
+            }
+
+            // 🔍 Find existing profile image
+            $existingPicture = \App\Models\General\Picture::where('code', $code)
+                ->where('type', 'profile')
+                ->first();
+
+            // 🗓️ Generate a new filename
+            $date = date('Ymd');
+            $uniqueId = uniqid();
+            $extension = $request->file('image')->getClientOriginalExtension();
+            $fileName = "ntti_{$code}_{$date}_{$uniqueId}.{$extension}";
+            $filePath = $uploadPath . '/' . $fileName;
+
+            // 🧹 If there’s an old image, delete both file and record
+            if ($existingPicture) {
+                $oldFile = $uploadPath . '/' . $existingPicture->picture_ori;
+                if (file_exists($oldFile)) {
+                    unlink($oldFile);
+                }
+                $existingPicture->delete();
+            }
+
+            // 🚀 Move uploaded file to destination
+            $request->file('image')->move($uploadPath, $fileName);
+
+            // 💾 Save new record
+            $picture = \App\Models\General\Picture::create([
+                'code' => $code,
+                'type' => 'profile',
+                'picture_ori' => $fileName,
+            ]);
+
+            // ✅ Return success response
+            return response()->json([
+                'success' => true,
+                'message' => 'រូបភាពត្រូវបានរក្សាទុកជោគជ័យ!',
+                'path' => asset("uploads/student/{$picture->picture_ori}")
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $ex) {
+            // ⚠️ Handle validation errors (e.g., file too large)
+            $errorMessage = $ex->validator->errors()->first('image');
+
+            if (str_contains($errorMessage, 'The image may not be greater than')) {
+                $errorMessage = '❌ ទំហំរូបភាពធំពេក! សូមជ្រើសរូបភាពមិនលើសពី 2MB.';
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => $errorMessage,
+            ], 422);
+        } catch (\Throwable $e) {
+            if (isset($filePath) && file_exists($filePath)) {
+                unlink($filePath);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'មានបញ្ហាក្នុងការផ្ទុករូបភាព!',
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+            ], 500);
+        }
+    }
+
+    public function CheckStudent(Request $request)
+    {
+        $student = auth()->user();
+        $currentUserAgent = $request->header('User-Agent');
+        // $exists = StudentCradSession::where('user_agent', $currentUserAgent)->first();
+        // if ($exists) {
+        //     return view('system.thank_you');
+        //     // return redirect("/card-student-list/{$exists->student_code}");
+        // }
+        return view('general.card_student_login');
+    }
+    public function QrAdminCardNtti(Request $request)
+    {
+        $records  =  StudentCradSession::orderBy('created_at', 'desc')->get();
+        $studentImg = Picture::whereIn('code', $records->pluck('student_code'))->get();
+
+        return view('general.student_reqeust_card', compact('records', 'studentImg'));
+    }
 }

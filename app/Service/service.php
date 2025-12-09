@@ -515,7 +515,7 @@ class service
         $department = Department::get();
         $qualifications = Qualifications::get();
         $classs = Classes::where('is_active', 'yes')
-        ->WhereRaw(self::getRrecordsByDepartment());
+            ->WhereRaw(self::getRrecordsByDepartment());
         if (!empty($sessionYearCode)) {
             $classs = $classs->where('school_year_code', $sessionYearCode);
         }
@@ -554,7 +554,8 @@ class service
         }
         return "1=1 and department_code = '" . addslashes($code) . "'";
     }
-    public static function formatSessionYearToKhmer($yearRange){
+    public static function formatSessionYearToKhmer($yearRange)
+    {
         $yearRange = str_replace('_', '-', $yearRange);
 
         $khmerDigits = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
@@ -577,5 +578,28 @@ class service
         }
 
         return $query;
+    }
+
+    public static function getStudentExpireYear($academicYear, $yearsToAdd = 5)
+    {
+        // Base query (if needed)
+        $creterial = '1=1';
+
+        // Check if valid format like 2025_2026
+        if (strpos($academicYear, '_') === false) {
+            return null;
+        }
+        
+        // Split academic year
+        [$startYear, $endYear] = explode('_', $academicYear);
+
+        // Convert start year to integer and add 5 years
+        $expireYear = (int)$startYear + $yearsToAdd;
+
+        // Create expiration date — 01 March of that year
+        $expireDate = Carbon::create($expireYear, 3, 1)->format('d-m-Y');
+
+        // Return expiration date
+        return $expireDate;
     }
 }

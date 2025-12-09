@@ -13,60 +13,63 @@ use Illuminate\Support\Facades\Auth;
 
 class StudentRegistration extends Model
 {
-   // protected $table = 'students';
+    // protected $table = 'students';
 
-   protected $table = 'student';
-   protected $primaryKey = 'id';
-   use HasFactory;
-   protected $fillable = [
-       '*',
-   ];
-   function convertDaysToDate($days)
-   {
-       $referenceDate = strtotime('1900-01-01');
-       $targetDate = $referenceDate + ($days * 86400); 
-       return date('Y-m-d', $targetDate);
-   }
+    protected $table = 'student';
+    protected $primaryKey = 'id';
+    use HasFactory;
+    protected $fillable = [
+        '*',
+    ];
+    function convertDaysToDate($days)
+    {
+        $referenceDate = strtotime('1900-01-01');
+        $targetDate = $referenceDate + ($days * 86400);
+        return date('Y-m-d', $targetDate);
+    }
 
-   public static function codeExists($code)
+    public static function codeExists($code)
     {
         return self::where('code', $code)->exists();
     }
-   public function department()
-   {
-       return $this->belongsTo(Department::class, 'department_code', 'code');
-   }
-   public function section()
-   {
-       return $this->belongsTo(Sections::class, 'sections_code', 'code');
-   }
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_code', 'code');
+    }
+    public function section()
+    {
+        return $this->belongsTo(Sections::class, 'sections_code', 'code');
+    }
 
-   public function skill()
-   {
-       return $this->belongsTo(Skills::class, 'skills_code', 'code');
-   }
+    public function skill()
+    {
+        return $this->belongsTo(Skills::class, 'skills_code', 'code');
+    }
 
-   public function teacher()
-   {
-       return $this->belongsTo(Teachers::class, 'teachers_code', 'code');
-   }
-  
-   public function study_years()
-   {
-       return $this->belongsTo(StudyYears::class, 'apply_year', 'code');
-   }
-   public function session_year()
-   {
-       return $this->belongsTo(SessionYear::class, 'session_year_code', 'code');
-   }
+    public function teacher()
+    {
+        return $this->belongsTo(Teachers::class, 'teachers_code', 'code');
+    }
+
+    public function study_years()
+    {
+        return $this->belongsTo(StudyYears::class, 'apply_year', 'code');
+    }
+    public function session_year()
+    {
+        return $this->belongsTo(SessionYear::class, 'session_year_code', 'code');
+    }
     public function scopeWithQueryPermission($query)
     {
         $user = Auth::user();
         if ($user->department_code) {
-           return $query->where('department_code', $user->department_code);
-        }else {
+            return $query->where('department_code', $user->department_code);
+        } else {
             return $query;
         }
-        
+    }
+    public function studentImg()
+    {
+        return $this->hasOne(Picture::class, 'code', 'code');
     }
 }

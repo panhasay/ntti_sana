@@ -179,45 +179,41 @@ class CertificateController extends Controller
         $search = $request->input('search');
         $page = $request->input('page', 1);
         $rows_per_page = $request->input('rows_per_page', 50);
-
         $students = StudentModel::getFilteredStudents($dept_code, $class_code, $search, $rows_per_page);
         $students->transform(function ($student) {
             $student->stu_photo = DB::table('picture')
                 ->where('code', $student->code)
                 ->orderByDesc('id')
                 ->value('picture_ori');
-
             $filePath = public_path('uploads/student/' . $student->stu_photo);
-
             $student->photo_status = $student->stu_photo && file_exists($filePath) ? true : false;
-
-            
-            
             $record_card_expire = CertStudentPrintCardExpireClass::where('class_code', $student->class_code)
                 ->where('status', 1)
                 ->orderBy('session_code', 'desc')
                 ->first();
 
+               
             $expireDate = null;
+
+            $expireDate = $this->services::getStudentExpireYear($student->session_year_code);
+
+           
 
             if ($record_card_expire && isset($record_card_expire->expire_date)) {
                 $expireDate = $this->services::DateYearKH($record_card_expire->expire_date);
             }
-
             $now = Carbon::now()->subYear();
-          
+            
             Carbon::parse($record_card_expire['expire_date'] ?? $now);
             // $diff = $expireDate->diff($now);
             $student->expire_date = $record_card_expire['expire_date'] ?? 0;
             $student->print_expire_date = $record_card_expire['print_expire_date'] ?? 0;
             $student->remaining = $expireDate;
-            
             if ($expireDate <= $now) {
                 $student->class_remaining = 'text-danger';
             } else {
                 $student->class_remaining = 'text-danger';
             }
-
             $count_revision = CertStudentPrintCardRevision::where('print_card_id', $student->id)
                 ->where('status', 1)
                 ->count();
@@ -234,7 +230,8 @@ class CertificateController extends Controller
     }
     public function printCardStudent(Request $request)
     {
-        try {
+        // try {
+
             $print_card_id = $request->input('print_card_id');
             $dept_code = $request->input('dept_code');
             $class_code = $request->input('class_code');
@@ -285,10 +282,10 @@ class CertificateController extends Controller
             }
 
             return view('certificate.certificate_card_print', compact('records', 'record_date_khmer', 'record_print'));
-        } catch (\Exception $e) {
-            Log::error('Card print error: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Unable to generate student card');
-        }
+        // } catch (\Exception $e) {
+        //     Log::error('Card print error: ' . $e->getMessage());
+        //     return redirect()->back()->with('error', 'Unable to generate student card');
+        // }
     }
     public function storePrintCardRevision(Request $request)
     {
@@ -445,8 +442,12 @@ class CertificateController extends Controller
 
         $dayOfWeek = $khmerDays[$date->format('w')];
 
-        $month = $LunarNewYear[$date->format('n') - 0];
-        $year = $nameYear[(($date->format('Y') - 5) % 12)];
+        $month = $LunarNewYear[$date->format('n') - 1];
+
+        $index = (($date->format('Y') - 5) % 12);
+        $index = ($index == 0 ? 12 : $index);
+
+        $year = $nameYear[$index];
 
         return "{$dayOfWeek} {$khmerDayInLunarPhase}{$lunarPhase} ខែ{$month} {$year} {$khmerYearCycle} ព.ស.{$buddhistYear}";
     }

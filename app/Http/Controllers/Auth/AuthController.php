@@ -119,7 +119,7 @@ class AuthController extends Controller
             }elseif($permission->role == "teachers"){
                 return redirect()->intended('teacher-dashboard');
             }else{
-                return redirect()->intended('department-menu')
+                return redirect()->intended('dashboard')
                 ->withSuccess('You have Successfully loggedin');    
             }
         }

@@ -10,7 +10,7 @@ class StudentCard extends Model
     use HasFactory;
 
     protected $table = 'student';
-
+    
     protected $fillable = [
         'name',
         'name_2',

@@ -26,7 +26,7 @@
         <div class="col-12 col-md">
             <div class="effect-9">
                 <div class="effect-img">
-                    <a href="{{ url('/class-schedule') }}">
+                    <a href="{{ url('/class-schedule-index') }}">
                         <img src="https://img.freepik.com/free-vector/organic-flat-people-business-training-illustration_23-2148901755.jpg?w=996&t=st=1699538720~exp=1699539320~hmac=e469da26591c37b7556bdd7e17fce39370c0b43b3e9cd9a5b61afd38d58a7246"
                             alt="Team Image">
                     </a>
@@ -154,9 +154,11 @@
                 </div>
                 <div class="container p-0 p-lg-3 menu-list">
                     <ul>
-                        <li><a href="{{ url('student/registration') }}">និស្សិត</a></li>
+                        <li><a href="{{ url('student/registration/transaction?type=cr') }}">បញ្ជូលទិន្នន័យ​ ព័ត៌មាននិស្សិត</a></li>
+                        <li><a href="{{ url('student/registration') }}">បញ្ជីឈ្មោះ ព័ត៌មាននិស្សិត</a></li>
+                        <li><a href="{{ url('class-new') }}">ទិន្នន័យ​ និស្សិតតាមក្រុមថ្នាក់</a></li>
+
                         <li><a href="{{ url('student/scholarship') }}">និស្សិតអាហារូបករណ៏</a></li>
-                        <li><a href="{{ url('class-new') }}">និស្សិតតាមក្រុមថ្នាក់</a></li>
                     </ul>
                 </div>
             </div>
@@ -195,7 +197,8 @@
         </div>
     @else
     <div>
-        <br><br><br><br><br><br><br>
+       
     </div>
     @endif
+     <br><br><br><br><br><br><br><br><br><br><br><br>
 @endsection

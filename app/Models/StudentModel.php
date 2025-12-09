@@ -85,7 +85,6 @@ class StudentModel extends Model
                         ->orWhere('student.name_2', 'LIKE', "%{$search}%");
                 });
             })
-            ->orderByRaw("student.name_2 COLLATE utf8mb4_general_ci")
             ->paginate($rows_per_page); 
 
         return $students;

@@ -29,139 +29,68 @@ class DashboardController extends Controller
     public function index()
     {
         try {
-            // Get total count of skills and classes
-            $total_skill = Skills::count(); // Using count() directly instead of get()->count()
-            $total_class = Classes::count(); // Similarly for classes
-            $total_students = Student::count();
-            $sections = Sections::get();
+            $total_skills = DB::table('skills')->count();
+            $total_classes = DB::table('classes')->count();
+            $total_student = DB::table('student')->count();
+            $total_departments = DB::table('department')->count();
 
-
-            // Que ry for aggregated skill data, including gender-based counts
-            $results = Skills::selectRaw(
-                'skills.name_2, 
-                COUNT(student.gender) AS total_students, 
-                SUM(CASE WHEN student.gender = "ស្រី" THEN 1 ELSE 0 END) AS total_f, 
-                SUM(CASE WHEN student.gender = "ប្រុស" THEN 1 ELSE 0 END) AS total_m'
-            )
-                ->leftJoin('student', 'student.skills_code', '=', 'skills.code',)
-                ->groupBy('skills.name_2', 'skills.code')
-                ->get();
-
-            $total_students_year = DB::table('session_year as sy')
+            $studentCounts = DB::table('session_year as sy')
+                ->leftJoin('student as s', function ($join) {
+                    $join->on(DB::raw("s.session_year_code COLLATE utf8mb4_general_ci"), '=', DB::raw("sy.code COLLATE utf8mb4_general_ci"));
+                })
                 ->select(
-                    'sy.code as year_code',
-                    'sy.name as year_name',
-                    DB::raw('COUNT(st.name) as total_students'),
-                    DB::raw("COUNT(CASE WHEN st.gender = 'ប្រុស' THEN 1 END) as total_male_students"),
-                    DB::raw("COUNT(CASE WHEN st.gender = 'ស្រី' THEN 1 END) as total_female_students")
+                    'sy.name',
+                    'sy.code',
+                    DB::raw("COUNT(CASE WHEN study_type = 'new student' THEN 1 END) as new_student_registration"),
+                    DB::raw("COUNT(CASE WHEN s.study_type = 'new student' AND s.gender = 'ស្រី' THEN 1 END) as new_female_registration"),
+                    DB::raw('COUNT(s.id) as total_students'),
+                    DB::raw("COUNT(CASE WHEN s.gender = 'ស្រី' THEN 1 END) as total_female"),
                 )
-                ->join('student as st', 'st.session_year_code', '=', DB::raw("sy.code COLLATE utf8mb4_unicode_ci"))
-                ->groupBy('sy.code', 'sy.name')
-                ->orderBy('sy.code')
-                ->orderBy('sy.name')
-                ->get();
-            //ss
-            $total_departments = DB::table('department as dm')
-                ->selectRaw(
-                    'dm.name_2 AS department_name, 
-                    COUNT(st.gender) AS total_students, 
-                    SUM(CASE WHEN st.gender = "ស្រី" THEN 1 ELSE 0 END) AS total_female_students, 
-                    SUM(CASE WHEN st.gender = "ប្រុស" THEN 1 ELSE 0 END) AS total_male_students'
-                )
-                ->leftJoin('student as st', 'st.department_code', '=', 'dm.code')
-                ->groupBy('dm.name_2')
+                ->groupBy('sy.name', 'sy.code')
                 ->get();
 
-
-
-            $total_results = DB::table('department as dt')
+            $student_per_department = DB::table('department as d')
+                ->leftJoin('student as s', 's.department_code', '=', 'd.code')
                 ->select(
-                    'dt.name_2',
-                    DB::raw('COUNT(st.name_2) as total_studentss'),
-                    DB::raw('SUM(CASE WHEN st.sections_code = "A" THEN 1 ELSE 0 END) as aa_1'),
-                    DB::raw('SUM(CASE WHEN st.sections_code = "M" THEN 1 ELSE 0 END) as mm_1'),
-                    DB::raw('SUM(CASE WHEN st.sections_code = "N" THEN 1 ELSE 0 END) as nn_1')
+                    'd.name_2 as department',
+                    DB::raw("COUNT(CASE WHEN study_type = 'new student' THEN 1 END) as new_student_registration"),
+                    DB::raw("COUNT(CASE WHEN s.study_type = 'new student' AND s.gender = 'ស្រី' THEN 1 END) as new_female_registration"),
+                    DB::raw('COUNT(s.id) as total_students'),
+                    DB::raw("COUNT(CASE WHEN s.gender = 'ស្រី' THEN 1 END) as total_female"),
                 )
-                ->leftJoin('student as st', 'st.department_code', '=', 'dt.code')
-                ->groupBy('dt.name_2', 'dt.code')
+                ->groupBy('d.name_2')
                 ->get();
 
+            $student_per_skill = DB::table('skills as ski')
+                ->leftJoin('student as s', 's.skills_code', '=', 'ski.code')
+                ->select(
+                    'ski.name_2',
+                    DB::raw("COUNT(CASE WHEN study_type = 'new student' THEN 1 END) as new_student_registration"),
+                    DB::raw("COUNT(CASE WHEN s.study_type = 'new student' AND s.gender = 'ស្រី' THEN 1 END) as new_female_registration"),
+                    DB::raw('COUNT(s.id) as total_students'),
+                    DB::raw("COUNT(CASE WHEN s.gender = 'ស្រី' THEN 1 END) as total_female"),
+                )
+                ->groupBy('ski.name_2')
+                ->get();
 
+            $student_province = DB::table('student')
+                ->select(
+                    DB::raw('COUNT(s.id) as total_students'),
+                    DB::raw("COUNT(CASE WHEN s. = 'ស្រី' THEN 1 END) as total_female"),
+                );
 
-            // $total_provinces = DB::table('student')
-            //     ->select(
-            //         DB::raw("SUBSTRING(student_address, LOCATE('ខេត្ត', student_address)) AS province"),
-            //         DB::raw("COUNT(*) AS total_provinces"),
-            //         DB::raw("COUNT(*) AS total_students")
-            //     )
-            //     ->groupBy(DB::raw("SUBSTRING(student_address, LOCATE('ខេត្ត', student_address))"))
-            //     ->orderByDesc(DB::raw("COUNT(*)"))
-            //     ->get();
+            $student_per_province = DB::table('student')
+                ->select('bakdop_province', DB::raw('COUNT(*) as total_students'))
+                ->groupBy('bakdop_province')
+                ->orderBy('total_students', 'desc')
+                ->get();
 
-        
-            $total_provinces = DB::table('student')
-            ->selectRaw("
-                CASE 
-                    WHEN student_address LIKE '%ភ្នំពេញ%' THEN 'ភ្នំពេញ'
-                    WHEN student_address LIKE '%ព្រៃវែង%' THEN 'ព្រៃវែង'
-                    WHEN student_address LIKE '%កំពត%' THEN 'កំពត'
-                    WHEN student_address LIKE '%កំពង់ឆ្នាំង%' THEN 'កំពង់ឆ្នាំង'
-                    WHEN student_address LIKE '%បន្ទាយមានជ័យ%' THEN 'បន្ទាយមានជ័យ'
-                    WHEN student_address LIKE '%សៀមរាប%' THEN 'សៀមរាប'
-                    WHEN student_address LIKE '%ព្រះវិហារ%' THEN 'ព្រះវិហារ'
-                    WHEN student_address LIKE '%កំពង់ចាម%' THEN 'កំពង់ចាម'
-                    WHEN student_address LIKE '%កំពង់ស្ពឺ%' THEN 'កំពង់ស្ពឺ'
-                    WHEN student_address LIKE '%ពោធិ៍សាត់%' OR student_address LIKE '%ពោធិសាត់%' THEN 'ពោធិ៍សាត់'
-                    WHEN student_address LIKE '%កណ្ដាល%' THEN 'កណ្ដាល'
-                    WHEN student_address LIKE '%ស្វាយរៀង%' THEN 'ស្វាយរៀង'
-                    WHEN student_address LIKE '%កែប%' THEN 'កែប'
-                    WHEN student_address LIKE '%បាត់ដំបង%' THEN 'បាត់ដំបង'
-                    WHEN student_address LIKE '%ក្រចេះ%' THEN 'ក្រចេះ'
-                    WHEN student_address LIKE '%រតនគីរី%' THEN 'រតនគីរី'
-                    WHEN student_address LIKE '%ត្បូងឃ្មុំ%' THEN 'ត្បូងឃ្មុំ'
-                    WHEN student_address LIKE '%កំពង់ធំ%' THEN 'កំពង់ធំ'
-                    WHEN student_address LIKE '%តាកែវ%' THEN 'តាកែវ'
-                    WHEN student_address LIKE '%កោះកុង%' THEN 'កោះកុង'
-                    WHEN student_address LIKE '%ប៉ៃលិន%' THEN 'ប៉ៃលិន'
-                    WHEN student_address LIKE '%ព្រះសីហនុ%' THEN 'ព្រះសីហនុ'
-                    WHEN student_address LIKE '%មណ្ឌលគិរី%' THEN 'មណ្ឌលគិរី'
-                    WHEN student_address LIKE '%ស្ទឹងត្រែង%' THEN 'ស្ទឹងត្រែង'
-                    WHEN student_address LIKE '%ឧត្តរមានជ័យ%' THEN 'ឧត្តរមានជ័យ'
-                    ELSE 'ផ្សេងៗ'
-                END AS province, COUNT(*) AS total_students
-            ")
-            ->groupBy('province')
-            ->orderByRaw("FIELD(province, 
-                'កណ្ដាល', 'កំពង់ចាម', 'កំពង់ឆ្នាំង', 'កំពង់ធំ', 'កំពង់ស្ពឺ', 
-                'កំពត', 'កែប', 'កោះកុង', 'ក្រចេះ', 'តាកែវ', 'ត្បូងឃ្មុំ', 
-                'បន្ទាយមានជ័យ', 'បាត់ដំបង', 'ប៉ៃលិន', 'ពោធិ៍សាត់', 
-                'ព្រះវិហារ', 'ព្រះសីហនុ', 'ព្រៃវែង', 'ភ្នំពេញ', 'មណ្ឌលគិរី', 
-                'រតនគីរី', 'សៀមរាប', 'ស្ទឹងត្រែង', 'ស្វាយរៀង', 'ឧត្តរមានជ័យ', 
-                'ផ្សេងៗ'
-            )")
-            ->get();
-        
-
-
-            // Prepare labels for chart data
-            $data = $total_students_year->map(function ($item) {
-                $item->label = "ឆ្នាំសិក្សា {$item->year_code} សិស្សសរុប {$item->total_students} នាក់ ស្រី {$item->total_female_students} ប្រុស {$item->total_male_students}";
-                return $item;
-            });
-
-
-            // Prepare additional data for the view (like records and types)
-            $records = $results;  // You can assign your results to 'records'
-            $type = 'skills';  // Example value, you can set your own type
-
-            // Return the view with data
-            return view('dashboard.dashboard', compact('total_skill', 'results', 'sections', 'total_students_year', 'total_departments', 'total_skill', 'total_class', 'total_students', 'data', 'total_results', 'total_provinces'));
+            return view('dashboard.dashboard', compact('studentCounts', 'total_skills', 'total_classes', 'total_student', 'total_departments', 'student_per_department', 'student_per_skill', 'student_per_province'));
         } catch (\Exception $ex) {
-            // If any exception occurs, roll back the transaction (if started) and log the error
+
             DB::rollBack();
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
 
-            // Return a response with the error message
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
@@ -234,7 +163,7 @@ class DashboardController extends Controller
             return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
         }
     }
-   
+
     public function teacherDashboard()
     {
         $record = Teachers::where('code', Auth::user()->user_code)->first();
@@ -244,14 +173,10 @@ class DashboardController extends Controller
         $total_class = AssingClasses::where('teachers_code', $record->code)->count();
         $total_subject = AssingClasses::where('teachers_code', $record->code)
             ->Groupby('subjects_code')->count();
-
-
         $schedules = ClassSchedule::with(['section', 'subject'])
             ->whereDate('start_date', '<=', Carbon::now())
             ->orderBy('start_date', 'asc')
             ->get();
-
-        
         // Extract class_schedule IDs as an array
         $class_schedule_ids = $schedules->pluck('id')->toArray();
         $date_name  = $schedules->pluck('date_name')->toArray();
@@ -264,15 +189,11 @@ class DashboardController extends Controller
             ->get();
         $Classes_history = AssingClasses::where('teachers_code', $record->code)
             ->get();
-
-
         $schedules_recored = AssingClasses::with(['section', 'subject', 'teacher', 'skill'])
-                ->where('teachers_code', $record->code)
-                ->get();
+            ->where('teachers_code', $record->code)
+            ->get();
 
-            // dd($schedules_recored);
-
-            $daysKhmer = [
+        $daysKhmer = [
             'monday'    => 'ច័ន្ទ',
             'tuesday'   => 'អង្គារ',
             'wednesday' => 'ពុធ',
@@ -288,13 +209,11 @@ class DashboardController extends Controller
     {
         $filter = $request->all();
         $type = $filter['type'] ?? '';
-        $data = $this->services->GetDateIndexOption(now()); 
+        $data = $this->services->GetDateIndexOption(now());
 
-       
-        $records = AssingClasses::where('teachers_code',$filter['code'])->get();
+        $records = AssingClasses::where('teachers_code', $filter['code'])->get();
 
         return view('dashboard.dashboard_teacher_management_class', array_merge($data, compact('records', 'type')));
-        // return view('dashboard.dashboard_teacher_management_class', compact('records'));
     }
     public function dahhboardInter(Request $request)
     {
@@ -307,7 +226,6 @@ class DashboardController extends Controller
             $qualification = DB::table('qualification')->where('code', $records->qualification ?? '')->first();
             $imgs = Picture::where('code', $records->code ?? '')->first();
             return view('dashboard.dashboard_inputer', compact('records', 'skills', 'qualification', 'imgs'));
-
         } catch (\Exception $ex) {
             DB::rollBack();
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());

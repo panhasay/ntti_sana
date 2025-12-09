@@ -1,4 +1,4 @@
-<table class="table table-striped" id="table1">
+<table class="table table-striped" id="">
     <thead>
         <tr class="general-data">
             <th width="80" class="text-center"> 
@@ -24,8 +24,10 @@
             <td class="text-left"> {{ $record->student->gender ?? '' }}</td>
             <td class="text-left"> {{ $record->student->date_of_birth ?? '' }}</td>
             <td class="text-left"> {{ $record->student->phone_student ?? '' }}</td>
-
         </tr>
         @endforeach
     </tbody>
 </table>
+<br>
+<br>
+<br>

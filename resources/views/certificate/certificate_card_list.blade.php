@@ -230,6 +230,7 @@
                     class="btn btn-outline-success btn-icon-text btn-sm mb-2 mb-md-0 me-2">Excel <i
                     class="mdi mdi-printer btn-icon-append"></i> 
                 </button>
+                
             </div>
             <div class="d-grid d-md-flex justify-content-md-end p-3">
                 <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" data-toggle="collapse"
@@ -259,7 +260,16 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <span class="form-label">ក្រុម
-                                        <?php $record_class =  DB::table('classes')->get(); ?>
+                                        <?php 
+                                            $sessionYearCode = Auth::user()->session_year_code ?? null;
+                                            $record_class =  DB::table('classes'); 
+
+                                            if (!empty($sessionYearCode)) {
+                                                $record_class = $record_class->where('school_year_code', $sessionYearCode);
+                                            }
+                                            
+                                            $record_class = $record_class->get();
+                                        ?>
                                     </span>
                                     <div class="input-group">
                                         <select class="select2-search" id="sch_class_spec" name="sch_class_spec"

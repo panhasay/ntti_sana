@@ -2,86 +2,8 @@
 @section('content')
 
 <div class="page-head page-head-custom">
-  <div class="row">
-    <div class="col-md-6 col-sm-6  col-6">
-      <div class="page-title page-title-custom">
-        <div class="title-page">
-          <i class="mdi mdi-format-list-bulleted"></i>
-          ការគ្រប់គ្រង ប្ដូរក្រុម / ប្ដូរវេនសិក្សា ព្យួរកាសិក្សា និងឈប់
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6 col-sm-6 col-6">
-      <div class="page-title page-title-custom text-right">
-        <h4 class="text-right">
-          <a id="btnShowMenuSetting" href="javascript:;"><i class="mdi mdi-settings"></i></a>
-        </h4>
-      </div>
-    </div>
-  </div>
 </div>
-<div class="page-header flex-wrap">
-  <div class="header-left">
-    {{-- <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="BntCreate"
-      href="{{url('transfer/transaction/?type=cr')}}"><i class="mdi mdi-account-plus"></i> Add New</i></a> --}}
-    {{-- <button type="button" data-type="skill" onclick="prints()"
-      class="btn btn-outline-info btn-icon-text btn-sm mb-2 mb-md-0 me-2"> Print
-      <i class="mdi mdi-printer btn-icon-append"></i> --}}
-      <button type="button" onclick="DownlaodExcel()"
-        class="btn btn-outline-success btn-icon-text btn-sm mb-2 mb-md-0 me-2">Excel <i
-          class="mdi mdi-printer btn-icon-append"></i> </button>
-  </div>
-  <div class="d-grid d-md-flex justify-content-md-end p-3">
-    <input type="text" class="form-control mb-2 mb-md-0 me-2" id="search_data" data-page="{{ $page ?? '' }}"
-      name="search_data" placeholder="Serch...." aria-label="Recipient's username" aria-describedby="basic-addon2">
-    <div>
-    </div>
-    <a class="btn btn-primary mb-2 mb-md-0 me-2" data-toggle="collapse" href="#Fliter" role="button"
-      aria-expanded="false" aria-controls="collapseExample">
-      ស្វែងរក
-    </a>
-  </div>
-</div>
-<div class="collapse show" id="Fliter">
-  <div class="card card-body">
-    <form id="advance_search" role="form" class="form-horizontal" enctype="multipart/form-data" action="">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="form-group row">
-            <div class="col-sm-2">
-              <button type="button" class="btn btn-outline-primary " 
-                style="cursor: pointer; width: 197px;height: 79px;background: #f2b707;font-size: 17px;">ចំនួននិស្សិតព្យួរ {{ $total_student_HangOfStudent ??"" }}
-              </button>
-            </div>
-             <div class="col-sm-2">
-              <button type="button" class="btn btn-outline-primary " 
-                style="cursor: pointer; width: 197px;height: 79px;background: #07c3f2;font-size: 17px;">និស្សិតស្នើសុំប្ដូវេន {{ $total_student_Transfer ??"" }}
-              </button>
-            </div>
 
-            {{-- <div class="col-sm-2">
-              <span class="labels">លេខកូដ</span>
-              <input type="text" class="form-control form-control-sm" id="code" name="code" value=""
-                placeholder="លេខកូដ" aria-label="លេខកូដ">
-            </div>
-            <div class="col-sm-2">
-              <span class="labels">ជំនាញ</span>
-              <input type="text" class="form-control form-control-sm" id="name" name="name" value="" placeholder="ជំនាញ"
-                aria-label="ជំនាញ">
-            </div>
-            <div class="col-sm-2">
-              <span class="labels">ជំនាញ ភាសាខ្មែរ</span>
-              <input type="text" class="form-control form-control-sm" id="name_2" name="name_2" value=""
-                placeholder="ជំនាញ ភាសាខ្មែរ" aria-label="ជំនាញ ភាសាខ្មែរ">
-            </div> --}}
-          </div>
-          {{-- <button type="button" class="btn btn-primary text-white" data-page="transfer"
-            id="btn-adSearch">Search</button> --}}
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
 <div class="print" style="display: none">
   <div class="print-content">
 

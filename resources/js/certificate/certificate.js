@@ -888,6 +888,7 @@ function showExpireClass() {
                     new Option(qualification, qualification)
                 );
             }
+            
             $("#txt_due_level").val(qualification).trigger("changes");
 
             $("#sl_due_expire_date").val(response.records.expire_date);
