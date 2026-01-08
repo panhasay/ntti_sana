@@ -35,6 +35,11 @@
   <link rel="shortcut icon" href="{{asset('https://nttiportal.com/./uploads/school_content/logo/front_fav_icon-619eeffe4674b6.56720560.png')}}" type="image/x-icon">
   <link rel="stylesheet" href="{{asset('https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css')}}"> 
   <meta name="csrf-token" content="{{ csrf_token() }}">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@100;300;400;700;900&family=Hanuman:wght@100;300;400;700;900&family=Khmer&family=Moul&family=Moulpali&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="https://www.ntti.edu.kh/assets/images/icon.png">
   <!---google chart -->
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -54,7 +59,10 @@
     .dropdown .dropdown-menu .dropdown-item {
       font-size: 1rem !important;
       padding: 10px 1.5rem !important;
-  }
+    }
+    /* * {
+       font-family: "Khmer", sans-serif !important;
+    } */
   </style>
 </head>
 <body class="addClass">

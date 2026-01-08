@@ -26,6 +26,12 @@
   .KhmerOSMuolLight {
     font-family: 'Khmer OS Muol Light';
   }
+  .color-bg > td {
+      background: #e18686 !important;
+  }
+  .color-bg-blue {
+    background: #30d160 !important;
+  }
 </style>
 
 @if($type == 'is_print')
@@ -139,50 +145,136 @@
         <tbody id="recordsLineTableBody">
           <?php $total_score = 0; ?>
           @foreach ($recordsLine as $line)
-          <?php  $total_score = (float) $line->attendance + (float) $line->assessment + (float) $line->final + (float) $line->midterm; ?>
-          <tr id="rowLine{{$line->id ?? ''}}" data-id="{{ $line->id ?? ''}}">
-            <form id="frmDataLine" role="form" class="form-sample" enctype="multipart/form-data">
+          <?php  
+              $total_score = (float) $line->attendance + (float) $line->assessment + (float) $line->final + (float) $line->midterm; 
+              $student_class = App\Models\General\ClassStudent::where('class_code', $records->class_code)
+                                        ->where('semester', $records->semester)
+                                        ->where('student_code', $line->student->code ?? '')
+                                        ->where('years', $records->years)
+                                        ->where('department_code', $records->department_code)
+                                        ->where('session_year_code', $records->session_year_code)
+                                        ->first();
+
+              $studentTransfer = App\Models\General\TransferLine::where('student_code', $line->student->code ?? '')->where('class_code_new', $records->class_code)->where('semester', $records->semester)
+                                        ->where('student_code', $line->student->code ?? '')
+                                        ->where('year', $records->years)
+                                        // ->where('department_code', $records->department_code)
+                                        ->where('session_year_code', $records->session_year_code)->first();
+              $studentHasTransfer = App\Models\General\TransferLine::where('student_code', $line->student->code ?? '')->where('class_code', $records->class_code)->where('semester', $records->semester)
+                                        ->where('student_code', $line->student->code ?? '')
+                                        ->where('year', $records->years)
+                                        // ->where('department_code', $records->department_code)
+                                        ->where('session_year_code', $records->session_year_code)->first();
+
+              $class_bg = "";
+              $disabled = "";
+              if((isset($studentHasTransfer) && $studentHasTransfer->student_code == $line->student->code)) {
+                  $class_bg = "color-bg";
+                  $disabled = "disabled";
+              }else if (isset($studentTransfer) && $line->student->code === $studentTransfer->student_code) {
+                 $class_bg = "color-bg-blue";
+                 
+              }
+
+            ?>
+            @if(@$line->student->code  == @$student_class->student_code)
+              <tr id="rowLine{{$line->id ?? ''}}" data-id="{{ $line->id ?? ''}}" class="{{ $class_bg }}">
+                <form id="frmDataLine" role="form" class="form-sample" enctype="multipart/form-data">
               
-              {{-- <td>
-                <a class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2 DeletDataLine"
-                  data-id="{{ $line->id ?? '' }}" href="javascript:void(0)">
-                    <i class="mdi mdi-delete-forever"></i> ដកចេញ
-                </a>
-              </td> --}}
+                  {{-- <td>
+                    <a class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2 DeletDataLine"
+                      data-id="{{ $line->id ?? '' }}" href="javascript:void(0)">
+                        <i class="mdi mdi-delete-forever"></i> ដកចេញ
+                    </a>
+                  </td> --}}
 
-              <td class="text-center">{{ $line->student->code ?? ''}}</td>  
-              <td>{{ $line->student->name_2 ?? ''}}</td>
-              <td>{{ $line->student->name ?? ''}}</td>
-              <td class="text-center">{{ $line->student->gender ?? ''}}</td>
-              <td class="text-center">
-                <input type="text" class="form-control-line form-control-sm form_data_line"  data-id="{{ $line->id }}"
-                  student-code="{{ $line->student_code }}" id="attendance" name="attendance" value="{{ $line->attendance }}"
-                  placeholder="0" aria-label="0">
-              </td>
-              <td class="text-center">
-                <input type="text" class="form-control-line form-control-sm form_data_line" data-id="{{ $line->id }}"
-                  student-code="{{ $line->student_code }}"  id="assessment" name="assessment" value="{{ $line->assessment }}"
-                  placeholder="0" aria-label="0">
-              </td>
-              <td class="text-center">
-                <input type="text" class="form-control-line form-control-sm form_data_line" data-id="{{ $line->id }}"
-                  student-code="{{ $line->student_code }}" id="midterm" name="midterm" value="{{ $line->midterm }}"
-                  placeholder="0" aria-label="0">
-              </td>
-              <td class="text-center">
-                <input type="text" class="form-control-line form-control-sm form_data_line" data-id="{{ $line->id }}"
-                  student-code="{{ $line->student_code }}" id="final" name="final" value="{{ $line->final }}"
-                  placeholder="0" aria-label="0">
-              </td>
-              <td class="text-center total_score" id="total_score">{{ $total_score ?? '' }}</td>
+                  <td class="text-center">{{ $line->student->code ?? ''}}</td>  
+                  <td >{{ $line->student->name_2 ?? ''}}</td>
+                  <td>{{ $line->student->name ?? ''}}</td>
+                  <td class="text-center">{{ $line->student->gender ?? ''}}</td>
+                  <td class="text-center">
+                    <input type="text" {{ $disabled }}  class="form-control-line form-control-sm form_data_line"  data-id="{{ $line->id }}"
+                      student-code="{{ $line->student_code }}" id="attendance" name="attendance" value="{{ $line->attendance }}"
+                      placeholder="0" aria-label="0">
+                  </td>
+                  <td class="text-center">
+                    <input type="text" {{ $disabled }} class="form-control-line form-control-sm form_data_line" data-id="{{ $line->id }}"
+                      student-code="{{ $line->student_code }}"  id="assessment" name="assessment" value="{{ $line->assessment }}"
+                      placeholder="0" aria-label="0">
+                  </td>
+                  <td class="text-center">
+                    <input type="text" {{ $disabled }} class="form-control-line form-control-sm form_data_line" data-id="{{ $line->id }}"
+                      student-code="{{ $line->student_code }}" id="midterm" name="midterm" value="{{ $line->midterm }}"
+                      placeholder="0" aria-label="0">
+                  </td>
+                  <td class="text-center">
+                    <input type="text" {{ $disabled }} class="form-control-line form-control-sm form_data_line" data-id="{{ $line->id }}"
+                      student-code="{{ $line->student_code }}" id="final" name="final" value="{{ $line->final }}"
+                      placeholder="0" aria-label="0">
+                  </td>
+                  <td class="text-center total_score" id="total_score">
+                    {{ $total_score ?? '' }}
+                  </td>
 
-              <td class="text-center total_score">
-                 <input type="text" class="form-control-line form-control-sm form_data_line" data-id="{{ $line->id }}"
-                  student-code="{{ $line->student_noted ?? '' }}" id="student_noted" name="student_noted" value="{{ $line->student_noted ?? "" }}"
-                  placeholder="ផ្សេងៗ" aria-label="0">
-              </td>
-            </form>
-          </tr>
+                  <td class="text-center total_score">
+                    <input
+                      type="text"
+                      class="form-control-line form-control-sm form_data_line"
+                      data-id="{{ $line->id }}"
+                      data-student-code="{{ $line->student_noted ?? '' }}"
+                      id="student_noted"
+                      name="student_noted"
+                      value="{{ $line->student_noted ?? (isset($studentTransfer) && $line->student->code === $studentTransfer->student_code ? 'និស្សិតប្ដូរមកពីក្រុម ' . $studentTransfer->class_code: '') }} {{ (isset($studentHasTransfer) && $studentHasTransfer->student_code == $line->student->code) ? 'និស្សិតត្រូវបានប្ដូរទៅក្រុម ថ្មី ' . $studentHasTransfer->class_code_new : '' }}"
+                      placeholder="ផ្សេងៗ"
+                      aria-label="0"
+                  />
+                  </td>
+                </form>
+              </tr>
+              {{-- <tr id="rowLine{{$line->id ?? ''}}" data-id="{{ $line->id ?? ''}}">
+                <form id="frmDataLine" role="form" class="form-sample" enctype="multipart/form-data">
+                  
+                  <td>
+                    <a class="btn btn-danger btn-icon-text btn-sm mb-2 mb-md-0 me-2 DeletDataLine"
+                      data-id="{{ $line->id ?? '' }}" href="javascript:void(0)">
+                        <i class="mdi mdi-delete-forever"></i> ដកចេញ
+                    </a>
+                  </td>
+
+                  <td class="text-center">{{ $line->student->code ?? ''}}  {{ $student_class->student_code ?? '' }}</td>  
+                  <td>{{ $line->student->name_2 ?? ''}}</td>
+                  <td>{{ $line->student->name ?? ''}}</td>
+                  <td class="text-center">{{ $line->student->gender ?? ''}}</td>
+                  <td class="text-center">
+                    <input type="text" class="form-control-line form-control-sm form_data_line"  data-id="{{ $line->id }}"
+                      student-code="{{ $line->student_code }}" id="attendance" name="attendance" value="{{ $line->attendance }}"
+                      placeholder="0" aria-label="0">
+                  </td>
+                  <td class="text-center">
+                    <input type="text" class="form-control-line form-control-sm form_data_line" data-id="{{ $line->id }}"
+                      student-code="{{ $line->student_code }}"  id="assessment" name="assessment" value="{{ $line->assessment }}"
+                      placeholder="0" aria-label="0">
+                  </td>
+                  <td class="text-center">
+                    <input type="text" class="form-control-line form-control-sm form_data_line" data-id="{{ $line->id }}"
+                      student-code="{{ $line->student_code }}" id="midterm" name="midterm" value="{{ $line->midterm }}"
+                      placeholder="0" aria-label="0">
+                  </td>
+                  <td class="text-center">
+                    <input type="text" class="form-control-line form-control-sm form_data_line" data-id="{{ $line->id }}"
+                      student-code="{{ $line->student_code }}" id="final" name="final" value="{{ $line->final }}"
+                      placeholder="0" aria-label="0">
+                  </td>
+                  <td class="text-center total_score" id="total_score">{{ $total_score ?? '' }}</td>
+
+                  <td class="text-center total_score">
+                    <input type="text" class="form-control-line form-control-sm form_data_line" data-id="{{ $line->id }}"
+                      student-code="{{ $line->student_noted ?? '' }}" id="student_noted" name="student_noted" value="{{ $line->student_noted ?? "" }}"
+                      placeholder="ផ្សេងៗ" aria-label="0">
+                  </td>
+                </form>
+              </tr> --}}
+            @endif
           @endforeach
         </tbody>
     </table>

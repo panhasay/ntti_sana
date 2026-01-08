@@ -14,7 +14,7 @@
     <div class="modal-dialog modal-xl"><!-- XL for 1200px width -->
         <div class="modal-content">
             <div class="modal-header bg-m-header">
-                <h5 class="modal-title" id="modaldivChangeClass">ស្ពាក្យសុំប្ដូរវេនសិក្សា</h5>
+                <h5 class="modal-title" id="modaldivChangeClass">ពាក្យសុំប្ដូរវេនសិក្សា</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -197,38 +197,35 @@
       });
     });
 
-    $(document).on('click', '#SaveStudentChangeClass', function() {
-      var code = $(this).attr('data-code');
-      var class_code = $('#class_code_new').val();
-      var class_old = $('#class_old').val();
-      var reason_detail = $('#reason_detail').val();
-      var posting_date = $('#posting_date').val();
-      var year = $('#years').val();
-      var semester = $('#semester').val();
-      var assing_no = $('#assing_no').val();
-      var session_year_code = $('#session_year_codes').val();
+    $(document).on('click', '#SaveStudentChangeClass', function () {
       $.ajax({
-        type: "POST",
-        url: `/transfer/submit-student-request-change-class`,
-        data: {
-          code : code,
-          class_code: class_code,
-          class_old : class_old,
-          reason_detail: reason_detail,
-          posting_date: posting_date,
-          year: year,
-          semester: semester,
-          assing_no: assing_no,
-          session_year_code : session_year_code,
-        },
-        success: function(response) {
-          if (response.status == 'success') {
-            $("#divChangeClass").modal('hide');
-            $("#row" + code).addClass("bg-info text-white"); 
-          }else {
-            notyf.error(response.msg);
+          type: "POST",
+          url: "/transfer/submit-student-request-change-class",
+          data: {
+              _token: $('meta[name="csrf-token"]').attr('content'),
+
+              code: $('#SaveStudentChangeClass').data('code'),
+              class_code: $('#class_code_new').val(),
+              class_old: $('#class_old').val(),
+              reason_detail: $('#reason_detail').val(),
+              posting_date: $('#posting_date').val(),
+              year: $('#years').val(),
+              semester: $('#semester').val(),
+              assing_no: $('#assing_no').val(),
+              session_year_code: $('#session_year_codes').val(),
+              year_new: $('#year_new').val(),
+              semester_new: $('#semester_new').val(),
+          },
+
+          success: function (response) {
+              if (response.status === 'success') {
+                  $("#divChangeClass").modal('hide');
+                  $("#row" + response.records.student_code)
+                      .addClass("bg-info text-white");
+              } else {
+                  notyf.error(response.msg);
+              }
           }
-        }
       });
     });
 

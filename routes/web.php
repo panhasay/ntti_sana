@@ -1,4 +1,5 @@
 <?php
+
     use App\Http\Controllers\Admin\adminController;
     use App\Http\Controllers\General\ClassesController;
     use Illuminate\Support\Facades\Route;
@@ -207,17 +208,30 @@ Route::group(['perfix' => 'classes'], function (){
     Route::POST ('/class-schedule', [ClassesController::class, 'delete']);
 })->middleware('auth');
 
-Route::group(['perfix' => '/class-schedule'], function (){
-    // Route::get('/class-schedule', [ClassScheduleController::class, 'index']);
-    // Route::get('/class-schedule/transaction', [ClassScheduleController::class, 'transaction']);
-    // Route::post('/class-schedule/update', [ClassScheduleController::class, 'update']);
-    // Route::post('/class-schedule/store', [ClassScheduleController::class, 'store']);
-    // Route::POST ('/class-schedule-delete', [ClassScheduleController::class, 'delete']);
-    // Route::POST ('/class-schedule/save-schedule', [ClassScheduleController::class, 'SaveSchedule']);
-    // Route::POST ('/class-schedule-delete-line', [ClassScheduleController::class, 'DeleteLine']);
-    // Route::get('/class-schedule-print',[ClassScheduleController::class,'printLine']);
-    // Route::get('/update/class-schedule/transaction',[ClassScheduleController::class,'EditTeacherSchedule']);
+// Route::group(['perfix' => '/class-schedule'], function (){
+//     Route::get('/class-schedule', [ClassScheduleController::class, 'index']);
+//     Route::get('/class-schedule/transaction', [ClassScheduleController::class, 'transaction']);
+//     Route::post('/class-schedule/update', [ClassScheduleController::class, 'update']);
+//     Route::post('/class-schedule/store', [ClassScheduleController::class, 'store']);
+//     Route::POST ('/class-schedule-delete', [ClassScheduleController::class, 'delete']);
+//     Route::POST ('/class-schedule/save-schedule', [ClassScheduleController::class, 'SaveSchedule']);
+//     Route::POST ('/class-schedule-delete-line', [ClassScheduleController::class, 'DeleteLine']);
+//     Route::get('/class-schedule-print',[ClassScheduleController::class,'printLine']);
+//     Route::get('/update/class-schedule/transaction',[ClassScheduleController::class,'EditTeacherSchedule']);
     
+//     Route::get('/class-schedule-index',[ClassScheduleController::class,'classScheduleV2']);
+//     Route::get('/list/transaction/{id}',[ClassScheduleController::class,'classScheduleList'])->name('class.schedule.list');
+//     Route::get('/create-new-list',[ClassScheduleController::class,'classScheduleStoreV2view'])->name('class.schedule.add');
+//     Route::get('/class-schedule/get-data', [ClassScheduleController::class, 'getClassData'])->name('class.schedule.getData');
+//     Route::post('/class-schedule/store-v2', [ClassScheduleController::class, 'classScheduleStoreV2'])->name('class.schedule.store.v2');
+//     Route::delete('/class-schedule/delete/{id}', [ClassScheduleController::class, 'deleteClassSchedule'])->name('class.schedule.delete');
+//     Route::post('/assign-class/store', [ClassScheduleController::class, 'storeAssignClassSchedule'])->name('assign.class.store');
+//     Route::delete('/assign-class/delete/{id}', [ClassScheduleController::class, 'deleteAssignClassSchedule'])->name('assign-class.delete');
+//     Route::get('/assign-class/{id}/edit', [ClassScheduleController::class, 'editAssignClassSchedule']);
+//     Route::put('/assign-class/{id}', [ClassScheduleController::class, 'updateAssignClassSchedule']);
+// })->middleware('auth');
+
+Route::group(['perfix' => '/class-schedule'], function (){
     Route::get('/class-schedule-index',[ClassScheduleController::class,'classScheduleV2']);
     Route::get('/list/transaction/{id}',[ClassScheduleController::class,'classScheduleList'])->name('class.schedule.list');
     Route::get('/create-new-list',[ClassScheduleController::class,'classScheduleStoreV2view'])->name('class.schedule.add');
@@ -228,8 +242,9 @@ Route::group(['perfix' => '/class-schedule'], function (){
     Route::delete('/assign-class/delete/{id}', [ClassScheduleController::class, 'deleteAssignClassSchedule'])->name('assign-class.delete');
     Route::get('/assign-class/{id}/edit', [ClassScheduleController::class, 'editAssignClassSchedule']);
     Route::put('/assign-class/{id}', [ClassScheduleController::class, 'updateAssignClassSchedule']);
-
+    Route::get('/assign-class/print-line/{id}',[ClassScheduleController::class,'classSchedulePrint']);
 })->middleware('auth');
+
 
 Route::group(['perfix' => 'skills'], function (){
     Route::get('/skills', [SkillsController::class, 'index']);
@@ -277,10 +292,12 @@ Route::group(['perfix' => 'teachers' ], function (){
     Route::get('/assign-classes/downlaodexcel-line',[AssingClassesController::class,'DownlaodexcelLine']);
     Route::post('/update-score-student', [AssingClassesController::class, 'UpdateScoreStudent']);
 })->middleware('auth');
+
 Route::group(['prefix' => 'attendance'], function () {
     Route::get('/dashboards-attendance', [AttendanceController::class, 'index']);
     Route::post('/submit-by-date', [AttendanceController::class, 'SumbitDocumentByDate']);
 })->middleware('auth');
+
 Route::group(['perfix' => '/class-schedule'], function (){
     Route::get('/class-schedule', [ClassScheduleController::class, 'index']);
     Route::get('/class-schedule/transaction', [ClassScheduleController::class, 'transaction']);
@@ -326,6 +343,8 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
         Route::get('/get-date-card-due-date', 'GetDate');
         Route::get('/D_IT/degree/MD_DE', 'IndexPrintCertificates');
         Route::get('/degree-print', 'CertificatesDegrePrints');
+        Route::get('/degree-priview', 'CertificatesDegrePriview');
+
         Route::get('/degree-priview', 'CertificatesDegrePriview');
     });
 });
@@ -469,6 +488,7 @@ Route::group(['perfix' => 'exam-schedule'], function () {
     Route::post('/exam-schedule/delete-session', [ExamScheduleController::class, 'deleteSession'])->name('exam.schedule.delete.session');
     Route::get('/exam-schedule/get-all-teachers', [ExamScheduleController::class, 'getAllTeachers']);
     Route::post('/exam-schedule/update-date', [ExamScheduleController::class, 'updateDate'])->name('exam.schedule.update.date');
+    Route::post('/ebtnUpddateExamSchedule',[ExamScheduleController::class, 'updateDateExamSchedule'])->name('exam.schedule.update.date.ExamSchedule');
 })->middleware('auth');
 
 Route::group(['prefix' => 'exam-credit',], function () {

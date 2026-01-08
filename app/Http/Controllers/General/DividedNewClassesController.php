@@ -92,6 +92,7 @@ class DividedNewClassesController extends Controller
         $teachers = Teachers::orderBy('code', 'asc')->get();
         $subjects = Subjects::orderBy('code', 'asc')->get();
         $qualifications = Qualifications::orderBy('code', 'desc')->get();
+        
         try {
             $params = ['records', 'type', 'page', 'sections', 'department', 'school_years', 'skills', 'classs', 'study_years', 'teachers', 'subjects', 'record_sub_lines', 'qualifications', 'records_student', 'totalFemale'];
             if ($type == 'cr') return view('general.divided_new_classes_card', compact($params));
@@ -132,27 +133,51 @@ class DividedNewClassesController extends Controller
                             ->delete();
                     }
 
+                    // foreach ($record_sub_lines as $line) {
+                    //     $exists = ClassStudent::where('student_code', $line->code)
+                    //         ->where('class_code', $line->class_code)
+                    //         ->where('sections_code', $line->sections_code)
+                    //         ->where('semester', 1)
+                    //         ->where('years', 1)
+                    //         ->exists();
+
+                    //     if (!$exists) {
+                    //         $missingDataTo = new ClassStudent();
+                    //         $missingDataTo->student_code = $line->code;
+                    //         $missingDataTo->class_code = $line->class_code;
+                    //         $missingDataTo->skills_code = $line->skills_code;
+                    //         $missingDataTo->sections_code = $line->sections_code;
+                    //         $missingDataTo->department_code = $line->department_code;
+                    //         $missingDataTo->session_year_code = $line->session_year_code;
+                    //         $missingDataTo->semester = 1;
+                    //         $missingDataTo->years = 1;
+                    //         $missingDataTo->qualification = $line->qualification;
+                    //         $missingDataTo->save();
+                    //     }
+                    // }
+
                     foreach ($record_sub_lines as $line) {
-                        $exists = ClassStudent::where('student_code', $line->code)
+
+                        // delete old record
+                        ClassStudent::where('student_code', $line->code)
                             ->where('class_code', $line->class_code)
                             ->where('sections_code', $line->sections_code)
                             ->where('semester', 1)
                             ->where('years', 1)
-                            ->exists();
+                            ->delete();
 
-                        if (!$exists) {
-                            $missingDataTo = new ClassStudent();
-                            $missingDataTo->student_code = $line->code;
-                            $missingDataTo->class_code = $line->class_code;
-                            $missingDataTo->skills_code = $line->skills_code;
-                            $missingDataTo->sections_code = $line->sections_code;
-                            $missingDataTo->department_code = $line->department_code;
-                            $missingDataTo->session_year_code = $line->session_year_code;
-                            $missingDataTo->semester = 1;
-                            $missingDataTo->years = 1;
-                            $missingDataTo->qualification = $line->qualification;
-                            $missingDataTo->save();
-                        }
+                        // insert new record
+                        $missingDataTo = new ClassStudent();
+                        $missingDataTo->student_code      = $line->code;
+                        $missingDataTo->class_code        = $line->class_code;
+                        $missingDataTo->skills_code       = $line->skills_code;
+                        $missingDataTo->sections_code     = $line->sections_code;
+                        $missingDataTo->department_code   = $line->department_code;
+                        $missingDataTo->session_year_code = $line->session_year_code;
+                        $missingDataTo->semester          = 1;
+                        $missingDataTo->years             = 1;
+                        $missingDataTo->qualification     = $line->qualification;
+                        $missingDataTo->save();
                     }
                 }
             }

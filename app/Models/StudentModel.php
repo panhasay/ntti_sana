@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\SystemSetup\Department;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Auth;
 
 class StudentModel extends Model
 {
@@ -85,6 +86,7 @@ class StudentModel extends Model
                         ->orWhere('student.name_2', 'LIKE', "%{$search}%");
                 });
             })
+            ->orderByRaw("student.name_2 COLLATE utf8mb4_general_ci")
             ->paginate($rows_per_page); 
 
         return $students;
@@ -137,6 +139,7 @@ class StudentModel extends Model
 
     public static function getShowCardTotalStudent($class_code)
     {
+        $sessionYearCode = Auth::user()->session_year_code ?? null;
         $genderCounts = self::query()
             ->selectRaw("COUNT(CASE WHEN student.gender = 'ប្រុស' THEN 1 END) as total_male")
             ->selectRaw("COUNT(CASE WHEN student.gender = 'ស្រី' THEN 1 END) as total_female")
@@ -155,10 +158,16 @@ class StudentModel extends Model
             ->join('skills as sk', 'sk.code', '=', 'cls.skills_code')
             ->whereNotNull('student.department_code')
             ->whereNotNull('student.class_code')
+
             ->when($class_code, function ($query, $class_code) {
                 $query->where('student.class_code', $class_code);
-            })
-            ->first();
+            });
+
+            if (!empty($sessionYearCode)) {
+                $genderCounts = $genderCounts->where('student.session_year_code', $sessionYearCode);
+            }
+            
+            $genderCounts = $genderCounts->first();
 
         return [
             'total_male' => $genderCounts->total_male,

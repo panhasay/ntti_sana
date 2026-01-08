@@ -27,7 +27,7 @@
             <p class="transfer-to indent">
                 ទៅក្រុម 
                 <span class="fill-in-small">
-                    <select class="js-example-basic-single" id="class_code_new" name="class_code_new" style="width: 20%;">
+                    <select class="js-example-basic-single" id="class_code_new" name="class_code_new" style="width: 30%;">
                         <option value="">&nbsp;</option>
                         @foreach ($class as $record)
                             @if ($record->code != $student->class_code)
@@ -38,6 +38,24 @@
                                 </option>
                             @endif
                         @endforeach
+                    </select>
+                </span> 
+                ឆ្នាំ
+                <span class="fill-in-small">
+                    <select class="js-example-basic-single" id="year_new" name="year_new" style="width: 10%;">
+                        <option value="">&nbsp;</option>
+                        <option value="1">ឆ្នាំទី១</option>
+                        <option value="2">ឆ្នាំទី២</option>
+                        <option value="3">ឆ្នាំទី៣</option>
+                        <option value="4">ឆ្នាំទី៤</option>
+                    </select>
+                </span> 
+                ឆមាស
+                <span class="fill-in-small">
+                    <select class="js-example-basic-single" id="semester_new" name="semester_new" style="width: 10%;">
+                        <option value="">&nbsp;</option>
+                        <option value="1">ឆមាសទី១</option>
+                        <option value="2">ឆមាសទី២</option>
                     </select>
                 </span> 
                ចាប់ពីថ្ងៃទី <input autocomplete="off" type="date" class="form-control form-control-sm" id="posting_date" name="posting_date" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}"  placeholder="ចាប់ពីថ្ងៃទី" aria-label="ចាប់ពីថ្ងៃទី" style="width: 150px; display: inline-block; margin: 0 5px;"> តទៅ។

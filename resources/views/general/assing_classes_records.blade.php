@@ -46,7 +46,11 @@
                 <td>{{ $record->years == '1' ? 'ឆ្នាំទី ១' : ($record->years == '2' ? 'ឆ្នាំទី ២' : '') }}</td>
                 <td>
                     @if ($record->exam_type == 'Yes')
-                        <label class="badge badge-success btn-sm mb-2 mb-md-0 me-2" id="exam_type">បានប្រលងបញ្ចាប់</label>
+                        <label class="badge badge-worng btn-sm mb-2 mb-md-0 me-2" id="exam_type">បានប្រលងបញ្ចាប់</label>
+                    @elseif($record->exam_status == 'Yes')
+                     <label class="badge bg-warning btn-sm mb-2 mb-md-0 me-2" id="exam_type">
+                        កំពុងប្រឡង
+                    </label>
                     @else
                         <label
                             class="badge badge-danger btn-sm mb-2 mb-md-0 me-2">&nbsp;&nbsp;មិនទាន់ប្រលង&nbsp;&nbsp;</label>

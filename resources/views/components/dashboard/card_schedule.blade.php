@@ -5,18 +5,35 @@
 ])
 
 <?php
-
     $count_data = App\Models\General\student_score::where('assign_line_no', $item['assing_no'])
     ->where('att_date', request()->get('date'))
     ->count();
-
+    $status = App\Models\General\AssingClasses::where('class_code',  @$schedule['class_code'])->first();
 ?>
 
-<div class="rounded-xl border-1 border-green-600 bg-card text-card-foreground shadow-sm hover:shadow-md transition-all cursor-pointer hover:scale-105 transform duration-300 ease-in-out relative {{ $count_data > 0 ? 'bg-active' : '' }}"
-    onclick="window.location.href='{{ url('get-attendant-student?assing_no=' . $item['assing_no'] . '&date=' . (is_object($selectedDate) ? $selectedDate->format('Y-m-d') : $selectedDate)) }}'">
-    <div class="p-4 sm:p-6 flex flex-col h-full">
+    <div class="rounded-xl border border-green-600 bg-card text-card-foreground shadow-sm hover:shadow-md transition-all cursor-pointer hover:scale-105 transform duration-300 ease-in-out relative {{ $count_data > 0 ? 'bg-active' : '' }}"
+        @if(optional($status)->exam_status != 'Yes')
+            onclick="window.location.href='{{ url('get-attendant-student?assing_no=' . $item['assing_no'] . '&date=' . (is_object($selectedDate) ? $selectedDate->format('Y-m-d') : $selectedDate)) }}'"
+        @else
+            {{-- style="pointer-events:none; opacity:0.6;" --}}
+        @endif
+    >
+    <div class="p-4 sm:p-6 flex flex-col h-full"
+            @if(isset($status) && $status->exam_status === 'Yes')
+                style=" background: #f3eaaa; border-radius:10px;"
+            @endif
+        >
         <div class="text-base font-semibold mb-4 flex flex-row items-center justify-between">
-            <span>ក្រុម : {{ $schedule['class_code'] }}</span>
+            <span>ក្រុម : {{ $schedule['class_code'] }} </span>
+        @if(isset($status) && $status->exam_status === 'Yes')
+        <span class="badge bg-info" style="
+            background: #017a96;
+            color: #ffffff;
+            border-radius: 8px;
+            ">
+                    ចំណាំ៖ កំពុងប្រឡង
+            </span>
+        @endif
         </div>
         <!-- Teacher and Subject Info -->
         <div class="flex items-center space-x-3 sm:space-x-4 mb-4">
@@ -74,3 +91,5 @@
         </div>
     </div>
 </div>
+
+

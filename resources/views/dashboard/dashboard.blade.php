@@ -1,5 +1,33 @@
 @extends('app_layout.app_layout')
 @section('content')
+    <style>
+        .dashboard-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .dashboard-card p {
+            letter-spacing: 0.5px;
+        }
+
+        .dashboard-card h2 {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        th,
+        td {
+            padding: 14px !important;
+        }
+    </style>
     <link rel="stylesheet" href="{{ asset('asset/NTTI/css/dashboard.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -13,7 +41,7 @@
     <script src="{{ asset('asset\js\dashboard\department.js') }}"></script>
     <script src="{{ asset('asset\js\dashboard\skill.js') }}"></script>
     <script src="{{ asset('asset\js\dashboard\province.js') }}"></script>
-    <section id="tabs" class="project-tab">
+    <section id="tabs" class="project-tab mb-5">
         <div>
             <div class="row">
                 <div class="col-md-12">
@@ -62,13 +90,15 @@
                                 </div>
                                 <div class="col-12 col-lg-3">
                                     <a href="#barchart_div" class="text-decoration-none">
-                                        <div class="bg-danger text-white p-4 text-center rounded shadow-sm">
+                                        <div class="bg-danger text-white p-4 rounded shadow-sm">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div>
-                                                    <p class="lead mb-0 font-dashboard">ថ្នាក់ / ក្រុម</p>
-                                                    <h1 class="text-center">{{ $total_classes }}</h1>
+                                                    <p class="lead mb-0 font-dashboard">វេន</p>
+                                                    @foreach ($total_sections as $record)
+                                                        <span class="mb-0 fs-5">{{ $record->name_2 }}</span>
+                                                    @endforeach
                                                 </div>
-                                                <h1 class="display-1"><i class="bi bi-building"></i></h1>
+                                                <h1 class="display-1"><i class="bi bi-calendar2-week"></i></h1>
                                             </div>
                                             <div class="border border-white">
                                             </div>
@@ -164,10 +194,10 @@
                                 </div>
                             </div>
                             <div class="row mt-4">
-                                <div class="col-12 col-md-12 col-lg-12">
+                                <div class="col-6 col-md-6 col-lg-6">
                                     <h4 class="mb-2">ស្ថិតិនិស្សិតសរុបតាមដេប៉ាតឺម៉ង់</h4>
-                                    <div class="table-responsive">
-                                        <table class="table table-striped table-hover ">
+                                    <div class="table-responsive d-flex align-items-center position-relative mb-0">
+                                        <table class="table table-striped table-hover">
                                             <thead>
                                                 <tr class="text-center fw-bold bg-transparent">
                                                     <td>ដេប៉ាតឺម៉ង់</td>
@@ -196,6 +226,8 @@
                                             </tbody>
                                         </table>
                                     </div>
+                                </div>
+                                <div class="col-6 col-md-6 col-lg-6">
                                     <div id="barchart_department" class="w-100" style="height: 400px;"></div>
                                 </div>
                             </div>
@@ -206,53 +238,7 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="info-schools" role="tabpanel" aria-labelledby="info-schools-tab">
-                            {{-- ព័ត៍មាន វិទ្យាស្ថាន --}}
                             <div class="py-4">
-                                <!-- Hero Banner -->
-                                {{-- <div class="hero-banner">
-                                    <div class="slideshow-container">
-                                        <!-- Slides -->
-                                        <div class="slide">
-                                            <img src="https://www.ntti.edu.kh/assets/images/best_1.jpg"
-                                                alt="NTTI Campus 1">
-                                        </div>
-                                        <div class="slide">
-                                            <img src="https://www.ntti.edu.kh/assets/images/best_2.jpg"
-                                                alt="NTTI Campus 2">
-                                        </div>
-                                        <div class="slide">
-                                            <img src="https://www.ntti.edu.kh/assets/images/best_3.jpg"
-                                                alt="NTTI Campus 3">
-                                        </div>
-                                        <div class="slide">
-                                            <img src="https://www.ntti.edu.kh/assets/images/best_4.jpg"
-                                                alt="NTTI Campus 4">
-                                        </div>
-                                        <div class="slide">
-                                            <img src="https://www.ntti.edu.kh/assets/images/best_5.jpg"
-                                                alt="NTTI Campus 5">
-                                        </div>
-
-                                        <!-- Navigation arrows -->
-                                        <a class="prev" onclick="changeSlide(-1)">❮</a>
-                                        <a class="next" onclick="changeSlide(1)">❯</a>
-
-                                        <!-- Dots/circles -->
-                                        <div class="dots-container">
-                                            <span class="dot" onclick="currentSlide(1)"></span>
-                                            <span class="dot" onclick="currentSlide(2)"></span>
-                                            <span class="dot" onclick="currentSlide(3)"></span>
-                                            <span class="dot" onclick="currentSlide(4)"></span>
-                                            <span class="dot" onclick="currentSlide(5)"></span>
-                                        </div>
-                                    </div>
-                                    <div class="hero-overlay">
-                                        <h1 style="font-size: 3rem; margin-bottom: 1rem;">
-                                            វិទ្យាស្ថានជាតិបណ្តុះបណ្តាលបច្ចេកទេស</h1>
-                                        <h2 style="font-size: 2rem;">National Technical Training Institute</h2>
-                                    </div>
-                                </div> --}}
-
                                 <div class="row">
                                     <div class="col-12 text-center mb-4 leader-ship-card">
                                         <img src="https://www.ntti.edu.kh/assets/images/director1.png" alt="Director NTTI"

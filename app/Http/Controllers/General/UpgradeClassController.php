@@ -41,15 +41,16 @@ class UpgradeClassController extends Controller
         $user = Auth::user();
         $page = $this->page;
         $sessionYearCode = Auth::user()->session_year_code ?? null;
+        
         $records = ClassStudent::select(
             'class_code',
             'semester',
             'years',
             'skills_code',
             'qualification',
-            'session_year_code'
-        )
-            ->orderBy('created_at', 'desc');
+            'session_year_code',
+            'sections_code'
+        )->orderBy('created_at', 'desc');
 
         if (!empty($sessionYearCode)) {
             $records->where('session_year_code', $sessionYearCode);
@@ -65,9 +66,9 @@ class UpgradeClassController extends Controller
             'years',
             'skills_code',
             'qualification',
-            'session_year_code'
-        )
-            ->get();
+            'session_year_code',
+            'sections_code'
+        )->get();
         $data = $this->services->GetDateIndexOption(now());
         return view('general.upp_grade_class', array_merge($data, compact('records', 'page')));
     }

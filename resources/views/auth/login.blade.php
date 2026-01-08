@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NTTI Portal</title>
+    <link rel="icon" type="image/x-icon" href="https://www.ntti.edu.kh/assets/images/icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Bayon&family=Moul&family=Noto+Serif+Khmer:wght@600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 

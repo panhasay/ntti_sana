@@ -14,7 +14,6 @@ TRUNCATE TABLE student;
 
 
 -- for studet clear data
-TRUNCATE TABLE class_schedule;
-TRUNCATE TABLE assing_classes;
 TRUNCATE TABLE assing_classes_student_line;
 TRUNCATE TABLE student_score;
+TRUNCATE TABLE class_student;

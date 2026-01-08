@@ -5,6 +5,7 @@ namespace App\Http\Controllers\General;
 use App\Http\Controllers\Controller;
 use App\Models\General\AssingClasses;
 use App\Models\General\Classes;
+use App\Models\General\ClassStudent;
 use App\Models\General\HangOfStudent;
 use App\Models\General\Qualifications;
 use App\Models\General\StudentRegistration;
@@ -56,16 +57,20 @@ class TransferController extends Controller
         // Student records
         $records = VStudentLedgerEntry::withQueryPermission()
             ->select(
-                'student_code', 'class_code', 'skills_code', 'qualification', 
-                'sections_code', 'years', 'session_year_code', 
+                'student_code',
+                'class_code',
+                'skills_code',
+                'qualification',
+                'sections_code',
+                'years',
+                'session_year_code',
                 DB::raw('MAX(semester) as semester')
             )
             ->when($sessionYearCode, fn($q) => $q->where('session_year_code', $sessionYearCode))
             ->groupBy('student_code', 'class_code', 'skills_code', 'qualification', 'sections_code', 'years', 'session_year_code')
             ->orderByDesc('student_code')
             ->get();
-
-
+            
         // Total HangOfStudent
         $total_student_HangOfStudent = HangOfStudent::when($sessionYearCode, fn($q) => $q->where('session_year_code', $sessionYearCode))
             ->count();
@@ -307,16 +312,16 @@ class TransferController extends Controller
             )
             ->orderBy('student_code', 'desc')
             ->first();
-            
-            $sessionYearCode = Auth::user()->session_year_code ?? null;
 
-            $class = Classes::WithQueryPermissionTeacher();
+        $sessionYearCode = Auth::user()->session_year_code ?? null;
 
-            if (!empty($sessionYearCode)) {
-                $class = $class->where('school_year_code', $sessionYearCode);
-            }
+        $class = Classes::WithQueryPermissionTeacher();
 
-            $class = $class->get();
+        if (!empty($sessionYearCode)) {
+            $class = $class->where('school_year_code', $sessionYearCode);
+        }
+
+        $class = $class->get();
 
         if ($student) {
             $view = view('modals.modals_student_change_class', compact('student', 'class'))->render();
@@ -395,39 +400,86 @@ class TransferController extends Controller
 
     public function SubmitStudentRequestChangeClass(Request $request)
     {
+        DB::beginTransaction();
+
         try {
+            $request->validate([
+                'code'              => 'required',
+                'class_code'        => 'required',
+                'class_old'         => 'required',
+                'posting_date'      => 'required|date',
+                'session_year_code' => 'required',
+                'year'              => 'required',
+                'semester'          => 'required',
+                'year_new'          => 'required',
+                'semester_new'      => 'required',
+            ]);
+
             $existing = TransferLine::where('student_code', $request->code)->first();
+            // dd($existing, $request->code);
+
             if ($existing) {
                 return response()->json([
                     'status' => 'error',
-                    'msg' => 'សិស្សមានសំណើរម្ដងរួចហើយ។'
+                    'msg'    => 'សិស្សមានសំណើរម្ដងរួចហើយ។'
+                ]);
+            }
+            $oldClass = Classes::where('code', $request->class_old)->first();
+            $newClass = Classes::where('code', $request->class_code)->first();
+            if (!$oldClass || !$newClass) {
+                return response()->json([
+                    'status' => 'error',
+                    'msg'    => 'Class code not found.'
                 ]);
             }
 
-            $sections_code = Classes::where('code', $request->class_old)->value('sections_code');
-            $sections_code_new = Classes::where('code', $request->class_code)->value('sections_code');
-            $student_code = $request->code;
-
+            // 4️⃣ Save transfer request
             $records = new TransferLine();
-            $records->student_code = $request->code;
-            $records->class_code_new = $request->class_code;
-            $records->class_code = $request->class_old;
-            $records->posting_date = $request->posting_date;
-            $records->reason_detail = $request->reason_detail;
-            $records->sections_code = $sections_code;
-            $records->sections_code_new = $sections_code_new;
-            $records->session_year_code = $request->session_year_code;
-
-            $records->year = $request->year;
-            $records->semester = $request->semester;
-            $records->status = "Yes";
+            $records->student_code       = $request->code;
+            $records->class_code         = $request->class_old;
+            $records->class_code_new     = $request->class_code;
+            $records->posting_date       = $request->posting_date;
+            $records->reason_detail      = $request->reason_detail;
+            $records->sections_code      = $oldClass->sections_code;
+            $records->sections_code_new  = $newClass->sections_code;
+            $records->session_year_code  = $request->session_year_code;
+            $records->year               = $request->year;
+            $records->semester           = $request->semester;
+            $records->year_new           = $request->year_new;
+            $records->semester_new       = $request->semester_new;
+            $records->status             = 'Yes';
             $records->save();
 
-            return response()->json(['status' => 'success', 'records' => $records]);
+
+            $classStudent = new ClassStudent();
+            $classStudent->student_code = $request->code;
+            $classStudent->class_code = $request->class_code;
+            $classStudent->years = $request->year_new;
+            $classStudent->semester = $request->semester_new;
+            $classStudent->sections_code = $newClass->sections_code;
+            $classStudent->session_year_code = $request->session_year_code;
+            $classStudent->department_code = $newClass->department_code;
+            $classStudent->skills_code = $newClass->skills_code;
+            $classStudent->status = "Yes";
+            $classStudent->qualification = $newClass->level;
+            $classStudent->save();
+            DB::commit();
+
+            return response()->json([
+                'status'  => 'success',
+                'records' => $records
+            ]);
         } catch (\Exception $ex) {
-            \DB::rollBack();
-            $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());
-            return response()->json(['status' => 'warning', 'msg' => $ex->getMessage()]);
+            DB::rollBack();
+            $this->services->telegram(
+                $ex->getMessage(),
+                $this->page,
+                $ex->getLine()
+            );
+            return response()->json([
+                'status' => 'warning',
+                'msg'    => 'Something went wrong. ',
+            ]);
         }
     }
 }

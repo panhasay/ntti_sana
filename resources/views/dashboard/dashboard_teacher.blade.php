@@ -70,7 +70,7 @@
     <div class="row mb-4">
         <div class="col-md-3">
             <?php $teacher_code = $record->code; ?>
-            <a href="{{ url('/teacher-management-class?code='.$record->code ?? '' ) }}" style="text-decoration: none;">
+            <a href="{{ url('/manage-academic-work') }}" style="text-decoration: none;">
                 <div class="card text-white" style="border-radius: 15px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                     <div class="card-body position-relative" style="background: linear-gradient(45deg, #43b1e9, #edbd9d); padding: 1.5rem;">
                         <div class="position-absolute" style="top: 0; right: 0; padding: 1rem;">
@@ -92,12 +92,12 @@
                     </div>
                     <h5 class="card-title" style="font-size: 1.1rem; margin-bottom: 1rem;">ថ្នាក់ត្រូវបង្រៀនថ្ងៃនេះ</h5>
                     <h2 class="card-text mb-1" style="font-size: 2.5rem; font-weight: bold;">{{ count($assignedClasses) ?? '0'}} 
-                        @foreach($assignedClasses as $record)
+                        {{-- @foreach($assignedClasses as $record)
                             <span style="font-size: 18px;"> 
                                 <a  href="{{ '/assign-classes/transaction?type=ed&code=' . App\Service\service::Encr_string($record->id) }}&years={{ $record->years ?? '' }}&type={{ $record->qualification ?? '' }}&assing_no={{ $record->assing_no ?? '' }}" style="color: #ffff;">{{ $record->class_code }}</a>
-                                {{-- <span style="font-size: 12px;">{{ $record->subject->name ?? '' }}</span> --}}
+                                <span style="font-size: 12px;">{{ $record->subject->name ?? '' }}</span>
                             </span>
-                        @endforeach
+                        @endforeach --}}
                     </h2>
                     <small class="text-white-50">នៅថ្ងៃនេះ</small>
                 </div>
@@ -148,7 +148,7 @@
                             <i class="mdi mdi-calendar-today" style="font-size: 2.5rem; opacity: 0.3;"></i>
                         </div>
                         <h5 class="card-title" style="font-size: 1.1rem; margin-bottom: 1rem;">កាលវិភាគ កាប្រឡង</h5>
-                        <h2 class="card-text mb-1" style="font-size: 2.5rem; font-weight: bold;">{{ count($assignedClasses) ?? '0'}} 
+                        <h2 class="card-text mb-1" style="font-size: 2.5rem; font-weight: bold;">&nbsp; 
                             {{-- @foreach($assignedClasses as $record)
                                 <span style="font-size: 18px;"> 
                                     <a  href="{{ url('/exam-schedule') }}" style="color: #ffff;">{{ $record->class_code }}</a>
@@ -171,7 +171,7 @@
             <div class="container menu-list">
                 <ul>
                     <li><a href="{{ url('manage-academic-work') }}">ប្រព័ន្ធគ្រប់គ្រង កាសិក្សា</a></li>
-                    <li><a href="{{ url('attendance/dashboards-attendance') }}">Attendance-អវត្តមាន</a></li>
+                    {{-- <li><a href="{{ url('attendance/dashboards-attendance') }}">Attendance-អវត្តមាន</a></li> --}}
                 </ul>
             </div>
         </div>
@@ -205,7 +205,7 @@
             </div>
             <div class="container menu-list">
                 <ul>
-                    <li><a href="{{ url('report-first-year-student-registration') }}">របាយការក្រុម ដែរលោកគ្រូបង្រៀន</a></li>
+                    {{-- <li><a href="{{ url('report-first-year-student-registration') }}">របាយការក្រុម ដែរលោកគ្រូបង្រៀន</a></li> --}}
                 </ul>
             </div>
         </div>

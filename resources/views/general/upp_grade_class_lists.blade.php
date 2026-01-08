@@ -42,11 +42,17 @@
     <tbody>
         @if(count($records) > 0)
           @foreach ($records as $record)
+            <?php 
+              $totalStudent = App\Models\General\ClassStudent::where('class_code', $record->class_code)
+                  ->where('semester', $record->semester)
+                  ->where('years', $record->years)
+                  ->count("student_code");
+            ?>
             <tr id="row{{$record->class_code}}">
               <td>
                   <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2"
                     href="{{ '/up-grade-class/transaction?type=ed&semester=' . ($record->semester ?? '') . '&years=' . ($record->years ?? '') . '&code=' . \App\Service\service::Encr_string($record->class_code ?? '') }}">
-                    <i class="mdi mdi-border-color"></i> ចំនួននិស្សិត
+                    <i class="mdi mdi-border-color"></i> ចំនួននិស្សិត {{ $totalStudent ?? "" }}
                   </a>
               </td>
               <td>{{ preg_replace('/[^a-zA-Z0-9]/', '', $record->class_code ?? '') }}</td>

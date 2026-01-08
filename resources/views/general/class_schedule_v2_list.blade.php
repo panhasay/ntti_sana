@@ -48,19 +48,25 @@
             --bs-gutter-y: 1px !important;
         }
     </style>
-    <div class="page-head page-head-custom mt-3">
+    <div class="page-title py-3">
         <div class="row align-items-center">
-            <div class="col-md-6">
+            <div class="col-12 col-md-6 order-md-1 order-last">
+                <div class="title-page">
+                    តារាងបែងចែកម៉ោងបង្រៀនក្រុម <span class="fw-bold">{{ $headers->class_code ?? '' }}</span>
+                </div>
             </div>
-            <div class="col-md-6 text-end">
-                <a href="{{ url('/class-schedule') }}" class="">
-                    <i class="mdi mdi-keyboard-return"></i>
-                </a>
+            <div class="col-12 col-md-6 order-md-2 order-first">
+                <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ url('/class-schedule-index') }}">តារាងបែងចែកម៉ោងបង្រៀន</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">ម៉ោងបង្រៀន</li>
+                    </ol>
+                </nav>
             </div>
         </div>
     </div>
     {{-- input data modal schedule --}}
-    <div class="p-4">
+    <div class="mb-2">
         <form id="classScheduleForm" action="{{ route('class.schedule.store.v2') }}" method="POST">
             @csrf
             <div class="row g-3">
@@ -76,7 +82,7 @@
                         <span class="error-text" id="class_code_error"></span>
                     </div>
                     <select name="class_code" class="class-select text-dark form-control"
-                        {{ $headers->class_code ? 'disabled' : '' }} required>
+                        {{ $headers->class_code ?? '' ? 'disabled' : '' }} required>
                         @foreach ($classs as $class)
                             <option value="{{ $class->code }}"
                                 {{ $headers->class_code == $class->code ? 'selected' : '' }}>
@@ -132,7 +138,7 @@
     {{-- end input data modal schedule --}}
     <div class="container-fluid p-2">
         <div class="row">
-            <div class="col-md-6 col-sm-6 col-6">
+            <div class="col-md-3 col-sm-6 col-6">
                 <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2" id="AddTeacherSchedule"
                     href="javascript:void(0);"><i class="mdi mdi-account-plus"></i>បន្ថែមថ្មី</a>
                 <button type="button" id="prints" data-id="{{ $headers->id ?? '' }}"
@@ -140,8 +146,8 @@
                     <i class="mdi mdi-printer btn-icon-append"></i>
                 </button>
             </div>
-            <div class="col-md-6 col-sm-7 col-7 khmer_os_b title-page">
-                កាលវិភាគបង្រៀន
+            <div class="col-md-5 col-sm-7 col-7 khmer_os_b title-page text-center">
+                កាលវិភាគបង្រៀន ចាប់ផ្តើមអនុវត្តថ្ងៃទី {{ App\Service\service::DateYearKH($headers->start_date ?? '') }}
             </div>
         </div>
     </div>
@@ -396,11 +402,16 @@
 
                         $.each(response.sessions, function(idx, session) {
                             $('#time_start').append(
-                                `<option value="${session.start_time}">
-                                        ${session.start_time}(${session.name})</option>`
+                                `<option 
+                                    value="${session.start_time}" 
+                                    data-end="${session.end_time}">
+                                    ${session.start_time} (${session.name})
+                                </option>`
                             );
                             $('#time_end').append(
-                                `<option value="${session.end_time}">${session.end_time}(${session.name})</option>`
+                                `<option value="${session.end_time}">
+                                        ${session.end_time} (${session.name})
+                                </option>`
                             );
                         });
 
@@ -409,6 +420,11 @@
                                 dropdownParent: $('#modalClassScheduleV2'),
                                 width: '100%'
                             });
+                        $('#time_start').on('change', function() {
+                            let selectedEndTime = $(this).find(':selected').data('end');
+
+                            $('#time_end').val(selectedEndTime).trigger('change');
+                        });
 
                     } else {
                         Swal.fire('Error', response.message, 'error');
@@ -420,6 +436,7 @@
                 }
             });
         });
+
         $('#SaveTeacherSchedule').on('click', function() {
             let classInfo = $('#modalClassScheduleV2').data('classInfo');
             let formData = {
@@ -449,26 +466,17 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(response) {
-                    if (response.conuter) {
+                    if(response.counter_add){
                         Swal.fire({
-                            icon: 'warning',
-                            title: 'មិនអនុញ្ញាត!',
+                            icon:'warning',
+                            title:"សូមពិនិត្យមើលម្ដងទៀត",
+                            timer:4000,
                             text: response.message,
-                            confirmButtonText: 'យល់ព្រម'
+                            showConfirmButton: false
                         });
+                        return;
                     }
 
-                    if (response.confilct_teacher) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'មិនអនុញ្ញាត!',
-                            html: `
-                                <h4 style="line-height:2">មុខវិជ្ជា ${response.subject} មានម៉ោងរួចហើយ។</h4>
-                                <p style="font-size:20px">សូមពិនិត្យមើលម្ដងទៀត</p>
-                            `,
-                            confirmButtonText: 'យល់ព្រម'
-                        });
-                    }
                     if (response.duplicate) {
                         Swal.fire({
                             icon: 'warning',
@@ -489,10 +497,12 @@
                             icon: 'success',
                             title: 'ជោគជ័យ!',
                             text: response.message,
-                            timer: 1500,
+                            timer: 3000,
                             showConfirmButton: false
                         });
-                        location.reload();
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
                         $('#modalClassScheduleV2').modal('hide');
                         $('#modalClassScheduleV2').find('input, select, textarea').val('');
                     }
@@ -506,6 +516,7 @@
                 }
             });
         });
+
         $(document).on('click', '.delete-icon', function() {
             let id = $(this).data('id');
 
@@ -558,10 +569,7 @@
                 }
             });
         });
-        $(document).on('click', '.edit-icon', function() {
-            let id = $(this).data('id');
-            editRecord(id);
-        });
+
         $(document).ready(function() {
             $('#edit_teachers').select2({
                 width: '100%',
@@ -585,6 +593,11 @@
             });
         });
 
+        $(document).on('click', '.edit-icon', function() {
+            let id = $(this).data('id');
+            editRecord(id);
+        });
+
         function editRecord(id) {
             $.ajax({
                 url: `/assign-class/${id}/edit`,
@@ -597,62 +610,45 @@
                         $('#edit_teachers').empty();
                         $.each(response.teachers, function(index, teacher) {
                             $('#edit_teachers').append(
-                                $('<option>', {
-                                    value: teacher.code,
-                                    text: teacher.name_2
-                                })
+                                $('<option>', { value: teacher.code, text: teacher.name_2 })
                             );
                         });
                         $('#edit_teachers').val(record.teachers_code).trigger('change');
                         $('#edit_subjects').empty();
                         $.each(response.subjects, function(code, name) {
                             $('#edit_subjects').append(
-                                $('<option>', {
-                                    value: code,
-                                    text: name
-                                })
+                                $('<option>', { value: code, text: name })
                             );
                         });
                         $('#edit_subjects').val(record.subjects_code).trigger('change');
-
-                        // DAYS
                         $('#edit_date').empty();
                         $.each(response.days, function(code, name) {
                             $('#edit_date').append(
-                                $('<option>', {
-                                    value: code,
-                                    text: name
-                                })
+                                $('<option>', { value: code, text: name })
                             );
                         });
                         $('#edit_date').val(record.date_name).trigger('change');
-
-                        // TIME START / END
                         $('#edit_time_start').empty();
                         $('#edit_time_end').empty();
                         $.each(response.sessions, function(index, session) {
                             $('#edit_time_start').append(
                                 $('<option>', {
                                     value: session.start_time,
-                                    text: session.start_time + `(${session.name})`
+                                    text: `${session.start_time} (${session.name})`
                                 })
                             );
                             $('#edit_time_end').append(
                                 $('<option>', {
                                     value: session.end_time,
-                                    text: session.end_time + `(${session.name})`
+                                    text: `${session.end_time} (${session.name})`
                                 })
                             );
                         });
                         $('#edit_time_start').val(record.start_time).trigger('change');
                         $('#edit_time_end').val(record.end_time).trigger('change');
-
-                        // ROOM
                         $('#edit_room').val(record.room);
-                        // SESSIONS TYPE
                         $('#edit_sessions_type').val(record.sessions_type);
 
-                        // Show modal
                         $('#editModal').modal('show');
                     } else {
                         Swal.fire({
@@ -667,6 +663,7 @@
                 }
             });
         }
+
         $('#SaveUpdateSchedule').on('click', function() {
             let id = $('#edit_id').val();
             let formData = $('#updateForm').serialize();
@@ -676,32 +673,17 @@
                 type: 'PUT',
                 data: formData,
                 success: function(response) {
-                    if (response.duplicate) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'មិនអនុញ្ញាត!',
-                            html: `
-                        <p>${response.message}</p>
-                        <hr>
-                        <p><b>ថ្ងៃ:</b> ${response.conflict_day}</p>
-                        <p><b>ម៉ោង:</b> ${response.conflict_start} - ${response.conflict_end}</p>
-                    `,
-                            confirmButtonText: 'យល់ព្រម'
-                        });
-                        return;
-                    }
-
                     if (response.success) {
                         Swal.fire({
                             icon: 'success',
                             title: 'ជោគជ័យ!',
                             text: response.message,
-                            timer: 1500,
+                            timer: 3000,
                             showConfirmButton: false
-                        }).then(() => {
-                            location.reload();
                         });
-
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
                         $('#editModal').modal('hide');
                     } else {
                         Swal.fire({
@@ -715,11 +697,12 @@
                     Swal.fire({
                         icon: 'error',
                         title: 'កំហុស!',
-                        text: 'មានបញ្ហា ក្នុងការកែប្រែទិន្នន័យ។ សូមព្យាយាមម្តងទៀត។',
+                        text: 'មានបញ្ហា ក្នុងការកែប្រែទិន្នន័យ។ សូមព្យាយាមម្តងទៀត។', 
                     });
                 }
             });
         });
+
         $('#prints').on('click', function() {
             Swal.fire({
                 title: 'តើអ្នកពិតជាចង់បោះពុម្ពមែនទេ?',

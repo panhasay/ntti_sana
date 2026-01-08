@@ -67,6 +67,7 @@ class AssingClassesController extends Controller
         //         }
         //         $records = $records->orderBy('semester', 'asc')->orderBy('years', 'asc')->paginate(15);
         // }
+        
         $records = AssingClasses::with(['department', 'section', 'skill', 'teacher','subject' ])
                 ->where('years', $data['years'])
                 ->where('qualification', $data['type'])
@@ -77,7 +78,7 @@ class AssingClassesController extends Controller
                 if ($user->role == "teachers") {
                     $records = $records->where('teachers_code', $user->user_code);
                 }
-                $records = $records->orderBy('semester', 'asc')->orderBy('years', 'asc')->paginate(15);
+                $records = $records->orderBy('semester', 'asc')->orderBy('years', 'asc')->get();
 
         try{
             $school_year_map = [
@@ -159,22 +160,26 @@ class AssingClassesController extends Controller
                     ->where('session_year_code', $records->session_year_code)
                     ->get();
 
-                // dd($students);
+                if ($students->isEmpty()) {
+                    return;
+                }
 
-                if ($students->isNotEmpty()) {
-                    $studentCodes = $students->pluck('student_code');
+                // get existing assigned student codes
+                $existingStudentCodes = AssingClassesStudentLine::where('assing_line_no', $records->assing_no)
+                    ->whereIn('student_code', $students->pluck('student_code'))
+                    ->pluck('student_code')
+                    ->toArray();
 
-                    $recordExists = AssingClassesStudentLine::whereIn('student_code', $studentCodes)
-                                        ->where('assing_line_no', $records->assing_no)
-                                        ->exists(); 
-                    if (!$recordExists) {
-                        foreach ($students as $student) {
-                            $recordStudent = new AssingClassesStudentLine();
-                            $recordStudent->student_code = $student->student_code;
-                            $recordStudent->assing_line_no = $records->assing_no;
-                            $recordStudent->save();
-                        }
+                foreach ($students as $student) {
+                    // skip if already exists
+                    if (in_array($student->student_code, $existingStudentCodes)) {
+                        continue;
                     }
+
+                    $recordStudent = new AssingClassesStudentLine();
+                    $recordStudent->student_code   = $student->student_code;
+                    $recordStudent->assing_line_no = $records->assing_no;
+                    $recordStudent->save();
                 }
             }
             return view('general.assing_classes_card', compact($params));

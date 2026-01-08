@@ -44,10 +44,28 @@ class ExamScheduleController extends Controller
     public function index()
     {
         $page = $this->page;
-        $records = ExamSchedule::orderBy('session_year_code', 'asc')->paginate(20);
+        $sessionYearCode = Auth::user()->session_year_code ?? null;
+        $records = AssingClasses::select(
+            'class_code',
+            'years',
+            'semester',
+            'session_year_code',
+            'sections_code',
+            'skills_code',
+            'qualification',
+            'department_code',
+            'exam_status'
+        )
+        ->whereNull('exam_type');
+        if (!empty($sessionYearCode)) {
+            $records = $records->where('session_year_code', $sessionYearCode);
+        }
+        $records = $records->groupBy('class_code', 'years', 'semester', 'session_year_code', 'sections_code', 'skills_code', 'qualification', 'department_code', 'exam_status')->paginate(1000);
+
         if (!Auth::check()) {
             return redirect("login")->withSuccess('Opps! You do not have access');
         }
+        
         return view('general.exam_schedule', compact('records', 'page'));
     }
     public function transaction(Request $request)
@@ -910,4 +928,16 @@ class ExamScheduleController extends Controller
 
     }
     
+     public function updateDateExamSchedule(Request $request)
+    {
+        AssingClasses::where('class_code', $request->class_code)
+            ->update([
+                'exam_status' => $request->exam_status
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'status'  => $request->exam_status
+        ]);
+    }
 }

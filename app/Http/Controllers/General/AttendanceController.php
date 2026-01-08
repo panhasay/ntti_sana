@@ -154,11 +154,17 @@ class AttendanceController extends Controller
         // Get the selected day name in lowercase
         $selectedDay = strtolower($selectedDate->format('l'));
 
+        $sessionYearCode = Auth::user()->session_year_code ?? null;
+
         // Get the class schedules and related assignments for the selected date
         $schedules = ClassSchedule::with(['section', 'subject'])
-            ->whereDate('start_date', '<=', $selectedDate)
-            ->orderBy('start_date', 'asc')
-            ->get()
+            ->whereDate('start_date', '<=', $selectedDate);
+            
+            if (!empty($sessionYearCode)) {
+                $schedules = $schedules->where('session_year_code', $sessionYearCode);
+            }
+
+            $schedules = $schedules->orderBy('start_date', 'asc')->get()
             ->map(function ($schedule) use ($selectedDay, $selectedDepartment, $selectedSection) {
                 // Get assignments for this schedule that match selected day
                 $assignments = AssingClasses::where('class_schedule_id', $schedule->id)
