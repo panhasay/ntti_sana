@@ -143,7 +143,11 @@
                         <li><a href="{{ url('skills') }}">ជំនាញ</a></li>
                         <li><a href="{{ url('subject') }}">មុខវិជ្ជា</a></li>
                         <li><a href="{{ url('teachers') }}">សាស្ត្រាចារ្យ លោកគ្រូអ្នកគ្រូ</a></li>
-                        <li><a href="{{ url('attendance/dashboards-attendance') }}">អវត្តមាន</a></li>
+                        <li>
+                            <a href="{{ url('attendance/dashboards-attendance?date=' . \Carbon\Carbon::now()->format('Y-m-d') . '&sections_code=' . getCurrentSectionCode()) }}">
+                                អវត្តមាន
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -175,6 +179,7 @@
                         <li><a href="{{ url('exam-credit') }}">បញ្ជីរាយនាមវត្តមានប្រចាំខែ</a></li>
                         <li><a href="{{ url('exam-credit/semester-att-list') }}">បញ្ជីរាយនាមវត្តមានប្រចាំឆមាស</a></li>
                         <li><a href="{{ url('retake-exam') }}">បញ្ជីរាយនាមនិស្សិតប្រឡងសង</a></li>
+                        <li><a href="{{ url('student/index-student') }}">និស្សិតបានដាក់ពាក្យ</a></li>
                     </ul>
                 </div>
             </div>

@@ -70,6 +70,7 @@ class UpgradeClassController extends Controller
             'sections_code'
         )->get();
         $data = $this->services->GetDateIndexOption(now());
+        
         return view('general.upp_grade_class', array_merge($data, compact('records', 'page')));
     }
     public function transaction(request $request)

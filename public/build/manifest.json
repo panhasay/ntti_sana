@@ -2223,7 +2223,7 @@
     "isDynamicEntry": true
   },
   "resources/js/app.js": {
-    "file": "js/ntti-app-DJkUAnWF.js",
+    "file": "js/ntti-app-C81EOEdG.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -2233,7 +2233,7 @@
     ]
   },
   "resources/js/certificate/certificate.js": {
-    "file": "js/ntti-app-DPqmFZfO.js",
+    "file": "js/ntti-app-DXEUyDqK.js",
     "name": "certificate",
     "src": "resources/js/certificate/certificate.js",
     "isDynamicEntry": true,

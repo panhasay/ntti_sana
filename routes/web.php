@@ -59,6 +59,9 @@ Route::get('/greeting/{locale}', function (string $locale) {
         return view('auth.login');
     });
     
+    Route::get('/panha', function () {
+        return view('certificate.certificate_card_generate_img');
+    });
     Route::get('/', [AuthController::class, 'HomeLogin'])->name('HomeLogin');
     Route::get('/thank-you-for-submit', function () {
         return view('/system.thank_you_for_submit');
@@ -295,7 +298,10 @@ Route::group(['perfix' => 'teachers' ], function (){
 
 Route::group(['prefix' => 'attendance'], function () {
     Route::get('/dashboards-attendance', [AttendanceController::class, 'index']);
-    Route::post('/submit-by-date', [AttendanceController::class, 'SumbitDocumentByDate']);
+    Route::post('/submit-by-date', [AttendanceController::class, 'SumbitDocumentByDate'])->name('attendance.submitByDate');
+    Route::post('/attendance/update', [AttendanceController::class, 'updateAttendance'])->name('attendance.update');
+    Route::post('/attendance/student/remove', [AttendanceController::class, 'removeStudent'])->name('attendance.student.remove');
+    
 })->middleware('auth');
 
 Route::group(['perfix' => '/class-schedule'], function (){
@@ -344,7 +350,6 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
         Route::get('/D_IT/degree/MD_DE', 'IndexPrintCertificates');
         Route::get('/degree-print', 'CertificatesDegrePrints');
         Route::get('/degree-priview', 'CertificatesDegrePriview');
-
         Route::get('/degree-priview', 'CertificatesDegrePriview');
     });
 });
@@ -353,7 +358,6 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
     Route::controller(CertificateController::class)->group(function () {
         Route::get('/dept-menu', 'index')->name('cert.dept_menu');
         Route::get('/dept-menu/{dept_code}', 'showMenuModule')->where('dept_code', '[A-Z_]+')->name('cert.dept.list');
-
         $subModules = DB::table('cert_sub_module')->where('active', 1)->whereNotNull('route')->get();
         Route::prefix('{dept_code}')->group(function () use ($subModules) {
             foreach ($subModules as $item) {
@@ -361,11 +365,9 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
                     ->name('certificate.' . $item->route);
             }
         });
-
         Route::prefix('student')->group(function () {
             Route::post('/bar', 'getStudentPieBarChartData');
         });
-
         Route::post('/level_shift_skill', 'showLevelShiftSkill');
         Route::post('/card_view', 'showCardView');
         Route::post('/card_view_list', 'showCardView');
@@ -380,11 +382,6 @@ Route::group(['prefix' => 'certificate', 'middleware' => 'auth'], static functio
         Route::post('/card_due_date', 'StoreDueDateSession');
         Route::post('/card_due_date_update', 'UpdateDueDateSession');
         Route::post('/card_total_student', 'showCardTotalStudent');
-        
-        // Route::get('/print_card', static function () {
-        //     return view('certificate/certificate_card_print_get');
-        // });
-
         Route::get('/print_card_pdf', 'printCardStudentPdf');
         Route::post('/card_due_expire', 'StoreDueDateExpireSession');
         Route::put('/card_due_expire_update', 'updateDueDateExpireSession');
@@ -565,3 +562,13 @@ Route::group(['prefix'=> 'exam-credit'],function(){
     Route::get('/print',[ExamCreditController::class,'print']);
     Route::get('/excel',[ExamCreditController::class,'excel']);
 })->middleware('auth');
+
+Route::group(['prefix'=> 'student'],function(){
+    Route::get('/index-student',[StudnetController::class,'indexStudent']);
+    Route::get('/class/students/detail',[StudnetController::class, 'studentsInClass'])->name('class.students.detail');
+    Route::get('/students-apply-new',[StudnetController::class,'StudentsApplyNew']);
+    Route::get('/excel',[StudnetController::class,'excel']);
+})->middleware('auth');
+
+Route::get('/generate-certificate-img', [CertificateController::class, 'generateImg'])->name('generate.certificate.img');
+

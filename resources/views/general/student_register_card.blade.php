@@ -261,7 +261,7 @@
                     @foreach ($skills as $record)
                       <option value="{{ $record->code ?? '' }}" {{ isset($records->skills_code) && $records->skills_code
                           ==
-                        $record->code ? 'selected' : '' }} {{ Auth::user()->department_code == $record->department_code ? 'selected' : '' }}>
+                        $record->code ? 'selected' : '' }}>
                         {{ isset($record->name_2) ? $record->name_2 : '' }}
                       </option>
                     @endforeach

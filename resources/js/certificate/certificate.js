@@ -279,7 +279,7 @@ function showCardView() {
                                                 .attr("type", "button")
                                                 .addClass(
                                                     "btn btn-outline-danger btn-sm"
-                                                )
+                                                )   
                                                 .attr("title", "Print")
                                                 .attr(
                                                     "name",
@@ -472,6 +472,43 @@ function showCardView() {
                                                                     rowsPerPage
                                                         )
                                                 )
+                                        )
+                                        // Panha add 
+                                        .append(
+                                            $("<button>")
+                                                .addClass(
+                                                    "btn btn-outline-info btn-sm GenerateImg"
+                                                )
+                                                .attr("type", "button")
+                                                .attr(
+                                                    "name",
+                                                    "GenerateImg"
+                                                )
+                                                .attr(
+                                                    "id",
+                                                    "GenerateImg"
+                                                )
+                                                .attr(
+                                                    "data-GenerateImg",
+                                                    item.id
+                                                )
+                                                .attr(
+                                                    "data-stu_code",
+                                                    item.code
+                                                )
+                                                .attr(
+                                                    "data-dept_code",
+                                                    item.department_code
+                                                )
+                                                .attr(
+                                                    "data-class_code",
+                                                    item.class_code
+                                                )
+                                               
+                                                .css({
+                                                    "margin-right": "5px",
+                                                })
+                                                .html('<i class="mdi mdi-image btn-icon-append"></i>')
                                         )
                                 )
                         );

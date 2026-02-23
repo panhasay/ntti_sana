@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\General;
-
 use App\Http\Controllers\Controller;
 use App\Models\General\AssingClasses;
 use App\Models\General\AssingClassesStudentLine;
@@ -338,20 +337,17 @@ class AssingClassesController extends Controller
     {
         $data = $request->all();
         try {
-            $records = AssingClassesStudentLine::with(['student'])
-                    ->where('assing_line_no', $data['assing_no'])
-                    ->get();
-
-            // Get scores for the specific date
+            $records = AssingClassesStudentLine::with('student')
+                ->where('assing_line_no', $data['assing_no'])
+                ->get()
+                ->sortBy(fn ($r) => $r->student->name_2);
             $selectedDate = $request->get('date', date('Y-m-d'));
             
-            // Get all student scores for this assignment and date
             $student_scores = student_score::where('assign_line_no', $data['assing_no'])
                 ->whereDate('att_date', $selectedDate)
                 ->get()
-                ->keyBy('student_code'); // Index by student_code for easier lookup
-
-            // Add attendance data to each student record
+                ->keyBy('student_code'); 
+                
             $records = $records->map(function($record) use ($student_scores) {
                 $score = $student_scores->get($record->student_code);
                 $record->score = $score ? $score->att_score : null;
@@ -366,7 +362,11 @@ class AssingClassesController extends Controller
                 ];
             })->values()->toArray();
 
-            return view('general.assing_attendant_lists', compact('records', 'header'));
+            $recordsAtt = student_score::where('assign_line_no', request('assing_no'))
+                ->where('att_date', request('date'))
+                ->get();
+
+            return view('general.assing_attendant_lists', compact('records', 'header', 'recordsAtt'));
 
         } catch (\Exception $ex) {
             $this->services->telegram($ex->getMessage(), $this->page, $ex->getLine());

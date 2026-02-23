@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
+
 use PDF;
 
 class AttendanceController extends Controller
@@ -90,135 +91,20 @@ class AttendanceController extends Controller
         if (!Auth::check()) {
             return redirect("login")->withSuccess('Opps! You do not have access');
         }
+        
+        $today = $request->date; 
+        $sections_code = $request->sections_code; 
+        $carbonDate = Carbon::parse($today);
+        $nameDay = strtolower($carbonDate->format('l'));
 
-        $holidays = $this->getKhmerHolidays();
-        $dateStrings = collect($holidays['items'])->pluck('start.date')->toArray();
+        
+        $records = AssingClasses::where('date_name', $nameDay)->where('sections_code', $sections_code)->get();
 
-        // Create a mapping of dates to holiday names for tooltips
-        $holidayNames = collect($holidays['items'])->mapWithKeys(function ($item) {
-            $date = $item['start']['date'];
-            $name = $item['summary'] ?? 'Holiday';
-            return [$date => $name];
-        })->toArray();
-
-        $classCode = $request->query('class_code');
-        $dateString = $request->query('date');
-        if ($dateString) {
-            $dateObj = \DateTime::createFromFormat('Y-m-d', $dateString);
-            $isValidDate = $dateObj && $dateObj->format('Y-m-d') === $dateString;
-            if (!$isValidDate) {
-                $today = Carbon::now()->format('Y-m-d');
-                $params = $request->all();
-                $params['date'] = $today;
-                return redirect()->to(url('attendance/dashboards-attendance') . '?' . http_build_query($params))
-                    ->with('warning', 'ថ្ងៃដែលបានជ្រើសមិនត្រឹមត្រូវ។ ប្រព័ន្ធបានកំណត់ទៅថ្ងៃបច្ចុប្បន្នវិញ។');
-            }
-            $selectedDate = Carbon::parse($dateString);
-        } else {
-            $selectedDate = Carbon::now();
-        }
-
-        // ទប់ស្កាត់ថ្ងៃឈប់សម្រាក
-        if (in_array($selectedDate->format('Y-m-d'), $dateStrings)) {
-            $today = Carbon::now()->format('Y-m-d');
-            $params = $request->all();
-            $params['date'] = $today;
-            return redirect()->to(url('attendance/dashboards-attendance') . '?' . http_build_query($params))
-                ->with('warning', 'មិនអាចជ្រើសរើសថ្ងៃឈប់សម្រាកបានទេ។ ប្រព័ន្ធបានកំណត់ទៅថ្ងៃបច្ចុប្បន្នវិញ។');
-        }
-
-        // ទប់ស្កាត់ថ្ងៃអាទិត្យ
-        if ($selectedDate->isSunday()) {
-            $today = Carbon::now()->format('Y-m-d');
-            $params = $request->all();
-            $params['date'] = $today;
-            return redirect()->to(url('attendance/dashboards-attendance') . '?' . http_build_query($params))
-                ->with('warning', 'មិនអាចជ្រើសរើសថ្ងៃអាទិត្យបានទេ។ ប្រព័ន្ធបានកំណត់ទៅថ្ងៃបច្ចុប្បន្នវិញ។');
-        }
-
-        $selectedDepartment = $request->query('department', 'All Departments');
-
-        // Set default section based on current time if not specified in request
-        $selectedSection = $request->query('section') ?? $this->getCurrentSection();
-
-        // If class code is provided, get the assignment record first
-        if ($classCode) {
-            $assignment = AssingClasses::where('class_code', $classCode)
-                ->first();
-
-            if ($assignment) {
-                return redirect()->to('/get-attendant-student?assing_no=' . $assignment->assing_no);
-            }
-        }
-
-        // Get the selected day name in lowercase
-        $selectedDay = strtolower($selectedDate->format('l'));
-
-        $sessionYearCode = Auth::user()->session_year_code ?? null;
-
-        // Get the class schedules and related assignments for the selected date
-        $schedules = ClassSchedule::with(['section', 'subject'])
-            ->whereDate('start_date', '<=', $selectedDate);
-            
-            if (!empty($sessionYearCode)) {
-                $schedules = $schedules->where('session_year_code', $sessionYearCode);
-            }
-
-            $schedules = $schedules->orderBy('start_date', 'asc')->get()
-            ->map(function ($schedule) use ($selectedDay, $selectedDepartment, $selectedSection) {
-                // Get assignments for this schedule that match selected day
-                $assignments = AssingClasses::where('class_schedule_id', $schedule->id)
-                    ->where('date_name', $selectedDay)
-                    ->with(['teacher', 'subject', 'department'])
-                    ->when($selectedDepartment !== 'All Departments', function ($query) use ($selectedDepartment) {
-                        $query->whereHas('department', function ($q) use ($selectedDepartment) {
-                            $q->where('name_2', $selectedDepartment);
-                        });
-                    })
-                    ->get()
-                    ->filter(function ($assignment) use ($selectedSection) {
-                        if ($selectedSection === 'All') {
-                            return true; // Show all sections
-                        }
-
-                        $sectionName = $this->extractSectionName($assignment->section);
-                        return strtolower($sectionName) === strtolower($selectedSection);
-                    });
-
-                // Split assignments into separate schedule items if multiple exist for same time
-                $scheduleItems = collect();
-                $assignments->each(function ($assignment) use ($scheduleItems) {
-                    $sectionName = $this->extractSectionName($assignment->section);
-
-                    $scheduleItems->push([
-                        'teacher' => $assignment->teacher->name ?? '',
-                        'teacher_2' => $assignment->teacher->name_2 ?? '',
-                        'subject' => $assignment->subject->name ?? '',
-                        'time' => $assignment->start_time . ' - ' . $assignment->end_time,
-                        'room' => $assignment->room,
-                        'checked' => (bool) $assignment->status,
-                        'assing_no' => $assignment->assing_no,
-                        'section' => $sectionName
-                    ]);
-                });
-
-                // Format the schedule data
-                return [
-                    'class_code' => $schedule->class_code,
-                    'section' => $schedule->section->name ?? '',
-                    'start_date' => $schedule->start_date,
-                    'schedule_items' => $scheduleItems->toArray()
-                ];
-            })
-            ->filter(function ($schedule) {
-                return !empty($schedule['schedule_items']);
-            })
-            ->values();
-
-        // Get list of departments
-        $departments = Department::pluck('name_2')->toArray();
-
-        return view('dashboard.dashboard_attendance_student', compact('schedules', 'selectedDate', 'selectedDepartment', 'selectedSection', 'departments', 'holidays', 'dateStrings', 'holidayNames'));
+        $assignNumbers = $records->pluck('assing_no'); // collection of assign numbers
+        $studentAtt = student_score::whereIn('assign_line_no', $assignNumbers)
+                        ->where('att_date', $today)
+                        ->get();
+        return view('dashboard.dashboard_attendance_student', compact('records', 'today', 'studentAtt'));
     }
 
     public function SumbitDocumentByDate(Request $request)
@@ -227,18 +113,9 @@ class AttendanceController extends Controller
             $assign_no = $request->input('assing_no');
             $att_date = $request->input('att_date');
             $att_date = Carbon::parse($att_date)->format('Y-m-d');
-
-            // 1. Get data
-            // 1. Fetch student scores
             $students = student_score::where('assign_line_no', $assign_no)
                 ->where('att_date', $att_date)
                 ->get();
-
-            foreach ($students as $student) {
-                $student->status = "Yes";
-                $student->save();
-            }
-
             // 2. Fetch related class assignment data
             $record = AssingClasses::with(['teacher', 'subject', 'section'])
                 ->where('assing_no', $assign_no)
@@ -252,10 +129,10 @@ class AttendanceController extends Controller
 
             // 4. Count student statuses
             $total        = $students->count();
-            $present      = $students->where('att_score', 2)->count();
-            $absent       = $students->where('att_score', 0)->count();
-            $permission   = $students->where('att_score', 0.5)->count();
-            $late         = $students->where('att_score', 1)->count();
+            $present      = $students->where('status', 'present')->count();
+            $absent       = $students->where('status', 'absent')->count();
+            $permission   = $students->where('status', 'permission')->count();
+            $late         = $students->where('status', 'late')->count();
 
             // 5. Compose message
             $message  = "📋 របាយការណ៍អវត្តមានប្រចាំថ្ងៃ ក្រុម $classCode\n";
@@ -270,28 +147,16 @@ class AttendanceController extends Controller
             $message .= "⏰ យឺត: $late\n";
             $message .= "👤 អ្នកហៅអវត្តមាន: " . Auth()->user()->name . "\n";
 
-            $telegramId = "-4557828405";
-            $telegramToken = "7286298295:AAE5VeNDbrjXIPF2mJNlZMpXa1MhojXHvnQ";
+            $telegramId = "8201275268";
+            $telegramToken = "8401740280:AAGDlGSuSNf5xGrw0w0XsRjCuxwjsBnb4BA";
 
             Http::post("https://api.telegram.org/bot{$telegramToken}/sendMessage", [
                 'chat_id' => $telegramId,
                 'text' => $message,
             ]);
-
-            // // 4. Send the PDF
-            // $response = Http::attach(
-            //     'document',
-            //     file_get_contents($filePath),
-            //     $filename
-            // )->post("https://api.telegram.org/bot{$telegramToken}/sendDocument", [
-            //     'chat_id' => $telegramId,
-            //     'caption' => 'សូមពិនិត្យរបាយការណ៍ PDF ខាងក្រោម។',
-            // ]);
-
             return response()->json([
                 'status' => 'success',
                 'msg' => 'បានបញ្ជូន PDF និងព័ត៌មានទៅ Telegram',
-                // 'telegram_response' => $response->json()
             ]);
         } catch (\Exception $ex) {
             return response()->json([
@@ -301,6 +166,74 @@ class AttendanceController extends Controller
         }
     }
 
+    public function SumbitDocumentByDatePDF(Request $request)
+    {
+        try {
+            // 1. Input
+            $assign_no = $request->input('assing_no');
+            $att_date  = Carbon::parse($request->input('att_date'))->format('Y-m-d');
+
+            // 2. Get students
+            $students = student_score::where('assign_line_no', $assign_no)
+                ->where('att_date', $att_date)
+                ->orderBy('student_code')
+                ->get();
+
+            if ($students->isEmpty()) {
+                return response()->json([
+                    'status' => 'error',
+                    'msg' => 'មិនមានទិន្នន័យអវត្តមាន'
+                ]);
+            }
+
+            // 3. Class info
+            $record = AssingClasses::with(['teacher', 'subject', 'section'])
+                ->where('assing_no', $assign_no)
+                ->first();
+
+            $data = [
+                'students'     => $students,
+                'record'       => $record,
+                'att_date'     => $att_date,
+                'teacherName'  => $record->teacher->name_2 ?? 'N/A',
+                'subjectName'  => $record->subject->name ?? 'N/A',
+                'sectionName'  => $record->section->name_2 ?? 'N/A',
+                'classCode'    => $record->class_code ?? 'N/A',
+                'generatedBy'  => auth()->user()->name,
+            ];
+
+            // 4. Generate PDF
+            $pdf = Pdf::loadView('pdf.attendance-official', $data)
+                ->setPaper('A4', 'portrait');
+
+            $fileName = "Attendance_{$assign_no}_{$att_date}.pdf";
+            $path = storage_path("app/{$fileName}");
+            $pdf->save($path);
+
+            // 5. Send to Telegram
+            Http::attach(
+                'document',
+                file_get_contents($path),
+                $fileName
+            )->post("https://api.telegram.org/bot" . env('TELEGRAM_BOT_TOKEN') . "/sendDocument", [
+                'chat_id' => env('TELEGRAM_CHAT_ID'),
+                'caption' => "📋 របាយការណ៍អវត្តមានផ្លូវការ\n📅 ថ្ងៃទី {$att_date}\n👨‍🏫 {$data['teacherName']}",
+            ]);
+
+            // 6. Delete file
+            @unlink($path);
+
+            return response()->json([
+                'status' => 'success',
+                'msg' => 'បានផ្ញើរបាយការណ៍ PDF ទៅ Telegram ដោយជោគជ័យ'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'msg' => $e->getMessage()
+            ], 500);
+        }
+    }
 
     public function getKhmerHolidays()
     {
@@ -327,5 +260,57 @@ class AttendanceController extends Controller
         }
 
         return ['error' => 'Unable to fetch holidays'];
+    }
+
+    public function updateAttendance(Request $request)
+    {
+        $scoreMap = [
+            'present'    => 1,
+            'absent'     => 0,
+            'permission' => 0.5,
+            'late'       => 0.5,
+        ];
+        $student = student_score::where('student_code', $request->student_code)
+            ->where('assign_line_no', $request->assign_no)
+            ->where('att_date', $request->att_date)
+            ->first();
+        if (!$student) {
+            $student = new student_score();
+            $student->student_code   = $request->student_code;
+            $student->assign_line_no = $request->assign_no;
+            $student->att_date       = $request->att_date;
+        }
+        $student->status    = $request->status;
+        $student->att_score = $scoreMap[$request->status] ?? 0;
+        $student->save();
+
+        $recordsAtt = student_score::where('assign_line_no', $request->assign_no)
+            ->where('att_date', $request->att_date)
+            ->get();
+
+        return response()->json([
+            'status'    => 'success',
+            'message'   => 'Attendance saved successfully',
+            'att_score' => $student->att_score,
+            'records'   => $recordsAtt, // all attendance for that day
+        ]);
+    }
+
+    public function removeStudent(Request $request)
+    {
+        $request->validate([
+            'assign_no' => 'required',
+            'att_date'  => 'required|date',
+        ]);
+
+        $query = student_score::where('assign_line_no', $request->assign_no)
+            ->where('att_date', $request->att_date);
+
+        if (!$query->exists()) {
+            return response()->json(['status' => 'error','msg' => 'រកមិនឃើញទិន្នន័យសិស្ស'], 404);
+        }
+
+        $query->delete();
+        return response()->json(['status' => 'success','msg'    => 'លុបទិន្នន័យសិស្សបានជោគជ័យ']);
     }
 }

@@ -25,6 +25,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ExportData;
 use App\Exports\UsersExport;
 use App\Imports\ImportExcell;
+use App\Models\General\AssingClasses;
 use App\Models\General\Classes;
 use App\Models\General\Picture;
 use App\Models\General\Skills;
@@ -36,7 +37,10 @@ use App\Models\General\Qualifications;
 use App\Models\General\Sections;
 use App\Models\General\StudentCard;
 use App\Models\General\StudentCradSession;
+use App\Models\General\ClassStudent;
 use UserImport;
+
+use function Termwind\render;
 
 class StudnetController extends Controller
 {
@@ -187,7 +191,6 @@ class StudnetController extends Controller
         if (!empty(Auth::user()->department_code)) {
             $query->where('department_code', Auth::user()->department_code);
         }
-
         $class_record = $query
             ->orderBy('created_at', 'desc')
             ->get();
@@ -197,6 +200,8 @@ class StudnetController extends Controller
         $skills = DB::table('skills')->get();
         if (!empty(Auth::user()->department_code)) {
             $skills = DB::table('skills')->whereIN('code', $skillCode)->get();
+        } else if (Auth::user()->email == 'tangliheng@gmail.com') {
+            $skills = DB::table('skills')->get();
         }
 
         $sections = DB::table('sections')->get();
@@ -1241,5 +1246,62 @@ class StudnetController extends Controller
         $studentImg = Picture::whereIn('code', $records->pluck('student_code'))->get();
 
         return view('general.student_reqeust_card', compact('records', 'studentImg'));
+    }
+    public function indexStudent()
+    {
+        if (!Auth::check()) {
+            return redirect('login')->withSuccess('Opps! You do not have access');
+        }
+
+        $user = Auth::user();
+        $page = $this->page;
+        $sessionYearCode = $user->session_year_code ?? null;
+
+        $records = ClassStudent::query()
+            ->select(
+                'class_code',
+                'semester',
+                'years',
+                'skills_code',
+                'qualification',
+                'session_year_code',
+                'sections_code',
+                'department_code'
+            )
+            ->when($sessionYearCode, function ($q) use ($sessionYearCode) {
+                $q->where('session_year_code', $sessionYearCode);
+            })
+            ->when($user->department_code, function ($q) use ($user) {
+                $q->where('department_code', $user->department_code);
+            })
+            ->orderByDesc('created_at')
+            ->groupBy(
+                'class_code',
+                'semester',
+                'years',
+                'skills_code',
+                'qualification',
+                'session_year_code',
+                'sections_code',
+                'department_code'
+            )
+            ->get();
+
+        $departments = Department::pluck('name_2', 'code');
+        $sections    = DB::table('sections')->pluck('name_2', 'code');
+        $skills      = DB::table('skills')->pluck('name_2', 'code');
+
+        return view(
+            'general.students_apply_new',
+            compact('records', 'page', 'departments', 'sections', 'skills')
+        );
+    }
+    public function studentsInClass(Request $request)
+    {
+        $students = ClassStudent::where('class_code', $request->class_code)
+            ->where('sections_code', $request->sections_code)
+            ->where('session_year_code', $request->session_year_code)
+            ->get();
+        return view('general.student_detail_row', compact('students'));
     }
 }

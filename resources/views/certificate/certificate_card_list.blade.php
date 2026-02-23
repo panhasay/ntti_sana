@@ -204,9 +204,7 @@
         ['route' => 'certificate/dept-menu', 'title' => $arr_dept[0]->name_2],
         ['route' => 'department-menu', 'title' => 'ប្រព័ន្ឋគ្រប់គ្រងលិខិតបញ្ជាក់'],
     ]" />
-
     <input type="hidden" name="session_code" id="session_code" value="{{ $sessionYear->code }}">
-
     <div class="row">
         <div class="page-header flex-wrap" style="border-bottom: 0px solid #dfdcdc;">
             <div class="header-left p-3">
@@ -1013,9 +1011,7 @@
             </div>
         </div>
         <!-- Modal -->
-    
         @include('system.modal_comfrim_donwload')
-
     <script>
         const dept_code = @json(request()->route('dept_code'), JSON_THROW_ON_ERROR);
         // var dept_code = {{ $arr_dept[0]->code }};
@@ -1126,10 +1122,7 @@
             });
         }
 
-
         $(document).ready(function() {
-            
-
             const cookieName = 'sch_class_spec';
             const cookieValue = getCookie(cookieName);
 
@@ -1246,6 +1239,69 @@
                 DownlaodExcel(DataClass);
             });
 
+            $(document).on('click', '.GenerateImg', function () {
+                let stu_code   = $(this).data('stu_code');
+                let dept_code  = $(this).data('dept_code');
+                let class_code = $(this).data('class_code');
+
+                let btn = $(this);
+                btn.prop('disabled', true).text('Generating...');
+
+                // Build URL
+                let url = "/generate-certificate-img?"
+                    + "stu_code=" + stu_code
+                    + "&dept_code=" + dept_code
+                    + "&class_code=" + class_code;
+
+                // Open in new tab
+                window.open(url, '_blank');
+
+                // Restore button
+                setTimeout(function () {
+                    btn.prop('disabled', false).text('Generate Image');
+                }, 2000);
+            });
+
+        //    $(document).on('click', '.GenerateImg', function () {
+        //         let stu_code  = $(this).data('stu_code');
+        //         let dept_code  = $(this).data('dept_code');
+        //         let class_code = $(this).data('class_code');
+        //         // Show loading state
+        //         let btn = $(this);
+        //         btn.prop('disabled', true).text('Generating...');
+                
+                
+
+
+        //         // $.ajax({
+        //         //     url: '{{ route("generate.certificate.img") }}',
+        //         //     method: 'GET',
+        //         //     data: {
+        //         //         stu_code:   stu_code,
+        //         //         dept_code:  dept_code,
+        //         //         class_code: class_code,
+        //         //     },
+        //         //     xhrFields: {
+        //         //         responseType: 'blob' 
+        //         //     },
+        //         //     success: function (blob) {
+        //         //         // Trigger browser download
+        //         //         let url  = window.URL.createObjectURL(blob);
+        //         //         let a    = document.createElement('a');
+        //         //         a.href   = url;
+        //         //         a.download = stu_code + '_certificate.jpg';
+        //         //         a.click();
+        //         //         window.URL.revokeObjectURL(url);
+
+        //         //         btn.prop('disabled', false).text('Download');
+        //         //     },
+        //         //     error: function (xhr) {
+        //         //         alert('Failed to generate certificate: ' + xhr.responseText);
+        //         //         btn.prop('disabled', false).text('Download');
+        //         //     }
+        //         // });
+
+        //     });
            
         });
 

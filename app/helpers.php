@@ -242,4 +242,25 @@ if (!function_exists('secured_decrypt')) {
         }
     }
 }
+
+if (!function_exists('getCurrentSectionCode')) {
+    /**
+     * Get current section code based on current time
+     * M = Morning, A = Afternoon, N = Night
+     *
+     * @return string
+     */
+    function getCurrentSectionCode()
+    {
+        $hour = Carbon::now()->hour;
+
+        if ($hour >= 6 && $hour < 12) {
+            return 'M'; // Morning
+        } elseif ($hour >= 12 && $hour < 18) {
+            return 'A'; // Afternoon
+        } else {
+            return 'N'; // Night (18:00 - 05:59)
+        }
+    }
+}
  

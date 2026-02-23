@@ -14,10 +14,6 @@
     ?>
 <tr id="row{{ $record->code ?? '' }}">
     <td class="">
-        {{-- <a class="btn btn-primary btn-icon-text btn-sm mb-2 mb-md-0 me-2"
-            href="{{ '/exam-schedule/transaction?type=ed&code=' . \App\Service\service::Encr_string($record->id ?? '') }}">
-            <i class="mdi mdi-border-color"></i>
-        </a> --}}
         <button
             id="btnUpddateExamSchedule"
             class="btn btn-sm {{ $record->exam_status == 'Yes' ? 'btn-success' : 'btn-danger' }}"

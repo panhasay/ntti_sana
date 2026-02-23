@@ -29,10 +29,11 @@ use App\Models\Certificates\CertStudentPrintCardRevision;
 use App\Models\Certificates\CertStudentPrintCardExpireClass;
 use App\Http\Controllers\certificates\CertificateDegreeController;
 use App\Http\Controllers\Certificates\CertificateOfficialTranscriptController;
-
+use Spatie\Browsershot\Browsershot;
 
 use App\Models\General\Qualifications;
 use App\Models\General\StudentCard;
+use App\Models\General\StudentRegistration;
 use App\Models\Student\Student;
 use App\Service\service;
 use Maatwebsite\Excel\Facades\Excel;
@@ -1055,9 +1056,94 @@ class CertificateController extends Controller
         $records = CertStudentPrintCardSession::first();
         return response()->json(['status' => 'success', 'records' => $records]);
     }
-     public function InterimDegree (Request $request)
+    public function InterimDegree (Request $request)
     {
         $records = Classes::all();
         return view('interimdeegree.interim_degree', compact('records'));
     }
+
+    // public function generateImg(Request $request)
+    // {
+    //     $stu_code = $request->stu_code;
+    //     $dept_code = $request->dept_code;
+    //     $class_code = $request->class_code;
+
+    //     $records = DB::table('student')
+    //         ->where('code', $stu_code)
+    //         ->first();
+
+    //     if (!$records) {
+    //         return response()->json([
+    //             'html' => '<p style="color:red;">Student not found</p>'
+    //         ]);
+    //     }
+
+    //     $html = view('certificate.certificate_card_generate_img', [
+    //         'records' => $records,
+    //         'dept_code' => $dept_code,
+    //         'class_code' => $class_code
+    //     ])->render();
+
+    //     return response()->json([
+    //         'html' => $html
+    //     ]);
+    // }
+
+    public function generateImg (Request $request) {
+        // 1. Validate inputs
+        $request->validate([
+            'stu_code'   => 'required|string',
+            'dept_code'  => 'nullable|string',
+            'class_code' => 'nullable|string',
+        ]);
+        $record = StudentRegistration::where('code', $request->stu_code)->first();
+        $expire_date = DB::table('cert_student_print_card_expire_class')->where('class_code',$request->class_code)->first();
+        $record->stu_photo = DB::table('picture')
+                ->where('code', $record->code)
+                ->orderByDesc('id')
+                ->value('picture_ori');
+            $filePath = public_path('uploads/student/' . $record->stu_photo);
+       
+
+       return view('certificate.certificate_card_generate_img', compact('record','expire_date', 'filePath'));
+    }
+    public function generateImgs(Request $request)
+    {
+        // 1. Validate inputs
+        $request->validate([
+            'stu_code'   => 'required|string',
+            'dept_code'  => 'nullable|string',
+            'class_code' => 'nullable|string',
+        ]);
+
+        // 2. Find student
+        $record = Student::where('code', $request->stu_code)->firstOrFail();
+
+        // 3. Render the Blade view to HTML
+        $html = view('certificate.certificate_card_generate_img', [
+            'records'    => $record,
+            'dept_code'  => $request->dept_code,
+            'class_code' => $request->class_code,
+        ])->render();
+
+        // 4. Unique filename to avoid collision between users
+        $fileName = 'certificate_' . $request->stu_code . '_' . time() . '.jpg';
+        $filePath = public_path('certificates/' . $fileName);
+
+        // 5. Make sure the directory exists
+        if (!file_exists(public_path('certificates'))) {
+            mkdir(public_path('certificates'), 0755, true);
+        }
+
+        // 6. Generate JPG — explicitly set type + quality
+        Browsershot::html($html)
+            // ->windowSize(234, 359)  
+            ->windowSize(600, 900)
+            ->setScreenshotType('jpeg', 90)   // ⚠️ required for JPG output
+            ->save($filePath);
+
+        // 7. Download then delete the temp file
+        return response()->download($filePath, $fileName)->deleteFileAfterSend(true);
+    }
+
 }

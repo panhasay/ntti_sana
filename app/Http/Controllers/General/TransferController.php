@@ -315,13 +315,7 @@ class TransferController extends Controller
 
         $sessionYearCode = Auth::user()->session_year_code ?? null;
 
-        $class = Classes::WithQueryPermissionTeacher();
-
-        if (!empty($sessionYearCode)) {
-            $class = $class->where('school_year_code', $sessionYearCode);
-        }
-
-        $class = $class->get();
+        $class = Classes::WithQueryPermissionTeacher()->get();
 
         if ($student) {
             $view = view('modals.modals_student_change_class', compact('student', 'class'))->render();

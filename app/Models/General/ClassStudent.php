@@ -24,12 +24,10 @@ class ClassStudent extends Model
     protected $fillable = [
         '*',
     ];
-
     public function department()
     {
         return $this->belongsTo(Department::class, 'department_code', 'code');
     }
-
     public function section()
     {
         return $this->belongsTo(Sections::class, 'sections_code', 'code');
@@ -39,11 +37,10 @@ class ClassStudent extends Model
     {
         return $this->belongsTo(Skills::class, 'skills_code', 'code');
     }
-     public function student()
+    public function student()
     {
         return $this->belongsTo(Student::class, 'student_code', 'code');
     }
-
     public function teacher()
     {
         return $this->belongsTo(Teachers::class, 'teachers_code', 'code');
