@@ -219,7 +219,7 @@
 
                                     $grand_total_score += $total_score;
                                 ?>
-                                @if($total_score > 50)
+                                @if($total_score > 49)
                                     <th class="text-center" width="150">{{ $total_score }} </th>
                                 @else
                                     <th class="text-center" width="150" style="background: rgb(98, 96, 96)">{{ $total_score }}</th>
@@ -359,7 +359,12 @@
 
                                     $grand_total_score += $total_score;
                                 ?>
-                                <th class="text-center" width="150">{{ $total_score }}</th>
+                                @if($total_score > 49)
+                                    <th class="text-center" width="150">{{ $total_score }} </th>
+                                @else
+                                    <th class="text-center" width="150" style="background: rgb(98, 96, 96)">{{ $total_score }}</th>
+                                @endif
+                                {{-- <th class="text-center" width="150">{{ $total_score }}</th> --}}
                             @endforeach
                             <?php
                                 // Calculate the student's average score again
@@ -370,8 +375,8 @@
                         @for ($i = 0; $i < $emptyColumns; $i++)
                             <th class="text-center" width="150">&nbsp;</th>
                         @endfor
-                        <td class="text-center">{{ number_format($average_student, 2) }} </td>
-                        <td class="text-center">{{ $studentData['rank'] }}</td>
+                        <td class="text-center bold">{{ number_format($average_student, 2) }} </td>
+                        <td class="text-center bold">{{ $studentData['rank'] }}</td>
                     </tr>
                 @endforeach
             </tbody>

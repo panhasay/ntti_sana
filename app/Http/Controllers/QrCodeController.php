@@ -38,7 +38,7 @@ class QrCodeController extends Controller
     public static function generateCardStudentImg($stu_code)
     {
         $baseUrl = self::getBaseUrl()->getData()->base_url;
-        $qrCode = QrCode::size(130)
+        $qrCode = QrCode::size(153)
             ->margin(2)
             ->errorCorrection('H')
             ->generate('https://myid.ntti.edu.kh/ntti' . urlencode($stu_code));

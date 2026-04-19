@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Card Auto Download</title>
     <style>
+
         body {
             margin: 0;
             display: flex;
@@ -18,7 +19,7 @@
         .id-card {
             width: 555px;
             height: 900px;
-            padding: 24px;
+            padding: 10px 23px 0px 21px;
             text-align: center;
             font-size: 14px;
             font-family: "Khmer OS Battambang", sans-serif;
@@ -184,7 +185,6 @@
 
         .id-card-left>.pull-right {
             float: right;
-            padding-right: 1.2rem !important;
             font-weight: bold !important;
             font-family: "Khmer OS Battambang" !important;
         }
@@ -332,7 +332,7 @@
 
                 <div class="id-card-left">
                     គោត្តនាម-នាម <label class="ps-1 name_1">{{ $record->name_2 ??'' }}</label> <span class="pull-right">ភេទ
-                        ប្រុស</span>
+                        {{ $record->gender ?? '' }}</span>
                 </div>
                 <div class="id-card-left">
                     អក្សរឡាតាំង <span class="ps-3 name_2" style="font-size: 24px !important;">{{ $record->name ??'' }}</span>
@@ -347,16 +347,17 @@
                     កម្រិត<span class="ps-5">&nbsp;&nbsp;{{ $record->qualification ?? '' }}</span>
                 </div>
                 <br>
-                <div class="id-card-date-khmer">
-                    {{  $expire_date->print_expire_date ?? '' }}
-                </div>
-                @php
-                    $date = \Carbon\Carbon::parse(@$expire_date->expire_date);
+                @php 
+                   $date_khmer = DB::table('cert_student_print_card_session')
+                        ->orderBy('session_code', 'desc')
+                        ->first();
                 @endphp
+                <div class="id-card-date-khmer">
+                    {{  $date_khmer->print_khmer_lunar ?? '' }} 
+                </div>
+                
                 <div class="id-card-date-khmer-pp">
-                    រាជធានីភ្នំពេញ, ថ្ងៃទី {{ \App\Service\Service::NumberToKhmer($date->day) }}
-                    ខែ {{ \App\Service\Service::MonthKH($date->month) }}
-                    ឆ្នាំ {{ \App\Service\Service::NumberToKhmer($date->year) }}
+                    {{ $date_khmer->print_date_due ?? '' }}
                 </div>
             </div>
             <div class="id-signature">

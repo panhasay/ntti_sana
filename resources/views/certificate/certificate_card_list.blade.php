@@ -71,7 +71,6 @@
         border: 1px solid #0056b3;
     }
 
-
     .card {
         background: #f4f4f4 !important;
     }
