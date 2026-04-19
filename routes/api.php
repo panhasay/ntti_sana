@@ -22,4 +22,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('get-student', [ApiController::class, 'APIGetStudent']);
-Route::get('get-student-2', [ApiController::class, 'APIGetStudent2']);
+Route::get('get-student-2', [ApiController::class, 'APIGetStudent2d']);
+Route::get('get-student-2', [ApiController::class, 'APIGetStudent2d']);
+Route::get('get-student-2', [ApiController::class, 'APIGetStudent2d']);
