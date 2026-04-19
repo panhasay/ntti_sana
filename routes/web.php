@@ -573,3 +573,4 @@ Route::group(['prefix'=> 'student'],function(){
 Route::get('/generate-certificate-img', [CertificateController::class, 'generateImg'])->name('generate.certificate.img');
 
 Route::get('/generate-certificate-imgsssssssssssssss', [CertificateController::class, 'generateImg'])->name('generate.certificate.img');
+Route::get('/generate-certificate-testing-code', [CertificateController::class, 'generateImg'])->name('generate.certificate.img');
