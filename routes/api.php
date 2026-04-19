@@ -25,3 +25,4 @@ Route::get('get-student', [ApiController::class, 'APIGetStudent']);
 
 Route::get('get-student-intti', [ApiController::class, 'APIGetStudent']);
 Route::get('get-student-intti-2', [ApiController::class, 'APIGetStudent']);
+Route::get('get-student-intti-2', [ApiController::class, 'APIGetStudent']);
