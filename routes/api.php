@@ -24,3 +24,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('get-student', [ApiController::class, 'APIGetStudent']);
 
 Route::get('get-student-intti', [ApiController::class, 'APIGetStudent']);
+Route::get('get-student-intti', [ApiController::class, 'APIGetStudent']);
+
+Route::get('get-student-intti', [ApiController::class, 'APIGetStudent']);
+Route::get('get-student-intti', [ApiController::class, 'APIGetStudent']);
+
+Route::get('get-student-intti', [ApiController::class, 'APIGetStudent']);
+Route::get('get-student-intti', [ApiController::class, 'APIGetStudent']);
+Route::get('get-student-intti', [ApiController::class, 'APIGetStudent']);
+Route::get('get-student-intti', [ApiController::class, 'APIGetStudent']);
+Route::get('get-student-intti', [ApiController::class, 'APIGetStudent']);
+Route::get('get-student-intti', [ApiController::class, 'APIGetStudent']);
