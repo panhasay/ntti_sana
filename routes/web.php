@@ -590,7 +590,12 @@ Route::get('/secure-download/payment/{id}', function ($id) {
     return response()->download($fullPath, $media->file_name);
 })->name('secure.payment.download');
 
+<<<<<<< HEAD
 // Route::get('/school/certificate/pro/view', [SchoolController::class, 'viewPdf']);
 // Route::get('/school/success-no-payment/{day}', [SchoolController::class, 'successNoPayment'])->name('school.school.index.success_no_payment');
 
 // noo nedd url testing Panha
+=======
+Route::get('/school/certificate/pro/view', [SchoolController::class, 'viewPdf']);
+Route::get('/school/success-no-payment/{day}', [SchoolController::class, 'successNoPayment'])->name('school.school.index.success_no_payment');
+>>>>>>> main
