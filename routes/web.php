@@ -1,51 +1,51 @@
 <?php
 
-    use App\Http\Controllers\Admin\adminController;
-    use App\Http\Controllers\General\ClassesController;
-    use Illuminate\Support\Facades\Route;
-    use App\Http\Controllers\Auth\AuthController;
-    use App\Http\Controllers\General\AssingClassesController;
-    use App\Http\Controllers\General\AttendanceController;
-    use App\Http\Controllers\General\ClassScheduleController;
-    use App\Http\Controllers\General\DividedNewClassesController;
-    use App\Http\Controllers\General\ExamScheduleController;
-    use App\Http\Controllers\General\SkillsController;
-    use App\Http\Controllers\Report\ListOfStudentController;
-    use App\Http\Controllers\General\StudnetController;
-    use App\Http\Controllers\General\SubjectsController;
-    use App\Http\Controllers\General\TeacherController;
-    use App\Http\Controllers\Report\ReportFirstYearStudentRegistrationController;
-    use App\Http\Controllers\SystemSetup\DashboardController;
-    use App\Http\Controllers\SystemSetup\DepartmentController;
-    use App\Http\Controllers\SystemSetup\SystemSettingController;
-    use App\Http\Controllers\SystemSetup\TableController;
-    use App\Http\Controllers\SystemSetup\UsersController;
-    use App\Models\General\DividedNewClasses;
-    use GuzzleHttp\Middleware;
-    use Illuminate\support\Facades\App;
-    use App\Http\Controllers\Report\ReportListTableStudentOfYearController;
-    use App\Http\Controllers\General\ScoreController;
-    use App\Models\General\ExamSchedule;
-    use App\Http\Controllers\Certificates\CertificateController;
+use App\Http\Controllers\Admin\adminController;
+use App\Http\Controllers\General\ClassesController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\General\AssingClassesController;
+use App\Http\Controllers\General\AttendanceController;
+use App\Http\Controllers\General\ClassScheduleController;
+use App\Http\Controllers\General\DividedNewClassesController;
+use App\Http\Controllers\General\ExamScheduleController;
+use App\Http\Controllers\General\SkillsController;
+use App\Http\Controllers\Report\ListOfStudentController;
+use App\Http\Controllers\General\StudnetController;
+use App\Http\Controllers\General\SubjectsController;
+use App\Http\Controllers\General\TeacherController;
+use App\Http\Controllers\Report\ReportFirstYearStudentRegistrationController;
+use App\Http\Controllers\SystemSetup\DashboardController;
+use App\Http\Controllers\SystemSetup\DepartmentController;
+use App\Http\Controllers\SystemSetup\SystemSettingController;
+use App\Http\Controllers\SystemSetup\TableController;
+use App\Http\Controllers\SystemSetup\UsersController;
+use App\Models\General\DividedNewClasses;
+use GuzzleHttp\Middleware;
+use Illuminate\support\Facades\App;
+use App\Http\Controllers\Report\ReportListTableStudentOfYearController;
+use App\Http\Controllers\General\ScoreController;
+use App\Models\General\ExamSchedule;
+use App\Http\Controllers\Certificates\CertificateController;
 use App\Http\Controllers\General\AttendanceMonthlyController;
 use App\Http\Controllers\General\AttendanceSemesterController;
 use App\Http\Controllers\General\SectionsController;
-    use App\Http\Controllers\General\StudentSanaController;
-    use App\Http\Controllers\General\TransferController;
-    use App\Http\Controllers\Report\ReportAttendanceController;
-    use App\Http\Controllers\Report\ReportListOfStudentClassAndSectionController;
-    use App\Http\Controllers\Report\ReportTotalScoreExamController;
-    use Illuminate\Support\Facades\DB;
-    use Illuminate\Support\Facades\Artisan;
-    use App\Http\Controllers\General\ExamCreditController;
-    use App\Http\Controllers\General\RetakeExamController;
+use App\Http\Controllers\General\StudentSanaController;
+use App\Http\Controllers\General\TransferController;
+use App\Http\Controllers\Report\ReportAttendanceController;
+use App\Http\Controllers\Report\ReportListOfStudentClassAndSectionController;
+use App\Http\Controllers\Report\ReportTotalScoreExamController;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\General\ExamCreditController;
+use App\Http\Controllers\General\RetakeExamController;
 use App\Http\Controllers\General\UpgradeClassController;
 
-Route::get('/clear-all', function() {
-    Artisan::call('cache:clear');    
-    Artisan::call('config:clear');   
-    Artisan::call('route:clear');    
-    Artisan::call('view:clear');     
+Route::get('/clear-all', function () {
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
     return 'All specific caches cleared!';
 });
 
@@ -55,54 +55,53 @@ Route::get('/greeting/{locale}', function (string $locale) {
     }
     App::setLocale($locale);
 });
-    Route::get('/', function () {
-        return view('auth.login');
-    });
-    
-    Route::get('/panha', function () {
-        return view('certificate.certificate_card_generate_img');
-    });
-    Route::get('/', [AuthController::class, 'HomeLogin'])->name('HomeLogin');
-    Route::get('/thank-you-for-submit', function () {
-        return view('/system.thank_you_for_submit');
-    });
+Route::get('/', function () {
+    return view('auth.login');
+});
 
-    Route::get('/menu-reports', function () {
-        return view('general.main_menu_report');
-    });
+Route::get('/panha', function () {
+    return view('certificate.certificate_card_generate_img');
+});
+Route::get('/', [AuthController::class, 'HomeLogin'])->name('HomeLogin');
+Route::get('/thank-you-for-submit', function () {
+    return view('/system.thank_you_for_submit');
+});
 
-    Route::get('user-dont-have-permission', function () {
-        return view('errors.permission_acces');
-    });
+Route::get('/menu-reports', function () {
+    return view('general.main_menu_report');
+});
 
-    Route::get('/login-blocked', function () {
-        return view('auth.login'); 
-    });
+Route::get('user-dont-have-permission', function () {
+    return view('errors.permission_acces');
+});
 
-    Route::get('/student-verification', function () {
-        return view('general.student_signin');
-    });
+Route::get('/login-blocked', function () {
+    return view('auth.login');
+});
 
-    
-    Route::get('/thank_you', function () {
-        return view('system.thank_you');
-    })->name('thank_you');
-        
-    Route::get('/return-login', [AuthController::class, 'returnlogin'])->name('returnlogin');
-    Route::get('login', [AuthController::class, 'index'])->name('login');
-    Route::post('post-login', [AuthController::class, 'postLogin'])->middleware('limit.logins')->name('login.post');
-    Route::get('registration_hole', [AuthController::class, 'registration'])->name('register');
-    Route::post('post-registration', [AuthController::class, 'postRegistration'])->name('register.post');
+Route::get('/student-verification', function () {
+    return view('general.student_signin');
+});
 
-    Route::get('logout', [AuthController::class, 'logout'])->name('logout');
-    Route::group(['perfix' => 'department', 'middleware' => 'user_permission'], function (){
+
+Route::get('/thank_you', function () {
+    return view('system.thank_you');
+})->name('thank_you');
+
+Route::get('/return-login', [AuthController::class, 'returnlogin'])->name('returnlogin');
+Route::get('login', [AuthController::class, 'index'])->name('login');
+Route::post('post-login', [AuthController::class, 'postLogin'])->middleware('limit.logins')->name('login.post');
+Route::get('registration_hole', [AuthController::class, 'registration'])->name('register');
+Route::post('post-registration', [AuthController::class, 'postRegistration'])->name('register.post');
+
+Route::get('logout', [AuthController::class, 'logout'])->name('logout');
+Route::group(['perfix' => 'department', 'middleware' => 'user_permission'], function () {
     // Route::get('/department-menu', [AuthController::class, 'departmentMenu']);
     Route::get('/department-menu', [AuthController::class, 'departmentMenu'])->middleware('user_permission');
-    
-    });
-    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('forgot.password');
-    Route::group(['perfix' => 'student'], function (){
-    
+});
+Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('forgot.password');
+Route::group(['perfix' => 'student'], function () {
+
     Route::get('/student', [StudnetController::class, 'index'])->name('student');
     Route::get('/settings-customize-field', [StudnetController::class, 'SettingsCustomizeField'])->name('SettingsCustomizeField');
     Route::get('/student/print', [StudnetController::class, 'Print'])->name('Print');
@@ -111,21 +110,20 @@ Route::get('/greeting/{locale}', function (string $locale) {
     Route::get('/system/avanceSearch/student/ajaxpagination', [StudnetController::class, 'Ajaxpaginat'])->name('Ajaxpaginat');
     Route::get('/pusher/send-message', [StudnetController::class, 'sendmessage'])->name('sendmessage');
     Route::get('/system/avanceSearch/student/ajaxpagination', [StudnetController::class, 'Ajaxpaginat'])->name('Ajaxpaginat');
-    Route::POST('/student/store',[StudnetController::class, 'store']);
-    Route::POST('/student/delete',[StudnetController::class,'delete']);
-    Route::POST('/student/update',[StudnetController::class,'update']);
-    Route::get('/student/create-user-account',[StudnetController::class,'CreateUser']);
-    Route::POST('/studnet/import-excel',[StudnetController::class,'ImportExcel']);
-    Route::get('/manage-academic-work',[StudnetController::class,'ManageStudnetWork']);
-    Route::get('/assign-classes',[StudnetController::class,'ManageAssignClasses']);
-    Route::get('/student/getImage',[StudnetController::class,'GetImage']);
-    Route::Post('/student/uploadimage',[StudnetController::class,'UploadImage']);
-    Route::Post('/student/delete-image',[StudnetController::class,'DeleteImage']);
+    Route::POST('/student/store', [StudnetController::class, 'store']);
+    Route::POST('/student/delete', [StudnetController::class, 'delete']);
+    Route::POST('/student/update', [StudnetController::class, 'update']);
+    Route::get('/student/create-user-account', [StudnetController::class, 'CreateUser']);
+    Route::POST('/studnet/import-excel', [StudnetController::class, 'ImportExcel']);
+    Route::get('/manage-academic-work', [StudnetController::class, 'ManageStudnetWork']);
+    Route::get('/assign-classes', [StudnetController::class, 'ManageAssignClasses']);
+    Route::get('/student/getImage', [StudnetController::class, 'GetImage']);
+    Route::Post('/student/uploadimage', [StudnetController::class, 'UploadImage']);
+    Route::Post('/student/delete-image', [StudnetController::class, 'DeleteImage']);
     Route::get('/students/list', [StudnetController::class, 'getStudents'])->name('students.list');
-
 })->middleware('auth');
 
-Route::group(['perfix' => 'table'], function (){
+Route::group(['perfix' => 'table'], function () {
     Route::get('/table', [TableController::class, 'index']);
     Route::get('/table_field', [TableController::class, 'table_field']);
     Route::post('/build', [TableController::class, 'build']);
@@ -139,21 +137,23 @@ Route::group(['prefix' => 'table'], function () {
     Route::get('/ajaxpagination', [TableController::class, 'Ajaxpaginat']);
 })->middleware('auth');
 // report
-Route::group(['perfix' => 'reports-list-of-student'], function (){
+Route::group(['perfix' => 'reports-list-of-student'], function () {
     Route::get('reports-list-of-student', [ListOfStudentController::class, 'index'])->name('index');
     Route::get('reports-list-of-student-priview', [ListOfStudentController::class, 'Priview'])->name('Priview');
     Route::get('reports-list-of-student-print', [ListOfStudentController::class, 'Print'])->name('Print');
     Route::get('reports-list-of-student-print/export/', [ListOfStudentController::class, 'export']);
 })->middleware('auth');
 
-Route::group(['perfix' => 'report-first-year-student-registration'], function (){
+Route::group(['perfix' => 'report-first-year-student-registration'], function () {
     Route::get('report-first-year-student-registration', [ReportFirstYearStudentRegistrationController::class, 'index'])->name('index');
     Route::get('report-first-year-student-registration-priview', [ReportFirstYearStudentRegistrationController::class, 'Priview'])->name('Priview');
     Route::get('reports-list-of-student-print', [ReportFirstYearStudentRegistrationController::class, 'Print'])->name('Print');
     Route::get('reports-list-of-student-print/export/', [ReportFirstYearStudentRegistrationController::class, 'export']);
 })->middleware('auth');
 
-Route::group(['prefix' => 'dashboard','middleware' => 'user_permission'
+Route::group([
+    'prefix' => 'dashboard',
+    'middleware' => 'user_permission'
 ], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::get('student-print', [DashboardController::class, 'Print'])->name('dashboard.print');
@@ -166,17 +166,16 @@ Route::get('teacher-dashboard', [DashboardController::class, 'TeacherDashboard']
 Route::get('teacher-management-class', [DashboardController::class, 'TeacherMmanagementClass'])->name('dashboard.TeacherMmanagementClass');
 
 Route::get('dsa', [DashboardController::class, 'StudentUserAccount'])->name('StudentUserAccount');
-Route::group(['perfix' => 'department' ,  'middleware' => 'permission'], function (){
+Route::group(['perfix' => 'department',  'middleware' => 'permission'], function () {
     Route::get('department-setup', [DepartmentController::class, 'index'])->name('index');
     Route::post('department-delete', [DepartmentController::class, 'delete'])->name('delete');
     Route::get('departments/transaction', [DepartmentController::class, 'transaction'])->name('transaction');
     Route::post('departments/update', [DepartmentController::class, 'update'])->name('update');
     Route::post('departments/store', [DepartmentController::class, 'store'])->name('store');
     Route::get('departments/print', [DepartmentController::class, 'Print'])->name('Print');
-
 })->middleware('auth');
 
-Route::group(['perfix' => 'Users'], function (){
+Route::group(['perfix' => 'Users'], function () {
     Route::get('users', [UsersController::class, 'index'])->name('index');
     Route::get('profile', [UsersController::class, 'Profile'])->name('Profile');
     Route::get('profile/reset-password', [UsersController::class, 'ResetPassword'])->name('ResetPassword');
@@ -189,26 +188,26 @@ Route::group(['perfix' => 'Users'], function (){
     Route::post('user/session-year', [UsersController::class, 'updateSessionYear'])->name('updateSessionYear');
 })->middleware('auth');
 
-Route::group(['perfix' => 'table'], function (){
+Route::group(['perfix' => 'table'], function () {
     Route::get('/menu-search', [SystemSettingController::class, 'pageSearch']);
     Route::get('/settings-customize-fields', [SystemSettingController::class, 'SettingsCustomizeField']);
-    Route::get('/system/avanceSearch/{page}',[SystemSettingController::class, 'AvanceSearch']);
-    Route::get('/system/avanceSearch-clear-data/{page}',[SystemSettingController::class, 'avanceSearchClearData']);
-    Route::get('/system/live-Search/{page}',[SystemSettingController::class, 'LiveSearch']);
-    Route::get('/system/class-get-data-group',[SystemSettingController::class, 'ClassGetData']);
+    Route::get('/system/avanceSearch/{page}', [SystemSettingController::class, 'AvanceSearch']);
+    Route::get('/system/avanceSearch-clear-data/{page}', [SystemSettingController::class, 'avanceSearchClearData']);
+    Route::get('/system/live-Search/{page}', [SystemSettingController::class, 'LiveSearch']);
+    Route::get('/system/class-get-data-group', [SystemSettingController::class, 'ClassGetData']);
     // Route::get('/', [SystemSettingController::class, 'index'])->name('locations.index');
     // Route::get('/districts', [SystemSettingController::class, 'districts'])->name('locations.districts');
     // Route::get('/communes', [SystemSettingController::class, 'communes'])->name('locations.communes');
     // Route::get('/villages', [SystemSettingController::class, 'villages'])->name('locations.villages');
 })->middleware('auth');
 
-Route::group(['perfix' => 'classes'], function (){
+Route::group(['perfix' => 'classes'], function () {
     Route::get('/classes', [ClassesController::class, 'index']);
     Route::get('/classes/transaction', [ClassesController::class, 'transaction']);
     Route::post('/classes/update', [ClassesController::class, 'update']);
     Route::post('/classes/store', [ClassesController::class, 'store']);
     Route::post('/classes-delete', [ClassesController::class, 'deleteCLASS']);
-    Route::POST ('/class-schedule', [ClassesController::class, 'delete']);
+    Route::POST('/class-schedule', [ClassesController::class, 'delete']);
 })->middleware('auth');
 
 // Route::group(['perfix' => '/class-schedule'], function (){
@@ -221,7 +220,7 @@ Route::group(['perfix' => 'classes'], function (){
 //     Route::POST ('/class-schedule-delete-line', [ClassScheduleController::class, 'DeleteLine']);
 //     Route::get('/class-schedule-print',[ClassScheduleController::class,'printLine']);
 //     Route::get('/update/class-schedule/transaction',[ClassScheduleController::class,'EditTeacherSchedule']);
-    
+
 //     Route::get('/class-schedule-index',[ClassScheduleController::class,'classScheduleV2']);
 //     Route::get('/list/transaction/{id}',[ClassScheduleController::class,'classScheduleList'])->name('class.schedule.list');
 //     Route::get('/create-new-list',[ClassScheduleController::class,'classScheduleStoreV2view'])->name('class.schedule.add');
@@ -234,10 +233,10 @@ Route::group(['perfix' => 'classes'], function (){
 //     Route::put('/assign-class/{id}', [ClassScheduleController::class, 'updateAssignClassSchedule']);
 // })->middleware('auth');
 
-Route::group(['perfix' => '/class-schedule'], function (){
-    Route::get('/class-schedule-index',[ClassScheduleController::class,'classScheduleV2']);
-    Route::get('/list/transaction/{id}',[ClassScheduleController::class,'classScheduleList'])->name('class.schedule.list');
-    Route::get('/create-new-list',[ClassScheduleController::class,'classScheduleStoreV2view'])->name('class.schedule.add');
+Route::group(['perfix' => '/class-schedule'], function () {
+    Route::get('/class-schedule-index', [ClassScheduleController::class, 'classScheduleV2']);
+    Route::get('/list/transaction/{id}', [ClassScheduleController::class, 'classScheduleList'])->name('class.schedule.list');
+    Route::get('/create-new-list', [ClassScheduleController::class, 'classScheduleStoreV2view'])->name('class.schedule.add');
     Route::get('/class-schedule/get-data', [ClassScheduleController::class, 'getClassData'])->name('class.schedule.getData');
     Route::post('/class-schedule/store-v2', [ClassScheduleController::class, 'classScheduleStoreV2'])->name('class.schedule.store.v2');
     Route::delete('/class-schedule/delete/{id}', [ClassScheduleController::class, 'deleteClassSchedule'])->name('class.schedule.delete');
@@ -245,54 +244,54 @@ Route::group(['perfix' => '/class-schedule'], function (){
     Route::delete('/assign-class/delete/{id}', [ClassScheduleController::class, 'deleteAssignClassSchedule'])->name('assign-class.delete');
     Route::get('/assign-class/{id}/edit', [ClassScheduleController::class, 'editAssignClassSchedule']);
     Route::put('/assign-class/{id}', [ClassScheduleController::class, 'updateAssignClassSchedule']);
-    Route::get('/assign-class/print-line/{id}',[ClassScheduleController::class,'classSchedulePrint']);
+    Route::get('/assign-class/print-line/{id}', [ClassScheduleController::class, 'classSchedulePrint']);
 })->middleware('auth');
 
 
-Route::group(['perfix' => 'skills'], function (){
+Route::group(['perfix' => 'skills'], function () {
     Route::get('/skills', [SkillsController::class, 'index']);
     Route::get('/skills/transaction', [SkillsController::class, 'transaction']);
     Route::post('/skills/update', [SkillsController::class, 'update']);
     Route::post('/skills/store', [SkillsController::class, 'store']);
-    Route::POST ('/skills-delete', [SkillsController::class, 'delete']);
+    Route::POST('/skills-delete', [SkillsController::class, 'delete']);
 })->middleware('auth');
 
-Route::group(['perfix' => 'subject' ], function (){
+Route::group(['perfix' => 'subject'], function () {
     Route::get('/subject', [SubjectsController::class, 'index']);
     Route::get('/subjects/transaction', [SubjectsController::class, 'transaction']);
     Route::post('/subjects/update', [SubjectsController::class, 'update']);
     Route::post('/subjects/store', [SubjectsController::class, 'store']);
-    Route::POST ('/subjects-delete', [SubjectsController::class, 'delete']);
+    Route::POST('/subjects-delete', [SubjectsController::class, 'delete']);
 })->middleware('auth');
 
-Route::group(['perfix' => 'teachers' ], function (){
+Route::group(['perfix' => 'teachers'], function () {
     Route::get('/teachers', [TeacherController::class, 'index']);
     Route::get('/teachers/transaction', [TeacherController::class, 'transaction']);
     Route::post('/teachers/update', [TeacherController::class, 'update']);
     Route::post('/teachers/store', [TeacherController::class, 'store']);
-    Route::POST ('/teachers-delete', [TeacherController::class, 'delete']);
-    Route::get('/teachers/create-user-account',[TeacherController::class,'CreateUser']);
+    Route::POST('/teachers-delete', [TeacherController::class, 'delete']);
+    Route::get('/teachers/create-user-account', [TeacherController::class, 'CreateUser']);
 })->middleware('auth');
 
-Route::group(['perfix' => 'teachers' ], function (){
+Route::group(['perfix' => 'teachers'], function () {
     Route::get('/assign-classes', [AssingClassesController::class, 'index']);
     Route::get('/assign-classes/transaction', [AssingClassesController::class, 'transaction']);
     Route::post('/assign-classes/update', [AssingClassesController::class, 'update']);
     Route::get('/assing-studnet-to-class', [AssingClassesController::class, 'AssingStudentToClass']);
-    Route::POST('/assign-student-line/update',[AssingClassesController::class,'UpdateStudentLine']);
-    Route::get ('/assign-classes-delete-studnet-line', [AssingClassesController::class, 'DeleteStudentLine']);
-    Route::get('/assign-student-line-by-code',[AssingClassesController::class,'AssingStudent']);
-    Route::get('/assign-student-print-print',[AssingClassesController::class,'printLine']);
-    Route::get('/create-assing-classeds-new',[AssingClassesController::class,'CreateNewAssingClasses']);
-    Route::get('/get-attendant-student',[AssingClassesController::class,'GetAttendantStudent']);
-    Route::get('/update-attendant-date-student',[AssingClassesController::class,'UpdateAttendantDateStudent']);
-    Route::get('/supdate-attendant-score-student',[AssingClassesController::class,'UpdateAttendanScoretDateStudent']);
-    Route::get('/assign-classes-update-examtype',[AssingClassesController::class,'UpdateExamType']);
-    Route::get('/exam-results',[AssingClassesController::class,'ExamResults']);
-    Route::get('/get-exam-results',[AssingClassesController::class,'GetExamResults']);
-    Route::get('/get-exam-results-print-exam',[AssingClassesController::class,'PrintExamResults']);
-    Route::get('/get-exam-results-excel-exam',[AssingClassesController::class,'ExcelExamResults']);
-    Route::get('/assign-classes/downlaodexcel-line',[AssingClassesController::class,'DownlaodexcelLine']);
+    Route::POST('/assign-student-line/update', [AssingClassesController::class, 'UpdateStudentLine']);
+    Route::get('/assign-classes-delete-studnet-line', [AssingClassesController::class, 'DeleteStudentLine']);
+    Route::get('/assign-student-line-by-code', [AssingClassesController::class, 'AssingStudent']);
+    Route::get('/assign-student-print-print', [AssingClassesController::class, 'printLine']);
+    Route::get('/create-assing-classeds-new', [AssingClassesController::class, 'CreateNewAssingClasses']);
+    Route::get('/get-attendant-student', [AssingClassesController::class, 'GetAttendantStudent']);
+    Route::get('/update-attendant-date-student', [AssingClassesController::class, 'UpdateAttendantDateStudent']);
+    Route::get('/supdate-attendant-score-student', [AssingClassesController::class, 'UpdateAttendanScoretDateStudent']);
+    Route::get('/assign-classes-update-examtype', [AssingClassesController::class, 'UpdateExamType']);
+    Route::get('/exam-results', [AssingClassesController::class, 'ExamResults']);
+    Route::get('/get-exam-results', [AssingClassesController::class, 'GetExamResults']);
+    Route::get('/get-exam-results-print-exam', [AssingClassesController::class, 'PrintExamResults']);
+    Route::get('/get-exam-results-excel-exam', [AssingClassesController::class, 'ExcelExamResults']);
+    Route::get('/assign-classes/downlaodexcel-line', [AssingClassesController::class, 'DownlaodexcelLine']);
     Route::post('/update-score-student', [AssingClassesController::class, 'UpdateScoreStudent']);
 })->middleware('auth');
 
@@ -301,19 +300,18 @@ Route::group(['prefix' => 'attendance'], function () {
     Route::post('/submit-by-date', [AttendanceController::class, 'SumbitDocumentByDate'])->name('attendance.submitByDate');
     Route::post('/attendance/update', [AttendanceController::class, 'updateAttendance'])->name('attendance.update');
     Route::post('/attendance/student/remove', [AttendanceController::class, 'removeStudent'])->name('attendance.student.remove');
-    
 })->middleware('auth');
 
-Route::group(['perfix' => '/class-schedule'], function (){
+Route::group(['perfix' => '/class-schedule'], function () {
     Route::get('/class-schedule', [ClassScheduleController::class, 'index']);
     Route::get('/class-schedule/transaction', [ClassScheduleController::class, 'transaction']);
     Route::post('/class-schedule/update', [ClassScheduleController::class, 'update']);
     Route::post('/class-schedule/store', [ClassScheduleController::class, 'store']);
-    Route::POST ('/class-schedule-delete', [ClassScheduleController::class, 'delete']);
-    Route::POST ('/class-schedule/save-schedule', [ClassScheduleController::class, 'SaveSchedule']);
-    Route::POST ('/class-schedule-delete-line', [ClassScheduleController::class, 'DeleteLine']);
-    Route::get('/class-schedule-print',[ClassScheduleController::class,'printLine']);
-    Route::get('/update/class-schedule/transaction',[ClassScheduleController::class,'EditTeacherSchedule']);
+    Route::POST('/class-schedule-delete', [ClassScheduleController::class, 'delete']);
+    Route::POST('/class-schedule/save-schedule', [ClassScheduleController::class, 'SaveSchedule']);
+    Route::POST('/class-schedule-delete-line', [ClassScheduleController::class, 'DeleteLine']);
+    Route::get('/class-schedule-print', [ClassScheduleController::class, 'printLine']);
+    Route::get('/update/class-schedule/transaction', [ClassScheduleController::class, 'EditTeacherSchedule']);
 })->middleware('auth');
 
 Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
@@ -330,12 +328,12 @@ Route::group(['prefix' => '', 'middleware' => 'auth'], function () {
     Route::get('/student/registration/loop-class', [StudnetController::class, 'StudentLoopClass']);
 });
 
-Route::group(['perfix' => 'class-new'], function (){
-    Route::get('/class-new',[DividedNewClassesController::class,'index']);
+Route::group(['perfix' => 'class-new'], function () {
+    Route::get('/class-new', [DividedNewClassesController::class, 'index']);
     Route::get('/class-new/transaction', [DividedNewClassesController::class, 'transaction']);
     Route::get('/class-new/get-student-register', [DividedNewClassesController::class, 'GEteStudentRegister']);
-    Route::POST ('/class-new/add-student-register', [DividedNewClassesController::class, 'AddStudentRegister']);
-    Route::POST('/class-new/add-student-register-deleteline',[DividedNewClassesController::class,'DeleteStudentRegisterDeleteline']);
+    Route::POST('/class-new/add-student-register', [DividedNewClassesController::class, 'AddStudentRegister']);
+    Route::POST('/class-new/add-student-register-deleteline', [DividedNewClassesController::class, 'DeleteStudentRegisterDeleteline']);
     Route::get('/class-new-print', [DividedNewClassesController::class, 'ClassNewPrintLine']);
     Route::get('/class-new/transaction/download-excel', [DividedNewClassesController::class, 'ClassNewDownloadExcel']);
     Route::get('/class-new/transaction/update-student', [DividedNewClassesController::class, 'ClassNewUpdateStudent']);
@@ -407,19 +405,19 @@ Route::group(['prefix' => 'admin-panel', 'middleware' => 'auth'], static functio
     });
 });
 
-Route::group(['prefix' => 'transfer'], function (){
-    Route::get('/',[TransferController::class,'index']);
+Route::group(['prefix' => 'transfer'], function () {
+    Route::get('/', [TransferController::class, 'index']);
     Route::get('/transaction', [TransferController::class, 'transaction']);
     Route::post('/update', [TransferController::class, 'update']);
     Route::post('/store', [TransferController::class, 'store']);
-    Route::POST ('/transfer-delete', [TransferController::class, 'delete']);
-    Route::get ('/get-student/-hang_of_study', [TransferController::class, 'GetStudentHangOfStudy']);
-    Route::POST ('/submit-student-request-hang-of-study', [TransferController::class, 'SubmitStudentRequestHangOfStudy']);
-    Route::POST ('/submit-student-request-change-class', [TransferController::class, 'SubmitStudentRequestChangeClass']);
-    Route::get ('/get-student/change-class', [TransferController::class, 'GetStudentChangeClass']);
+    Route::POST('/transfer-delete', [TransferController::class, 'delete']);
+    Route::get('/get-student/-hang_of_study', [TransferController::class, 'GetStudentHangOfStudy']);
+    Route::POST('/submit-student-request-hang-of-study', [TransferController::class, 'SubmitStudentRequestHangOfStudy']);
+    Route::POST('/submit-student-request-change-class', [TransferController::class, 'SubmitStudentRequestChangeClass']);
+    Route::get('/get-student/change-class', [TransferController::class, 'GetStudentChangeClass']);
 })->middleware('auth');
 
-Route::group(['perfix' => 'report_list_of_student_class_and_section'], function (){
+Route::group(['perfix' => 'report_list_of_student_class_and_section'], function () {
     Route::get('report_list_of_student_class_and_section', [ReportListOfStudentClassAndSectionController::class, 'index'])->name('index');
     Route::get('report_list_of_student_class_and_section-priview', [ReportListOfStudentClassAndSectionController::class, 'Priview'])->name('Priview');
     Route::get('report_list_of_student_class_and_section-print', [ReportListOfStudentClassAndSectionController::class, 'Print'])->name('Print');
@@ -427,26 +425,26 @@ Route::group(['perfix' => 'report_list_of_student_class_and_section'], function 
     Route::get('report_attendance_student', [ReportAttendanceController::class, 'index']);
 })->middleware('auth');
 
-Route::group(['prefix' => 'student-sana'], function (){
-    Route::get('/',[StudentSanaController::class,'index']);
+Route::group(['prefix' => 'student-sana'], function () {
+    Route::get('/', [StudentSanaController::class, 'index']);
     Route::get('/transaction', [StudentSanaController::class, 'transaction']);
     Route::post('/update', [StudentSanaController::class, 'update']);
     Route::post('/store', [StudentSanaController::class, 'store']);
-    Route::POST ('/transfer-delete', [StudentSanaController::class, 'delete']);
-    Route::get ('/update/student-sana/transaction', [StudentSanaController::class, 'EcitStudentTransactionSana']);
-    Route::get ('/edit/student-sana/transaction', [StudentSanaController::class, 'EcitStudentSana']);
-    Route::get ('/save/update-student-sana', [StudentSanaController::class, 'SaveStudentSana']);
+    Route::POST('/transfer-delete', [StudentSanaController::class, 'delete']);
+    Route::get('/update/student-sana/transaction', [StudentSanaController::class, 'EcitStudentTransactionSana']);
+    Route::get('/edit/student-sana/transaction', [StudentSanaController::class, 'EcitStudentSana']);
+    Route::get('/save/update-student-sana', [StudentSanaController::class, 'SaveStudentSana']);
 })->middleware('auth');
 
-Route::group(['prefix' => 'report-total-score'], function (){
-    Route::get('/',[ReportTotalScoreExamController::class,'index']);
-    Route::get('/report-total-score-priview',[ReportTotalScoreExamController::class,'Priview']);
+Route::group(['prefix' => 'report-total-score'], function () {
+    Route::get('/', [ReportTotalScoreExamController::class, 'index']);
+    Route::get('/report-total-score-priview', [ReportTotalScoreExamController::class, 'Priview']);
 })->middleware('auth');
 
 Route::get('/score', [ScoreController::class, 'index']);
 
 
-Route::group(['perfix' => 'report_list_table_student_of_years'], function (){
+Route::group(['perfix' => 'report_list_table_student_of_years'], function () {
     Route::get('report_list_table_student_of_years', [ReportListTableStudentOfYearController::class, 'index'])->name('index');
     Route::get('reports-list-of-student-priview', [ReportListTableStudentOfYearController::class, 'Priview'])->name('Priview');
     Route::get('reports-list-of-student-print', [ReportListTableStudentOfYearController::class, 'Print'])->name('Print');
@@ -485,21 +483,21 @@ Route::group(['perfix' => 'exam-schedule'], function () {
     Route::post('/exam-schedule/delete-session', [ExamScheduleController::class, 'deleteSession'])->name('exam.schedule.delete.session');
     Route::get('/exam-schedule/get-all-teachers', [ExamScheduleController::class, 'getAllTeachers']);
     Route::post('/exam-schedule/update-date', [ExamScheduleController::class, 'updateDate'])->name('exam.schedule.update.date');
-    Route::post('/ebtnUpddateExamSchedule',[ExamScheduleController::class, 'updateDateExamSchedule'])->name('exam.schedule.update.date.ExamSchedule');
+    Route::post('/ebtnUpddateExamSchedule', [ExamScheduleController::class, 'updateDateExamSchedule'])->name('exam.schedule.update.date.ExamSchedule');
 })->middleware('auth');
 
 Route::group(['prefix' => 'exam-credit',], function () {
     Route::get('/', [ExamCreditController::class, 'index']);
     Route::get('/results', [ExamCreditController::class, 'examCreditResult'])->name('exam-credit.results');
     Route::get('/get-student-detail', [ExamCreditController::class, 'GetStudentDetail'])->name('get-student-detail');
-    Route::get('/print-attendance-list',[ExamCreditController::class,'printAttedanceList']);
-    Route::get('/attendance-list',[ExamCreditController::class,'attendanceList']);
-    Route::get('/attendance-list-monthly',[ExamCreditController::class,'attendenceListMonthly']);
+    Route::get('/print-attendance-list', [ExamCreditController::class, 'printAttedanceList']);
+    Route::get('/attendance-list', [ExamCreditController::class, 'attendanceList']);
+    Route::get('/attendance-list-monthly', [ExamCreditController::class, 'attendenceListMonthly']);
     Route::get('/attendance-list/download-excel', [ExamCreditController::class, 'attendanceListExcel']);
-    Route::get('/print-attendance-list-monthly',[ExamCreditController::class,'printAttedanceListMonthly']);
+    Route::get('/print-attendance-list-monthly', [ExamCreditController::class, 'printAttedanceListMonthly']);
     Route::get('/attendance-monthly/download-excel', [ExamCreditController::class, 'downloadAttedanceListMonthly']);
-    Route::get('/exam-student-list',[ExamCreditController::class,'examCreditStudentList']);
-    Route::post('/print-exam-student-list',[ExamCreditController::class,'printExamCreditStudentList']);
+    Route::get('/exam-student-list', [ExamCreditController::class, 'examCreditStudentList']);
+    Route::post('/print-exam-student-list', [ExamCreditController::class, 'printExamCreditStudentList']);
     Route::post('/assign-score', [ExamCreditController::class, 'assignScore'])->name('exam-credit.assign-score');
     Route::get('/assign-score/preview', [ExamCreditController::class, 'assignScorePreview'])->name('exam-credit.assign-score.preview');
     Route::post('/print-assign-score', [ExamCreditController::class, 'printAssignScore'])->name('exam-credit.print-assign-score');
@@ -509,7 +507,7 @@ Route::group(['prefix' => 'exam-credit',], function () {
     Route::get('/monthly-attendance-list', [ExamScheduleController::class, 'MonthlyAttendancList']);
 })->middleware('auth');
 
-Route::group(['prefix' => 'retake-exam'],function(){
+Route::group(['prefix' => 'retake-exam'], function () {
     Route::get('/', [RetakeExamController::class, 'index'])->name('retake.exam');
     Route::get('/live-search', [RetakeExamController::class, 'liveSearch'])->name('retake.exam.live.search');
     Route::post('/print-print-list', [RetakeExamController::class, 'printList'])->name('retake.exam.print.ajax');
@@ -527,50 +525,70 @@ Route::get('dahhboard-inputer-account', [DashboardController::class, 'dahhboardI
 //     Route::get('/', [DashboardController::class, 'dahhboardInter']);
 // })->middleware('auth');
 
- Route::get('qr-stu', [StudnetController::class, 'CheckStudent'])->name('students.CheckStudent');
- Route::get('qr-card-admin-ntti', [StudnetController::class, 'QrAdminCardNtti'])->name('students.QrAdminCardNtti');
+Route::get('qr-stu', [StudnetController::class, 'CheckStudent'])->name('students.CheckStudent');
+Route::get('qr-card-admin-ntti', [StudnetController::class, 'QrAdminCardNtti'])->name('students.QrAdminCardNtti');
 
-Route::group(['prefix' => 'up-grade-class'], function (){
-    Route::get('/',[UpgradeClassController::class,'index']);
+Route::group(['prefix' => 'up-grade-class'], function () {
+    Route::get('/', [UpgradeClassController::class, 'index']);
     Route::get('/transaction', [UpgradeClassController::class, 'transaction']);
     Route::POST('/save-selected-students', [UpgradeClassController::class, 'SelectedStudent']);
     Route::POST('/save-upgraded-students', [UpgradeClassController::class, 'SaveUpgradedStudents']);
 })->middleware('auth');
 
-Route::get('register-card-student',[StudnetController::class,'cardStudent'])->name('card.student.login.get');
-Route::post('register-card-student',[StudnetController::class,'cardStudentLogin'])->name('card.student.login.post');
-Route::get('card-student-list/{code}',[StudnetController::class,'cardStudentList'])->name('card.student.list');
+Route::get('register-card-student', [StudnetController::class, 'cardStudent'])->name('card.student.login.get');
+Route::post('register-card-student', [StudnetController::class, 'cardStudentLogin'])->name('card.student.login.post');
+Route::get('card-student-list/{code}', [StudnetController::class, 'cardStudentList'])->name('card.student.list');
 Route::put('card-student-list/{code}', [StudnetController::class, 'updateCardStudent'])->name('students.update');
 Route::post('/upload-profile/{code}', [StudnetController::class, 'uploadProfile']);
 
-Route::group(['prefix' => 'attendance-monthly'],function(){
-    Route::get('/index',[AttendanceMonthlyController::class,'index']);
-    Route::get('/class-list',[AttendanceMonthlyController::class,'attendanceMonthlyClassList']);
-    Route::get('/list',[AttendanceMonthlyController::class,'attendanceMonthlyList']);
-    Route::get('/class-detail',[AttendanceMonthlyController::class,'attendanceMonthlySubjectDetail']);
-    Route::get('/print',[AttendanceMonthlyController::class,'printAttendanceMonthly']);
+Route::group(['prefix' => 'attendance-monthly'], function () {
+    Route::get('/index', [AttendanceMonthlyController::class, 'index']);
+    Route::get('/class-list', [AttendanceMonthlyController::class, 'attendanceMonthlyClassList']);
+    Route::get('/list', [AttendanceMonthlyController::class, 'attendanceMonthlyList']);
+    Route::get('/class-detail', [AttendanceMonthlyController::class, 'attendanceMonthlySubjectDetail']);
+    Route::get('/print', [AttendanceMonthlyController::class, 'printAttendanceMonthly']);
 })->middleware('auth');
 
-Route::group(['prefix' => 'attendance-semester'],function(){
-    Route::get('/index',[AttendanceSemesterController::class,'index']);
-    Route::get('/list',[AttendanceSemesterController::class,'attendanceSemesterList']);
-    Route::get('/print',[AttendanceSemesterController::class,'printAttendanceSemester']);
+Route::group(['prefix' => 'attendance-semester'], function () {
+    Route::get('/index', [AttendanceSemesterController::class, 'index']);
+    Route::get('/list', [AttendanceSemesterController::class, 'attendanceSemesterList']);
+    Route::get('/print', [AttendanceSemesterController::class, 'printAttendanceSemester']);
 })->middleware('auth');
 
-Route::group(['prefix'=> 'exam-credit'],function(){
-    Route::get('/index',[ExamCreditController::class,'index']);
-    Route::get('/print',[ExamCreditController::class,'print']);
-    Route::get('/excel',[ExamCreditController::class,'excel']);
+Route::group(['prefix' => 'exam-credit'], function () {
+    Route::get('/index', [ExamCreditController::class, 'index']);
+    Route::get('/print', [ExamCreditController::class, 'print']);
+    Route::get('/excel', [ExamCreditController::class, 'excel']);
 })->middleware('auth');
 
-Route::group(['prefix'=> 'student'],function(){
-    Route::get('/index-student',[StudnetController::class,'indexStudent']);
-    Route::get('/class/students/detail',[StudnetController::class, 'studentsInClass'])->name('class.students.detail');
-    Route::get('/students-apply-new',[StudnetController::class,'StudentsApplyNew']);
-    Route::get('/excel',[StudnetController::class,'excel']);
+Route::group(['prefix' => 'student'], function () {
+    Route::get('/index-student', [StudnetController::class, 'indexStudent']);
+    Route::get('/class/students/detail', [StudnetController::class, 'studentsInClass'])->name('class.students.detail');
+    Route::get('/students-apply-new', [StudnetController::class, 'StudentsApplyNew']);
+    Route::get('/excel', [StudnetController::class, 'excel']);
 })->middleware('auth');
 
 Route::get('/generate-certificate-img', [CertificateController::class, 'generateImg'])->name('generate.certificate.img');
 
 Route::get('/generate-certificate-imgsssssssssssssss', [CertificateController::class, 'generateImg'])->name('generate.certificate.img');
 Route::get('/generate-certificate-testing-code', [CertificateController::class, 'generateImg'])->name('generate.certificate.img');
+
+
+
+
+Route::get('/schools/print/{id}', [SchoolController::class, 'printTemplate'])->name('schools.print');
+Route::get('/secure-download/payment/{id}', function ($id) {
+    $id = Crypt::decrypt($id);
+    $media = Media::findOrFail($id);
+    if (!Auth::check()) {
+        abort(403);
+    }
+    $fullPath = $media->getPath();
+    if (!file_exists($fullPath)) {
+        abort(404);
+    }
+    return response()->download($fullPath, $media->file_name);
+})->name('secure.payment.download');
+
+Route::get('/school/certificate/pro/view', [SchoolController::class, 'viewPdf']);
+Route::get('/school/success-no-payment/{day}', [SchoolController::class, 'successNoPayment'])->name('school.school.index.success_no_payment');
