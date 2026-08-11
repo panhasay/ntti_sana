@@ -279,7 +279,7 @@ class StudentSanaController extends Controller
         }
     }
 
-    public function SaveStudentSanaV2(Request $request)
+    public function SaveStudentSanaV2111111111(Request $request)
     {
         $data = $request->all();
 
